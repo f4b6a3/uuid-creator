@@ -4,7 +4,7 @@
 
 	<groupId>com.github</groupId>
 	<artifactId>small-uuid</artifactId>
-	<version>0.1.0</version>
+	<version>0.1.1</version>
 	<packaging>jar</packaging>
 
 	<name>small-uuid</name>
