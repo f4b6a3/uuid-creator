@@ -1,9 +1,7 @@
 package com.github.small.uuid;
 
 import java.time.Instant;
-import java.time.temporal.ChronoField;
 import java.util.UUID;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -12,6 +10,9 @@ import junit.framework.TestSuite;
  * Unit test for simple App.
  */
 public class UUIDGeneratorTest extends TestCase {
+
+	private static final String PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[14][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
+
 	/**
 	 * Create the test case
 	 *
@@ -29,21 +30,52 @@ public class UUIDGeneratorTest extends TestCase {
 		return new TestSuite(UUIDGeneratorTest.class);
 	}
 
-	/**
-	 * Test if the first part of the UUID contains date and time information.
-	 */
-	public void testGetHalfRandomUUID() {
-		
-		Instant instant = Instant.now();
-		UUID uuid = UUIDGenerator.getCustomUUID(instant);
-		
-		long seconds = instant.getLong(ChronoField.INSTANT_SECONDS);
-		long milliSeconds = instant.getLong(ChronoField.MILLI_OF_SECOND);
-		
-		String secondsUUID = uuid.toString().substring(0, 8);
-		String milliSecondsUUID = uuid.toString().substring(9, 13);
+	public void testGetRandomUUIDStringIsValid() {
+		String uuid = UUIDGenerator.getRandomUUIDString();
+		assertTrue(uuid.toString().matches(PATTERN));
+	}
 
-		assertEquals(seconds, (long) Long.parseLong(secondsUUID, 16));
-		assertEquals(milliSeconds, (long) Long.parseLong(milliSecondsUUID, 16));
+	public void testGetTimestampUUIDStringIsValid() {
+		String uuid = UUIDGenerator.getTimestampUUIDString();
+		assertTrue(uuid.toString().matches(PATTERN));
+	}
+
+	public void testGetNaturalTimestampUUIDStringIsValid() {
+		String uuid = UUIDGenerator.getNaturalTimestampUUIDString();
+		assertTrue(uuid.toString().matches(PATTERN));
+	}
+
+	public void testGetTimestampAndHardwareAddressUUIDStringIsValid() {
+		String uuid = UUIDGenerator.getTimestampAndHardwareAddressUUIDString();
+		assertTrue(uuid.toString().matches(PATTERN));
+	}
+
+	public void testGetNaturalTimestampAndHardwareAddressUUIDStringIsValid() {
+		String uuid = UUIDGenerator.getNaturalTimestampAndHardwareAddressUUIDString();
+		assertTrue(uuid.toString().matches(PATTERN));
+	}
+
+	/**
+	 * Test if a time based UUID version 1 is has the correct timestamp.
+	 */
+	public void testGetTimestampUUIDVersion1() {
+
+		Instant instant = Instant.now();
+		UUID uuid = UUIDGenerator.getTimestampUUID(instant);
+		Instant uuidInstant = UUIDGenerator.extractInstant(uuid);
+
+		assertEquals(instant, uuidInstant);
+	}
+
+	/**
+	 * Test if a time based UUID version 4 is has the correct timestamp.
+	 */
+	public void testGetTimestampUUIDVersion4() {
+
+		Instant instant = Instant.now();
+		UUID uuid = UUIDGenerator.getNaturalTimestampUUID(instant);
+		Instant uuidInstant = UUIDGenerator.extractInstant(uuid);
+
+		assertEquals(instant, uuidInstant);
 	}
 }
