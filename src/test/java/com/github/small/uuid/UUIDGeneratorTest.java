@@ -78,4 +78,37 @@ public class UUIDGeneratorTest extends TestCase {
 
 		assertEquals(instant, uuidInstant);
 	}
+	
+	/**
+	 * Test speed of random UUID generation.
+	 * 
+	 * It's Very fest for short loops :)
+	 * But it's slow for long loops...
+	 *  
+	 */
+	public void testSpeed() {
+		
+		long max = (long) Math.pow(10, 1);
+		Instant start = null;
+		Instant end = null;
+		
+		start = Instant.now();
+		for(int i = 0; i < max; i++) {
+			UUID.randomUUID();
+		}
+		end = Instant.now();
+		long milisecondsJavaUtil = (end.toEpochMilli() - start.toEpochMilli());
+		
+		start = Instant.now();
+		for(int i = 0; i < max; i++) {
+			UUIDGenerator.getRandomUUID();
+		}
+		end = Instant.now();
+		long milisecondsUUIDGenerator = (end.toEpochMilli() - start.toEpochMilli());
+		
+		System.out.println("Miliseconds java.util.UUID: " + milisecondsJavaUtil);
+		System.out.println("Miliseconds UUIDGenerator: " + milisecondsUUIDGenerator);
+		
+		assertTrue(milisecondsUUIDGenerator < milisecondsJavaUtil);
+	}
 }
