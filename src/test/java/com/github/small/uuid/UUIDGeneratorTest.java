@@ -34,6 +34,11 @@ public class UUIDGeneratorTest extends TestCase {
 		String uuid = UUIDGenerator.getRandomUUIDString();
 		assertTrue(uuid.toString().matches(PATTERN));
 	}
+	
+	public void testGetRandomHashUUIDStringIsValid() {
+		String uuid = UUIDGenerator.getRandomHashUUIDString();
+		assertTrue(uuid.toString().matches(PATTERN));
+	}
 
 	public void testGetTimestampUUIDStringIsValid() {
 		String uuid = UUIDGenerator.getTimestampUUIDString();
@@ -46,12 +51,12 @@ public class UUIDGeneratorTest extends TestCase {
 	}
 
 	public void testGetTimestampAndHardwareAddressUUIDStringIsValid() {
-		String uuid = UUIDGenerator.getTimestampAndHardwareAddressUUIDString();
+		String uuid = UUIDGenerator.getTimestampAndMachineUUIDString();
 		assertTrue(uuid.toString().matches(PATTERN));
 	}
 
 	public void testGetNaturalTimestampAndHardwareAddressUUIDStringIsValid() {
-		String uuid = UUIDGenerator.getNaturalTimestampAndHardwareAddressUUIDString();
+		String uuid = UUIDGenerator.getNaturalTimestampAndMachineUUIDString();
 		assertTrue(uuid.toString().matches(PATTERN));
 	}
 
@@ -77,38 +82,5 @@ public class UUIDGeneratorTest extends TestCase {
 		Instant uuidInstant = UUIDGenerator.extractInstant(uuid);
 
 		assertEquals(instant, uuidInstant);
-	}
-	
-	/**
-	 * Test speed of random UUID generation.
-	 * 
-	 * It's Very fest for short loops :)
-	 * But it's slow for long loops...
-	 *  
-	 */
-	public void testSpeed() {
-		
-		long max = (long) Math.pow(10, 1);
-		Instant start = null;
-		Instant end = null;
-		
-		start = Instant.now();
-		for(int i = 0; i < max; i++) {
-			UUID.randomUUID();
-		}
-		end = Instant.now();
-		long milisecondsJavaUtil = (end.toEpochMilli() - start.toEpochMilli());
-		
-		start = Instant.now();
-		for(int i = 0; i < max; i++) {
-			UUIDGenerator.getRandomUUID();
-		}
-		end = Instant.now();
-		long milisecondsUUIDGenerator = (end.toEpochMilli() - start.toEpochMilli());
-		
-		System.out.println("Miliseconds java.util.UUID: " + milisecondsJavaUtil);
-		System.out.println("Miliseconds UUIDGenerator: " + milisecondsUUIDGenerator);
-		
-		assertTrue(milisecondsUUIDGenerator < milisecondsJavaUtil);
 	}
 }
