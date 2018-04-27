@@ -23,11 +23,6 @@ public class UUIDGenerator {
 	private static final char TIMESTAMP_VERSION = '1';
 	private static final char RANDOM_VERSION = '4';
 
-	// This two constants are used to avoid buffer overflow
-	// It was not possible to get nano seconds in some cases of large dates
-	private static final long SECONDS_MULTIPLYER = (long) Math.pow(10, 7);
-	private static final long NANOSECONDS_DIVISOR = (long) Math.pow(10, 2);
-
 	private static final short TIMESTAMP_LENGH = 15;
 	private static final char[] VARIANT_1_CHARS = "89ab".toCharArray();
 	private static final char[] HEXADECIMAL_CHARS = "0123456789abcdef".toCharArray();
@@ -38,8 +33,13 @@ public class UUIDGenerator {
 
 	private static Charset charsetUTF8 = null;
 	private static MessageDigest messageDigest = null;
-	
+
+	// Constant used to generate clock sequence (3 nibbles)
 	private static final int THREE_NIBBLES = 4096;
+
+	// Constants used to avoid long data type overflow
+	private static final long SECONDS_MULTIPLYER = (long) Math.pow(10, 7);
+	private static final long NANOSECONDS_DIVISOR = (long) Math.pow(10, 2);
 
 	/**
 	 * @see {@link UUIDGenerator#getRandomUUIDString(boolean)}
@@ -271,8 +271,7 @@ public class UUIDGenerator {
 	 * @param standardTimestamp
 	 * @return
 	 */
-	protected static String getUUIDString(Instant instant, boolean includeHardwareAddress,
-			boolean standardTimestamp) {
+	protected static String getUUIDString(Instant instant, boolean includeHardwareAddress, boolean standardTimestamp) {
 
 		long timestamp = getGregorianCalendarTimestamp(instant);
 		String timestampHex = toHexadecimal(timestamp, TIMESTAMP_LENGH);
@@ -289,7 +288,7 @@ public class UUIDGenerator {
 			blocks[2] = RANDOM_VERSION + timestampHex.substring(12);
 		}
 
-		blocks[3] = getCharSequence(timestamp);
+		blocks[3] = getClockSequence(timestamp);
 
 		if (includeHardwareAddress && getHardwareAddress() != null) {
 			blocks[4] = getHardwareAddress();
@@ -311,7 +310,7 @@ public class UUIDGenerator {
 	 * @param timestampHex
 	 * @return
 	 */
-	protected static String getCharSequence(long timestamp) {
+	protected static String getClockSequence(long timestamp) {
 
 		// Get char from '8' to 'b', calculated from last byte of timestamp
 		char variant = VARIANT_1_CHARS[(int) (timestamp % 16) / 4];
