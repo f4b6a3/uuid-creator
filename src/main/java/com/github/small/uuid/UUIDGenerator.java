@@ -51,12 +51,12 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * @see {@link UUIDGenerator#getTimestampWithoutMachineAddressUUIDString()}
+	 * @see {@link UUIDGenerator#getTimestampPrivateUUIDString()}
 	 * 
 	 * @return
 	 */
-	public static UUID getTimestampWithoutMachineAddressUUID() {
-		return UUID.fromString(getTimestampWithoutMachineAddressUUIDString());
+	public static UUID getTimestampPrivateUUID() {
+		return UUID.fromString(getTimestampPrivateUUIDString());
 	}
 
 	/**
@@ -69,12 +69,12 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * @see {@link UUIDGenerator#getSequentialWithoutMachineAddressUUIDString()}
+	 * @see {@link UUIDGenerator#getSequentialPrivateUUIDString()}
 	 * 
 	 * @return
 	 */
-	public static UUID getSequentialWithoutMachineAddressUUID() {
-		return UUID.fromString(getSequentialWithoutMachineAddressUUIDString());
+	public static UUID getSequentialPrivateUUID() {
+		return UUID.fromString(getSequentialPrivateUUIDString());
 	}
 
 	/**
@@ -87,12 +87,12 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * @see {@link UUIDGenerator#getTimestampWithoutMachineAddressUUIDString(Instant)}
+	 * @see {@link UUIDGenerator#getTimestampPrivateUUIDString(Instant)}
 	 * 
 	 * @return
 	 */
-	protected static UUID getTimestampWithoutMachineAddressUUID(Instant instant) {
-		return UUID.fromString(getTimestampWithoutMachineAddressUUIDString(instant));
+	protected static UUID getTimestampPrivateUUID(Instant instant) {
+		return UUID.fromString(getTimestampPrivateUUIDString(instant));
 	}
 
 	/**
@@ -105,12 +105,12 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * @see {@link UUIDGenerator#getSequentialWithoutMachineAddressUUIDString(Instant)}
+	 * @see {@link UUIDGenerator#getSequentialPrivateUUIDString(Instant)}
 	 * 
 	 * @return
 	 */
-	protected static UUID getSequentialWithoutMachineAddressUUID(Instant instant) {
-		return UUID.fromString(getSequentialWithoutMachineAddressUUIDString(instant));
+	protected static UUID getSequentialPrivateUUID(Instant instant) {
+		return UUID.fromString(getSequentialPrivateUUIDString(instant));
 	}
 
 	/**
@@ -123,12 +123,12 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * @see {@link UUIDGenerator#getTimestampWithoutMachineAddressUUIDString(Instant)}
+	 * @see {@link UUIDGenerator#getTimestampPrivateUUIDString(Instant)}
 	 * 
 	 * @return
 	 */
-	public static String getTimestampWithoutMachineAddressUUIDString() {
-		return getTimestampWithoutMachineAddressUUIDString(getClockInstant());
+	public static String getTimestampPrivateUUIDString() {
+		return getTimestampPrivateUUIDString(getClockInstant());
 	}
 
 	/**
@@ -141,12 +141,12 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * @see {@link UUIDGenerator#getSequentialWithoutMachineAddressUUIDString(Instant)}
+	 * @see {@link UUIDGenerator#getSequentialPrivateUUIDString(Instant)}
 	 * 
 	 * @return
 	 */
-	public static String getSequentialWithoutMachineAddressUUIDString() {
-		return getSequentialWithoutMachineAddressUUIDString(getClockInstant());
+	public static String getSequentialPrivateUUIDString() {
+		return getSequentialPrivateUUIDString(getClockInstant());
 	}
 
 	/**
@@ -159,7 +159,7 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Returns a UUID with timestamp and no machine address.
+	 * Returns a UUID with timestamp and without machine address.
 	 * 
 	 * Details: <br/>
 	 * - Version number: 1 <br/>
@@ -171,7 +171,7 @@ public class UUIDGenerator {
 	 * @param instant
 	 * @return
 	 */
-	protected static String getTimestampWithoutMachineAddressUUIDString(Instant instant) {
+	protected static String getTimestampPrivateUUIDString(Instant instant) {
 		return getUUIDString(instant, false, true);
 	}
 
@@ -193,9 +193,10 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Returns a UUID with timestamp and no machine address, but the bytes
-	 * corresponding to timestamp are arranged in "natural" order, that is not
-	 * compliant the standard.
+	 * Returns a UUID with timestamp and without machine address, but the bytes
+	 * corresponding to timestamp are arranged in the "natural" order, that is
+	 * not compatible with the version 1. For that reason it's returned as a
+	 * version 4 UUID.
 	 * 
 	 * Details: <br/>
 	 * - Version number: 4 <br/>
@@ -207,14 +208,15 @@ public class UUIDGenerator {
 	 * @param instant
 	 * @return
 	 */
-	protected static String getSequentialWithoutMachineAddressUUIDString(Instant instant) {
+	protected static String getSequentialPrivateUUIDString(Instant instant) {
 		return getUUIDString(instant, false, false);
 	}
 
 	/**
 	 * Returns a UUID with timestamp and machine adress, but the bytes
-	 * corresponding to timestamp are arranged in "natural" order, that is not
-	 * compliant the standard.
+	 * corresponding to timestamp are arranged in the "natural" order, that is
+	 * not compatible with the version 1. For that reason it's returned as a
+	 * version 4 UUID.
 	 * 
 	 * Details: <br/>
 	 * - Version number: 4 <br/>
@@ -231,8 +233,7 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Returns a random UUID with no timestamp and no machine address with the
-	 * option to use or not MD5 hash to theoretically increase randomness.
+	 * Returns a random UUID with no timestamp and no machine address.
 	 * 
 	 * Details: <br/>
 	 * - Version number: 4 <br/>
@@ -249,7 +250,7 @@ public class UUIDGenerator {
 		String uuid = null;
 		uuid = getFormattedRandomHash();
 		uuid = replaceBlock(uuid, RANDOM_VERSION + getRandomHexadecimal(3), 3);
-		uuid = replaceBlock(uuid, getRandomCharactersArray(VARIANT_1_CHARS, 1)[0] + getRandomHexadecimal(3), 4);
+		uuid = replaceBlock(uuid, getRandomCharacters(VARIANT_1_CHARS, 1)[0] + getRandomHexadecimal(3), 4);
 
 		return uuid;
 
@@ -267,11 +268,11 @@ public class UUIDGenerator {
 	 * - Timestamp bytes are in standard order: YES or NO <br/>
 	 * 
 	 * @param instant
-	 * @param includeHardwareAddress
+	 * @param realHardwareAddress
 	 * @param standardTimestamp
 	 * @return
 	 */
-	protected static String getUUIDString(Instant instant, boolean includeHardwareAddress, boolean standardTimestamp) {
+	protected static String getUUIDString(Instant instant, boolean realHardwareAddress, boolean standardTimestamp) {
 
 		long timestamp = getGregorianCalendarTimestamp(instant);
 		String timestampHex = toHexadecimal(timestamp, TIMESTAMP_LENGH);
@@ -289,12 +290,7 @@ public class UUIDGenerator {
 		}
 
 		blocks[3] = getClockSequence(timestamp);
-
-		if (includeHardwareAddress && getHardwareAddress() != null) {
-			blocks[4] = getHardwareAddress();
-		} else {
-			blocks[4] = setMultiCastBit(getRandomHexadecimal(12));
-		}
+		blocks[4] = getHardwareAddress(realHardwareAddress);
 
 		return String.join("-", blocks);
 	}
@@ -335,7 +331,7 @@ public class UUIDGenerator {
 	 * @param length
 	 * @return
 	 */
-	protected static char[] getRandomCharactersArray(char[] chars, int length) {
+	protected static char[] getRandomCharacters(char[] chars, int length) {
 
 		char[] array = new char[length];
 
@@ -353,7 +349,7 @@ public class UUIDGenerator {
 	 * @return
 	 */
 	protected static String getRandomHexadecimal(int length) {
-		char[] array = getRandomCharactersArray(HEXADECIMAL_CHARS, length);
+		char[] array = getRandomCharacters(HEXADECIMAL_CHARS, length);
 		return String.valueOf(array);
 	}
 
@@ -394,7 +390,7 @@ public class UUIDGenerator {
 	 * @return
 	 */
 	protected static char getRandomVariantOne() {
-		char[] array = getRandomCharactersArray(VARIANT_1_CHARS, 1);
+		char[] array = getRandomCharacters(VARIANT_1_CHARS, 1);
 		return array[0];
 	}
 
@@ -459,9 +455,14 @@ public class UUIDGenerator {
 	 * 
 	 * @return
 	 */
-	protected static String getHardwareAddress() {
+	protected static String getHardwareAddress(boolean realHardwareAddress) {
 
 		if (hardwareAddress != null) {
+			return hardwareAddress;
+		}
+
+		if (!realHardwareAddress) {
+			hardwareAddress = setMultiCastBit(getRandomHexadecimal(12));
 			return hardwareAddress;
 		}
 
@@ -601,24 +602,10 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Returns a random string formatted in the UUID format, but not compliant
-	 * to the standard in most cases.
-	 * 
-	 * Some chars should be changed to follow standards, like version and
-	 * variant numbers.
-	 * 
-	 * @return
-	 */
-	protected static String getFormattedRandomHexadecimal() {
-		return formatString(getRandomHexadecimal(32));
-	}
-
-	/**
-	 * Returns a random MD5 string formatted in the UUID format, but not
-	 * compliant to the standard in most cases.
+	 * Returns a random MD5 hash formatted in the UUID format.
 	 *
-	 * Some chars should be changed to follow standards, like version and
-	 * variant numbers.
+	 * Some chars must be changed to comply standards, like version and variant
+	 * chars.
 	 * 
 	 * @return
 	 */

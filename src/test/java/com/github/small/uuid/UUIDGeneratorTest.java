@@ -46,12 +46,12 @@ public class UUIDGeneratorTest extends TestCase {
 	}
 
 	public void testGetTimestampWithoutMachineAddressUUIDStringIsValid() {
-		String uuid = UUIDGenerator.getTimestampWithoutMachineAddressUUIDString();
+		String uuid = UUIDGenerator.getTimestampPrivateUUIDString();
 		assertTrue(uuid.toString().matches(PATTERN));
 	}
 
 	public void testGetSequentialWithoutMachineAddressUUIDStringIsValid() {
-		String uuid = UUIDGenerator.getSequentialWithoutMachineAddressUUIDString();
+		String uuid = UUIDGenerator.getSequentialPrivateUUIDString();
 		assertTrue(uuid.toString().matches(PATTERN));
 	}
 
