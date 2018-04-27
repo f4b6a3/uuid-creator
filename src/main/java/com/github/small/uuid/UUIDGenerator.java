@@ -16,11 +16,15 @@ import java.util.UUID;
 
 public class UUIDGenerator {
 
+	private static final UUIDClock clock = new UUIDClock();
+
 	private static final Instant GREGORIAN_EPOCH = getGregorianCalendarBeginning();
 
 	private static final char TIMESTAMP_VERSION = '1';
 	private static final char RANDOM_VERSION = '4';
 
+	// This two constants are used to avoid buffer overflow
+	// It was not possible to get nano seconds in some cases of large dates
 	private static final long SECONDS_MULTIPLYER = (long) Math.pow(10, 7);
 	private static final long NANOSECONDS_DIVISOR = (long) Math.pow(10, 2);
 
@@ -28,13 +32,14 @@ public class UUIDGenerator {
 	private static final char[] VARIANT_1_CHARS = "89ab".toCharArray();
 	private static final char[] HEXADECIMAL_CHARS = "0123456789abcdef".toCharArray();
 
-	private static long lastTimestamp = 0;
-	private static long nanosecondsSnapshot = System.nanoTime();
 	private static Random random = new Random();
 	private static String hardwareAddress = null;
-	
+	private static String lastClockSequence = null;
+
 	private static Charset charsetUTF8 = null;
 	private static MessageDigest messageDigest = null;
+	
+	private static final int THREE_NIBBLES = 4096;
 
 	/**
 	 * @see {@link UUIDGenerator#getRandomUUIDString(boolean)}
@@ -42,16 +47,16 @@ public class UUIDGenerator {
 	 * @return
 	 */
 	public static UUID getRandomUUID() {
-		return UUID.fromString(getRandomUUIDString(false));
+		return UUID.fromString(getRandomUUIDString());
 	}
 
 	/**
-	 * @see {@link UUIDGenerator#getRandomUUIDString(boolean)}
+	 * @see {@link UUIDGenerator#getTimestampWithoutMachineAddressUUIDString()}
 	 * 
 	 * @return
 	 */
-	public static UUID getRandomHashUUID() {
-		return UUID.fromString(getRandomUUIDString(true));
+	public static UUID getTimestampWithoutMachineAddressUUID() {
+		return UUID.fromString(getTimestampWithoutMachineAddressUUIDString());
 	}
 
 	/**
@@ -64,30 +69,30 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * @see {@link UUIDGenerator#getTimestampAndMachineUUIDString()}
+	 * @see {@link UUIDGenerator#getSequentialWithoutMachineAddressUUIDString()}
 	 * 
 	 * @return
 	 */
-	public static UUID getTimestampAndMachineUUID() {
-		return UUID.fromString(getTimestampAndMachineUUIDString());
+	public static UUID getSequentialWithoutMachineAddressUUID() {
+		return UUID.fromString(getSequentialWithoutMachineAddressUUIDString());
 	}
 
 	/**
-	 * @see {@link UUIDGenerator#getNaturalTimestampUUIDString()}
+	 * @see {@link UUIDGenerator#getSequentialUUIDString()}
 	 * 
 	 * @return
 	 */
-	public static UUID getNaturalTimestampUUID() {
-		return UUID.fromString(getNaturalTimestampUUIDString());
+	public static UUID getSequentialUUID() {
+		return UUID.fromString(getSequentialUUIDString());
 	}
 
 	/**
-	 * @see {@link UUIDGenerator#getNaturalTimestampAndMachineUUIDString()}
+	 * @see {@link UUIDGenerator#getTimestampWithoutMachineAddressUUIDString(Instant)}
 	 * 
 	 * @return
 	 */
-	public static UUID getNaturalTimestampAndMachineUUID() {
-		return UUID.fromString(getNaturalTimestampAndMachineUUIDString());
+	protected static UUID getTimestampWithoutMachineAddressUUID(Instant instant) {
+		return UUID.fromString(getTimestampWithoutMachineAddressUUIDString(instant));
 	}
 
 	/**
@@ -95,53 +100,35 @@ public class UUIDGenerator {
 	 * 
 	 * @return
 	 */
-	public static UUID getTimestampUUID(Instant instant) {
+	protected static UUID getTimestampUUID(Instant instant) {
 		return UUID.fromString(getTimestampUUIDString(instant));
 	}
 
 	/**
-	 * @see {@link UUIDGenerator#getTimestampAndMachineUUIDString(Instant)}
+	 * @see {@link UUIDGenerator#getSequentialWithoutMachineAddressUUIDString(Instant)}
 	 * 
 	 * @return
 	 */
-	public static UUID getTimestampAndMachineUUID(Instant instant) {
-		return UUID.fromString(getTimestampAndMachineUUIDString(instant));
+	protected static UUID getSequentialWithoutMachineAddressUUID(Instant instant) {
+		return UUID.fromString(getSequentialWithoutMachineAddressUUIDString(instant));
 	}
 
 	/**
-	 * @see {@link UUIDGenerator#getNaturalTimestampUUIDString(Instant)}
+	 * @see {@link UUIDGenerator#getSequentialUUIDString(Instant)}
 	 * 
 	 * @return
 	 */
-	public static UUID getNaturalTimestampUUID(Instant instant) {
-		return UUID.fromString(getNaturalTimestampUUIDString(instant));
+	protected static UUID getSequentialUUID(Instant instant) {
+		return UUID.fromString(getSequentialUUIDString(instant));
 	}
 
 	/**
-	 * @see {@link UUIDGenerator#getNaturalTimestampAndMachineUUIDString(Instant)}
+	 * @see {@link UUIDGenerator#getTimestampWithoutMachineAddressUUIDString(Instant)}
 	 * 
 	 * @return
 	 */
-	public static UUID getNaturalTimestampAndMachineUUID(Instant instant) {
-		return UUID.fromString(getNaturalTimestampAndMachineUUIDString(instant));
-	}
-
-	/**
-	 * @see {@link UUIDGenerator#getRandomUUIDString(boolean)}
-	 * 
-	 * @return
-	 */
-	public static String getRandomUUIDString() {
-		return getRandomUUIDString(false);
-	}
-
-	/**
-	 * @see {@link UUIDGenerator#getRandomUUIDString(boolean)}
-	 * 
-	 * @return
-	 */
-	public static String getRandomHashUUIDString() {
-		return getRandomUUIDString(true);
+	public static String getTimestampWithoutMachineAddressUUIDString() {
+		return getTimestampWithoutMachineAddressUUIDString(getClockInstant());
 	}
 
 	/**
@@ -150,34 +137,25 @@ public class UUIDGenerator {
 	 * @return
 	 */
 	public static String getTimestampUUIDString() {
-		return getTimestampUUIDString(Instant.now());
+		return getTimestampUUIDString(getClockInstant());
 	}
 
 	/**
-	 * @see {@link UUIDGenerator#getTimestampAndMachineUUIDString(Instant)}
+	 * @see {@link UUIDGenerator#getSequentialWithoutMachineAddressUUIDString(Instant)}
 	 * 
 	 * @return
 	 */
-	public static String getTimestampAndMachineUUIDString() {
-		return getTimestampAndMachineUUIDString(Instant.now());
+	public static String getSequentialWithoutMachineAddressUUIDString() {
+		return getSequentialWithoutMachineAddressUUIDString(getClockInstant());
 	}
 
 	/**
-	 * @see {@link UUIDGenerator#getNaturalTimestampUUIDString(Instant)}
+	 * @see {@link UUIDGenerator#getSequentialUUIDString(Instant)}
 	 * 
 	 * @return
 	 */
-	public static String getNaturalTimestampUUIDString() {
-		return getNaturalTimestampUUIDString(Instant.now());
-	}
-
-	/**
-	 * @see {@link UUIDGenerator#getNaturalTimestampAndMachineUUIDString(Instant)}
-	 * 
-	 * @return
-	 */
-	public static String getNaturalTimestampAndMachineUUIDString() {
-		return getNaturalTimestampAndMachineUUIDString(Instant.now());
+	public static String getSequentialUUIDString() {
+		return getSequentialUUIDString(getClockInstant());
 	}
 
 	/**
@@ -193,8 +171,8 @@ public class UUIDGenerator {
 	 * @param instant
 	 * @return
 	 */
-	public static String getTimestampUUIDString(Instant instant) {
-		return getTimestampUUIDString(instant, false, true);
+	protected static String getTimestampWithoutMachineAddressUUIDString(Instant instant) {
+		return getUUIDString(instant, false, true);
 	}
 
 	/**
@@ -210,8 +188,8 @@ public class UUIDGenerator {
 	 * @param instant
 	 * @return
 	 */
-	public static String getTimestampAndMachineUUIDString(Instant instant) {
-		return getTimestampUUIDString(instant, true, true);
+	protected static String getTimestampUUIDString(Instant instant) {
+		return getUUIDString(instant, true, true);
 	}
 
 	/**
@@ -229,8 +207,8 @@ public class UUIDGenerator {
 	 * @param instant
 	 * @return
 	 */
-	public static String getNaturalTimestampUUIDString(Instant instant) {
-		return getTimestampUUIDString(instant, false, false);
+	protected static String getSequentialWithoutMachineAddressUUIDString(Instant instant) {
+		return getUUIDString(instant, false, false);
 	}
 
 	/**
@@ -248,8 +226,8 @@ public class UUIDGenerator {
 	 * @param instant
 	 * @return
 	 */
-	public static String getNaturalTimestampAndMachineUUIDString(Instant instant) {
-		return getTimestampUUIDString(instant, true, false);
+	protected static String getSequentialUUIDString(Instant instant) {
+		return getUUIDString(instant, true, false);
 	}
 
 	/**
@@ -266,16 +244,10 @@ public class UUIDGenerator {
 	 * @param instant
 	 * @return
 	 */
-	public static String getRandomUUIDString(boolean useHash) {
+	protected static String getRandomUUIDString() {
 
 		String uuid = null;
-
-		if (useHash) {
-			uuid = getFormattedRandomHash();
-		} else {
-			uuid = getFormattedRandomHexadecimal();
-		}
-
+		uuid = getFormattedRandomHash();
 		uuid = replaceBlock(uuid, RANDOM_VERSION + getRandomHexadecimal(3), 3);
 		uuid = replaceBlock(uuid, getRandomCharactersArray(VARIANT_1_CHARS, 1)[0] + getRandomHexadecimal(3), 4);
 
@@ -299,7 +271,7 @@ public class UUIDGenerator {
 	 * @param standardTimestamp
 	 * @return
 	 */
-	protected static String getTimestampUUIDString(Instant instant, boolean includeHardwareAddress,
+	protected static String getUUIDString(Instant instant, boolean includeHardwareAddress,
 			boolean standardTimestamp) {
 
 		long timestamp = getGregorianCalendarTimestamp(instant);
@@ -317,7 +289,7 @@ public class UUIDGenerator {
 			blocks[2] = RANDOM_VERSION + timestampHex.substring(12);
 		}
 
-		blocks[3] = getClockSequenceBlock(timestamp);
+		blocks[3] = getCharSequence(timestamp);
 
 		if (includeHardwareAddress && getHardwareAddress() != null) {
 			blocks[4] = getHardwareAddress();
@@ -329,30 +301,31 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Returns a four char string in which the first char between '8' an 'b' and
-	 * the other chars hexadecimal represent a sequential number that is
-	 * incremented every microsecond (1000 nanoseconds).
+	 * Returns a 4 char sequence in which the first char is between '8' an 'b.
 	 * 
-	 * It uses the method System.nanoTime() to generate the clock sequence.
+	 * All four chars are generated based on the timestamp's last bytes.
+	 * 
+	 * If the char sequence generated repeats, the new char sequence is
+	 * incremented.
 	 * 
 	 * @param timestampHex
 	 * @return
 	 */
-	protected static String getClockSequenceBlock(long timestamp) {
-
-		long nanosecondsInterval = 0;
+	protected static String getCharSequence(long timestamp) {
 
 		// Get char from '8' to 'b', calculated from last byte of timestamp
-		char variant = VARIANT_1_CHARS[((int) timestamp % 16) / 4];
+		char variant = VARIANT_1_CHARS[(int) (timestamp % 16) / 4];
 
-		if (timestamp != lastTimestamp) {
-			nanosecondsSnapshot = System.nanoTime();
-		} else {
-			nanosecondsInterval = System.nanoTime() - nanosecondsSnapshot;
+		// Get three chars from the last bytes of timestamp
+		long hundredNanoseconds = (timestamp / NANOSECONDS_DIVISOR) % THREE_NIBBLES;
+		String clockSequence = toHexadecimal(hundredNanoseconds, 3);
+
+		// Increment if the clock sequence repeats
+		if (lastClockSequence != null && lastClockSequence.equals(clockSequence)) {
+			clockSequence = toHexadecimal(hundredNanoseconds + 1, 3);
 		}
 
-		lastTimestamp = timestamp;
-		return variant + toHexadecimal((nanosecondsInterval / 1000) % 4096, 3);
+		return variant + clockSequence;
 
 	}
 
@@ -536,6 +509,17 @@ public class UUIDGenerator {
 	}
 
 	/**
+	 * Returns an instant based on {@link UUIDClock#instant()}.
+	 * 
+	 * This method should be used in this class instead of "Instant.now()".
+	 * 
+	 * @return
+	 */
+	protected static Instant getClockInstant() {
+		return Instant.now(clock);
+	}
+
+	/**
 	 * Returns the date of adpotion the Gregorian Calendar: 1582-10-15T00:00:00Z
 	 * 
 	 * It used the UTC timezone.
@@ -686,31 +670,31 @@ public class UUIDGenerator {
 		BitSet bits = BitSet.valueOf(bytes);
 		return bits.get(0);
 	}
-	
+
 	/**
 	 * This is just a template used during implementations to compare speed of
 	 * to versions of the same method.
 	 */
-	private static void compareSpeed() {
+	protected static void speedTest() {
 
 		long max = (long) Math.pow(10, 1);
 		Instant start = null;
 		Instant end = null;
 
-		start = Instant.now();
+		start = getClockInstant();
 		for (int i = 0; i < max; i++) {
-			// METHOD 1 TO COMPARE SPEED
-			UUID.randomUUID(); // example
+			// UUID.randomUUID(); // example
+			UUID.randomUUID();
 		}
-		end = Instant.now();
+		end = getClockInstant();
 		long miliseconds1 = (end.toEpochMilli() - start.toEpochMilli());
 
-		start = Instant.now();
+		start = getClockInstant();
 		for (int i = 0; i < max; i++) {
-			// METHOD 2 TO COMPARE SPEED
-			UUIDGenerator.getRandomHashUUID(); // example
+			// UUIDGenerator.getRandomUUID(); // example
+			UUIDGenerator.getRandomUUID();
 		}
-		end = Instant.now();
+		end = getClockInstant();
 		long miliseconds2 = (end.toEpochMilli() - start.toEpochMilli());
 
 		System.out.println("Method 1: " + miliseconds1);
@@ -720,7 +704,6 @@ public class UUIDGenerator {
 
 	public static void main(String[] args) {
 
-		compareSpeed();
-
+		speedTest();
 	}
 }

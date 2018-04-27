@@ -34,29 +34,24 @@ public class UUIDGeneratorTest extends TestCase {
 		String uuid = UUIDGenerator.getRandomUUIDString();
 		assertTrue(uuid.toString().matches(PATTERN));
 	}
-	
-	public void testGetRandomHashUUIDStringIsValid() {
-		String uuid = UUIDGenerator.getRandomHashUUIDString();
-		assertTrue(uuid.toString().matches(PATTERN));
-	}
 
 	public void testGetTimestampUUIDStringIsValid() {
 		String uuid = UUIDGenerator.getTimestampUUIDString();
 		assertTrue(uuid.toString().matches(PATTERN));
 	}
 
-	public void testGetNaturalTimestampUUIDStringIsValid() {
-		String uuid = UUIDGenerator.getNaturalTimestampUUIDString();
+	public void testGetSequentialUUIDStringIsValid() {
+		String uuid = UUIDGenerator.getSequentialUUIDString();
 		assertTrue(uuid.toString().matches(PATTERN));
 	}
 
-	public void testGetTimestampAndHardwareAddressUUIDStringIsValid() {
-		String uuid = UUIDGenerator.getTimestampAndMachineUUIDString();
+	public void testGetTimestampWithoutMachineAddressUUIDStringIsValid() {
+		String uuid = UUIDGenerator.getTimestampWithoutMachineAddressUUIDString();
 		assertTrue(uuid.toString().matches(PATTERN));
 	}
 
-	public void testGetNaturalTimestampAndHardwareAddressUUIDStringIsValid() {
-		String uuid = UUIDGenerator.getNaturalTimestampAndMachineUUIDString();
+	public void testGetSequentialWithoutMachineAddressUUIDStringIsValid() {
+		String uuid = UUIDGenerator.getSequentialWithoutMachineAddressUUIDString();
 		assertTrue(uuid.toString().matches(PATTERN));
 	}
 
@@ -75,10 +70,10 @@ public class UUIDGeneratorTest extends TestCase {
 	/**
 	 * Test if a time based UUID version 4 is has the correct timestamp.
 	 */
-	public void testGetTimestampUUIDVersion4() {
+	public void testGetSequentialUUIDVersion4() {
 
 		Instant instant = Instant.now();
-		UUID uuid = UUIDGenerator.getNaturalTimestampUUID(instant);
+		UUID uuid = UUIDGenerator.getSequentialUUID(instant);
 		Instant uuidInstant = UUIDGenerator.extractInstant(uuid);
 
 		assertEquals(instant, uuidInstant);
