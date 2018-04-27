@@ -354,7 +354,7 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Returns a MD5 hash for de input string.
+	 * Returns a SHA-1 hash for de input string.
 	 * 
 	 * @param string
 	 * @return
@@ -364,7 +364,7 @@ public class UUIDGenerator {
 		if (messageDigest == null) {
 			try {
 				charsetUTF8 = Charset.forName("UTF-8");
-				messageDigest = MessageDigest.getInstance("MD5");
+				messageDigest = MessageDigest.getInstance("SHA-1");
 			} catch (NoSuchAlgorithmException e) {
 				return null;
 			}
@@ -376,22 +376,12 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Returns a MD5 hash calculated from a randomly generated string.
+	 * Returns a SHA-1 hash calculated from a randomly generated string.
 	 * 
 	 * @return
 	 */
 	protected static String getRandomHash() {
 		return getHash(getRandomHexadecimal(64));
-	}
-
-	/**
-	 * Returns a random hexadecimal char from 8 to b.
-	 * 
-	 * @return
-	 */
-	protected static char getRandomVariantOne() {
-		char[] array = getRandomCharacters(VARIANT_1_CHARS, 1);
-		return array[0];
 	}
 
 	/**
@@ -602,7 +592,7 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Returns a random MD5 hash formatted in the UUID format.
+	 * Returns a random SHA-1 hash formatted in the UUID format.
 	 *
 	 * Some chars must be changed to comply standards, like version and variant
 	 * chars.
@@ -663,7 +653,7 @@ public class UUIDGenerator {
 	 */
 	protected static void speedTest() {
 
-		long max = (long) Math.pow(10, 1);
+		long max = (long) Math.pow(10, 3);
 		Instant start = null;
 		Instant end = null;
 
@@ -693,3 +683,7 @@ public class UUIDGenerator {
 		speedTest();
 	}
 }
+
+//Method 1: 27
+//Method 2: 36
+
