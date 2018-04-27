@@ -653,22 +653,20 @@ public class UUIDGenerator {
 	 */
 	protected static void speedTest() {
 
-		long max = (long) Math.pow(10, 3);
+		long max = (long) Math.pow(10, 1);
 		Instant start = null;
 		Instant end = null;
 
 		start = getClockInstant();
 		for (int i = 0; i < max; i++) {
-			// UUID.randomUUID(); // example
-			UUID.randomUUID();
+			UUID.randomUUID(); // example
 		}
 		end = getClockInstant();
 		long miliseconds1 = (end.toEpochMilli() - start.toEpochMilli());
 
 		start = getClockInstant();
 		for (int i = 0; i < max; i++) {
-			// UUIDGenerator.getRandomUUID(); // example
-			UUIDGenerator.getRandomUUID();
+			UUIDGenerator.getRandomUUID(); // example
 		}
 		end = getClockInstant();
 		long miliseconds2 = (end.toEpochMilli() - start.toEpochMilli());
@@ -683,7 +681,3 @@ public class UUIDGenerator {
 		speedTest();
 	}
 }
-
-//Method 1: 27
-//Method 2: 36
-
