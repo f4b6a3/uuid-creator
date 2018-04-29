@@ -36,22 +36,22 @@ public class UUIDGeneratorTest extends TestCase {
 	}
 
 	public void testGetTimestampUUIDStringIsValid() {
-		String uuid = UUIDGenerator.getTimestampUUIDString();
+		String uuid = UUIDGenerator.getTimestampUUIDString(UUIDGenerator.getClockInstant());
 		assertTrue(uuid.toString().matches(PATTERN));
 	}
 
 	public void testGetSequentialUUIDStringIsValid() {
-		String uuid = UUIDGenerator.getSequentialUUIDString();
+		String uuid = UUIDGenerator.getSequentialUUIDString(UUIDGenerator.getClockInstant());
 		assertTrue(uuid.toString().matches(PATTERN));
 	}
 
 	public void testGetTimestampWithoutMachineAddressUUIDStringIsValid() {
-		String uuid = UUIDGenerator.getTimestampPrivateUUIDString();
+		String uuid = UUIDGenerator.getTimestampPrivateUUIDString(UUIDGenerator.getClockInstant());
 		assertTrue(uuid.toString().matches(PATTERN));
 	}
 
 	public void testGetSequentialWithoutMachineAddressUUIDStringIsValid() {
-		String uuid = UUIDGenerator.getSequentialPrivateUUIDString();
+		String uuid = UUIDGenerator.getSequentialPrivateUUIDString(UUIDGenerator.getClockInstant());
 		assertTrue(uuid.toString().matches(PATTERN));
 	}
 
@@ -61,7 +61,7 @@ public class UUIDGeneratorTest extends TestCase {
 	public void testGetTimestampUUIDVersion1() {
 
 		Instant instant1 = UUIDGenerator.getClockInstant();
-		UUID uuid = UUIDGenerator.getTimestampUUID(instant1);
+		UUID uuid = UUID.fromString(UUIDGenerator.getTimestampUUIDString(instant1));
 		Instant instant2 = UUIDGenerator.extractInstant(uuid);
 		
 		long timestamp1 = UUIDGenerator.getGregorianCalendarTimestamp(instant1);
@@ -76,7 +76,7 @@ public class UUIDGeneratorTest extends TestCase {
 	public void testGetSequentialUUIDVersion4() {
 
 		Instant instant1 = UUIDGenerator.getClockInstant();
-		UUID uuid = UUIDGenerator.getSequentialUUID(instant1);
+		UUID uuid = UUID.fromString(UUIDGenerator.getSequentialUUIDString(instant1));
 		Instant instant2 = UUIDGenerator.extractInstant(uuid);
 		
 		long timestamp1 = UUIDGenerator.getGregorianCalendarTimestamp(instant1);
