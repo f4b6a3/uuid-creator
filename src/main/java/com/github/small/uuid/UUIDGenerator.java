@@ -686,7 +686,7 @@ public class UUIDGenerator {
 	 */
 	protected static void speedTest() {
 
-		long max = (long) Math.pow(10, 6);
+		long max = (long) Math.pow(10, 5);
 		Instant start = null;
 		Instant end = null;
 
