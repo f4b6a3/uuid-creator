@@ -59,15 +59,15 @@ public class UUIDGeneratorTest extends TestCase {
 	 * Test if a time based UUID version 1 is has the correct timestamp.
 	 */
 	public void testGetTimestampUUIDVersion1() {
-		// TODO: Fix time nanoseconds
-		Instant instant = UUIDGenerator.getClockInstant();
-		UUID uuid = UUIDGenerator.getTimestampUUID(instant);
-		Instant uuidInstant = UUIDGenerator.extractInstant(uuid);
 
-//		System.out.println(instant);
-//		System.out.println(uuidInstant);
+		Instant instant1 = UUIDGenerator.getClockInstant();
+		UUID uuid = UUIDGenerator.getTimestampUUID(instant1);
+		Instant instant2 = UUIDGenerator.extractInstant(uuid);
 		
-		assertEquals(instant, uuidInstant);
+		long timestamp1 = UUIDGenerator.getGregorianCalendarTimestamp(instant1);
+		long timestamp2 = UUIDGenerator.getGregorianCalendarTimestamp(instant2);
+		
+		assertEquals(timestamp1, timestamp2);
 	}
 
 	/**
@@ -75,10 +75,13 @@ public class UUIDGeneratorTest extends TestCase {
 	 */
 	public void testGetSequentialUUIDVersion4() {
 
-		Instant instant = Instant.now();
-		UUID uuid = UUIDGenerator.getSequentialUUID(instant);
-		Instant uuidInstant = UUIDGenerator.extractInstant(uuid);
+		Instant instant1 = UUIDGenerator.getClockInstant();
+		UUID uuid = UUIDGenerator.getSequentialUUID(instant1);
+		Instant instant2 = UUIDGenerator.extractInstant(uuid);
+		
+		long timestamp1 = UUIDGenerator.getGregorianCalendarTimestamp(instant1);
+		long timestamp2 = UUIDGenerator.getGregorianCalendarTimestamp(instant2);
 
-		assertEquals(instant, uuidInstant);
+		assertEquals(timestamp1, timestamp2);
 	}
 }
