@@ -59,11 +59,14 @@ public class UUIDGeneratorTest extends TestCase {
 	 * Test if a time based UUID version 1 is has the correct timestamp.
 	 */
 	public void testGetTimestampUUIDVersion1() {
-
-		Instant instant = Instant.now();
+		// TODO: Fix time nanoseconds
+		Instant instant = UUIDGenerator.getClockInstant();
 		UUID uuid = UUIDGenerator.getTimestampUUID(instant);
 		Instant uuidInstant = UUIDGenerator.extractInstant(uuid);
 
+//		System.out.println(instant);
+//		System.out.println(uuidInstant);
+		
 		assertEquals(instant, uuidInstant);
 	}
 

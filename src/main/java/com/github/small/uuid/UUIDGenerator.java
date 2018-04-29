@@ -2,7 +2,6 @@ package com.github.small.uuid;
 
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
@@ -10,36 +9,32 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.util.BitSet;
 import java.util.Random;
 import java.util.UUID;
 
 public class UUIDGenerator {
 
-	private static final UUIDClock clock = new UUIDClock();
+	protected static final UUIDClock clock = new UUIDClock();
 
 	private static final Instant GREGORIAN_EPOCH = getGregorianCalendarBeginning();
 
-	private static final char TIMESTAMP_VERSION = '1';
-	private static final char RANDOM_VERSION = '4';
-
-	private static final short TIMESTAMP_LENGH = 15;
-	private static final char[] VARIANT_1_CHARS = "89ab".toCharArray();
 	private static final char[] HEXADECIMAL_CHARS = "0123456789abcdef".toCharArray();
 
 	private static Random random = new Random();
-	private static String hardwareAddress = null;
-	private static String lastClockSequence = null;
+	private static byte[] hardwareAddress = null;
+	private static byte[] lastClockSequence = null;
 
-	private static Charset charsetUTF8 = null;
 	private static MessageDigest messageDigest = null;
 
 	// Constant used to generate clock sequence (3 nibbles)
-	private static final int THREE_NIBBLES = 4096;
+	private static final int CLOCK_SEQUENCE_DIVISOR = (int) Math.pow(2, 14); // 14
+																				// bits
 
 	// Constants used to avoid long data type overflow
 	private static final long SECONDS_MULTIPLYER = (long) Math.pow(10, 7);
 	private static final long NANOSECONDS_DIVISOR = (long) Math.pow(10, 2);
+
+	private static final byte[] NIL_UUID = array(16, (byte) 0x00);
 
 	/**
 	 * @see {@link UUIDGenerator#getRandomUUIDString(boolean)}
@@ -245,14 +240,18 @@ public class UUIDGenerator {
 	 * @param instant
 	 * @return
 	 */
+
 	protected static String getRandomUUIDString() {
 
-		String uuid = null;
-		uuid = getFormattedRandomHash();
-		uuid = replaceBlock(uuid, RANDOM_VERSION + getRandomHexadecimal(3), 3);
-		uuid = replaceBlock(uuid, getRandomCharacters(VARIANT_1_CHARS, 1)[0] + getRandomHexadecimal(3), 4);
+		byte[] uuid = getRandomHash();
 
-		return uuid;
+		uuid = replaceFragment(uuid, getRandomBytes(2), 3);
+		uuid = replaceFragment(uuid, getRandomBytes(2), 4);
+
+		uuid[6] = (byte) (uuid[6] & 0x0f | 0x40); // version 4
+		uuid[8] = (byte) (uuid[8] & 0x3f | 0x80); // variant 1
+
+		return formatString(toHexadecimal(uuid));
 
 	}
 
@@ -268,226 +267,209 @@ public class UUIDGenerator {
 	 * - Timestamp bytes are in standard order: YES or NO <br/>
 	 * 
 	 * @param instant
-	 * @param realHardwareAddress
 	 * @param standardTimestamp
+	 * @param realHardwareAddress
 	 * @return
 	 */
-	protected static String getUUIDString(Instant instant, boolean realHardwareAddress, boolean standardTimestamp) {
+	protected static String getUUIDString(Instant instant, boolean standardTimestamp, boolean realHardwareAddress) {
 
 		long timestamp = getGregorianCalendarTimestamp(instant);
-		String timestampHex = toHexadecimal(timestamp, TIMESTAMP_LENGH);
 
-		String[] blocks = new String[5];
+		long nanoseconds = timestamp % SECONDS_MULTIPLYER;
+		long seconds = timestamp - nanoseconds;
+		Instant i = GREGORIAN_EPOCH.plus(seconds / SECONDS_MULTIPLYER, ChronoUnit.SECONDS);
+		i = i.plus(nanoseconds * NANOSECONDS_DIVISOR, ChronoUnit.NANOS);
+
+		byte[] bytes = toBytes(timestamp);
+
+		byte[] result = copy(NIL_UUID);
+
+		byte[] fragment1;
+		byte[] fragment2;
+		byte[] fragment3;
+		byte[] fragment4;
+		byte[] fragment5;
 
 		if (standardTimestamp) {
-			blocks[0] = timestampHex.substring(7);
-			blocks[1] = timestampHex.substring(3, 7);
-			blocks[2] = TIMESTAMP_VERSION + timestampHex.substring(0, 3);
+			fragment1 = copy(bytes, 4, 8);
+			fragment2 = copy(bytes, 2, 4);
+			fragment3 = copy(bytes, 0, 2);
 		} else {
-			blocks[0] = timestampHex.substring(0, 8);
-			blocks[1] = timestampHex.substring(8, 12);
-			blocks[2] = RANDOM_VERSION + timestampHex.substring(12);
+			fragment1 = copy(bytes, 0, 4);
+			fragment2 = copy(bytes, 4, 6);
+			fragment3 = copy(bytes, 6, 8);
 		}
 
-		blocks[3] = getClockSequence(timestamp);
-		blocks[4] = getHardwareAddress(realHardwareAddress);
+		fragment4 = getClockSequence(timestamp);
+		fragment5 = getHardwareAddress(realHardwareAddress);
 
-		return String.join("-", blocks);
-	}
+		result = replaceFragment(result, fragment1, 1);
+		result = replaceFragment(result, fragment2, 2);
+		result = replaceFragment(result, fragment3, 3);
+		result = replaceFragment(result, fragment4, 4);
+		result = replaceFragment(result, fragment5, 5);
 
-	/**
-	 * Returns a 4 char sequence in which the first char is between '8' an 'b.
-	 * 
-	 * All four chars are generated based on the timestamp's last bytes.
-	 * 
-	 * If the char sequence generated repeats, the new char sequence is
-	 * incremented.
-	 * 
-	 * @param timestampHex
-	 * @return
-	 */
-	protected static String getClockSequence(long timestamp) {
-
-		// Get char from '8' to 'b', calculated from last byte of timestamp
-		char variant = VARIANT_1_CHARS[(int) (timestamp % 16) / 4];
-
-		// Get three chars from the last bytes of timestamp
-		long hundredNanoseconds = (timestamp / NANOSECONDS_DIVISOR) % THREE_NIBBLES;
-		String clockSequence = toHexadecimal(hundredNanoseconds, 3);
-
-		// Increment if the clock sequence repeats
-		if (lastClockSequence != null && lastClockSequence.equals(clockSequence)) {
-			clockSequence = toHexadecimal(hundredNanoseconds + 1, 3);
+		if (standardTimestamp) {
+			result[6] = (byte) (result[6] & 0x0f | 0x10); // version 1
+		} else {
+			result[6] = (byte) (result[6] & 0x0f | 0x40); // version 4
 		}
 
-		return variant + clockSequence;
+		result[8] = (byte) (result[8] & 0x3f | 0x80); // variant 1
 
+		return toUUIDString(result);
+	}
+	
+	protected static byte[] getClockSequence(long timestamp) {
+		byte[] clockSequence = geIncrementClockSequence(timestamp, 0);
+
+		if (lastClockSequence != null && equals(lastClockSequence, clockSequence)) {
+			clockSequence = geIncrementClockSequence(timestamp, 1);
+		}
+		lastClockSequence = clockSequence;
+		return clockSequence;
 	}
 
-	/**
-	 * Returns a random array of chars chosen from within a list of chars.
-	 * 
-	 * @param chars
-	 * @param length
-	 * @return
-	 */
-	protected static char[] getRandomCharacters(char[] chars, int length) {
+	protected static byte[] geIncrementClockSequence(long timestamp, long increment) {
+		long t = (timestamp + increment) % CLOCK_SEQUENCE_DIVISOR;
+		byte[] bytes = toBytes(t);
+		byte[] clockSequence = copy(bytes, 6, 8);
+		return clockSequence;
+	}
 
-		char[] array = new char[length];
-
-		for (int i = 0; i < length; i++) {
-			array[i] = chars[random.nextInt(chars.length)];
+	protected static boolean equals(byte[] bytes1, byte[] bytes2) {
+		if (bytes1.length != bytes2.length) {
+			return false;
 		}
 
-		return array;
+		for (int i = 0; i < bytes1.length; i++) {
+			if (bytes1[i] != bytes2[i]) {
+				return false;
+			}
+		}
+		return true;
 	}
 
-	/**
-	 * Returns a random String of hexadecimal.
-	 * 
-	 * @param length
-	 * @return
-	 */
-	protected static String getRandomHexadecimal(int length) {
-		char[] array = getRandomCharacters(HEXADECIMAL_CHARS, length);
-		return String.valueOf(array);
+	protected static byte[] getRandomBytes(int length) {
+		byte[] bytes = new byte[length];
+		random.nextBytes(bytes);
+		return bytes;
 	}
 
-	/**
-	 * Returns a SHA-1 hash for de input string.
-	 * 
-	 * @param string
-	 * @return
-	 */
-	protected static String getHash(String string) {
+	protected static byte[] getHash(byte[] bytes) {
 
 		if (messageDigest == null) {
 			try {
-				charsetUTF8 = Charset.forName("UTF-8");
-				messageDigest = MessageDigest.getInstance("SHA-1");
+				messageDigest = MessageDigest.getInstance("MD5");
 			} catch (NoSuchAlgorithmException e) {
 				return null;
 			}
 		}
-
-		byte[] bytes = string.getBytes(charsetUTF8);
-		byte[] hash = messageDigest.digest(bytes);
-		return toHexadecimal(hash);
+		return messageDigest.digest(bytes);
 	}
 
-	/**
-	 * Returns a SHA-1 hash calculated from a randomly generated string.
-	 * 
-	 * @return
-	 */
-	protected static String getRandomHash() {
-		return getHash(getRandomHexadecimal(64));
+	protected static byte[] getRandomHash() {
+		return getHash(getRandomBytes(32));
 	}
 
-	/**
-	 * Get a number corresponding to a hexadecimal string.
-	 * 
-	 * @param hexadecimal
-	 * @return
-	 */
 	protected static long toNumber(String hexadecimal) {
 		return (long) Long.parseLong(hexadecimal, 16);
 	}
 
-	/**
-	 * Get a hexadecimal string corresponding to a number.
-	 * 
-	 * The string is padded with zeros to fit its desired length.
-	 * 
-	 * @param number
-	 * @param length
-	 * @return
-	 */
-	protected static String toHexadecimal(long number, int length) {
-		String format2 = "%" + length + "s";
-		String string = Long.toHexString(number);
-		return String.format(format2, string).replaceAll(" ", "0");
+	protected static byte[] toBytes(long number) {
+		byte[] bytes = new byte[8];
+		for (int i = 0; i < bytes.length; i++) {
+			bytes[i] = (byte) (number >>> (8 * ((bytes.length - 1) - i)));
+		}
+		return bytes;
 	}
 
-	/**
-	 * Get a block of chars corresponding to an index from 1 to 5.
-	 * 
-	 * @param uuid
-	 * @param index
-	 * @return
-	 */
-	protected static String getBlock(String uuid, int index) {
-		String[] blocks = uuid.split("-");
-		return blocks[index - 1];
+	protected static byte[] getFragment(byte[] uuid, int index) {
+		switch (index) {
+		case 1:
+			return copy(uuid, 0, 4);
+		case 2:
+			return copy(uuid, 4, 6);
+		case 3:
+			return copy(uuid, 6, 8);
+		case 4:
+			return copy(uuid, 8, 10);
+		case 5:
+			return copy(uuid, 10, 16);
+		default:
+			return null;
+		}
 	}
 
-	/**
-	 * Replace a block of chars corresponding to an index from 1 to 5.
-	 * 
-	 * @param uuid
-	 * @param hex
-	 * @param index
-	 * @return
-	 */
-	protected static String replaceBlock(String uuid, String hex, int index) {
-		String[] blocks = uuid.split("-");
-		blocks[index - 1] = hex;
-		String result = String.join("-", blocks);
+	protected static byte[] replaceFragment(final byte[] uuid, final byte[] replacement, int index) {
+		switch (index) {
+		case 1:
+			return replace(uuid, replacement, 0);
+		case 2:
+			return replace(uuid, replacement, 4);
+		case 3:
+			return replace(uuid, replacement, 6);
+		case 4:
+			return replace(uuid, replacement, 8);
+		case 5:
+			return replace(uuid, replacement, 10);
+		default:
+			return null;
+		}
+	}
+
+	private static byte[] copy(byte[] bytes) {
+		byte[] result = copy(bytes, 0, bytes.length);
 		return result;
 	}
 
-	/**
-	 * Returns a string of the hardware address (MAC).
-	 * 
-	 * It returns the first MAC found.
-	 * 
-	 * It returns NULL if no MAC is found or something wrong happens.
-	 * 
-	 * @return
-	 */
-	protected static String getHardwareAddress(boolean realHardwareAddress) {
+	private static byte[] copy(byte[] bytes, int start, int end) {
+
+		byte[] result = new byte[end - start];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = bytes[start + i];
+		}
+		return result;
+	}
+
+	private static byte[] replace(final byte[] bytes, final byte[] replacement, int index) {
+		byte[] result = copy(bytes);
+		for (int i = 0; i < replacement.length; i++) {
+			result[index + i] = replacement[i];
+		}
+		return result;
+	}
+
+	protected static byte[] getHardwareAddress(boolean realHardwareAddress) {
 
 		if (hardwareAddress != null) {
 			return hardwareAddress;
 		}
 
 		if (!realHardwareAddress) {
-			hardwareAddress = setMultiCastBit(getRandomHexadecimal(12));
+			hardwareAddress = setMulticastHardwareAddress(getRandomBytes(6));
 			return hardwareAddress;
 		}
 
 		try {
 			NetworkInterface nic = NetworkInterface.getNetworkInterfaces().nextElement();
-			byte[] mac = nic.getHardwareAddress();
-			hardwareAddress = toHexadecimal(mac);
+			hardwareAddress = nic.getHardwareAddress();
 			return hardwareAddress;
 		} catch (SocketException | NullPointerException e) {
 			return null;
 		}
 	}
 
-	/**
-	 * Returns a hexadecimal string from a array of bytes.
-	 * 
-	 * @param bytes
-	 * @return
-	 */
 	public static String toHexadecimal(byte[] bytes) {
 		char[] hexadecimal = new char[bytes.length * 2];
-		for (int j = 0; j < bytes.length; j++) {
-			int v = bytes[j] & 0xFF;
-			hexadecimal[j * 2] = HEXADECIMAL_CHARS[v >>> 4];
-			hexadecimal[j * 2 + 1] = HEXADECIMAL_CHARS[v & 0x0F];
+		for (int i = 0; i < bytes.length; i++) {
+			int v = bytes[i] & 0xFF;
+			hexadecimal[i * 2] = HEXADECIMAL_CHARS[v >>> 4];
+			hexadecimal[i * 2 + 1] = HEXADECIMAL_CHARS[v & 0x0F];
 		}
 		return new String(hexadecimal);
 	}
-
-	/**
-	 * Returns a array of bytes from a hexadecimal string.
-	 * 
-	 * @param hexadecimal
-	 * @return
-	 */
+	
 	public static byte[] toByteArray(String hexadecimal) {
 		int len = hexadecimal.length();
 		byte[] bytes = new byte[len / 2];
@@ -498,68 +480,67 @@ public class UUIDGenerator {
 		return bytes;
 	}
 
-	/**
-	 * Returns an instant based on {@link UUIDClock#instant()}.
-	 * 
-	 * This method should be used in this class instead of "Instant.now()".
-	 * 
-	 * @return
-	 */
 	protected static Instant getClockInstant() {
 		return Instant.now(clock);
 	}
 
-	/**
-	 * Returns the date of adpotion the Gregorian Calendar: 1582-10-15T00:00:00Z
-	 * 
-	 * It used the UTC timezone.
-	 * 
-	 * @return
-	 */
 	protected static Instant getGregorianCalendarBeginning() {
 		LocalDate localDate = LocalDate.parse("1582-10-15");
 		return localDate.atStartOfDay(ZoneId.of("UTC")).toInstant();
 	}
 
-	/**
-	 * Returns a timestamp since 1582-10-15T00:00:00Z with of resolution 100
-	 * nanoseconds.
-	 * 
-	 * @param instant
-	 * @return
-	 */
 	protected static long getGregorianCalendarTimestamp(Instant instant) {
 		long seconds = GREGORIAN_EPOCH.until(instant, ChronoUnit.SECONDS);
 		long nanoseconds = instant.getLong(ChronoField.NANO_OF_SECOND);
 		return ((seconds * SECONDS_MULTIPLYER) + (nanoseconds / NANOSECONDS_DIVISOR));
 	}
 
+	// TODO: Fix time nanoseconds
 	/**
-	 * Returns the timestamp from the UUID.
-	 * 
+	 * @see {@link UUIDGeneratorTest#testGetTimestampUUIDVersion1()}
 	 * @param uuid
 	 * @return
 	 */
 	protected static Instant extractInstant(UUID uuid) {
 
-		String uuidString = uuid.toString();
+		byte[] bytes = toByteArray(uuid.toString().replaceAll("-", ""));
 
-		String timeLow = getBlock(uuidString, 1);
-		String timeMid = getBlock(uuidString, 2);
-		String timeHi = getBlock(uuidString, 3);
+		byte[] fragment3 = getFragment(bytes, 3);
+		boolean version1 = (fragment3[0] >> 4 & 0x01) == 1;
+		boolean version4 = (fragment3[0] >> 4 & 0x04) == 4;
 
-		char version = timeHi.charAt(0);
+		byte[] time1;
+		byte[] time2;
+		byte[] time3;
 
-		String timestampHex = null;
-		if (version == TIMESTAMP_VERSION) {
-			timestampHex = timeHi.substring(1) + timeMid + timeLow;
-		} else if (version == RANDOM_VERSION) {
-			timestampHex = timeLow + timeMid + timeHi.substring(1);
+		if (version1) {
+			time1 = getFragment(bytes, 1);
+			time2 = getFragment(bytes, 2);
+			time3 = getFragment(bytes, 3);
+
+			time3[0] = (byte) (time3[0] & 0x0F);
+		} else if (version4) {
+			time3 = getFragment(bytes, 1);
+			time2 = getFragment(bytes, 2);
+			time1 = getFragment(bytes, 3);
 		} else {
 			return null;
 		}
 
-		long timestamp = toNumber(timestampHex);
+		byte[] timestampBytes = array(8, (byte) 0x00);
+		if (version1) {
+			timestampBytes = replace(timestampBytes, time3, 0);
+			timestampBytes = replace(timestampBytes, time2, 2);
+			timestampBytes = replace(timestampBytes, time1, 4);
+		} else if (version4) {
+			timestampBytes = replace(timestampBytes, time3, 0);
+			timestampBytes = replace(timestampBytes, time2, 4);
+			timestampBytes = replace(timestampBytes, time1, 6);
+		} else {
+			return null;
+		}
+
+		long timestamp = toNumber(toHexadecimal(timestampBytes));
 		long nanoseconds = timestamp % SECONDS_MULTIPLYER;
 		long seconds = timestamp - nanoseconds;
 
@@ -568,49 +549,25 @@ public class UUIDGenerator {
 
 	}
 
-	/**
-	 * Returns the hardware address if UUIDs version is 1 and the hardware
-	 * addres is unicast.
-	 * 
-	 * @param uuid
-	 * @return
-	 */
-	public static String extractHardwareAddress(UUID uuid) {
+	public static byte[] extractHardwareAddress(UUID uuid) {
 
-		String uuidString = uuid.toString();
+		byte[] bytes = toByteArray(uuid.toString().replaceAll("-", ""));
 
-		String timeHi = getBlock(uuidString, 3);
-		String hardwareAddress = getBlock(uuidString, 5);
+		byte[] hardwareAddress = getFragment(bytes, 5);
 
-		char version = timeHi.charAt(0);
-
-		if (version == TIMESTAMP_VERSION && !isMulticastHardwareAddress(hardwareAddress)) {
+		if (!isMulticastHardwareAddress(hardwareAddress)) {
 			return hardwareAddress;
 		}
 
 		return null;
 	}
 
-	/**
-	 * Returns a random SHA-1 hash formatted in the UUID format.
-	 *
-	 * Some chars must be changed to comply standards, like version and variant
-	 * chars.
-	 * 
-	 * @return
-	 */
 	protected static String getFormattedRandomHash() {
-		return formatString(getRandomHash());
+		return formatString(toHexadecimal(getRandomHash()));
 	}
 
-	/**
-	 * Returns a formatted string like this:
-	 * 00000000-0000-0000-0000-000000000000
-	 * 
-	 * @return
-	 */
-	protected static String formatString(String string) {
-		StringBuffer buffer = new StringBuffer(string.substring(0, 32));
+	protected static String formatString(String uuid) {
+		StringBuffer buffer = new StringBuffer(uuid.substring(0, 32));
 		buffer.insert(8, '-');
 		buffer.insert(13, '-');
 		buffer.insert(18, '-');
@@ -618,33 +575,26 @@ public class UUIDGenerator {
 		return buffer.toString();
 	}
 
-	/**
-	 * Sets the least significant bit of the first byte of the hardware address
-	 * to 1.
-	 * 
-	 * @param hardwareAddress
-	 * @return
-	 */
-	protected static String setMultiCastBit(String hardwareAddress) {
-		byte[] bytes = toByteArray(hardwareAddress);
-		BitSet bits = BitSet.valueOf(bytes);
-		bits.set(0, true);
-		bytes = bits.toByteArray();
-		return toHexadecimal(bytes);
+	private static String toUUIDString(final byte[] uuid) {
+		return formatString(toHexadecimal(uuid));
 	}
 
-	/**
-	 * Checks if a hardware address has the multicast set to 1.
-	 * 
-	 * Otherwise, the addres is unicast.
-	 * 
-	 * @param hardwareAddress
-	 * @return
-	 */
-	protected static boolean isMulticastHardwareAddress(String hardwareAddress) {
-		byte[] bytes = toByteArray(hardwareAddress);
-		BitSet bits = BitSet.valueOf(bytes);
-		return bits.get(0);
+	private static byte[] array(int length, byte value) {
+		byte[] result = new byte[length];
+		for (int i = 0; i < length; i++) {
+			result[i] = value;
+		}
+		return result;
+	}
+
+	protected static byte[] setMulticastHardwareAddress(final byte[] hardwareAddress) {
+		byte[] result = copy(hardwareAddress);
+		result[0] = (byte) (result[0] | 0x01);
+		return result;
+	}
+
+	protected static boolean isMulticastHardwareAddress(final byte[] hardwareAddress) {
+		return (hardwareAddress[0] & 0x01) == 1;
 	}
 
 	/**
@@ -653,7 +603,7 @@ public class UUIDGenerator {
 	 */
 	protected static void speedTest() {
 
-		long max = (long) Math.pow(10, 1);
+		long max = (long) Math.pow(10, 6);
 		Instant start = null;
 		Instant end = null;
 
@@ -666,7 +616,8 @@ public class UUIDGenerator {
 
 		start = getClockInstant();
 		for (int i = 0; i < max; i++) {
-			UUIDGenerator.getRandomUUID(); // example
+			// UUIDGenerator.getRandomUUIDString(); // example
+			UUIDGenerator.getUUIDString(UUIDGenerator.getClockInstant(), true, true);
 		}
 		end = getClockInstant();
 		long miliseconds2 = (end.toEpochMilli() - start.toEpochMilli());
