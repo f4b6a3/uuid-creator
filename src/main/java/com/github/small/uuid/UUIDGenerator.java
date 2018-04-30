@@ -774,38 +774,4 @@ public class UUIDGenerator {
             this.lastNanoseconds = this.initialNanoseconds;
         }
     }
-    
-    /**
-     * This is just a template used during implementations to compare speed of to versions of the same method.
-     */
-    protected static void speedTest() {
-        
-        long max = (long) Math.pow(10, 5);
-        Instant start = null;
-        Instant end = null;
-        
-        start = UUIDGenerator.getClockInstant();
-        for (int i = 0; i < max; i++) {
-            UUID.randomUUID(); // example
-        }
-        end = UUIDGenerator.getClockInstant();
-        long miliseconds1 = (end.toEpochMilli() - start.toEpochMilli());
-        
-        start = UUIDGenerator.getClockInstant();
-        for (int i = 0; i < max; i++) {
-            UUIDGenerator.getRandomUUIDString(); // example
-        }
-        end = UUIDGenerator.getClockInstant();
-        long miliseconds2 = (end.toEpochMilli() - start.toEpochMilli());
-        
-        System.out.println("Method 1: " + miliseconds1);
-        System.out.println("Method 2: " + miliseconds2);
-        
-    }
-    
-    public static void main(String[] args) {
-        
-        UUIDGenerator.speedTest();
-        
-    }
 }

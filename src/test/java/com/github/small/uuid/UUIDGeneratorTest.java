@@ -2,6 +2,8 @@ package com.github.small.uuid;
 
 import java.time.Instant;
 import java.util.UUID;
+
+import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -32,27 +34,27 @@ public class UUIDGeneratorTest extends TestCase {
 
 	public void testGetRandomUUIDStringIsValid() {
 		String uuid = UUIDGenerator.getRandomUUIDString();
-		assertTrue(uuid.toString().matches(PATTERN));
+		Assert.assertTrue(uuid.toString().matches(UUIDGeneratorTest.PATTERN));
 	}
 
 	public void testGetTimestampUUIDStringIsValid() {
 		String uuid = UUIDGenerator.getTimestampUUIDString(UUIDGenerator.getClockInstant());
-		assertTrue(uuid.toString().matches(PATTERN));
+		Assert.assertTrue(uuid.toString().matches(UUIDGeneratorTest.PATTERN));
 	}
 
 	public void testGetSequentialUUIDStringIsValid() {
 		String uuid = UUIDGenerator.getSequentialUUIDString(UUIDGenerator.getClockInstant());
-		assertTrue(uuid.toString().matches(PATTERN));
+		Assert.assertTrue(uuid.toString().matches(UUIDGeneratorTest.PATTERN));
 	}
 
 	public void testGetTimestampWithoutMachineAddressUUIDStringIsValid() {
 		String uuid = UUIDGenerator.getTimestampPrivateUUIDString(UUIDGenerator.getClockInstant());
-		assertTrue(uuid.toString().matches(PATTERN));
+		Assert.assertTrue(uuid.toString().matches(UUIDGeneratorTest.PATTERN));
 	}
 
 	public void testGetSequentialWithoutMachineAddressUUIDStringIsValid() {
 		String uuid = UUIDGenerator.getSequentialPrivateUUIDString(UUIDGenerator.getClockInstant());
-		assertTrue(uuid.toString().matches(PATTERN));
+		Assert.assertTrue(uuid.toString().matches(UUIDGeneratorTest.PATTERN));
 	}
 
 	/**
@@ -67,7 +69,7 @@ public class UUIDGeneratorTest extends TestCase {
 		long timestamp1 = UUIDGenerator.getGregorianCalendarTimestamp(instant1);
 		long timestamp2 = UUIDGenerator.getGregorianCalendarTimestamp(instant2);
 		
-		assertEquals(timestamp1, timestamp2);
+		Assert.assertEquals(timestamp1, timestamp2);
 	}
 
 	/**
@@ -82,6 +84,32 @@ public class UUIDGeneratorTest extends TestCase {
 		long timestamp1 = UUIDGenerator.getGregorianCalendarTimestamp(instant1);
 		long timestamp2 = UUIDGenerator.getGregorianCalendarTimestamp(instant2);
 
-		assertEquals(timestamp1, timestamp2);
+		Assert.assertEquals(timestamp1, timestamp2);
+	}
+	
+	/**
+	 * This method only prints running times.
+	 */
+	public void testRunningTime() {
+        long max = (long) Math.pow(10, 5);
+        Instant start = null;
+        Instant end = null;
+        
+        start = UUIDGenerator.getClockInstant();
+        for (int i = 0; i < max; i++) {
+            UUID.randomUUID(); // example
+        }
+        end = UUIDGenerator.getClockInstant();
+        long miliseconds1 = (end.toEpochMilli() - start.toEpochMilli());
+        
+        start = UUIDGenerator.getClockInstant();
+        for (int i = 0; i < max; i++) {
+            UUIDGenerator.getRandomUUIDString(); // example
+        }
+        end = UUIDGenerator.getClockInstant();
+        long miliseconds2 = (end.toEpochMilli() - start.toEpochMilli());
+        
+        System.out.println("Method 1: " + miliseconds1);
+        System.out.println("Method 2: " + miliseconds2);
 	}
 }
