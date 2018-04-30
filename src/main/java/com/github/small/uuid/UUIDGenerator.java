@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class UUIDGenerator {
 
-	protected static final UUIDClock clock = new UUIDClock();
+	private static final UUIDClock clock = new UUIDClock();
 
 	private static final Instant GREGORIAN_EPOCH = getGregorianCalendarBeginning();
 
@@ -26,9 +26,6 @@ public class UUIDGenerator {
 
 	// Used to generate a MD5 hash
 	private static MessageDigest messageDigest = null;
-
-	// Constant used to generate clock sequence (2^14 or 14 bits)
-	private static final int CLOCK_SEQUENCE_DIVISOR = (int) Math.pow(2, 14);
 
 	// Constants used to avoid long data type overflow
 	private static final long SECONDS_MULTIPLYER = (long) Math.pow(10, 7);
@@ -153,9 +150,6 @@ public class UUIDGenerator {
 
 		byte[] uuid = getRandomHash();
 
-		uuid = replaceFragment(uuid, getRandomBytes(2), 3);
-		uuid = replaceFragment(uuid, getRandomBytes(2), 4);
-
 		uuid[6] = (byte) (uuid[6] & 0x0f | 0x40); // version 4
 		uuid[8] = (byte) (uuid[8] & 0x3f | 0x80); // variant 1
 
@@ -187,40 +181,56 @@ public class UUIDGenerator {
 
 		byte[] uuid = copy(NIL_UUID);
 
-		byte[] fragment1;
-		byte[] fragment2;
-		byte[] fragment3;
-		byte[] fragment4;
-		byte[] fragment5;
+		byte[] field1;
+		byte[] field2;
+		byte[] field3;
+		byte[] field4;
+		byte[] field5;
 
 		if (standardTimestamp) {
-			fragment1 = copy(bytes, 4, 8);
-			fragment2 = copy(bytes, 2, 4);
-			fragment3 = copy(bytes, 0, 2);
+			field1 = copy(bytes, 4, 8);
+			field2 = copy(bytes, 2, 4);
 		} else {
-			fragment1 = copy(bytes, 0, 4);
-			fragment2 = copy(bytes, 4, 6);
-			fragment3 = copy(bytes, 6, 8);
+			field1 = copy(bytes, 0, 4);
+			field2 = copy(bytes, 4, 6);
 		}
 
-		fragment4 = getClockSequence(instant);
-		fragment5 = getHardwareAddress(realHardwareAddress);
+		field3 = getVersionField(bytes, standardTimestamp);
+		field4 = getClockSequenceField(instant);
+		field5 = getHardwareAddressField(realHardwareAddress);
 
-		uuid = replaceFragment(uuid, fragment1, 1);
-		uuid = replaceFragment(uuid, fragment2, 2);
-		uuid = replaceFragment(uuid, fragment3, 3);
-		uuid = replaceFragment(uuid, fragment4, 4);
-		uuid = replaceFragment(uuid, fragment5, 5);
-
-		if (standardTimestamp) {
-			uuid[6] = (byte) (uuid[6] & 0x0f | 0x10); // version 1
-		} else {
-			uuid[6] = (byte) (uuid[6] & 0x0f | 0x40); // version 4
-		}
-
-		uuid[8] = (byte) (uuid[8] & 0x3f | 0x80); // variant 1
+		uuid = replaceField(uuid, field1, 1);
+		uuid = replaceField(uuid, field2, 2);
+		uuid = replaceField(uuid, field3, 3);
+		uuid = replaceField(uuid, field4, 4);
+		uuid = replaceField(uuid, field5, 5);
 
 		return formatString(toHexadecimal(uuid));
+	}
+
+	/**
+	 * Returns a byte array thet contains the number version and part of the
+	 * timestamp, depending on the UUID version.
+	 * 
+	 * @param bytes
+	 * @param standardTimestamp
+	 * @return
+	 */
+	protected static byte[] getVersionField(final byte[] bytes, boolean standardTimestamp) {
+
+		byte[] field = null;
+
+		if (standardTimestamp) {
+			field = copy(bytes, 0, 2);
+			field[0] = (byte) (field[0] | 0x10); // set bits for version 1
+		} else {
+			field = copy(bytes, 6, 8);
+			long number = toNumber(field) >> 4; // shift right
+			field = copy(toBytes(number), 6, 8);
+			field[0] = (byte) (field[0] | 0x40); // set bits for version 4
+		}
+
+		return field;
 	}
 
 	/* ### PROTECTED AUXILIARY METHODS */
@@ -253,7 +263,8 @@ public class UUIDGenerator {
 	protected static long getGregorianCalendarTimestamp(Instant instant) {
 		long seconds = GREGORIAN_EPOCH.until(instant, ChronoUnit.SECONDS);
 		long nanoseconds = instant.getLong(ChronoField.NANO_OF_SECOND);
-		return ((seconds * SECONDS_MULTIPLYER) + (nanoseconds / NANOSECONDS_DIVISOR));
+		long hundredNanoseconds = ((seconds * SECONDS_MULTIPLYER) + ((nanoseconds) / NANOSECONDS_DIVISOR));
+		return hundredNanoseconds & 0xFFFFFFF0; // Discard the last 4 bits;
 	}
 
 	/**
@@ -267,6 +278,65 @@ public class UUIDGenerator {
 		long seconds = timestamp - nanoseconds;
 		Instant instant = GREGORIAN_EPOCH.plus(seconds / SECONDS_MULTIPLYER, ChronoUnit.SECONDS);
 		return instant.plus(nanoseconds * NANOSECONDS_DIVISOR, ChronoUnit.NANOS);
+	}
+
+	/**
+	 * Get the instant contained in the UUID.
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public static Instant extractInstant(UUID uuid) {
+
+		byte[] bytes = toBytes(uuid.toString().replaceAll("-", ""));
+
+		byte[] versionField = getField(bytes, 3);
+		boolean version1 = (versionField[0] >> 4 & 0x01) == 1;
+		boolean version4 = (versionField[0] >> 4 & 0x04) == 4;
+
+		byte[] field1;
+		byte[] field2;
+		byte[] field3;
+
+		if (version1) {
+
+			field1 = getField(bytes, 1);
+			field2 = getField(bytes, 2);
+			field3 = getField(bytes, 3);
+
+			// remove version
+			field3[0] = (byte) (field3[0] & 0x0F);
+
+		} else if (version4) {
+
+			field3 = getField(bytes, 1);
+			field2 = getField(bytes, 2);
+			field1 = getField(bytes, 3);
+
+			// remove version and shift left
+			long value = (toNumber(field1) & 0x0FFF) << 4;
+			field1 = copy(toBytes(value), 6, 8);
+
+		} else {
+			return null;
+		}
+
+		byte[] timestampBytes = array(8, (byte) 0x00);
+
+		if (version1) {
+			timestampBytes = replace(timestampBytes, field3, 0);
+			timestampBytes = replace(timestampBytes, field2, 2);
+			timestampBytes = replace(timestampBytes, field1, 4);
+		} else if (version4) {
+			timestampBytes = replace(timestampBytes, field3, 0);
+			timestampBytes = replace(timestampBytes, field2, 4);
+			timestampBytes = replace(timestampBytes, field1, 6);
+		} else {
+			return null;
+		}
+
+		long timestamp = toNumber(timestampBytes);
+		return getGregorianCalendarInstant(timestamp);
 	}
 
 	/**
@@ -284,7 +354,7 @@ public class UUIDGenerator {
 	 * @param timestamp
 	 * @return
 	 */
-	protected static byte[] getClockSequence(Instant instant) {
+	protected static byte[] getClockSequenceField(Instant instant) {
 		byte[] clockSequence = incrementClockSequence(instant, 0);
 
 		if (lastClockSequence != null && equals(lastClockSequence, clockSequence)) {
@@ -305,59 +375,10 @@ public class UUIDGenerator {
 	 * @return
 	 */
 	protected static byte[] incrementClockSequence(Instant instant, long nanosecondsIncrement) {
-		long nanoseconds = instant.getLong(ChronoField.NANO_OF_SECOND);
-		long nanosecondsRest = (nanoseconds + nanosecondsIncrement) % CLOCK_SEQUENCE_DIVISOR;
-		byte[] bytes = toBytes(nanosecondsRest);
-		byte[] clockSequence = copy(bytes, 6, 8);
+		long nanoseconds = instant.getLong(ChronoField.NANO_OF_SECOND) + nanosecondsIncrement;
+		byte[] clockSequence = copy(toBytes(nanoseconds), 6, 8);
+		clockSequence[0] = (byte) (clockSequence[0] & 0x3f | 0x80); // variant 1
 		return clockSequence;
-	}
-
-	/**
-	 * Get the instant contained in the UUID.
-	 * 
-	 * @param uuid
-	 * @return
-	 */
-	protected static Instant extractInstant(UUID uuid) {
-
-		byte[] bytes = toByteArray(uuid.toString().replaceAll("-", ""));
-
-		byte[] fragment3 = getFragment(bytes, 3);
-		boolean version1 = (fragment3[0] >> 4 & 0x01) == 1;
-		boolean version4 = (fragment3[0] >> 4 & 0x04) == 4;
-
-		byte[] time1;
-		byte[] time2;
-		byte[] time3;
-
-		if (version1) {
-			time1 = getFragment(bytes, 1);
-			time2 = getFragment(bytes, 2);
-			time3 = getFragment(bytes, 3);
-			time3[0] = (byte) (time3[0] & 0x0F);
-		} else if (version4) {
-			time3 = getFragment(bytes, 1);
-			time2 = getFragment(bytes, 2);
-			time1 = getFragment(bytes, 3);
-		} else {
-			return null;
-		}
-
-		byte[] timestampBytes = array(8, (byte) 0x00);
-		if (version1) {
-			timestampBytes = replace(timestampBytes, time3, 0);
-			timestampBytes = replace(timestampBytes, time2, 2);
-			timestampBytes = replace(timestampBytes, time1, 4);
-		} else if (version4) {
-			timestampBytes = replace(timestampBytes, time3, 0);
-			timestampBytes = replace(timestampBytes, time2, 4);
-			timestampBytes = replace(timestampBytes, time1, 6);
-		} else {
-			return null;
-		}
-
-		long timestamp = toNumber(toHexadecimal(timestampBytes));
-		return getGregorianCalendarInstant(timestamp);
 	}
 
 	/**
@@ -368,7 +389,7 @@ public class UUIDGenerator {
 	 * @param realHardwareAddress
 	 * @return
 	 */
-	protected static byte[] getHardwareAddress(boolean realHardwareAddress) {
+	protected static byte[] getHardwareAddressField(boolean realHardwareAddress) {
 
 		if (hardwareAddress != null) {
 			return hardwareAddress;
@@ -418,9 +439,9 @@ public class UUIDGenerator {
 	 */
 	public static byte[] extractHardwareAddress(UUID uuid) {
 
-		byte[] bytes = toByteArray(uuid.toString().replaceAll("-", ""));
+		byte[] bytes = toBytes(uuid.toString().replaceAll("-", ""));
 
-		byte[] hardwareAddress = getFragment(bytes, 5);
+		byte[] hardwareAddress = getField(bytes, 5);
 
 		if (!isMulticastHardwareAddress(hardwareAddress)) {
 			return hardwareAddress;
@@ -450,8 +471,9 @@ public class UUIDGenerator {
 	/**
 	 * Get a random hash.
 	 * 
-	 * It works in two steps: 1. get an array of 32 bytes using
-	 * java.util.Random(); 2. get and return a MD5 hash from the array of bytes.
+	 * It works in two steps:<br/>
+	 * 1. get an array of 32 bytes using java.util.Random(); <br/>
+	 * 2. get and return a MD5 hash from the array of bytes.
 	 * 
 	 * @return
 	 */
@@ -472,15 +494,6 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Get a formatted random hash.
-	 * 
-	 * @return
-	 */
-	protected static String getFormattedRandomHash() {
-		return formatString(toHexadecimal(getRandomHash()));
-	}
-
-	/**
 	 * Format a string to UUID format.
 	 * 
 	 * @param uuid
@@ -496,13 +509,13 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Get a fragment of a given UUID.
+	 * Get a field of a given UUID.
 	 * 
 	 * @param uuid
 	 * @param index
 	 * @return
 	 */
-	protected static byte[] getFragment(byte[] uuid, int index) {
+	protected static byte[] getField(byte[] uuid, int index) {
 		switch (index) {
 		case 1:
 			return copy(uuid, 0, 4);
@@ -520,14 +533,14 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Replace a fragment of a given UUID.
+	 * Replace a field of a given UUID.
 	 * 
 	 * @param uuid
 	 * @param replacement
 	 * @param index
 	 * @return
 	 */
-	protected static byte[] replaceFragment(final byte[] uuid, final byte[] replacement, int index) {
+	protected static byte[] replaceField(final byte[] uuid, final byte[] replacement, int index) {
 		switch (index) {
 		case 1:
 			return replace(uuid, replacement, 0);
@@ -554,6 +567,22 @@ public class UUIDGenerator {
 		return (long) Long.parseLong(hexadecimal, 16);
 	}
 
+	protected static long toNumber(byte[] bytes) {
+		byte[] b = bytes;
+
+		if (bytes.length < 8) {
+			b = array(8, (byte) 0x00);
+			b = replace(b, bytes, 8 - bytes.length);
+		}
+
+		long result = 0;
+		for (int i = 0; i < 8; i++) {
+			result <<= 8;
+			result |= (b[i] & 0xFF);
+		}
+		return result;
+	}
+
 	/**
 	 * Get an array of bytes from a given number.
 	 * 
@@ -569,28 +598,12 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Get a hexadecimal string from given array of bytes.
-	 * 
-	 * @param bytes
-	 * @return
-	 */
-	public static String toHexadecimal(byte[] bytes) {
-		char[] hexadecimal = new char[bytes.length * 2];
-		for (int i = 0; i < bytes.length; i++) {
-			int v = bytes[i] & 0xFF;
-			hexadecimal[i * 2] = HEXADECIMAL_CHARS[v >>> 4];
-			hexadecimal[i * 2 + 1] = HEXADECIMAL_CHARS[v & 0x0F];
-		}
-		return new String(hexadecimal);
-	}
-
-	/**
 	 * Get an array of bytes from a given hexadecimal string.
 	 * 
 	 * @param hexadecimal
 	 * @return
 	 */
-	public static byte[] toByteArray(String hexadecimal) {
+	protected static byte[] toBytes(String hexadecimal) {
 		int len = hexadecimal.length();
 		byte[] bytes = new byte[len / 2];
 		for (int i = 0; i < len; i += 2) {
@@ -601,13 +614,29 @@ public class UUIDGenerator {
 	}
 
 	/**
+	 * Get a hexadecimal string from given array of bytes.
+	 * 
+	 * @param bytes
+	 * @return
+	 */
+	protected static String toHexadecimal(byte[] bytes) {
+		char[] hexadecimal = new char[bytes.length * 2];
+		for (int i = 0; i < bytes.length; i++) {
+			int v = bytes[i] & 0xFF;
+			hexadecimal[i * 2] = HEXADECIMAL_CHARS[v >>> 4];
+			hexadecimal[i * 2 + 1] = HEXADECIMAL_CHARS[v & 0x0F];
+		}
+		return new String(hexadecimal);
+	}
+
+	/**
 	 * Get a new array with a specific lenth and filled with a byte value.
 	 * 
 	 * @param length
 	 * @param value
 	 * @return
 	 */
-	private static byte[] array(int length, byte value) {
+	protected static byte[] array(int length, byte value) {
 		byte[] result = new byte[length];
 		for (int i = 0; i < length; i++) {
 			result[i] = value;
@@ -621,7 +650,7 @@ public class UUIDGenerator {
 	 * @param bytes
 	 * @return
 	 */
-	private static byte[] copy(byte[] bytes) {
+	protected static byte[] copy(byte[] bytes) {
 		byte[] result = copy(bytes, 0, bytes.length);
 		return result;
 	}
@@ -634,7 +663,7 @@ public class UUIDGenerator {
 	 * @param end
 	 * @return
 	 */
-	private static byte[] copy(byte[] bytes, int start, int end) {
+	protected static byte[] copy(byte[] bytes, int start, int end) {
 
 		byte[] result = new byte[end - start];
 		for (int i = 0; i < result.length; i++) {
@@ -652,7 +681,7 @@ public class UUIDGenerator {
 	 * @param index
 	 * @return
 	 */
-	private static byte[] replace(final byte[] bytes, final byte[] replacement, int index) {
+	protected static byte[] replace(final byte[] bytes, final byte[] replacement, int index) {
 		byte[] result = copy(bytes);
 		for (int i = 0; i < replacement.length; i++) {
 			result[index + i] = replacement[i];
