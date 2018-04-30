@@ -136,11 +136,11 @@ public class UUIDGenerator {
 	}
 
 	protected static String getTimestampPrivateUUIDString(Instant instant) {
-		return getUUIDString(instant, false, true);
+		return getUUIDString(instant, true, false);
 	}
 
 	protected static String getSequentialUUIDString(Instant instant) {
-		return getUUIDString(instant, true, false);
+		return getUUIDString(instant, false, true);
 	}
 
 	protected static String getSequentialPrivateUUIDString(Instant instant) {
