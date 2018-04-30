@@ -208,31 +208,6 @@ public class UUIDGenerator {
 		return formatString(toHexadecimal(uuid));
 	}
 
-	/**
-	 * Returns a byte array thet contains the number version and part of the
-	 * timestamp, depending on the UUID version.
-	 * 
-	 * @param bytes
-	 * @param standardTimestamp
-	 * @return
-	 */
-	protected static byte[] getVersionField(final byte[] bytes, boolean standardTimestamp) {
-
-		byte[] field = null;
-
-		if (standardTimestamp) {
-			field = copy(bytes, 0, 2);
-			field[0] = (byte) (field[0] | 0x10); // set bits for version 1
-		} else {
-			field = copy(bytes, 6, 8);
-			long number = toNumber(field) >> 4; // shift right
-			field = copy(toBytes(number), 6, 8);
-			field[0] = (byte) (field[0] | 0x40); // set bits for version 4
-		}
-
-		return field;
-	}
-
 	/* ### PROTECTED AUXILIARY METHODS */
 
 	/**
@@ -289,6 +264,8 @@ public class UUIDGenerator {
 	public static Instant extractInstant(UUID uuid) {
 
 		byte[] bytes = toBytes(uuid.toString().replaceAll("-", ""));
+		
+		byte[] timestampBytes = array(8, (byte) 0x00);
 
 		byte[] versionField = getField(bytes, 3);
 		boolean version1 = (versionField[0] >> 4 & 0x01) == 1;
@@ -306,6 +283,10 @@ public class UUIDGenerator {
 
 			// remove version
 			field3[0] = (byte) (field3[0] & 0x0F);
+			
+			timestampBytes = replace(timestampBytes, field3, 0);
+			timestampBytes = replace(timestampBytes, field2, 2);
+			timestampBytes = replace(timestampBytes, field1, 4);
 
 		} else if (version4) {
 
@@ -316,21 +297,21 @@ public class UUIDGenerator {
 			// remove version and shift left
 			long value = (toNumber(field1) & 0x0FFF) << 4;
 			field1 = copy(toBytes(value), 6, 8);
+			
+			timestampBytes = replace(timestampBytes, field3, 0);
+			timestampBytes = replace(timestampBytes, field2, 4);
+			timestampBytes = replace(timestampBytes, field1, 6);
 
 		} else {
 			return null;
 		}
 
-		byte[] timestampBytes = array(8, (byte) 0x00);
+
 
 		if (version1) {
-			timestampBytes = replace(timestampBytes, field3, 0);
-			timestampBytes = replace(timestampBytes, field2, 2);
-			timestampBytes = replace(timestampBytes, field1, 4);
+
 		} else if (version4) {
-			timestampBytes = replace(timestampBytes, field3, 0);
-			timestampBytes = replace(timestampBytes, field2, 4);
-			timestampBytes = replace(timestampBytes, field1, 6);
+
 		} else {
 			return null;
 		}
@@ -339,6 +320,31 @@ public class UUIDGenerator {
 		return getGregorianCalendarInstant(timestamp);
 	}
 
+	/**
+	 * Returns a byte array thet contains the number version and part of the
+	 * timestamp, depending on the UUID version.
+	 * 
+	 * @param bytes
+	 * @param standardTimestamp
+	 * @return
+	 */
+	protected static byte[] getVersionField(final byte[] bytes, boolean standardTimestamp) {
+
+		byte[] field = null;
+
+		if (standardTimestamp) {
+			field = copy(bytes, 0, 2);
+			field[0] = (byte) (field[0] | 0x10); // set bits for version 1
+		} else {
+			field = copy(bytes, 6, 8);
+			long number = toNumber(field) >> 4; // shift right
+			field = copy(toBytes(number), 6, 8);
+			field[0] = (byte) (field[0] | 0x40); // set bits for version 4
+		}
+
+		return field;
+	}
+	
 	/**
 	 * Get a clock sequence extracted from a given instant.
 	 * 
