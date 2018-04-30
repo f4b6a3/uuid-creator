@@ -402,7 +402,7 @@ public class UUIDGenerator {
      */
     protected static byte[] getHardwareAddressField(boolean realHardwareAddress) {
         
-        if ((UUIDGenerator.hardwareAddress != null) && (UUIDGenerator.hardwareAddress.length == 6)) {
+        if (UUIDGenerator.hardwareAddress != null) {
             return UUIDGenerator.hardwareAddress;
         }
         
@@ -410,7 +410,9 @@ public class UUIDGenerator {
             try {
                 NetworkInterface nic = NetworkInterface.getNetworkInterfaces().nextElement();
                 UUIDGenerator.hardwareAddress = nic.getHardwareAddress();
-                return UUIDGenerator.hardwareAddress;
+                if(UUIDGenerator.hardwareAddress != null) {
+                    return UUIDGenerator.hardwareAddress;
+                }
             } catch (SocketException | NullPointerException e) {
                 // Do nothing.
             }
