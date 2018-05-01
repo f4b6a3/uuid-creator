@@ -1,7 +1,7 @@
 
 ### UUID Generator
 
-It can generate these kind of UUIDs:
+It can generate these types of UUIDs:
 
 - Random;
 - Timestamp;
