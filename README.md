@@ -8,10 +8,10 @@ Summary
 It can generate these types of UUIDs:
 
 - Random;
-- Timestamp;
-- Timestamp without MAC (private);
-- Sequential;
-- Sequential without MAC (private);
+- _Timestamp:_ time-based identifier;
+- _Timestamp Private:_ time-based identifier without hardware address;
+- _Sequential:_ modified time-based identifier;
+- _Sequential Private:_ modified time-based identifier without hardware address;
 
 Differences between Timestamp UUID and Sequential UUID
 ------------------------------------------------------
@@ -44,17 +44,15 @@ In Sequential UUID the bytes are arranged in this way:
 
 To understand the difference between Timestamp UUID and Sequential UUID, look thise two practical examples of UUID generated at the same instant.
 
-- Timestamp UUID:  66ccb4f0-4cd6-11e8-8a73-a5f01af13e8e
-- Sequential UUID: 01e84cd6-66cc-4b4f-8a74-a5f01af13e8e
+- Timestamp UUID:  62a9a1f1-4d09-11e8-b674-8416f91b1893
+- Sequential UUID: 1e84d096-2a9a-41f1-b675-8416f91b1893
 
-Note that the byte order of the first three fields are different in both examples. But both have the same bytes of a single instant, that is 2018-05-01T00:27:16.620414400Z.
+Note that the byte order of the first three fields are different in both examples. But both have the same bytes of a single instant, that is 2018-05-01T06:32:14.012875380Z.
 
 Now see the three fields that contain timestamp information separated from the other fields. The lowest bytes of the timestamp are highlighted (the "V" is for version).
 
-- Timestamp UUID:  **66ccb4f0**4cd6V1e8
-- Sequential UUID: 01e84cd6**66ccVb4f**
+- Timestamp UUID:  **62a9a1f1**4d09V1e8
+- Sequential UUID: 1e84d09**62a9aV1f1**
 
 In short, that is the is the difference between both.
-
-
 

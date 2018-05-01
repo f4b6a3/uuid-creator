@@ -47,16 +47,41 @@ public class UUIDGeneratorTest extends TestCase {
 		Assert.assertTrue(uuid.toString().matches(UUIDGeneratorTest.PATTERN));
 	}
 
-	public void testGetTimestampWithoutMachineAddressUUIDStringIsValid() {
+	public void testGetTimestampPrivateAddressUUIDStringIsValid() {
 		String uuid = UUIDGenerator.getTimestampPrivateUUIDString(UUIDGenerator.getClockInstant());
 		Assert.assertTrue(uuid.toString().matches(UUIDGeneratorTest.PATTERN));
 	}
 
-	public void testGetSequentialWithoutMachineAddressUUIDStringIsValid() {
+	public void testGetSequentialPrivateAddressUUIDStringIsValid() {
 		String uuid = UUIDGenerator.getSequentialPrivateUUIDString(UUIDGenerator.getClockInstant());
 		Assert.assertTrue(uuid.toString().matches(UUIDGeneratorTest.PATTERN));
 	}
 
+	public void testGetTimestampUUIDStringIsTimestampCorrect() {
+		
+		Instant instant = UUIDGenerator.getClockInstant();
+		String uuid = UUIDGenerator.getTimestampUUIDString(instant);
+		
+		long timestamp1 = UUID.fromString(uuid).timestamp();
+		long timestamp2 = UUIDGenerator.getGregorianCalendarTimestamp(instant);
+		
+		Assert.assertEquals(timestamp1, timestamp2);
+	}
+	
+	/**
+	 * Test if a time based UUID version 1 is has the correct timestamp.
+	 */
+	public void testGetTimestampPrivateUUIDStringIsTimestampCorrect() {
+		
+		Instant instant = UUIDGenerator.getClockInstant();
+		String uuid = UUIDGenerator.getTimestampPrivateUUIDString(instant);
+		
+		long timestamp1 = UUID.fromString(uuid).timestamp();
+		long timestamp2 = UUIDGenerator.getGregorianCalendarTimestamp(instant);
+		
+		Assert.assertEquals(timestamp1, timestamp2);
+	}
+	
 	/**
 	 * Test if a time based UUID version 1 is has the correct timestamp.
 	 */
@@ -65,10 +90,10 @@ public class UUIDGeneratorTest extends TestCase {
 		Instant instant1 = UUIDGenerator.getClockInstant();
 		UUID uuid = UUID.fromString(UUIDGenerator.getTimestampUUIDString(instant1));
 		Instant instant2 = UUIDGenerator.extractInstant(uuid);
-		
+
 		long timestamp1 = UUIDGenerator.getGregorianCalendarTimestamp(instant1);
 		long timestamp2 = UUIDGenerator.getGregorianCalendarTimestamp(instant2);
-		
+
 		Assert.assertEquals(timestamp1, timestamp2);
 	}
 
@@ -80,36 +105,55 @@ public class UUIDGeneratorTest extends TestCase {
 		Instant instant1 = UUIDGenerator.getClockInstant();
 		UUID uuid = UUID.fromString(UUIDGenerator.getSequentialUUIDString(instant1));
 		Instant instant2 = UUIDGenerator.extractInstant(uuid);
-		
+
 		long timestamp1 = UUIDGenerator.getGregorianCalendarTimestamp(instant1);
 		long timestamp2 = UUIDGenerator.getGregorianCalendarTimestamp(instant2);
 
 		Assert.assertEquals(timestamp1, timestamp2);
 	}
-	
+
 	/**
 	 * This method only prints running times.
 	 */
 	public void testRunningTime() {
-        long max = (long) Math.pow(10, 5);
-        Instant start = null;
-        Instant end = null;
-        
-        start = UUIDGenerator.getClockInstant();
-        for (int i = 0; i < max; i++) {
-            UUID.randomUUID(); // example
-        }
-        end = UUIDGenerator.getClockInstant();
-        long miliseconds1 = (end.toEpochMilli() - start.toEpochMilli());
-        
-        start = UUIDGenerator.getClockInstant();
-        for (int i = 0; i < max; i++) {
-            UUIDGenerator.getRandomUUIDString(); // example
-        }
-        end = UUIDGenerator.getClockInstant();
-        long miliseconds2 = (end.toEpochMilli() - start.toEpochMilli());
-        
-        System.out.println("Method 1: " + miliseconds1);
-        System.out.println("Method 2: " + miliseconds2);
+		
+		long max = (long) Math.pow(10, 5);
+		Instant start = null;
+		Instant end = null;
+
+		start = UUIDGenerator.getClockInstant();
+		for (int i = 0; i < max; i++) {
+			UUID.randomUUID(); // example
+		}
+		end = UUIDGenerator.getClockInstant();
+		long miliseconds1 = (end.toEpochMilli() - start.toEpochMilli());
+
+		start = UUIDGenerator.getClockInstant();
+		for (int i = 0; i < max; i++) {
+			UUIDGenerator.getRandomUUIDString(); // example
+		}
+		end = UUIDGenerator.getClockInstant();
+		long miliseconds2 = (end.toEpochMilli() - start.toEpochMilli());
+
+		System.out.println();
+		System.out.println("Time method 1 (ms): " + miliseconds1);
+		System.out.println("Time method 2 (ms): " + miliseconds2);
+	}
+
+	/**
+	 * Just prints UUIDs generated to a specific instant.
+	 */
+	public void testDemoDifferenceBetweenTimestampAndSequentialUUID() {
+
+		Instant instant = UUIDGenerator.getClockInstant();
+		String timestampUUID = UUIDGenerator.getTimestampPrivateUUIDString(instant);
+		String sequentialUUID = UUIDGenerator.getSequentialPrivateUUIDString(instant);
+
+		System.out.println();
+		System.out.println("Timestamp UUID:  " + timestampUUID.toString());
+		System.out.println("Sequential UUID: " + sequentialUUID.toString());
+		System.out.println("Original instant:        " + instant.toString());
+		System.out.println("Timestamp UUID instant:  " + UUIDGenerator.extractInstant(UUID.fromString(timestampUUID)));
+		System.out.println("Sequential UUID instant: " + UUIDGenerator.extractInstant(UUID.fromString(sequentialUUID)));
 	}
 }
