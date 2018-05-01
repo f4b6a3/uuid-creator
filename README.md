@@ -7,7 +7,7 @@ Summary
 
 It can generate these types of UUIDs:
 
-- Random;
+- _Random_;
 - _Timestamp:_ time-based identifier;
 - _Timestamp Private:_ time-based identifier without hardware address;
 - _Sequential:_ modified time-based identifier;
@@ -52,7 +52,7 @@ Note that the byte order of the first three fields are different in both example
 Now see the three fields that contain timestamp information separated from the other fields. The lowest bytes of the timestamp are highlighted (the "V" is for version).
 
 - Timestamp UUID:  **62a9a1f1**4d09V1e8
-- Sequential UUID: 1e84d09**62a9aV1f1**
+- Sequential UUID: 1e84d09**62a9a**V**1f1**
 
 In short, that is the is the difference between both.
 
