@@ -28,19 +28,19 @@ The dashes separate the UUID in parts called "fields". The first tree fields con
 
 In Timestamp UUID the bytes are arranged in this way:
 
-* TTTTTTTT: this field contains the lowest bytes of the timestamp;
-* TTTT: this field contains the middle bytes of the timestamp;
-* VTTT: in this field, "V" is the version (always 1) and the "TTT" are the highest bytes of timestamp;
-* RSS: in this field, "R" is the variant and "SSS" are a clock sequence;
-* MMMMMMMMMMMM: this field contains the hardware address or node (MAC)
+* `TTTTTTTT`: this field contains the lowest bytes of the timestamp;
+* `TTTT`: this field contains the middle bytes of the timestamp;
+* `VTTT`: in this field, "V" is the version (always 1) and the "TTT" are the highest bytes of timestamp;
+* `RSS`: in this field, "R" is the variant and "SSS" are a clock sequence;
+* `MMMMMMMMMMMM`: this field contains the hardware address or node (MAC)
 
 In Sequential UUID the bytes are arranged in this way:
 
-* TTTTTTTT: this field contains the **highest** bytes of the timestamp;
-* TTTT: this field contains the middle bytes of the timestamp;
-* VTTT: in this field, "V" is the version (always 4) and the "TTT" are the **lowest** bytes of timestamp;
-* RSS: in this field, "R" is the variant and "SSS" are a clock sequence;
-* MMMMMMMMMMMM: this field contains the hardware address or node (MAC)
+* `TTTTTTTT`: this field contains the **highest** bytes of the timestamp;
+* `TTTT`: this field contains the middle bytes of the timestamp;
+* `VTTT`: in this field, "V" is the version (always 4) and the "TTT" are the **lowest** bytes of timestamp;
+* `RSS`: in this field, "R" is the variant and "SSS" are a clock sequence;
+* `MMMMMMMMMMMM`: this field contains the hardware address or node (MAC)
 
 To understand the difference between Timestamp UUID and Sequential UUID, look thise two practical examples of UUID generated at the same instant.
 
