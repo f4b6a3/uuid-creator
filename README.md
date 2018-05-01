@@ -38,7 +38,7 @@ In Sequential UUID the bytes are arranged in this way:
 
 - TTTTTTTT: this field contains the **highest** bytes of the timestamp;
 - TTTT: this field contains the middle bytes of the timestamp;
-- VTTT: in this field, "V" is the version (always 4) and the "TTT" are the *lowest* bytes of timestamp;
+- VTTT: in this field, "V" is the version (always 4) and the "TTT" are the **lowest** bytes of timestamp;
 - RSS: in this field, "R" is the variant and "SSS" are a clock sequence;
 - MMMMMMMMMMMM: this field contains the hardware address or node (MAC)
 
