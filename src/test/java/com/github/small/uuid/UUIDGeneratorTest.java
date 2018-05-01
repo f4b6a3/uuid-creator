@@ -130,14 +130,22 @@ public class UUIDGeneratorTest extends TestCase {
 
 		start = UUIDGenerator.getClockInstant();
 		for (int i = 0; i < max; i++) {
-			UUIDGenerator.getRandomUUIDString(); // example
+			UUIDGenerator.getRandomUUID(); // example
 		}
 		end = UUIDGenerator.getClockInstant();
 		long miliseconds2 = (end.toEpochMilli() - start.toEpochMilli());
+		
+		start = UUIDGenerator.getClockInstant();
+		for (int i = 0; i < max; i++) {
+			UUIDGenerator.getSequentialPrivateUUID(); // example
+		}
+		end = UUIDGenerator.getClockInstant();
+		long miliseconds4 = (end.toEpochMilli() - start.toEpochMilli());
 
 		System.out.println();
-		System.out.println("Time method 1 (ms): " + miliseconds1);
-		System.out.println("Time method 2 (ms): " + miliseconds2);
+		System.out.println("java.util.UUID.randomUUID():              " + miliseconds1 + " ms");
+		System.out.println("UUIDGenerator.getRamdomUUID():            " + miliseconds2 + " ms");
+		System.out.println("UUIDGenerator.getSequentialPrivateUUID(): " + miliseconds4 + " ms");
 	}
 
 	/**
