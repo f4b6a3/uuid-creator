@@ -9,5 +9,5 @@ It can generate these kind of UUIDs:
 - Sequential;
 - Sequential without MAC (private);
  
-The *Sequential UUID* is a modified implementation of Timestamp UUID. All the octets deticated to timestamp in the Sequential UUID are in the "natural order". In the standard Timestamp UUID the octets of timetamp are arranged in an inversed order (RFC-4122, section 4.2).
+UUID Sequential is a modified implementation of the Timestamp UUID. All octets dedicated to the timestamp in the Sequential UUID are in the natural order. In the default timestamp UUID the timestamp octets are arranged differently (RFC-4122, section 4.2).
 
