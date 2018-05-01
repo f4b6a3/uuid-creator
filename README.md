@@ -44,14 +44,27 @@ In Sequential UUID the bytes are arranged in this way:
 
 To understand the difference between Timestamp UUID and Sequential UUID, look thise two practical examples of UUID generated at the same instant.
 
-* Timestamp UUID:  6a012540-4d0c-11e8-b90b-6f38ff517141
-* Sequential UUID: 1e84d0c6-a012-4540-b90c-6f38ff517141
+* Timestamp UUID:  79592ca7-4d7f-11e8-b946-3bababbf5f8b
+* Sequential UUID: 1e84d7f7-9592-4ca7-b947-3bababbf5f8b
 
-Note that the byte order of the first three fields are different in both examples. But both have the same bytes of a single instant, that is 2018-05-01T06:53:54.820640011Z.
+Note that the byte order of the first three fields are different in both examples. But both have the same bytes of a single instant, that is 2018-05-01T20:37:32.687274310Z.
 
 Now see the three fields that contain timestamp information separated from the other fields. The lowest bytes of the timestamp are highlighted (the "V" is for version).
 
-* Timestamp UUID:  **6a012540**-4d0c-V1e8
-* Sequential UUID: 1e84d0c6-**a012**-V**540**
+* Timestamp UUID:  **79592ca7**4d7fV1e8
+* Sequential UUID: 1e84d7f**79592**V**ca7**
 
 In short, that is the is the difference between both.
+
+Timings compared to java.util.UUID
+------------------------------------------------------
+
+A simple time measurement was done to test how long each methods take to generate 100,000 (a hundred thousand) UUIDs. These are the aproximante results:
+
+* java.util.UUID.randomUUID(): 47 ms
+* UUIDGenerator.getRandomUUID(): 64 ms
+* UUIDGenerator.getTimestampPrivateUUID(): 15 ms
+* UUIDGenerator.getSequentialPrivateUUID(): 15 ms
+
+The machine used to do this test was an Intel i5-3330 with 16GB RAM.
+
