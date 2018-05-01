@@ -44,15 +44,15 @@ In Sequential UUID the bytes are arranged in this way:
 
 To understand the difference between Timestamp UUID and Sequential UUID, look thise two practical examples of UUID generated at the same instant.
 
-- Timestamp UUID:  62a9a1f1-4d09-11e8-b674-8416f91b1893
-- Sequential UUID: 1e84d096-2a9a-41f1-b675-8416f91b1893
+- Timestamp UUID:  6a012540-4d0c-11e8-b90b-6f38ff517141
+- Sequential UUID: 1e84d0c6-a012-4540-b90c-6f38ff517141
 
-Note that the byte order of the first three fields are different in both examples. But both have the same bytes of a single instant, that is 2018-05-01T06:32:14.012875380Z.
+Note that the byte order of the first three fields are different in both examples. But both have the same bytes of a single instant, that is 2018-05-01T06:53:54.820640011Z.
 
 Now see the three fields that contain timestamp information separated from the other fields. The lowest bytes of the timestamp are highlighted (the "V" is for version).
 
-- Timestamp UUID:  **62a9a1f1**4d09V1e8
-- Sequential UUID: 1e84d09**62a9a**V**1f1**
+- Timestamp UUID:  **6a012540**-4d0c-V1e8
+- Sequential UUID: 1e84d0c6-**a012**-V**540**
 
 In short, that is the is the difference between both.
 
