@@ -357,9 +357,10 @@ public class UUIDGenerator {
 
 		long nanoseconds = instant.getLong(ChronoField.NANO_OF_SECOND);
 		long clockSequence = ((nanoseconds & 0x0000000000003FFFL) | 0x0000000000008000L);
-
+		
 		if (clockSequence == lastClockSequence) {
-			clockSequence = clockSequence + 1;
+			long randomNumber = random.nextLong(); 
+			clockSequence = ((randomNumber & 0x0000000000003FFFL) | 0x0000000000008000L);
 		}
 
 		UUIDGenerator.lastClockSequence = clockSequence;
