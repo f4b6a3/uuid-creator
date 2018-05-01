@@ -49,7 +49,7 @@ To understand the difference between Timestamp UUID and Sequential UUID, look th
 
 Note that the byte order of the first three fields are different in both examples. But both have the same bytes of a single instant, that is 2018-05-01T00:27:16.620414400Z.
 
-Now see the three fields that contain timestamp information separated from the other fields. The lowest bytes of the timestamp are highlighted (the "v" is for version).
+Now see the three fields that contain timestamp information separated from the other fields. The lowest bytes of the timestamp are highlighted (the "V" is for version).
 
 - Timestamp UUID:  **66ccb4f0**4cd6V1e8
 - Sequential UUID: 01e84cd6**66ccVb4f**
