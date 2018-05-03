@@ -21,13 +21,13 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.util.Random;
 import java.util.UUID;
 
 public class UUIDGenerator {
@@ -38,7 +38,7 @@ public class UUIDGenerator {
 
 	private static final char[] HEXADECIMAL_CHARS = "0123456789abcdef".toCharArray();
 
-	private static Random random = new Random();
+	private static SecureRandom random = null;
 	private static byte[] hardwareAddress = null;
 	private static long lastClockSequence = 0;
 
@@ -170,9 +170,7 @@ public class UUIDGenerator {
 
 	protected static byte[] getRandomUUIDBytes() {
 
-		byte[] bytes = UUIDGenerator.getRandomBytes(32);
-		byte[] hash = UUIDGenerator.getHash(bytes);
-		byte[] uuid = copy(hash, 0, 16);
+		byte[] uuid = UUIDGenerator.getRandomBytes(16);
 
 		uuid[6] = (byte) ((uuid[6] & 0x0f) | 0x40); // version 4
 		uuid[8] = (byte) ((uuid[8] & 0x3f) | 0x80); // variant 1
@@ -357,9 +355,9 @@ public class UUIDGenerator {
 
 		long nanoseconds = instant.getLong(ChronoField.NANO_OF_SECOND);
 		long clockSequence = ((nanoseconds & 0x0000000000003FFFL) | 0x0000000000008000L);
-		
+
 		if (clockSequence == lastClockSequence) {
-			long randomNumber = random.nextLong(); 
+			long randomNumber = getRandomNumber();
 			clockSequence = ((randomNumber & 0x0000000000003FFFL) | 0x0000000000008000L);
 		}
 
@@ -465,9 +463,46 @@ public class UUIDGenerator {
 	 * @return
 	 */
 	protected static byte[] getRandomBytes(int length) {
+		initSecureRandom();
 		byte[] bytes = new byte[length];
 		UUIDGenerator.random.nextBytes(bytes);
 		return bytes;
+	}
+
+	/**
+	 * Get a random number.
+	 * 
+	 * @return
+	 */
+	protected static long getRandomNumber() {
+		initSecureRandom();
+		return random.nextLong();
+	}
+
+	/**
+	 * Initiate a secure random instance with SHA1PRNG algorithm.
+	 * 
+	 * If this algorithm is not present, it uses JVM's default.
+	 */
+	protected static void initSecureRandom() {
+		if (random == null) {
+			try {
+				random = SecureRandom.getInstance("SHA1PRNG");
+			} catch (NoSuchAlgorithmException e) {
+				random = new SecureRandom();
+			}
+		}
+	}
+
+	/**
+	 * Initializes random attribute with SHA1PRNG algorithm.
+	 * 
+	 * If this algorithm is not available, it uses the default.
+	 * 
+	 * 
+	 */
+	protected static void initRandom() {
+
 	}
 
 	/**

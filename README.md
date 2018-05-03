@@ -59,12 +59,14 @@ In short, that is the is the difference between both.
 Timings compared to java.util.UUID
 ------------------------------------------------------
 
-A simple time measurement was done to test how long each methods take to generate 100,000 (a hundred thousand) UUIDs. These are the aproximante results:
+A simple time measurement was done to test how long each methods take to generate 100,000 (a hundred thousand) UUIDs. These are the average results:
 
 * java.util.UUID.randomUUID(): 47 ms
-* UUIDGenerator.getRandomUUID(): 64 ms
+* UUIDGenerator.getRandomUUID(): 34 ms
 * UUIDGenerator.getTimestampPrivateUUID(): 15 ms
 * UUIDGenerator.getSequentialPrivateUUID(): 15 ms
+
+The method getTimestampPrivateUUID() uses SecureRandom (java.security.SecureRandom).
 
 The machine used to do this test was an Intel i5-3330 with 16GB RAM.
 
