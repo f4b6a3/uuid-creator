@@ -2,13 +2,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.github.f4b6a3d8</groupId>
+	<groupId>com.github.f4b6a3</groupId>
 	<artifactId>uuid-generator</artifactId>
 	<version>0.5.7</version>
 	<packaging>jar</packaging>
 
 	<name>uuid-generator</name>
-	<url>http://github.com/f4b6a3d8</url>
+	<url>http://github.com/f4b6a3</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

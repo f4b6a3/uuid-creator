@@ -15,7 +15,7 @@
  *
  */
 
-package com.github.f4b6a3d8.uuid;
+package com.github.f4b6a3.uuid;
 
 import java.net.NetworkInterface;
 import java.net.SocketException;

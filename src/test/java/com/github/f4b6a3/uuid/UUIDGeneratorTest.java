@@ -1,7 +1,9 @@
-package com.github.f4b6a3d8.uuid;
+package com.github.f4b6a3.uuid;
 
 import java.time.Instant;
 import java.util.UUID;
+
+import com.github.f4b6a3.uuid.UUIDGenerator;
 
 import junit.framework.Assert;
 import junit.framework.Test;
