@@ -38,7 +38,7 @@ public class UUIDGenerator {
 
 	private static final char[] HEXADECIMAL_CHARS = "0123456789abcdef".toCharArray();
 
-	private static SecureRandom random = null;
+	private static SecureRandom random = getSecureRandom();
 	private static byte[] hardwareAddress = null;
 	private static long lastClockSequence = 0;
 
@@ -463,7 +463,6 @@ public class UUIDGenerator {
 	 * @return
 	 */
 	protected static byte[] getRandomBytes(int length) {
-		initSecureRandom();
 		byte[] bytes = new byte[length];
 		UUIDGenerator.random.nextBytes(bytes);
 		return bytes;
@@ -475,7 +474,6 @@ public class UUIDGenerator {
 	 * @return
 	 */
 	protected static long getRandomNumber() {
-		initSecureRandom();
 		return random.nextLong();
 	}
 
@@ -484,14 +482,12 @@ public class UUIDGenerator {
 	 * 
 	 * If this algorithm is not present, it uses JVM's default.
 	 */
-	protected static void initSecureRandom() {
-		if (random == null) {
+	protected static SecureRandom getSecureRandom() {
 			try {
-				random = SecureRandom.getInstance("SHA1PRNG");
+				return SecureRandom.getInstance("SHA1PRNG");
 			} catch (NoSuchAlgorithmException e) {
-				random = new SecureRandom();
+				return new SecureRandom();
 			}
-		}
 	}
 
 	/**
