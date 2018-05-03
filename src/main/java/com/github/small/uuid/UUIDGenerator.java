@@ -40,6 +40,7 @@ public class UUIDGenerator {
 
 	private static SecureRandom random = getSecureRandom();
 	private static byte[] hardwareAddress = null;
+	private static long lastTimestamp = 0;
 	private static long lastClockSequence = 0;
 
 	// Used to generate a SHA-256 hash
@@ -205,7 +206,7 @@ public class UUIDGenerator {
 		long timestamp = UUIDGenerator.getGregorianCalendarTimestamp(instant);
 
 		timestampBytes = UUIDGenerator.getUUIDTimestampBytes(timestamp, standardTimestamp);
-		clockSequenceBytes = UUIDGenerator.getClockSequenceBytes(instant);
+		clockSequenceBytes = UUIDGenerator.getClockSequenceBytes(timestamp);
 		hardwareAddressBytes = UUIDGenerator.getHardwareAddressByts(realHardwareAddress);
 
 		uuid = UUIDGenerator.copy(UUIDGenerator.NIL_UUID);
@@ -337,31 +338,36 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Get a clock sequence extracted from a given instant.
+	 * Get a random clock sequence.
 	 * 
-	 * Currently the clock sequence is calculated from the instant nanoseconds.
+	 * The clock sequence is a random number that is generated when it is needed
+	 * for the first time.
 	 * 
-	 * It receives an Instant as parameter, then extracts its nanoseconds and
-	 * calculates the clock sequence based on these nanoseconds.
-	 * 
-	 * If the current clock sequence is equal to the last clock sequence, the
-	 * current clock sequence is incremented by 1 nanosecond to avoid
-	 * repetitions.
+	 * If the current timestamp is less or equal than the last timestamp, the
+	 * clock sequence is incremented by one to avoid UUID repetition.
 	 * 
 	 * @param timestamp
 	 * @return
 	 */
-	protected static byte[] getClockSequenceBytes(Instant instant) {
+	protected static byte[] getClockSequenceBytes(long timestamp) {
 
-		long nanoseconds = instant.getLong(ChronoField.NANO_OF_SECOND);
-		long clockSequence = ((nanoseconds & 0x0000000000003FFFL) | 0x0000000000008000L);
+		long clockSequence = 0;
 
-		if (clockSequence == lastClockSequence) {
-			long randomNumber = getRandomNumber();
-			clockSequence = ((randomNumber & 0x0000000000003FFFL) | 0x0000000000008000L);
+		if (UUIDGenerator.lastClockSequence != 0) {
+			clockSequence = UUIDGenerator.lastClockSequence;
+		} else {
+			// Generate a random clock sequence
+			clockSequence = ((getRandomNumber() & 0x0000000000003FFFL) | 0x0000000000008000L);
+			UUIDGenerator.lastClockSequence = clockSequence;
 		}
 
-		UUIDGenerator.lastClockSequence = clockSequence;
+		if (timestamp <= UUIDGenerator.lastTimestamp) {
+			// Increment clock sequence if to avoid UUID repetition
+			clockSequence = ((++clockSequence & 0x0000000000003FFFL) | 0x0000000000008000L);
+			UUIDGenerator.lastClockSequence = clockSequence;
+		}
+
+		UUIDGenerator.lastTimestamp = timestamp;
 		byte[] clockSequenceBytes = toBytes(clockSequence);
 
 		return copy(clockSequenceBytes, 6, 8);
@@ -483,11 +489,11 @@ public class UUIDGenerator {
 	 * If this algorithm is not present, it uses JVM's default.
 	 */
 	protected static SecureRandom getSecureRandom() {
-			try {
-				return SecureRandom.getInstance("SHA1PRNG");
-			} catch (NoSuchAlgorithmException e) {
-				return new SecureRandom();
-			}
+		try {
+			return SecureRandom.getInstance("SHA1PRNG");
+		} catch (NoSuchAlgorithmException e) {
+			return new SecureRandom();
+		}
 	}
 
 	/**
