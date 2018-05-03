@@ -1,4 +1,4 @@
-package com.github.small.uuid;
+package com.github.f4b6a3d8.uuid;
 
 import java.time.Instant;
 import java.util.UUID;
