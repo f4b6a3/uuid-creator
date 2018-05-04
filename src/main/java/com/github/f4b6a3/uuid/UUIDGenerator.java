@@ -38,7 +38,7 @@ public class UUIDGenerator {
 
 	private static final char[] HEXADECIMAL_CHARS = "0123456789abcdef".toCharArray();
 
-	private static SecureRandom random = getSecureRandom();
+	private static SecureRandom random = UUIDGenerator.getSecureRandom();
 	private static byte[] hardwareAddress = null;
 	private static long lastTimestamp = 0;
 	private static long lastClockSequence = 0;
@@ -57,52 +57,52 @@ public class UUIDGenerator {
 
 	/**
 	 * Returns a random UUID with no timestamp and no machine address.
-	 * 
+	 *
 	 * Details: <br/>
 	 * - Version number: 4 <br/>
 	 * - Variant number: 1 <br/>
 	 * - Has timestamp?: NO <br/>
 	 * - Has hardware address (MAC)?: NO <br/>
 	 * - Timestamp bytes are in standard order: NO <br/>
-	 * 
+	 *
 	 * @param instant
 	 * @return
 	 */
 	public static UUID getRandomUUID() {
-		return toUUID(getRandomUUIDBytes());
+		return UUIDGenerator.toUUID(UUIDGenerator.getRandomUUIDBytes());
 	}
 
 	/**
 	 * Returns a UUID with timestamp and machine address.
-	 * 
+	 *
 	 * Details: <br/>
 	 * - Version number: 1 <br/>
 	 * - Variant number: 1 <br/>
 	 * - Has timestamp?: YES <br/>
 	 * - Has hardware address (MAC)?: YES <br/>
 	 * - Timestamp bytes are in standard order: YES <br/>
-	 * 
+	 *
 	 * @return
 	 */
 	public static UUID getTimestampUUID() {
-		return toUUID(getUUIDBytes(UUIDGenerator.getClockInstant(), true, true));
+		return UUIDGenerator.toUUID(UUIDGenerator.getUUIDBytes(UUIDGenerator.getClockInstant(), true, true));
 	}
 
 	/**
 	 * Returns a UUID with timestamp and without machine address.
-	 * 
+	 *
 	 * Details: <br/>
 	 * - Version number: 1 <br/>
 	 * - Variant number: 1 <br/>
 	 * - Has timestamp?: YES <br/>
 	 * - Has hardware address (MAC)?: NO <br/>
 	 * - Timestamp bytes are in standard order: YES <br/>
-	 * 
+	 *
 	 * @param instant
 	 * @return
 	 */
 	public static UUID getTimestampPrivateUUID() {
-		return toUUID(getUUIDBytes(UUIDGenerator.getClockInstant(), true, false));
+		return UUIDGenerator.toUUID(UUIDGenerator.getUUIDBytes(UUIDGenerator.getClockInstant(), true, false));
 	}
 
 	/**
@@ -110,19 +110,19 @@ public class UUIDGenerator {
 	 * corresponding to timestamp are arranged in the "natural" order, that is
 	 * not compatible with the version 1. For that reason it's returned as a
 	 * version 4 UUID.
-	 * 
+	 *
 	 * Details: <br/>
 	 * - Version number: 4 <br/>
 	 * - Variant number: 1 <br/>
 	 * - Has timestamp?: YES <br/>
 	 * - Has hardware address (MAC)?: YES <br/>
 	 * - Timestamp bytes are in standard order: NO <br/>
-	 * 
+	 *
 	 * @param instant
 	 * @return
 	 */
 	public static UUID getSequentialUUID() {
-		return toUUID(getUUIDBytes(UUIDGenerator.getClockInstant(), false, true));
+		return UUIDGenerator.toUUID(UUIDGenerator.getUUIDBytes(UUIDGenerator.getClockInstant(), false, true));
 	}
 
 	/**
@@ -130,19 +130,19 @@ public class UUIDGenerator {
 	 * corresponding to timestamp are arranged in the "natural" order, that is
 	 * not compatible with the version 1. For that reason it's returned as a
 	 * version 4 UUID.
-	 * 
+	 *
 	 * Details: <br/>
 	 * - Version number: 4 <br/>
 	 * - Variant number: 1 <br/>
 	 * - Has timestamp?: YES <br/>
 	 * - Has hardware address (MAC)?: NO <br/>
 	 * - Timestamp bytes are in standard order: NO <br/>
-	 * 
+	 *
 	 * @param instant
 	 * @return
 	 */
 	public static UUID getSequentialPrivateUUID() {
-		return toUUID(getUUIDBytes(UUIDGenerator.getClockInstant(), false, false));
+		return UUIDGenerator.toUUID(UUIDGenerator.getUUIDBytes(UUIDGenerator.getClockInstant(), false, false));
 	}
 
 	/* ### PROTECTED UUID STRING GENERATORS */
@@ -166,7 +166,7 @@ public class UUIDGenerator {
 	/* ### PROTECTED ACTUAL UUID STRING GENERATORS */
 
 	protected static String getRandomUUIDString() {
-		return UUIDGenerator.formatString(UUIDGenerator.toHexadecimal(getRandomUUIDBytes()));
+		return UUIDGenerator.formatString(UUIDGenerator.toHexadecimal(UUIDGenerator.getRandomUUIDBytes()));
 	}
 
 	protected static byte[] getRandomUUIDBytes() {
@@ -183,14 +183,14 @@ public class UUIDGenerator {
 	/**
 	 * Returns a time based UUID with to options: to include or not hardware
 	 * address and to use or not the standard bytes order for timestamps.
-	 * 
+	 *
 	 * Details: <br/>
 	 * - Version number: 1 or 4<br/>
 	 * - Variant number: 1 or 4 <br/>
 	 * - Has timestamp?: YES <br/>
 	 * - Has hardware address (MAC)?: YES or NO <br/>
 	 * - Timestamp bytes are in standard order: YES or NO <br/>
-	 * 
+	 *
 	 * @param instant
 	 * @param standardTimestamp
 	 * @param realHardwareAddress
@@ -210,9 +210,9 @@ public class UUIDGenerator {
 		hardwareAddressBytes = UUIDGenerator.getHardwareAddressByts(realHardwareAddress);
 
 		uuid = UUIDGenerator.copy(UUIDGenerator.NIL_UUID);
-		uuid = UUIDGenerator.replaceField(uuid, copy(timestampBytes, 0, 4), 1);
-		uuid = UUIDGenerator.replaceField(uuid, copy(timestampBytes, 4, 6), 2);
-		uuid = UUIDGenerator.replaceField(uuid, copy(timestampBytes, 6, 8), 3);
+		uuid = UUIDGenerator.replaceField(uuid, UUIDGenerator.copy(timestampBytes, 0, 4), 1);
+		uuid = UUIDGenerator.replaceField(uuid, UUIDGenerator.copy(timestampBytes, 4, 6), 2);
+		uuid = UUIDGenerator.replaceField(uuid, UUIDGenerator.copy(timestampBytes, 6, 8), 3);
 		uuid = UUIDGenerator.replaceField(uuid, clockSequenceBytes, 4);
 		uuid = UUIDGenerator.replaceField(uuid, hardwareAddressBytes, 5);
 
@@ -220,14 +220,15 @@ public class UUIDGenerator {
 	}
 
 	protected static String getUUIDString(Instant instant, boolean standardTimestamp, boolean realHardwareAddress) {
-		return UUIDGenerator.formatString(toHexadecimal(getUUIDBytes(instant, standardTimestamp, realHardwareAddress)));
+		return UUIDGenerator.formatString(UUIDGenerator
+				.toHexadecimal(UUIDGenerator.getUUIDBytes(instant, standardTimestamp, realHardwareAddress)));
 	}
 
 	/* ### PROTECTED AUXILIARY METHODS */
 
 	/**
 	 * Get the clock instance used to get timestamps.
-	 * 
+	 *
 	 * @return
 	 */
 	protected static Instant getClockInstant() {
@@ -236,7 +237,7 @@ public class UUIDGenerator {
 
 	/**
 	 * Get the beggining of the Gregorian Calendar: 1582-10-15 00:00:00Z.
-	 * 
+	 *
 	 * @return
 	 */
 	protected static Instant getGregorianCalendarBeginning() {
@@ -246,7 +247,7 @@ public class UUIDGenerator {
 
 	/**
 	 * Get the timestamp associated with the given instant.
-	 * 
+	 *
 	 * @param instant
 	 * @return
 	 */
@@ -260,7 +261,7 @@ public class UUIDGenerator {
 
 	/**
 	 * Get the Instant associated with the given timestamp.
-	 * 
+	 *
 	 * @param timestamp
 	 * @return
 	 */
@@ -275,7 +276,7 @@ public class UUIDGenerator {
 	/**
 	 * Get a byte array that contains the timestamp that will be embedded in the
 	 * UUID.
-	 * 
+	 *
 	 * @param timestamp
 	 * @param standardTimestamp
 	 * @return
@@ -299,12 +300,12 @@ public class UUIDGenerator {
 
 		timestampBytes = part1 | part2 | part3;
 
-		return toBytes(timestampBytes);
+		return UUIDGenerator.toBytes(timestampBytes);
 	}
 
 	/**
 	 * Get the instant that is embedded in the UUID
-	 * 
+	 *
 	 * @param uuid
 	 * @return
 	 */
@@ -316,7 +317,7 @@ public class UUIDGenerator {
 		long timestamp;
 
 		byte[] timestampBytes = UUIDGenerator.toBytes(uuid.toString().replaceAll("-", ""));
-		long embededTimestamp = toNumber(copy(timestampBytes, 0, 8));
+		long embededTimestamp = UUIDGenerator.toNumber(UUIDGenerator.copy(timestampBytes, 0, 8));
 
 		long version = (embededTimestamp & 0x000000000000F000) >>> 12;
 
@@ -339,13 +340,13 @@ public class UUIDGenerator {
 
 	/**
 	 * Get a random clock sequence.
-	 * 
+	 *
 	 * The clock sequence is a random number that is generated when it is needed
 	 * for the first time.
-	 * 
+	 *
 	 * If the current timestamp is less or equal than the last timestamp, the
 	 * clock sequence is incremented by one to avoid UUID repetition.
-	 * 
+	 *
 	 * @param timestamp
 	 * @return
 	 */
@@ -357,7 +358,7 @@ public class UUIDGenerator {
 			clockSequence = UUIDGenerator.lastClockSequence;
 		} else {
 			// Generate a random clock sequence
-			clockSequence = ((getRandomNumber() & 0x0000000000003FFFL) | 0x0000000000008000L);
+			clockSequence = ((UUIDGenerator.getRandomNumber() & 0x0000000000003FFFL) | 0x0000000000008000L);
 			UUIDGenerator.lastClockSequence = clockSequence;
 		}
 
@@ -368,16 +369,16 @@ public class UUIDGenerator {
 		}
 
 		UUIDGenerator.lastTimestamp = timestamp;
-		byte[] clockSequenceBytes = toBytes(clockSequence);
+		byte[] clockSequenceBytes = UUIDGenerator.toBytes(clockSequence);
 
-		return copy(clockSequenceBytes, 6, 8);
+		return UUIDGenerator.copy(clockSequenceBytes, 6, 8);
 	}
 
 	/**
 	 * Get hardware address from host machine.
-	 * 
+	 *
 	 * It tries to get the first MAC, otherwise, returns null.
-	 * 
+	 *
 	 * @param realHardwareAddress
 	 * @return
 	 */
@@ -395,7 +396,8 @@ public class UUIDGenerator {
 			}
 		}
 
-		if (hardwareAddress != null && UUIDGenerator.isMulticastHardwareAddress(hardwareAddress)) {
+		if ((UUIDGenerator.hardwareAddress != null)
+				&& UUIDGenerator.isMulticastHardwareAddress(UUIDGenerator.hardwareAddress)) {
 			return UUIDGenerator.hardwareAddress;
 		}
 
@@ -405,7 +407,7 @@ public class UUIDGenerator {
 
 	/**
 	 * Set a hardware address as multicast.
-	 * 
+	 *
 	 * @param hardwareAddress
 	 * @return
 	 */
@@ -417,7 +419,7 @@ public class UUIDGenerator {
 
 	/**
 	 * Returns true if the hardware address is a multicast address.
-	 * 
+	 *
 	 * @param hardwareAddress
 	 * @return
 	 */
@@ -427,7 +429,7 @@ public class UUIDGenerator {
 
 	/**
 	 * Get hardware address contained in the UUID.
-	 * 
+	 *
 	 * @param uuid
 	 * @return
 	 */
@@ -446,7 +448,7 @@ public class UUIDGenerator {
 
 	/**
 	 * Get a SHA-256 hash from a given array of bytes.
-	 * 
+	 *
 	 * @param bytes
 	 * @return
 	 */
@@ -464,7 +466,7 @@ public class UUIDGenerator {
 
 	/**
 	 * Get a random array of bytes.
-	 * 
+	 *
 	 * @param length
 	 * @return
 	 */
@@ -476,16 +478,16 @@ public class UUIDGenerator {
 
 	/**
 	 * Get a random number.
-	 * 
+	 *
 	 * @return
 	 */
 	protected static long getRandomNumber() {
-		return random.nextLong();
+		return UUIDGenerator.random.nextLong();
 	}
 
 	/**
 	 * Initiate a secure random instance with SHA1PRNG algorithm.
-	 * 
+	 *
 	 * If this algorithm is not present, it uses JVM's default.
 	 */
 	protected static SecureRandom getSecureRandom() {
@@ -498,10 +500,10 @@ public class UUIDGenerator {
 
 	/**
 	 * Initializes random attribute with SHA1PRNG algorithm.
-	 * 
+	 *
 	 * If this algorithm is not available, it uses the default.
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	protected static void initRandom() {
 
@@ -509,7 +511,7 @@ public class UUIDGenerator {
 
 	/**
 	 * Format a string to UUID format.
-	 * 
+	 *
 	 * @param uuid
 	 * @return
 	 */
@@ -524,7 +526,7 @@ public class UUIDGenerator {
 
 	/**
 	 * Get a field of a given UUID.
-	 * 
+	 *
 	 * @param uuid
 	 * @param index
 	 * @return
@@ -548,7 +550,7 @@ public class UUIDGenerator {
 
 	/**
 	 * Replace a field of a given UUID.
-	 * 
+	 *
 	 * @param uuid
 	 * @param replacement
 	 * @param index
@@ -573,21 +575,21 @@ public class UUIDGenerator {
 
 	/**
 	 * Returns a java.util.UUID from a given byte array.
-	 * 
+	 *
 	 * @param bytes
 	 * @return
 	 */
 	protected static UUID toUUID(byte[] bytes) {
 
-		long mostSigBits = toNumber(copy(bytes, 0, 8));
-		long leastSigBits = toNumber(copy(bytes, 8, 16));
+		long mostSigBits = UUIDGenerator.toNumber(UUIDGenerator.copy(bytes, 0, 8));
+		long leastSigBits = UUIDGenerator.toNumber(UUIDGenerator.copy(bytes, 8, 16));
 
 		return new UUID(mostSigBits, leastSigBits);
 	}
 
 	/**
 	 * Get a number from a given hexadevimal string.
-	 * 
+	 *
 	 * @param hexadecimal
 	 * @return
 	 */
@@ -613,7 +615,7 @@ public class UUIDGenerator {
 
 	/**
 	 * Get an array of bytes from a given number.
-	 * 
+	 *
 	 * @param number
 	 * @return
 	 */
@@ -627,7 +629,7 @@ public class UUIDGenerator {
 
 	/**
 	 * Get an array of bytes from a given hexadecimal string.
-	 * 
+	 *
 	 * @param hexadecimal
 	 * @return
 	 */
@@ -643,7 +645,7 @@ public class UUIDGenerator {
 
 	/**
 	 * Get a hexadecimal string from given array of bytes.
-	 * 
+	 *
 	 * @param bytes
 	 * @return
 	 */
@@ -659,7 +661,7 @@ public class UUIDGenerator {
 
 	/**
 	 * Get a new array with a specific lenth and filled with a byte value.
-	 * 
+	 *
 	 * @param length
 	 * @param value
 	 * @return
@@ -674,7 +676,7 @@ public class UUIDGenerator {
 
 	/**
 	 * Copy an entire array.
-	 * 
+	 *
 	 * @param bytes
 	 * @return
 	 */
@@ -685,7 +687,7 @@ public class UUIDGenerator {
 
 	/**
 	 * Copy part of an array.
-	 * 
+	 *
 	 * @param bytes
 	 * @param start
 	 * @param end
@@ -703,7 +705,7 @@ public class UUIDGenerator {
 	/**
 	 * Replace part of an array of bytes with another subarray of bytes and
 	 * starting from a given index.
-	 * 
+	 *
 	 * @param bytes
 	 * @param replacement
 	 * @param index
@@ -719,7 +721,7 @@ public class UUIDGenerator {
 
 	/**
 	 * Check if two arrays of bytes are equal.
-	 * 
+	 *
 	 * @param bytes1
 	 * @param bytes2
 	 * @return
@@ -754,7 +756,7 @@ public class UUIDGenerator {
 
 		public UUIDClock(final Clock clock) {
 			this.clock = clock;
-			reset();
+			this.reset();
 		}
 
 		@Override
@@ -764,7 +766,7 @@ public class UUIDGenerator {
 
 		@Override
 		public Instant instant() {
-			return this.initialInstant.plusNanos(getSystemNanos() - this.initialNanoseconds);
+			return this.initialInstant.plusNanos(this.getSystemNanos() - this.initialNanoseconds);
 		}
 
 		@Override
@@ -778,7 +780,7 @@ public class UUIDGenerator {
 			if (currentNanoseconds > this.lastNanoseconds) {
 				this.lastNanoseconds = currentNanoseconds;
 			} else {
-				reset(); // You can't go back!
+				this.reset(); // You can't go back!
 			}
 
 			return currentNanoseconds;

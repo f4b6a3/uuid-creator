@@ -3,8 +3,6 @@ package com.github.f4b6a3.uuid;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.UUIDGenerator;
-
 import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -156,18 +154,17 @@ public class UUIDGeneratorTest extends TestCase {
 	 */
 	public void testRunningTimeAverage() {
 
-
 		long acum1 = 0;
 		long acum2 = 0;
 		long acum3 = 0;
 		long rounds = 10;
 
 		for (int j = 0; j < rounds; j++) {
-			
+
 			Instant start = null;
 			Instant end = null;
 			long max = (long) Math.pow(10, 5);
-			
+
 			start = UUIDGenerator.getClockInstant();
 			for (int i = 0; i < max; i++) {
 				UUID.randomUUID(); // example
@@ -183,7 +180,7 @@ public class UUIDGeneratorTest extends TestCase {
 			end = UUIDGenerator.getClockInstant();
 			long miliseconds2 = (end.toEpochMilli() - start.toEpochMilli());
 			acum2 = acum2 + miliseconds2;
-			
+
 			start = UUIDGenerator.getClockInstant();
 			for (int i = 0; i < max; i++) {
 				UUIDGenerator.getSequentialPrivateUUID(); // example
@@ -214,7 +211,9 @@ public class UUIDGeneratorTest extends TestCase {
 		System.out.println("- Timestamp UUID:  " + timestampUUID.toString());
 		System.out.println("- Sequential UUID: " + sequentialUUID.toString());
 		System.out.println("- Original instant:        " + instant.toString());
-		System.out.println("- Timestamp UUID instant:  " + UUIDGenerator.extractInstant(UUID.fromString(timestampUUID)));
-		System.out.println("- Sequential UUID instant: " + UUIDGenerator.extractInstant(UUID.fromString(sequentialUUID)));
+		System.out
+				.println("- Timestamp UUID instant:  " + UUIDGenerator.extractInstant(UUID.fromString(timestampUUID)));
+		System.out
+				.println("- Sequential UUID instant: " + UUIDGenerator.extractInstant(UUID.fromString(sequentialUUID)));
 	}
 }
