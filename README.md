@@ -7,11 +7,11 @@ Summary
 
 It can generate these types of UUIDs:
 
-* _Random_: the pseudo-randomly generated version;
-* _Timestamp:_ the time-based version;
-* _Timestamp Private:_ the time-based version without hardware address;
-* _Sequential:_ a modified time-based version;
-* _Sequential Private:_ a modified time-based version without hardware address;
+* __Random__: the pseudo-randomly generated version;
+* __Timestamp:__ the time-based version;
+* __Timestamp Private:__ the time-based version without hardware address;
+* __Sequential:__ a modified time-based version;
+* __Sequential Private:__ a modified time-based version without hardware address;
 
 Differences between Timestamp UUID and Sequential UUID
 ------------------------------------------------------
