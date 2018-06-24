@@ -207,7 +207,7 @@ public class UUIDGenerator {
 
 		timestampBytes = UUIDGenerator.getUUIDTimestampBytes(timestamp, standardTimestamp);
 		clockSequenceBytes = UUIDGenerator.getClockSequenceBytes(timestamp);
-		hardwareAddressBytes = UUIDGenerator.getHardwareAddressByts(realHardwareAddress);
+		hardwareAddressBytes = UUIDGenerator.getHardwareAddressBytes(realHardwareAddress);
 
 		uuid = UUIDGenerator.copy(UUIDGenerator.NIL_UUID);
 		uuid = UUIDGenerator.replaceField(uuid, UUIDGenerator.copy(timestampBytes, 0, 4), 1);
@@ -382,8 +382,19 @@ public class UUIDGenerator {
 	 * @param realHardwareAddress
 	 * @return
 	 */
-	protected static byte[] getHardwareAddressByts(boolean realHardwareAddress) {
+	protected static byte[] getHardwareAddressBytes(boolean realHardwareAddress) {
 
+		if (UUIDGenerator.hardwareAddress != null) {
+			
+			boolean isMulticastHardwareAddress = !UUIDGenerator.isMulticastHardwareAddress(UUIDGenerator.hardwareAddress);
+			
+			if(realHardwareAddress && !isMulticastHardwareAddress) {
+				return UUIDGenerator.hardwareAddress;
+			} else if(!realHardwareAddress && isMulticastHardwareAddress) {
+				return UUIDGenerator.hardwareAddress;
+			}
+		}
+		
 		if (realHardwareAddress) {
 			try {
 				NetworkInterface nic = NetworkInterface.getNetworkInterfaces().nextElement();
@@ -394,11 +405,6 @@ public class UUIDGenerator {
 			} catch (SocketException | NullPointerException e) {
 				// If exception occurs, return a random hardware address.
 			}
-		}
-
-		if ((UUIDGenerator.hardwareAddress != null)
-				&& UUIDGenerator.isMulticastHardwareAddress(UUIDGenerator.hardwareAddress)) {
-			return UUIDGenerator.hardwareAddress;
 		}
 
 		UUIDGenerator.hardwareAddress = UUIDGenerator.setMulticastHardwareAddress(UUIDGenerator.getRandomBytes(6));
