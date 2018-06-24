@@ -63,8 +63,8 @@ A simple time measurement was done to test how long each methods take to generat
 
 * java.util.UUID.randomUUID(): 47 ms
 * UUIDGenerator.getRandomUUID(): 34 ms
-* UUIDGenerator.getTimestampPrivateUUID(): 15 ms
-* UUIDGenerator.getSequentialPrivateUUID(): 15 ms
+* UUIDGenerator.getTimestampPrivateUUID(): 25 ms
+* UUIDGenerator.getSequentialPrivateUUID(): 25 ms
 
 The method getRandomUUID() uses SecureRandom (java.security.SecureRandom).
 
