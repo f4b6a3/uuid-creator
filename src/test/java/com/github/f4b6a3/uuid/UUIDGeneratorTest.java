@@ -137,6 +137,13 @@ public class UUIDGeneratorTest extends TestCase {
 
 		start = UUIDGenerator.getClockInstant();
 		for (int i = 0; i < max; i++) {
+			UUIDGenerator.getTimestampPrivateUUID(); // example
+		}
+		end = UUIDGenerator.getClockInstant();
+		long miliseconds3 = (end.toEpochMilli() - start.toEpochMilli());
+		
+		start = UUIDGenerator.getClockInstant();
+		for (int i = 0; i < max; i++) {
 			UUIDGenerator.getSequentialPrivateUUID(); // example
 		}
 		end = UUIDGenerator.getClockInstant();
@@ -146,6 +153,7 @@ public class UUIDGeneratorTest extends TestCase {
 		System.out.println("Running times for 100,000 UUIDs generated:");
 		System.out.println("- java.util.UUID.randomUUID():              " + miliseconds1 + " ms");
 		System.out.println("- UUIDGenerator.getRandomUUID():            " + miliseconds2 + " ms");
+		System.out.println("- UUIDGenerator.getTimestampPrivateUUID():  " + miliseconds3 + " ms");
 		System.out.println("- UUIDGenerator.getSequentialPrivateUUID(): " + miliseconds4 + " ms");
 	}
 
@@ -157,6 +165,7 @@ public class UUIDGeneratorTest extends TestCase {
 		long acum1 = 0;
 		long acum2 = 0;
 		long acum3 = 0;
+		long acum4 = 0;
 		long rounds = 10;
 
 		for (int j = 0; j < rounds; j++) {
@@ -183,18 +192,27 @@ public class UUIDGeneratorTest extends TestCase {
 
 			start = UUIDGenerator.getClockInstant();
 			for (int i = 0; i < max; i++) {
-				UUIDGenerator.getSequentialPrivateUUID(); // example
+				UUIDGenerator.getTimestampPrivateUUID(); // example
 			}
 			end = UUIDGenerator.getClockInstant();
 			long miliseconds3 = (end.toEpochMilli() - start.toEpochMilli());
 			acum3 = acum3 + miliseconds3;
+			
+			start = UUIDGenerator.getClockInstant();
+			for (int i = 0; i < max; i++) {
+				UUIDGenerator.getSequentialPrivateUUID(); // example
+			}
+			end = UUIDGenerator.getClockInstant();
+			long miliseconds4 = (end.toEpochMilli() - start.toEpochMilli());
+			acum4 = acum4 + miliseconds4;
 		}
 
 		System.out.println();
 		System.out.println("Average running times for 100,000 UUIDs generated:");
 		System.out.println("- java.util.UUID.randomUUID():              " + (acum1 / rounds) + " ms");
 		System.out.println("- UUIDGenerator.getRandomUUID():            " + (acum2 / rounds) + " ms");
-		System.out.println("- UUIDGenerator.getSequentialPrivateUUID(): " + (acum3 / rounds) + " ms");
+		System.out.println("- UUIDGenerator.getTimestampPrivateUUID():  " + (acum3 / rounds) + " ms");
+		System.out.println("- UUIDGenerator.getSequentialPrivateUUID(): " + (acum4 / rounds) + " ms");
 	}
 
 	/**
@@ -215,5 +233,67 @@ public class UUIDGeneratorTest extends TestCase {
 				.println("- Timestamp UUID instant:  " + UUIDGenerator.extractInstant(UUID.fromString(timestampUUID)));
 		System.out
 				.println("- Sequential UUID instant: " + UUIDGenerator.extractInstant(UUID.fromString(sequentialUUID)));
+	}
+	
+	
+	public void testRaceCondition() {
+		
+		int threadCount = (int) Math.pow(10, 2);
+		int threadLoopLimit = (int) Math.pow(10, 2);
+		Instant instant = UUIDGenerator.getClockInstant();
+		String[][] uuidArray = new String[threadCount][threadLoopLimit]; 
+		
+		for (int i = 0; i < threadCount; i++) {
+			Thread thread = new Thread(new RaceConditionRunnable(i, instant, threadCount, threadLoopLimit, uuidArray));
+			thread.start();
+		}
+	}
+	
+	private class RaceConditionException extends RuntimeException {
+		private static final long serialVersionUID = 7832373879543765269L;
+	}
+	
+	private class RaceConditionRunnable implements Runnable {
+		
+		private int id;
+		private Instant instant;
+		private int threadCount;
+		private int threadLoopLimit;
+		private String[][] uuidArray;
+		
+		private String uuid;
+		
+		public RaceConditionRunnable(int id, Instant instant, int threadCount, int threadLoopLimit, String[][] uuidArray) {
+			this.id = id;
+			this.instant = instant;
+			this.threadCount = threadCount;
+			this.threadLoopLimit = threadLoopLimit;
+			this.uuidArray = uuidArray;
+					
+		}
+		
+		private boolean contains(String uuid) {
+			for (int i = 0; i < threadCount ; i ++) {
+				for (int j = 0; j < threadLoopLimit; j++) {
+					if (this.uuidArray[i][j] != null && this.uuidArray[i][j].equals(uuid)) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		
+		@Override
+		public void run() {
+			
+			for (int i = 0; i < threadLoopLimit; i++) {
+				uuid = UUIDGenerator.getSequentialPrivateUUIDString(instant);
+				if(!contains(uuid)) {
+					uuidArray[id][i] = uuid;
+				} else {
+					throw new RaceConditionException();
+				}
+			}
+		}
 	}
 }
