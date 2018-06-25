@@ -5,7 +5,9 @@ UUID Generator
 Summary
 ------------------------------------------------------
 
-It can generate these types of UUIDs:
+UUIDGenerator is a single class that can generate UUIDs (Universally Unique Identifiers), also known as GUIDs (Globally Unique Identifiers).
+
+These types of UUIDs can be generated:
 
 * __Random__: the pseudo-randomly generated version;
 * __Timestamp:__ the time-based version;
@@ -14,6 +16,8 @@ It can generate these types of UUIDs:
 * __Sequential Private:__ a modified time-based version without hardware address;
 * __Name-based:__ a base-named version that uses MD5;
 * __Name-based SHA1:__ a base-named version that uses SHA-1.
+
+The sequential UUID is a different implementation of the standard time-based UUIDs.
 
 Differences between Timestamp UUID and Sequential UUID
 ------------------------------------------------------
