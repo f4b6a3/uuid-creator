@@ -38,9 +38,8 @@ public class UUIDGeneratorTest extends TestCase {
 
 	public void testGetClockSequence() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			boolean incrementClockSequence = ((i % 2) == 0);
-			long clockSequence = UUIDGenerator.getClockSequence(incrementClockSequence);
-			byte[] clockSequenceBytes = UUIDGenerator.copy(UUIDGenerator.copy(UUIDGenerator.toBytes(clockSequence)), 6, 8);
+			long timestamp = (i % 2);
+			byte[] clockSequenceBytes = UUIDGenerator.getClockSequenceBytes(timestamp);
 			String clockSequenceString = UUIDGenerator.toHexadecimal(clockSequenceBytes);
 			
 			boolean isValidClockSequence = clockSequenceString.matches(UUIDGeneratorTest.ClOCK_SEQUENCE_PATTERN);
@@ -326,10 +325,8 @@ public class UUIDGeneratorTest extends TestCase {
 		System.out.println("- TimeBased UUID:  " + TimeBasedUUID.toString());
 		System.out.println("- Sequential UUID: " + sequentialUUID.toString());
 		System.out.println("- Original instant:        " + instant.toString());
-		System.out
-				.println("- TimeBased UUID instant:  " + UUIDGenerator.extractInstant(UUID.fromString(TimeBasedUUID)));
-		System.out
-				.println("- Sequential UUID instant: " + UUIDGenerator.extractInstant(UUID.fromString(sequentialUUID)));
+		System.out.println("- TimeBased UUID instant:  " + UUIDGenerator.extractInstant(UUID.fromString(TimeBasedUUID)));
+		System.out.println("- Sequential UUID instant: " + UUIDGenerator.extractInstant(UUID.fromString(sequentialUUID)));
 	}
 	
 	/**
