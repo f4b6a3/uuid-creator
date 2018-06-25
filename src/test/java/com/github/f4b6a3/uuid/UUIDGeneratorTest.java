@@ -17,7 +17,6 @@ public class UUIDGeneratorTest extends TestCase {
 	
 	private static final String ClOCK_SEQUENCE_PATTERN = "^[89ab][0-9a-fA-F]{3}$";
 	
-	// Ivalid: bc9715e0-77fd-11e8-De8a-3dd3a89571d7
 	private static final String UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
 
 	/**
@@ -190,18 +189,21 @@ public class UUIDGeneratorTest extends TestCase {
 	}
 	
 	/**
-	 * Test if a name-based UUID version 3 is correct.
+	 * Test if a name-based UUID version 3 with name space is correct.
 	 */
 	public void testGetNameBasedUUIDVersion3() {
 		
-		byte[] bytes = null;
-		String name = null;
+		UUID namespace = UUIDGenerator.NAMESPACE_DNS;
+		String value = null;
 		UUID uuid = null;
 		
-		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			name = UUIDGenerator.toHexadecimal(UUIDGenerator.getRandomBytes(32));
-			bytes = name.getBytes();
-			uuid = UUIDGenerator.getNameBasedUUID(name);
+		for (int i = 0; i < 10; i++) {
+			value = UUIDGenerator.getRandomUUIDString();
+			uuid = UUIDGenerator.getNameBasedUUID(namespace, value);
+			
+			byte[] namespaceBytes = UUIDGenerator.toBytes(namespace.toString().replaceAll("[^0-9a-fA-F]", ""));
+			byte[] valueBytes = value.getBytes();
+			byte[] bytes = UUIDGenerator.concat(namespaceBytes, valueBytes);
 			
 			assertEquals(UUID.nameUUIDFromBytes(bytes).toString(), uuid.toString());
 		}

@@ -48,7 +48,13 @@ public class UUIDGenerator {
 	private static final long NANOSECONDS_DIVISOR = (long) Math.pow(10, 2);
 
 	// UUID in this format: 00000000-0000-0000-0000-000000000000
-	private static final byte[] NIL_UUID = UUIDGenerator.array(16, (byte) 0x00);
+	private static final byte[] UUID_NIL = UUIDGenerator.array(16, (byte) 0x00);
+	
+	// UUID for name spaces defined in RFC-4122
+	public static final UUID NAMESPACE_DNS = UUID.fromString("6ba7b810-9dad-11d1-80b4-00c04fd430c8");
+	public static final UUID NAMESPACE_URL = UUID.fromString("6ba7b811-9dad-11d1-80b4-00c04fd430c8");
+	public static final UUID NAMESPACE_ISO_OID = UUID.fromString("6ba7b812-9dad-11d1-80b4-00c04fd430c8");
+	public static final UUID NAMESPACE_X500 = UUID.fromString("6ba7b814-9dad-11d1-80b4-00c04fd430c8");
 	
 	/* ### PUBLIC UUID GENERATORS */
 
@@ -62,7 +68,6 @@ public class UUIDGenerator {
 	 * - Has hardware address (MAC)?: NO <br/>
 	 * - Timestamp bytes are in standard order: NO <br/>
 	 *
-	 * @param instant
 	 * @return
 	 */
 	public static UUID getRandomUUID() {
@@ -95,7 +100,6 @@ public class UUIDGenerator {
 	 * - Has hardware address (MAC)?: NO <br/>
 	 * - Timestamp bytes are in standard order: YES <br/>
 	 *
-	 * @param instant
 	 * @return
 	 */
 	public static UUID getTimestampPrivateUUID() {
@@ -115,7 +119,6 @@ public class UUIDGenerator {
 	 * - Has hardware address (MAC)?: YES <br/>
 	 * - Timestamp bytes are in standard order: NO <br/>
 	 *
-	 * @param instant
 	 * @return
 	 */
 	public static UUID getSequentialUUID() {
@@ -143,37 +146,74 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Returns a UUID with based on a name, using MD5.
+	 * Returns a UUID with based on a name, using MD5, but without a name space.
 	 *
+	 * It uses the NIL UUID as name space internally.
+	 * 
 	 * Details: <br/>
-	 * - Version number: 5 <br/>
+	 * - Version number: 3 <br/>
 	 * - Variant number: 1 <br/>
-	 * - Has timestamp?: NO <br/>
-	 * - Has hardware address (MAC)?: NO <br/>
-	 * - Timestamp bytes are in standard order: NO <br/>
+	 * - Hash Algorithm: MD5 <br/>
+	 * - Name Space: NIL UUID (default) <br/>
 	 *
-	 * @param instant
+	 * @param name
+	 * @return
 	 * @return
 	 */
 	public static UUID getNameBasedUUID(String name) {
-		return UUIDGenerator.getNameBasedUUID(name, false);
+		return UUIDGenerator.getNameBasedUUID(null, name, false);
 	}
-
+	
 	/**
-	 * Returns a UUID with based on a name, using SHA1.
+	 * Returns a UUID with based on a name space and a name, using MD5.
 	 *
 	 * Details: <br/>
 	 * - Version number: 3 <br/>
 	 * - Variant number: 1 <br/>
-	 * - Has timestamp?: NO <br/>
-	 * - Has hardware address (MAC)?: NO <br/>
-	 * - Timestamp bytes are in standard order: NO <br/>
+	 * - Hash Algorithm: MD5 <br/>
+	 * - Name Space: informed by user <br/>
 	 *
-	 * @param instant
+	 * @param namespace
+	 * @param name
+	 * @return
+	 */
+	public static UUID getNameBasedUUID(UUID namespace, String name) {
+		return UUIDGenerator.getNameBasedUUID(namespace, name, false);
+	}
+
+	/**
+	 * Returns a UUID with based on a name, using SHA1, but without a name space.
+	 *
+	 * It uses the NIL UUID as name space internally.
+	 *
+	 * Details: <br/>
+	 * - Version number: 5 <br/>
+	 * - Variant number: 1 <br/>
+	 * - Hash Algorithm: SHA1 <br/>
+	 * - Name Space: NIL UUID (default) <br/>
+	 *
+	 * @param name
 	 * @return
 	 */
 	public static UUID getNameBasedSHA1UUID(String name) {
-		return UUIDGenerator.getNameBasedUUID(name, true);
+		return UUIDGenerator.getNameBasedUUID(null, name, true);
+	}
+	
+	/**
+	 * Returns a UUID with based on a name space and a name, using SHA1.
+	 *
+	 * Details: <br/>
+	 * - Version number: 5 <br/>
+	 * - Variant number: 1 <br/>
+	 * - Hash Algorithm: MD5 <br/>
+	 * - Name Space: informed by user <br/>
+	 *
+	 * @param namespace
+	 * @param name
+	 * @return
+	 */
+	public static UUID getNameBasedSHA1UUID(UUID namespace, String name) {
+		return UUIDGenerator.getNameBasedUUID(null, name, true);
 	}
 	
 	protected static String getTimestampUUIDString(Instant instant) {
@@ -196,14 +236,22 @@ public class UUIDGenerator {
 		return UUIDGenerator.formatString(UUIDGenerator.toHexadecimal(UUIDGenerator.getRandomUUIDBytes()));
 	}
 	
-	public static String getNameBasedUUIDString(String name) {
-		return UUIDGenerator.getNameBasedUUID(name, false).toString();
+	protected static String getNameBasedUUIDString(String name) {
+		return UUIDGenerator.getNameBasedUUID(null, name, false).toString();
 	}
 	
-	public static String getNameBasedSHA1UUIDString(String name) {
-		return UUIDGenerator.getNameBasedUUID(name, true).toString();
+	protected static String getNameBasedSHA1UUIDString(String name) {
+		return UUIDGenerator.getNameBasedUUID(null, name, true).toString();
 	}
 
+	protected static String getNameBasedUUIDString(UUID namespace, String name) {
+		return UUIDGenerator.getNameBasedUUID(namespace, name, false).toString();
+	}
+	
+	protected static String getNameBasedSHA1UUIDString(UUID namespace, String name) {
+		return UUIDGenerator.getNameBasedUUID(namespace, name, true).toString();
+	}
+	
 	protected static byte[] getRandomUUIDBytes() {
 
 		byte[] uuid = UUIDGenerator.getRandomBytes(16);
@@ -258,7 +306,7 @@ public class UUIDGenerator {
 			hardwareAddressBytes = getRandomHardwareAddress();
 		}
 		
-		uuid = UUIDGenerator.copy(UUIDGenerator.NIL_UUID);
+		uuid = UUIDGenerator.copy(UUIDGenerator.UUID_NIL);
 		uuid = UUIDGenerator.replaceField(uuid, UUIDGenerator.copy(timestampBytes, 0, 4), 1);
 		uuid = UUIDGenerator.replaceField(uuid, UUIDGenerator.copy(timestampBytes, 4, 6), 2);
 		uuid = UUIDGenerator.replaceField(uuid, UUIDGenerator.copy(timestampBytes, 6, 8), 3);
@@ -273,8 +321,34 @@ public class UUIDGenerator {
 		return UUIDGenerator.formatString(UUIDGenerator
 				.toHexadecimal(UUIDGenerator.getUUIDBytes(instant, standardTimestamp, realHardwareAddress)));
 	}
+
+	/**
+	 * Get a name-based UUID using name space, a name and a specific hash algorithm.
+	 * 
+	 * @param namespace
+	 * @param name
+	 * @param useSHA1
+	 * @return
+	 */
+	protected static UUID getNameBasedUUID(final UUID namespace, final String name, boolean useSHA1) {
+		
+		byte[] namespaceBytes = null;
+		byte[] nameBytes = null;
+		byte[] bytes = null;
+		
+		if(namespace != null) {
+			namespaceBytes = UUIDGenerator.toBytes(namespace.toString().replaceAll("[^0-9a-fA-F]", ""));
+		} else {
+			namespaceBytes = UUID_NIL;
+		}
+		
+		nameBytes = name.getBytes();
+		bytes = UUIDGenerator.concat(namespaceBytes, nameBytes);
+		
+		return UUIDGenerator.getNameBasedUUID(bytes, useSHA1);
+	}
 	
-	protected static UUID getNameBasedUUID(String name, boolean useSHA1) {
+	private static UUID getNameBasedUUID(byte[] bytes, boolean useSHA1) {
 		byte[] uuid = null;
         MessageDigest md;
         try {
@@ -286,7 +360,7 @@ public class UUIDGenerator {
         } catch (NoSuchAlgorithmException e) {
             throw new InternalError("Message digest algorithm not supported.", e);
         }
-        byte[] bytes = name.getBytes();
+        
         byte[] hash = md.digest(bytes);
         
 		if(useSHA1) {
