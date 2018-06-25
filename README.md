@@ -12,6 +12,8 @@ It can generate these types of UUIDs:
 * __Timestamp Private:__ the time-based version without hardware address;
 * __Sequential:__ a modified time-based version;
 * __Sequential Private:__ a modified time-based version without hardware address;
+* __Name-based:__ a base-named version that uses MD5;
+* __Name-based SHA1:__ a base-named version that uses SHA-1.
 
 Differences between Timestamp UUID and Sequential UUID
 ------------------------------------------------------

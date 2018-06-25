@@ -43,16 +43,13 @@ public class UUIDGenerator {
 	private static long lastTimestamp = 0;
 	private static long lastClockSequence = 0;
 	
-	// Used to generate a SHA-256 hash
-	private static MessageDigest messageDigest = null;
-
 	// Constants used to avoid long data type overflow
 	private static final long SECONDS_MULTIPLYER = (long) Math.pow(10, 7);
 	private static final long NANOSECONDS_DIVISOR = (long) Math.pow(10, 2);
 
 	// UUID in this format: 00000000-0000-0000-0000-000000000000
 	private static final byte[] NIL_UUID = UUIDGenerator.array(16, (byte) 0x00);
-
+	
 	/* ### PUBLIC UUID GENERATORS */
 
 	/**
@@ -145,8 +142,40 @@ public class UUIDGenerator {
 		return UUIDGenerator.toUUID(UUIDGenerator.getUUIDBytes(UUIDGenerator.getClockInstant(), false, false));
 	}
 
-	/* ### PROTECTED UUID STRING GENERATORS */
+	/**
+	 * Returns a UUID with based on a name, using MD5.
+	 *
+	 * Details: <br/>
+	 * - Version number: 5 <br/>
+	 * - Variant number: 1 <br/>
+	 * - Has timestamp?: NO <br/>
+	 * - Has hardware address (MAC)?: NO <br/>
+	 * - Timestamp bytes are in standard order: NO <br/>
+	 *
+	 * @param instant
+	 * @return
+	 */
+	public static UUID getNameBasedUUID(String name) {
+		return UUIDGenerator.getNameBasedUUID(name, false);
+	}
 
+	/**
+	 * Returns a UUID with based on a name, using SHA1.
+	 *
+	 * Details: <br/>
+	 * - Version number: 3 <br/>
+	 * - Variant number: 1 <br/>
+	 * - Has timestamp?: NO <br/>
+	 * - Has hardware address (MAC)?: NO <br/>
+	 * - Timestamp bytes are in standard order: NO <br/>
+	 *
+	 * @param instant
+	 * @return
+	 */
+	public static UUID getNameBasedSHA1UUID(String name) {
+		return UUIDGenerator.getNameBasedUUID(name, true);
+	}
+	
 	protected static String getTimestampUUIDString(Instant instant) {
 		return UUIDGenerator.getUUIDString(instant, true, true);
 	}
@@ -163,19 +192,22 @@ public class UUIDGenerator {
 		return UUIDGenerator.getUUIDString(instant, false, false);
 	}
 
-	/* ### PROTECTED ACTUAL UUID STRING GENERATORS */
-
 	protected static String getRandomUUIDString() {
 		return UUIDGenerator.formatString(UUIDGenerator.toHexadecimal(UUIDGenerator.getRandomUUIDBytes()));
+	}
+	
+	public static String getNameBasedUUIDString(String name) {
+		return UUIDGenerator.getNameBasedUUID(name, false).toString();
+	}
+	
+	public static String getNameBasedSHA1UUIDString(String name) {
+		return UUIDGenerator.getNameBasedUUID(name, true).toString();
 	}
 
 	protected static byte[] getRandomUUIDBytes() {
 
 		byte[] uuid = UUIDGenerator.getRandomBytes(16);
-
-		uuid[6] = (byte) ((uuid[6] & 0x0f) | 0x40); // version 4
-		uuid[8] = (byte) ((uuid[8] & 0x3f) | 0x80); // variant 1
-
+		uuid = setUUIDVersion(uuid, 4);
 		return uuid;
 
 	}
@@ -209,23 +241,22 @@ public class UUIDGenerator {
 		if(UUIDGenerator.lastTimestamp == 0) {
 			UUIDGenerator.lastTimestamp = UUIDGenerator.getGregorianCalendarTimestamp(instant);
 		}
-		
-		if(UUIDGenerator.lastClockSequence == 0) {
-			UUIDGenerator.lastClockSequence = getClockSequence();
-		}
 
 		timestamp = UUIDGenerator.getGregorianCalendarTimestamp(instant);
+		timestampBytes = UUIDGenerator.getUUIDTimestampBytes(timestamp, standardTimestamp);
 		
-		if (timestamp > UUIDGenerator.lastTimestamp) {
-			clockSequence = UUIDGenerator.lastClockSequence;
+		boolean hasTimestampChanged = (timestamp > UUIDGenerator.lastTimestamp);
+		boolean incrementClockSequence = !hasTimestampChanged; 
+		UUIDGenerator.lastTimestamp = timestamp;
+		
+		clockSequence = getClockSequence(incrementClockSequence);
+		clockSequenceBytes = UUIDGenerator.copy(UUIDGenerator.copy(UUIDGenerator.toBytes(clockSequence)), 6, 8);
+		
+		if (hasTimestampChanged) {
 			hardwareAddressBytes = getHardwareAddress(realHardwareAddress);
 		} else {
-			clockSequence = (((++UUIDGenerator.lastClockSequence) & 0x0000000000003FFFL) | 0x0000000000008000L);
 			hardwareAddressBytes = getRandomHardwareAddress();
 		}
-		
-		clockSequenceBytes = UUIDGenerator.copy(UUIDGenerator.copy(UUIDGenerator.toBytes(clockSequence)), 6, 8);
-		timestampBytes = UUIDGenerator.getUUIDTimestampBytes(timestamp, standardTimestamp);
 		
 		uuid = UUIDGenerator.copy(UUIDGenerator.NIL_UUID);
 		uuid = UUIDGenerator.replaceField(uuid, UUIDGenerator.copy(timestampBytes, 0, 4), 1);
@@ -234,8 +265,6 @@ public class UUIDGenerator {
 		uuid = UUIDGenerator.replaceField(uuid, clockSequenceBytes, 4);
 		
 		uuid = UUIDGenerator.replaceField(uuid, hardwareAddressBytes, 5);
-
-		UUIDGenerator.lastTimestamp = timestamp;
 		
 		return uuid;
 	}
@@ -245,8 +274,29 @@ public class UUIDGenerator {
 				.toHexadecimal(UUIDGenerator.getUUIDBytes(instant, standardTimestamp, realHardwareAddress)));
 	}
 	
-	/* ### PROTECTED AUXILIARY METHODS */
-
+	protected static UUID getNameBasedUUID(String name, boolean useSHA1) {
+		byte[] uuid = null;
+        MessageDigest md;
+        try {
+        	if(useSHA1) {
+        		md = MessageDigest.getInstance("SHA1");
+        	} else {
+        		md = MessageDigest.getInstance("MD5");
+        	}
+        } catch (NoSuchAlgorithmException e) {
+            throw new InternalError("Message digest algorithm not supported.", e);
+        }
+        byte[] bytes = name.getBytes();
+        byte[] hash = md.digest(bytes);
+        
+		if(useSHA1) {
+			uuid = setUUIDVersion(hash, 5);
+		} else {
+			uuid = setUUIDVersion(hash, 3);
+		}
+		return toUUID(uuid);
+	}
+	
 	/**
 	 * Get the clock instance used to get timestamps.
 	 *
@@ -325,7 +375,7 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Get the instant that is embedded in the UUID
+	 * Get the instant that is embedded in the UUID.
 	 *
 	 * @param uuid
 	 * @return
@@ -360,15 +410,27 @@ public class UUIDGenerator {
 	}
 	
 	/**
-	 * Get a clock sequence.
+	 * Get the clock sequence.
 	 * 
 	 * @return
 	 */
-	protected static long getClockSequence() {
-		if(UUIDGenerator.lastClockSequence == 0) {
-			UUIDGenerator.lastClockSequence = ((UUIDGenerator.getRandomNumber() & 0x0000000000003FFFL) | 0x0000000000008000L);
+	protected static long getClockSequence(boolean increment) {
+		
+		long clockSequence = 0;
+		
+		if(!increment && UUIDGenerator.lastClockSequence != 0) {
+			return UUIDGenerator.lastClockSequence;
 		}
-
+		
+		if(increment) {
+			clockSequence = UUIDGenerator.lastClockSequence + 1;
+		} else {
+			clockSequence = UUIDGenerator.getRandomNumber();
+		}
+		
+		clockSequence &= 0x0000000000003FFFL;
+		clockSequence |= 0x0000000000008000L;
+		UUIDGenerator.lastClockSequence = clockSequence;
 		return UUIDGenerator.lastClockSequence;
 	}
 	
@@ -385,11 +447,11 @@ public class UUIDGenerator {
 
 		if (UUIDGenerator.lastHardwareAddress != null) {
 			
-			boolean isMulticastHardwareAddress = UUIDGenerator.isMulticastHardwareAddress(UUIDGenerator.lastHardwareAddress);
+			boolean isMulticast = UUIDGenerator.isMulticastHardwareAddress(UUIDGenerator.lastHardwareAddress);
 			
-			if(realHardwareAddress && !isMulticastHardwareAddress) {
+			if(realHardwareAddress && !isMulticast) {
 				return UUIDGenerator.lastHardwareAddress;
-			} else if(!realHardwareAddress && isMulticastHardwareAddress) {
+			} else if(!realHardwareAddress && isMulticast) {
 				return UUIDGenerator.lastHardwareAddress;
 			}
 		}
@@ -411,6 +473,7 @@ public class UUIDGenerator {
 	 * @return
 	 */
 	protected static byte[] getRealHardwareAddress() {
+		
 		try {
 			NetworkInterface nic = NetworkInterface.getNetworkInterfaces().nextElement();
 			byte[] realHardwareAddress = nic.getHardwareAddress();
@@ -422,6 +485,10 @@ public class UUIDGenerator {
 			// If exception occurs, return a random hardware address.
 		}
 		
+		if (UUIDGenerator.lastHardwareAddress != null) {
+			return UUIDGenerator.lastHardwareAddress;
+		}
+		
 		return getRandomHardwareAddress();
 	}
 	
@@ -431,7 +498,8 @@ public class UUIDGenerator {
 	 * @return
 	 */
 	protected static byte[] getRandomHardwareAddress() {
-		UUIDGenerator.lastHardwareAddress = UUIDGenerator.setMulticastHardwareAddress(UUIDGenerator.getRandomBytes(6));
+		byte[] ramdomHardwareAddress = UUIDGenerator.getRandomBytes(6);
+		UUIDGenerator.lastHardwareAddress = UUIDGenerator.setMulticastHardwareAddress(ramdomHardwareAddress);
 		return UUIDGenerator.lastHardwareAddress;
 	}
 	
@@ -477,24 +545,6 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Get a SHA-256 hash from a given array of bytes.
-	 *
-	 * @param bytes
-	 * @return
-	 */
-	protected static byte[] getHash(byte[] bytes) {
-
-		if (UUIDGenerator.messageDigest == null) {
-			try {
-				UUIDGenerator.messageDigest = MessageDigest.getInstance("SHA-256");
-			} catch (NoSuchAlgorithmException e) {
-				return null;
-			}
-		}
-		return UUIDGenerator.messageDigest.digest(bytes);
-	}
-
-	/**
 	 * Get a random array of bytes.
 	 *
 	 * @param length
@@ -529,17 +579,6 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Initializes random attribute with SHA1PRNG algorithm.
-	 *
-	 * If this algorithm is not available, it uses the default.
-	 *
-	 *
-	 */
-	protected static void initRandom() {
-
-	}
-
-	/**
 	 * Format a string to UUID format.
 	 *
 	 * @param uuid
@@ -554,6 +593,36 @@ public class UUIDGenerator {
 		return buffer.toString();
 	}
 
+	/**
+	 * Set uuid version.
+	 * 
+	 * @param uuid
+	 * @param type
+	 * @return
+	 */
+	protected static byte[] setUUIDVersion(final byte[] uuid, long type) {
+		
+		byte[] bytes = copy(uuid);
+		
+		if(type == 1) {
+			bytes[6] = (byte) ((bytes[6] & 0x0f) | 0x10); // version 1
+		} else if (type == 2) {
+			bytes[6] = (byte) ((bytes[6] & 0x0f) | 0x20); // version 2
+		} else if (type == 3) {
+			bytes[6] = (byte) ((bytes[6] & 0x0f) | 0x30); // version 3
+		} else if (type == 4) {
+			bytes[6] = (byte) ((bytes[6] & 0x0f) | 0x40); // version 4
+		} else if (type == 5) {
+			bytes[6] = (byte) ((bytes[6] & 0x0f) | 0x50); // version 5
+		} else {
+			throw new RuntimeException("No such UUID type.");
+		}
+		
+		bytes[8] = (byte) ((bytes[8] & 0x3f) | 0x80); // variant 1		
+		
+		return bytes;
+	}
+	
 	/**
 	 * Get a field of a given UUID.
 	 *
@@ -710,7 +779,7 @@ public class UUIDGenerator {
 	 * @param bytes
 	 * @return
 	 */
-	protected static byte[] copy(byte[] bytes) {
+	protected static byte[] copy(final byte[] bytes) {
 		byte[] result = UUIDGenerator.copy(bytes, 0, bytes.length);
 		return result;
 	}
@@ -731,7 +800,20 @@ public class UUIDGenerator {
 		}
 		return result;
 	}
+	
+	protected static byte[] concat(byte[] bytes1, byte[] bytes2) {
+		
+		int length = bytes1.length + bytes2.length;
+		byte[] result = new byte[length];
 
+		for (int i = 0; i < bytes1.length; i++) {
+			result[i] = bytes1[i];
+		}
+		for (int j = 0; j < bytes2.length; j++) {
+			result[bytes1.length + j] = bytes2[j];
+		}
+		return result;
+	}
 	/**
 	 * Replace part of an array of bytes with another subarray of bytes and
 	 * starting from a given index.
