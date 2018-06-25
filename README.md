@@ -5,7 +5,7 @@ UUID Generator
 Summary
 ------------------------------------------------------
 
-UUIDGenerator is a single class that can generate UUIDs (Universally Unique Identifiers), also known as GUIDs (Globally Unique Identifiers).
+UUID Generator is a single class that can generate UUIDs (Universally Unique Identifiers), also known as GUIDs (Globally Unique Identifiers). It provides methods for RFC-4122 versions 1, 3, 4, 5. It also provides methods for a custom sequential version, retrievd as a RFC-4122 version 4.
 
 These types of UUIDs can be generated:
 
