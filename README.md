@@ -22,7 +22,7 @@ The sequential UUID is a different implementation of the standard time-based UUI
 How to Use
 ------------------------------------------------------
 
-#### Version 0: Sequential UUID
+### Version 0: Sequential UUID
 
 The Sequential UUID is a modified time-based UUID. The bytes of timestamp part are arrenged in the 'natural' order. The version number 0 (zero) was chosen to identify Sequential UUIDs. It may be considered as a non-standard 'extension' of the RFC-4122.
 
@@ -34,7 +34,7 @@ System.out.println(uuid.toString());
 // Output: 1e879099-a413-0e81-9888-737f8d128eed
 ```
 
-#### Version 1: Time-based UUID
+### Version 1: Time-based UUID
 
 The Time-based UUID embeds a timestamp and may embed a hardware address.
 
@@ -45,7 +45,7 @@ UUID uuid = UUIDGenerator.getTimeBasedUUID();
 System.out.println(uuid.toString());
 // Output: 8caea7c7-7909-11e8-a919-4b43423cffc9
 ```
-#### Version 2: DCE Security
+### Version 2: DCE Security
 
 The DCE Security version 2 is out of scope.
 
@@ -63,7 +63,7 @@ System.out.println(uuid.toString());
 // Output: 295df05a-2c43-337c-b6b8-4b84826e4a94
 ```
 
-#### Version 4: Random UUID
+### Version 4: Random UUID
 
 The Random UUID is a simple random array of 16 bytes.
 
@@ -75,7 +75,7 @@ System.out.println(uuid.toString());
 // Output: f390cc68-6004-417b-81df-4514e4a7323b
 ```
 
-#### Version 5: Name-based UUID hashed with SHA-1
+### Version 5: Name-based UUID hashed with SHA-1
 
 The Name-based UUID version 5 is a SHA-1 hash of a name space and a name. 
 
