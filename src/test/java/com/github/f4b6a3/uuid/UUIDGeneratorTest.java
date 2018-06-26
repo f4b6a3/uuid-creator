@@ -17,7 +17,7 @@ public class UUIDGeneratorTest extends TestCase {
 	
 	private static final String ClOCK_SEQUENCE_PATTERN = "^[89ab][0-9a-fA-F]{3}$";
 	
-	private static final String UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
+	private static final String UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
 
 	private static final boolean TIMEBASED_UUID = true;
 	private static final boolean SEQUENTIAL_UUID = false;
@@ -56,9 +56,6 @@ public class UUIDGeneratorTest extends TestCase {
 	public void testGetRandomUUIDStringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			String uuid = UUIDGenerator.getRandomUUID().toString();
-			if(!uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN)) {
-				System.out.println(uuid.toString());
-			}
 			Assert.assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
 		}
 	}
@@ -66,9 +63,6 @@ public class UUIDGeneratorTest extends TestCase {
 	public void testGetTimeBasedMACUUIDStringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), TIMEBASED_UUID, REAL_MAC);
-			if(!uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN)) {
-				System.out.println(uuid.toString());
-			}
 			Assert.assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
 		}
 	}
@@ -76,9 +70,6 @@ public class UUIDGeneratorTest extends TestCase {
 	public void testGetSequentialMACUUIDStringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), SEQUENTIAL_UUID, REAL_MAC);
-			if (!uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN)) {
-				System.out.println(uuid.toString());
-			}
 			Assert.assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
 		}
 	}
@@ -86,9 +77,6 @@ public class UUIDGeneratorTest extends TestCase {
 	public void testGetTimeBasedAddressUUID_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), TIMEBASED_UUID, FAKE_MAC);
-			if(!uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN)) {
-				System.out.println(uuid.toString());
-			}
 			Assert.assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
 		}
 	}
@@ -226,8 +214,8 @@ public class UUIDGeneratorTest extends TestCase {
 		System.out.println("Running times for 100,000 UUIDs generated:");
 		System.out.println("- java.util.UUID.randomUUID():              " + miliseconds1 + " ms");
 		System.out.println("- UUIDGenerator.getRandomUUID():            " + miliseconds2 + " ms");
-		System.out.println("- UUIDGenerator.getTimeBasedPrivateUUID():  " + miliseconds3 + " ms");
-		System.out.println("- UUIDGenerator.getSequentialPrivateUUID(): " + miliseconds4 + " ms");
+		System.out.println("- UUIDGenerator.getTimeBasedUUID():  " + miliseconds3 + " ms");
+		System.out.println("- UUIDGenerator.getSequentialUUID(): " + miliseconds4 + " ms");
 	}
 
 	/**

@@ -47,10 +47,10 @@ public class UUIDGenerator {
 	private static final long SECONDS_MULTIPLYER = (long) Math.pow(10, 7);
 	private static final long NANOSECONDS_DIVISOR = (long) Math.pow(10, 2);
 
-	// UUID in this format: 00000000-0000-0000-0000-000000000000
+	// NIL UUID has this value: 00000000-0000-0000-0000-000000000000
 	private static final byte[] NIL_UUID = UUIDGenerator.array(16, (byte) 0x00);
 	
-	// UUID for name spaces defined in RFC-4122
+	// UUIDs for standard name spaces defined in RFC-4122
 	public static final UUID NAMESPACE_DNS = UUID.fromString("6ba7b810-9dad-11d1-80b4-00c04fd430c8");
 	public static final UUID NAMESPACE_URL = UUID.fromString("6ba7b811-9dad-11d1-80b4-00c04fd430c8");
 	public static final UUID NAMESPACE_ISO_OID = UUID.fromString("6ba7b812-9dad-11d1-80b4-00c04fd430c8");
@@ -236,11 +236,11 @@ public class UUIDGenerator {
 
 		long version = (embededTimestamp & 0x000000000000F000) >>> 12;
 
-		if (version == 1) {
+		if (version == 1) { // standard time-based UUID
 			part1 = (embededTimestamp & 0xFFFFFFFF00000000L) >>> 32;
 			part2 = (embededTimestamp & 0x00000000FFFF0000L) << 16;
 			part3 = (embededTimestamp & 0x0000000000000FFFL) << 48;
-		} else if (version == 4) {
+		} else if (version == 0) { // non-standard sequential UUID
 			part1 = (embededTimestamp & 0xFFFFFFFF00000000L) >>> 4;
 			part2 = (embededTimestamp & 0x00000000FFFF0000L) >>> 4;
 			part3 = (embededTimestamp & 0x0000000000000FFFL);
@@ -441,7 +441,7 @@ public class UUIDGenerator {
 		} else {
 			part1 = (timestamp & 0x0FFFFFFFF0000000L) << 4;
 			part2 = (timestamp & 0x000000000FFFF000L) << 4;
-			part3 = ((timestamp & 0x0000000000000FFFL) | 0x0000000000004000L);
+			part3 = ((timestamp & 0x0000000000000FFFL) | 0x0000000000000000L);
 		}
 
 		timestampBytes = part1 | part2 | part3;
@@ -616,7 +616,11 @@ public class UUIDGenerator {
 		
 		byte[] bytes = copy(uuid);
 		
-		if(type == 1) {
+		if(type == 0) {
+			// Version number not defined by RFC-4122. 
+			// Used to indicate a Sequential UUID.
+			bytes[6] = (byte) ((bytes[6] & 0x0f) | 0x00); // version 0
+		} else if(type == 1) {
 			bytes[6] = (byte) ((bytes[6] & 0x0f) | 0x10); // version 1
 		} else if (type == 2) {
 			bytes[6] = (byte) ((bytes[6] & 0x0f) | 0x20); // version 2
@@ -630,6 +634,7 @@ public class UUIDGenerator {
 			throw new RuntimeException("No such UUID type.");
 		}
 		
+		// Variant specified by RFC-4122
 		bytes[8] = (byte) ((bytes[8] & 0x3f) | 0x80); // variant 1		
 		
 		return bytes;

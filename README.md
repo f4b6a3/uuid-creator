@@ -5,7 +5,7 @@ UUID Generator
 Summary
 ------------------------------------------------------
 
-UUID Generator is a single class that can generate UUIDs (Universally Unique Identifiers), also known as GUIDs (Globally Unique Identifiers). It provides methods for RFC-4122 versions 1, 3, 4, 5. It also provides methods for a custom sequential version, retrievd as a RFC-4122 version 4.
+UUID Generator is a single class that can generate UUIDs (Universally Unique Identifiers), also known as GUIDs (Globally Unique Identifiers). It provides methods for RFC-4122 versions 1, 3, 4, 5. It also provides methods for a sequential version 0.
 
 These types of UUIDs can be generated:
 
@@ -44,14 +44,14 @@ In Sequential UUID the bytes are arranged in this way:
 
 * `TTTTTTTT`: this field contains the **highest** bytes of the timestamp;
 * `TTTT`: this field contains the middle bytes of the timestamp;
-* `VTTT`: in this field, "V" is the version (always 4) and the "TTT" are the **lowest** bytes of timestamp;
+* `VTTT`: in this field, "V" is the version (always 0) and the "TTT" are the **lowest** bytes of timestamp;
 * `RSS`: in this field, "R" is the variant and "SSS" are a clock sequence;
 * `MMMMMMMMMMMM`: this field contains the hardware address or node (MAC)
 
 To understand the difference between Time-based UUID and Sequential UUID, look thise two practical examples of UUID generated at the same instant.
 
 * Time-based UUID:  79592ca7-4d7f-11e8-b946-3bababbf5f8b
-* Sequential UUID: 1e84d7f7-9592-4ca7-b947-3bababbf5f8b
+* Sequential UUID: 1e84d7f7-9592-0ca7-b947-3bababbf5f8b
 
 Note that the byte order of the first three fields are different in both examples. But both have the same bytes of a single instant, that is 2018-05-01T20:37:32.687274310Z.
 
