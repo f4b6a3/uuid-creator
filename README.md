@@ -57,7 +57,7 @@ The Name-based UUID version 3 is a MD5 hash of a name space and a name.
 
 ```java
 UUID namespace = UUIDGenerator.NAMESPACE_URL;
-UUID name = "https://github.com/"
+String name = "https://github.com/"
 UUID uuid = UUIDGenerator.getTimeBasedMD5UUID(namespace, name);
 System.out.println(uuid.toString());
 // Output: 295df05a-2c43-337c-b6b8-4b84826e4a94
@@ -83,7 +83,7 @@ The Name-based UUID version 5 is a SHA-1 hash of a name space and a name.
 
 ```java
 UUID namespace = UUIDGenerator.NAMESPACE_URL;
-UUID name = "https://github.com/"
+String name = "https://github.com/"
 UUID uuid = UUIDGenerator.getNameBasedSHA1UUID(namespace, name);
 System.out.println(uuid.toString());
 // Output: 39983165-606c-5d83-abfa-b97af8b1ae8d
