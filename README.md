@@ -45,8 +45,11 @@ UUID uuid = UUIDGenerator.getTimeBasedUUID();
 System.out.println(uuid.toString());
 // Output: 8caea7c7-7909-11e8-a919-4b43423cffc9
 ```
+#### Version 2: DCE Security
 
-#### Version 2: Name-based UUID hashed with MD5
+The DCE Security version 2 is out of scope.
+
+#### Version 3: Name-based UUID hashed with MD5
 
 The Name-based UUID version 3 is a MD5 hash of a name space and a name.
 
@@ -72,7 +75,7 @@ System.out.println(uuid.toString());
 // Output: f390cc68-6004-417b-81df-4514e4a7323b
 ```
 
-### Version 5: Name-based UUID hashed with SHA-1
+#### Version 5: Name-based UUID hashed with SHA-1
 
 The Name-based UUID version 5 is a SHA-1 hash of a name space and a name. 
 
