@@ -74,16 +74,17 @@ public class UUIDGeneratorTest extends TestCase {
 		}
 	}
 
-	public void testGetTimeBasedAddressUUID_StringIsValid() {
+	public void testGetTimeBasedUUID_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), TIMEBASED_UUID, FAKE_MAC);
 			Assert.assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
 		}
 	}
 
-	public void testGetSequentialAddressUUID_StringIsValid() {
+	public void testGetSequentialUUID_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), SEQUENTIAL_UUID, FAKE_MAC);
+			System.out.println(uuid.toString());
 			Assert.assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
 		}
 	}
@@ -129,7 +130,7 @@ public class UUIDGeneratorTest extends TestCase {
 	 */
 	public void testGetNameBasedMD5UUID() {
 		
-		UUID namespace = UUIDGenerator.NAMESPACE_DNS;
+		UUID namespace = UUIDGenerator.NAMESPACE_URL;
 		String name = null;
 		UUID uuid = null;
 		
