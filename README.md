@@ -50,7 +50,7 @@ In Sequential UUID the bytes are arranged in this way:
 
 To understand the difference between Time-based UUID and Sequential UUID, look thise two practical examples of UUID generated at the same instant.
 
-* Time-based UUID:  79592ca7-4d7f-11e8-b946-3bababbf5f8b
+* Time-based UUID: 79592ca7-4d7f-11e8-b946-3bababbf5f8b
 * Sequential UUID: 1e84d7f7-9592-0ca7-b947-3bababbf5f8b
 
 Note that the byte order of the first three fields are different in both examples. But both have the same bytes of a single instant, that is 2018-05-01T20:37:32.687274310Z.
@@ -69,8 +69,8 @@ A simple time measurement was done to test how long each methods take to generat
 
 * java.util.UUID.randomUUID(): 47 ms
 * UUIDGenerator.getRandomUUID(): 34 ms
-* UUIDGenerator.getTimeBasedUUID(): 25 ms
-* UUIDGenerator.getSequentialUUID(): 25 ms
+* UUIDGenerator.getTimeBasedUUID(): 22 ms
+* UUIDGenerator.getSequentialUUID(): 22 ms
 
 The method getRandomUUID() uses SecureRandom (java.security.SecureRandom).
 

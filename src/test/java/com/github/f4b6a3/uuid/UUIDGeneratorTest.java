@@ -88,68 +88,41 @@ public class UUIDGeneratorTest extends TestCase {
 		}
 	}
 
-//	public void testGetTimeBasedMACUUIDString_TimestampIsCorrect() {
-//		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-//			Instant instant = UUIDGenerator.getClockInstant();
-//			String uuid = UUIDGenerator.getTimeBasedUUIDString(instant);
-//
-//			long timestamp1 = UUID.fromString(uuid).timestamp();
-//			long timestamp2 = UUIDGenerator.getGregorianCalendarTimestamp(instant);
-//
-//			Assert.assertEquals(timestamp1, timestamp2);
-//		}
-//	}
-//
-//	/**
-//	 * Test if a time based UUID version 1 is has the correct timestamp.
-//	 */
-//	public void testGetTimeBasedUUIDString_TimestampIsCorrect() {
-//		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-//			Instant instant = UUIDGenerator.getClockInstant();
-//			String uuid = UUIDGenerator.getTimeBasedPrivateUUIDString(instant);
-//	
-//			long timestamp1 = UUID.fromString(uuid).timestamp();
-//			long timestamp2 = UUIDGenerator.getGregorianCalendarTimestamp(instant);
-//			
-//			Assert.assertEquals(timestamp1, timestamp2);
-//		}
-//	}
+	/**
+	 * Test if a time based UUID version 1 is has the correct timestamp.
+	 */
+	public void testGetTimeBasedMACUUID_TimestampIsCorrect() {
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			
+			Instant instant1 = UUIDGenerator.getClockInstant();
+			
+			UUID uuid = UUIDGenerator.getTimeBasedUUID(instant1, TIMEBASED_UUID, REAL_MAC);
+			Instant instant2 = UUIDGenerator.extractInstant(uuid);
+			
+			long timestamp1 = UUIDGenerator.getGregorianCalendarTimestamp(instant1);
+			long timestamp2 = UUIDGenerator.getGregorianCalendarTimestamp(instant2);
+			
+			Assert.assertEquals(timestamp1, timestamp2);
+		}
+	}
 
-//	/**
-//	 * Test if a time based UUID version 1 is has the correct timestamp.
-//	 */
-//	public void testGetTimeBasedMACUUID_TimestampIsCorrect() {
-//		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-//			
-//			Instant instant1 = UUIDGenerator.getClockInstant();
-//			
-//			UUID uuid = UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), TIMEBASED_UUID, REAL_MAC);
-//			Instant instant2 = UUIDGenerator.extractInstant(uuid);
-//
-//			long timestamp1 = UUIDGenerator.getGregorianCalendarTimestamp(instant1);
-//			long timestamp2 = UUIDGenerator.getGregorianCalendarTimestamp(instant2);
-//			
-//			Assert.assertEquals(timestamp1, timestamp2);
-//		}
-//	}
-//
-//	/**
-//	 * Test if a sequential UUID version 4 is has the correct timestamp.
-//	 */
-//	public void testGetSequentialMACUUID_TimestampIsCorrect() {
-//		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-//			
-//			Instant instant1 = UUIDGenerator.getClockInstant();
-//			
-//			UUID uuid = UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), SEQUENTIAL_UUID, REAL_MAC);
-//			Instant instant2 = UUIDGenerator.extractInstant(uuid);
-//
-//			long timestamp1 = UUIDGenerator.getGregorianCalendarTimestamp(instant1);
-//			long timestamp2 = UUIDGenerator.getGregorianCalendarTimestamp(instant2);
-//			
-//			Assert.assertEquals(timestamp1, timestamp2);
-//		}
-//	}
+	/**
+	 * Test if a sequential UUID version 4 is has the correct timestamp.
+	 */
+	public void testGetSequentialMACUUID_TimestampIsCorrect() {
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			
+			Instant instant1 = UUIDGenerator.getClockInstant();
+			
+			UUID uuid = UUIDGenerator.getTimeBasedUUID(instant1, SEQUENTIAL_UUID, REAL_MAC);
+			Instant instant2 = UUIDGenerator.extractInstant(uuid);
+
+			long timestamp1 = UUIDGenerator.getGregorianCalendarTimestamp(instant1);
+			long timestamp2 = UUIDGenerator.getGregorianCalendarTimestamp(instant2);
+			
+			Assert.assertEquals(timestamp1, timestamp2);
+		}
+	}
 	
 	/**
 	 * Test if a name-based UUID version 3 with name space is correct.
@@ -212,8 +185,8 @@ public class UUIDGeneratorTest extends TestCase {
 
 		System.out.println();
 		System.out.println("Running times for 100,000 UUIDs generated:");
-		System.out.println("- java.util.UUID.randomUUID():              " + miliseconds1 + " ms");
-		System.out.println("- UUIDGenerator.getRandomUUID():            " + miliseconds2 + " ms");
+		System.out.println("- java.util.UUID.randomUUID():       " + miliseconds1 + " ms");
+		System.out.println("- UUIDGenerator.getRandomUUID():     " + miliseconds2 + " ms");
 		System.out.println("- UUIDGenerator.getTimeBasedUUID():  " + miliseconds3 + " ms");
 		System.out.println("- UUIDGenerator.getSequentialUUID(): " + miliseconds4 + " ms");
 	}
@@ -270,8 +243,8 @@ public class UUIDGeneratorTest extends TestCase {
 
 		System.out.println();
 		System.out.println("Average running times for 100,000 UUIDs generated:");
-		System.out.println("- java.util.UUID.randomUUID():              " + (acum1 / rounds) + " ms");
-		System.out.println("- UUIDGenerator.getRandomUUID():            " + (acum2 / rounds) + " ms");
+		System.out.println("- java.util.UUID.randomUUID():       " + (acum1 / rounds) + " ms");
+		System.out.println("- UUIDGenerator.getRandomUUID():     " + (acum2 / rounds) + " ms");
 		System.out.println("- UUIDGenerator.getTimeBasedUUID():  " + (acum3 / rounds) + " ms");
 		System.out.println("- UUIDGenerator.getSequentialUUID(): " + (acum4 / rounds) + " ms");
 	}
@@ -287,8 +260,8 @@ public class UUIDGeneratorTest extends TestCase {
 
 		System.out.println();
 		System.out.println("Demonstration:");
-		System.out.println("- TimeBased UUID:  " + timeBasedUUID.toString());
-		System.out.println("- Sequential UUID: " + sequentialUUID.toString());
+		System.out.println("- TimeBased UUID:          " + timeBasedUUID.toString());
+		System.out.println("- Sequential UUID:         " + sequentialUUID.toString());
 		System.out.println("- Original instant:        " + instant.toString());
 		System.out.println("- TimeBased UUID instant:  " + UUIDGenerator.extractInstant(UUID.fromString(timeBasedUUID)));
 		System.out.println("- Sequential UUID instant: " + UUIDGenerator.extractInstant(UUID.fromString(sequentialUUID)));
