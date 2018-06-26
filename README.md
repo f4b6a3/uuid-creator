@@ -11,10 +11,10 @@ These types of UUIDs can be generated:
 
 * __Random__: the pseudo-randomly generated version;
 * __Time-based:__ the time-based version;
-* __Time-based Private:__ the time-based version without hardware address;
+* __Time-based MAC:__ the time-based version with hardware address;
 * __Sequential:__ a modified time-based version;
-* __Sequential Private:__ a modified time-based version without hardware address;
-* __Name-based:__ a base-named version that uses MD5;
+* __Sequential MAC:__ a modified time-based version with hardware address;
+* __Name-based MD5:__ a base-named version that uses MD5;
 * __Name-based SHA1:__ a base-named version that uses SHA-1.
 
 The sequential UUID is a different implementation of the standard time-based UUIDs.
@@ -69,8 +69,8 @@ A simple time measurement was done to test how long each methods take to generat
 
 * java.util.UUID.randomUUID(): 47 ms
 * UUIDGenerator.getRandomUUID(): 34 ms
-* UUIDGenerator.getTimeBasedPrivateUUID(): 25 ms
-* UUIDGenerator.getSequentialPrivateUUID(): 25 ms
+* UUIDGenerator.getTimeBasedUUID(): 25 ms
+* UUIDGenerator.getSequentialUUID(): 25 ms
 
 The method getRandomUUID() uses SecureRandom (java.security.SecureRandom).
 

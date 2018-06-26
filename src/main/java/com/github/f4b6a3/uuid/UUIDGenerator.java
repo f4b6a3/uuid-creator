@@ -71,7 +71,25 @@ public class UUIDGenerator {
 	 * @return
 	 */
 	public static UUID getRandomUUID() {
-		return UUIDGenerator.toUUID(UUIDGenerator.getRandomUUIDBytes());
+		byte[] uuid = UUIDGenerator.getRandomBytes(16);
+		uuid = setUUIDVersion(uuid, 4);
+		return UUIDGenerator.toUUID(uuid);
+	}
+	
+	/**
+	 * Returns a UUID with timestamp and without machine address.
+	 *
+	 * Details: <br/>
+	 * - Version number: 1 <br/>
+	 * - Variant number: 1 <br/>
+	 * - Has timestamp?: YES <br/>
+	 * - Has hardware address (MAC)?: NO <br/>
+	 * - Timestamp bytes are in standard order: YES <br/>
+	 *
+	 * @return
+	 */
+	public static UUID getTimeBasedUUID() {
+		return UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), true, false);
 	}
 
 	/**
@@ -86,45 +104,10 @@ public class UUIDGenerator {
 	 *
 	 * @return
 	 */
-	public static UUID getTimeBasedUUID() {
-		return UUIDGenerator.toUUID(UUIDGenerator.getTimeBasedUUIDBytes(UUIDGenerator.getClockInstant(), true, true));
+	public static UUID getTimeBasedMACUUID() {
+		return UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), true, true);
 	}
-
-	/**
-	 * Returns a UUID with timestamp and without machine address.
-	 *
-	 * Details: <br/>
-	 * - Version number: 1 <br/>
-	 * - Variant number: 1 <br/>
-	 * - Has timestamp?: YES <br/>
-	 * - Has hardware address (MAC)?: NO <br/>
-	 * - Timestamp bytes are in standard order: YES <br/>
-	 *
-	 * @return
-	 */
-	public static UUID getTimeBasedPrivateUUID() {
-		return UUIDGenerator.toUUID(UUIDGenerator.getTimeBasedUUIDBytes(UUIDGenerator.getClockInstant(), true, false));
-	}
-
-	/**
-	 * Returns a UUID with timestamp and machine adress, but the bytes
-	 * corresponding to timestamp are arranged in the "natural" order, that is
-	 * not compatible with the version 1. For that reason it's returned as a
-	 * version 4 UUID.
-	 *
-	 * Details: <br/>
-	 * - Version number: 4 <br/>
-	 * - Variant number: 1 <br/>
-	 * - Has timestamp?: YES <br/>
-	 * - Has hardware address (MAC)?: YES <br/>
-	 * - Timestamp bytes are in standard order: NO <br/>
-	 *
-	 * @return
-	 */
-	public static UUID getSequentialUUID() {
-		return UUIDGenerator.toUUID(UUIDGenerator.getTimeBasedUUIDBytes(UUIDGenerator.getClockInstant(), false, true));
-	}
-
+	
 	/**
 	 * Returns a UUID with timestamp and without machine address, but the bytes
 	 * corresponding to timestamp are arranged in the "natural" order, that is
@@ -141,14 +124,33 @@ public class UUIDGenerator {
 	 * @param instant
 	 * @return
 	 */
-	public static UUID getSequentialPrivateUUID() {
-		return UUIDGenerator.toUUID(UUIDGenerator.getTimeBasedUUIDBytes(UUIDGenerator.getClockInstant(), false, false));
+	public static UUID getSequentialUUID() {
+		return UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), false, false);
+	}
+	
+	/**
+	 * Returns a UUID with timestamp and machine adress, but the bytes
+	 * corresponding to timestamp are arranged in the "natural" order, that is
+	 * not compatible with the version 1. For that reason it's returned as a
+	 * version 4 UUID.
+	 *
+	 * Details: <br/>
+	 * - Version number: 4 <br/>
+	 * - Variant number: 1 <br/>
+	 * - Has timestamp?: YES <br/>
+	 * - Has hardware address (MAC)?: YES <br/>
+	 * - Timestamp bytes are in standard order: NO <br/>
+	 *
+	 * @return
+	 */
+	public static UUID getSequentialMACUUID() {
+		return UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), false, true);
 	}
 
 	/**
-	 * Returns a UUID with based on a name, using MD5, but without a name space.
+	 * Returns a UUID with based on a name, using MD5.
 	 *
-	 * It uses the NIL UUID as name space internally.
+	 * It uses the NIL UUID as default name space.
 	 * 
 	 * Details: <br/>
 	 * - Version number: 3 <br/>
@@ -160,7 +162,7 @@ public class UUIDGenerator {
 	 * @return
 	 * @return
 	 */
-	public static UUID getNameBasedUUID(String name) {
+	public static UUID getNameBasedMD5UUID(String name) {
 		return UUIDGenerator.getNameBasedUUID(null, name, false);
 	}
 	
@@ -177,14 +179,14 @@ public class UUIDGenerator {
 	 * @param name
 	 * @return
 	 */
-	public static UUID getNameBasedUUID(UUID namespace, String name) {
+	public static UUID getNameBasedMD5UUID(UUID namespace, String name) {
 		return UUIDGenerator.getNameBasedUUID(namespace, name, false);
 	}
 
 	/**
-	 * Returns a UUID with based on a name, using SHA1, but without a name space.
+	 * Returns a UUID with based on a name, using SHA1.
 	 *
-	 * It uses the NIL UUID as name space internally.
+	 * It uses the NIL UUID as default name space.
 	 *
 	 * Details: <br/>
 	 * - Version number: 5 <br/>
@@ -213,53 +215,63 @@ public class UUIDGenerator {
 	 * @return
 	 */
 	public static UUID getNameBasedSHA1UUID(UUID namespace, String name) {
-		return UUIDGenerator.getNameBasedUUID(null, name, true);
+		return UUIDGenerator.getNameBasedUUID(namespace, name, true);
+	}
+
+	/**
+	 * Get the instant that is embedded in the UUID.
+	 *
+	 * @param uuid
+	 * @return
+	 */
+	public static Instant extractInstant(UUID uuid) {
+
+		long part1;
+		long part2;
+		long part3;
+		long timestamp;
+
+		byte[] timestampBytes = UUIDGenerator.toBytes(uuid.toString().replaceAll("-", ""));
+		long embededTimestamp = UUIDGenerator.toNumber(UUIDGenerator.copy(timestampBytes, 0, 8));
+
+		long version = (embededTimestamp & 0x000000000000F000) >>> 12;
+
+		if (version == 1) {
+			part1 = (embededTimestamp & 0xFFFFFFFF00000000L) >>> 32;
+			part2 = (embededTimestamp & 0x00000000FFFF0000L) << 16;
+			part3 = (embededTimestamp & 0x0000000000000FFFL) << 48;
+		} else if (version == 4) {
+			part1 = (embededTimestamp & 0xFFFFFFFF00000000L) >>> 4;
+			part2 = (embededTimestamp & 0x00000000FFFF0000L) >>> 4;
+			part3 = (embededTimestamp & 0x0000000000000FFFL);
+		} else {
+			return null;
+		}
+
+		timestamp = part1 | part2 | part3;
+
+		return UUIDGenerator.getGregorianCalendarInstant(timestamp);
 	}
 	
-	protected static String getTimeBasedUUIDString(Instant instant) {
-		return UUIDGenerator.getTimeBasedUUIDString(instant, true, true);
-	}
+	/**
+	 * Get hardware address contained in the UUID.
+	 *
+	 * @param uuid
+	 * @return
+	 */
+	public static byte[] extractHardwareAddress(UUID uuid) {
 
-	protected static String getTimeBasedPrivateUUIDString(Instant instant) {
-		return UUIDGenerator.getTimeBasedUUIDString(instant, true, false);
-	}
+		byte[] bytes = UUIDGenerator.toBytes(uuid.toString().replaceAll("-", ""));
 
-	protected static String getSequentialUUIDString(Instant instant) {
-		return UUIDGenerator.getTimeBasedUUIDString(instant, false, true);
-	}
+		byte[] hardwareAddress = UUIDGenerator.getField(bytes, 5);
 
-	protected static String getSequentialPrivateUUIDString(Instant instant) {
-		return UUIDGenerator.getTimeBasedUUIDString(instant, false, false);
-	}
+		if (!UUIDGenerator.isMulticastHardwareAddress(hardwareAddress)) {
+			return hardwareAddress;
+		}
 
-	protected static String getRandomUUIDString() {
-		return UUIDGenerator.formatString(UUIDGenerator.toHexadecimal(UUIDGenerator.getRandomUUIDBytes()));
+		return null;
 	}
 	
-	protected static String getNameBasedUUIDString(String name) {
-		return UUIDGenerator.getNameBasedUUID(null, name, false).toString();
-	}
-	
-	protected static String getNameBasedSHA1UUIDString(String name) {
-		return UUIDGenerator.getNameBasedUUID(null, name, true).toString();
-	}
-
-	protected static String getNameBasedUUIDString(UUID namespace, String name) {
-		return UUIDGenerator.getNameBasedUUID(namespace, name, false).toString();
-	}
-	
-	protected static String getNameBasedSHA1UUIDString(UUID namespace, String name) {
-		return UUIDGenerator.getNameBasedUUID(namespace, name, true).toString();
-	}
-	
-	protected static byte[] getRandomUUIDBytes() {
-
-		byte[] uuid = UUIDGenerator.getRandomBytes(16);
-		uuid = setUUIDVersion(uuid, 4);
-		return uuid;
-
-	}
-
 	/**
 	 * Returns a time-based UUID with to options: to include or not hardware
 	 * address and to use or not the standard bytes order for timestamps.
@@ -276,7 +288,7 @@ public class UUIDGenerator {
 	 * @param realHardwareAddress
 	 * @return
 	 */
-	protected static byte[] getTimeBasedUUIDBytes(Instant instant, boolean standardTimestamp, boolean realHardwareAddress) {
+	protected static UUID getTimeBasedUUID(Instant instant, boolean standardTimestamp, boolean realHardwareAddress) {
 		
 		byte[] uuid;
 		byte[] timestampBytes;
@@ -304,23 +316,19 @@ public class UUIDGenerator {
 		uuid = UUIDGenerator.replaceField(uuid, clockSequenceBytes, 4);
 		uuid = UUIDGenerator.replaceField(uuid, hardwareAddressBytes, 5);
 		
-		return uuid;
-	}
-	
-	protected static String getTimeBasedUUIDString(Instant instant, boolean standardTimestamp, boolean realHardwareAddress) {
-		return UUIDGenerator.formatString(UUIDGenerator
-				.toHexadecimal(UUIDGenerator.getTimeBasedUUIDBytes(instant, standardTimestamp, realHardwareAddress)));
+		return UUIDGenerator.toUUID(uuid);
 	}
 
 	/**
 	 * Get a name-based UUID using name space, a name and a specific hash algorithm.
-	 * It uses the NIL UUID as name space internally.
+	 * 
+	 * It uses the NIL UUID as default name space.
 	 * 
 	 * Details: <br/>
 	 * - Version number: 3 or 5 <br/>
 	 * - Variant number: 1 <br/>
 	 * - Hash Algorithm: MD5 or SHA1 <br/>
-	 * - Name Space: NIL UUID (default) or other informed by user <br/>
+	 * - Name Space: NIL UUID (default) or another informed by user <br/>
 	 * 
 	 * @param namespace
 	 * @param name
@@ -329,9 +337,11 @@ public class UUIDGenerator {
 	 */
 	protected static UUID getNameBasedUUID(final UUID namespace, final String name, boolean useSHA1) {
 		
+		byte[] uuid = null;
 		byte[] namespaceBytes = null;
 		byte[] nameBytes = null;
 		byte[] bytes = null;
+		MessageDigest md;
 		
 		if(namespace != null) {
 			namespaceBytes = UUIDGenerator.toBytes(namespace.toString().replaceAll("[^0-9a-fA-F]", ""));
@@ -339,15 +349,6 @@ public class UUIDGenerator {
 			namespaceBytes = NIL_UUID;
 		}
 		
-		nameBytes = name.getBytes();
-		bytes = UUIDGenerator.concat(namespaceBytes, nameBytes);
-		
-		return UUIDGenerator.getNameBasedUUID(bytes, useSHA1);
-	}
-	
-	private static UUID getNameBasedUUID(byte[] bytes, boolean useSHA1) {
-		byte[] uuid = null;
-		MessageDigest md;
 		try {
 			if(useSHA1) {
 				md = MessageDigest.getInstance("SHA1");
@@ -357,6 +358,9 @@ public class UUIDGenerator {
 		} catch (NoSuchAlgorithmException e) {
 			throw new InternalError("Message digest algorithm not supported.", e);
 		}
+		
+		nameBytes = name.getBytes();
+		bytes = UUIDGenerator.concat(namespaceBytes, nameBytes);
 		
 		byte[] hash = md.digest(bytes);
 		
@@ -443,41 +447,6 @@ public class UUIDGenerator {
 		timestampBytes = part1 | part2 | part3;
 
 		return UUIDGenerator.toBytes(timestampBytes);
-	}
-
-	/**
-	 * Get the instant that is embedded in the UUID.
-	 *
-	 * @param uuid
-	 * @return
-	 */
-	public static Instant extractInstant(UUID uuid) {
-
-		long part1;
-		long part2;
-		long part3;
-		long timestamp;
-
-		byte[] timestampBytes = UUIDGenerator.toBytes(uuid.toString().replaceAll("-", ""));
-		long embededTimestamp = UUIDGenerator.toNumber(UUIDGenerator.copy(timestampBytes, 0, 8));
-
-		long version = (embededTimestamp & 0x000000000000F000) >>> 12;
-
-		if (version == 1) {
-			part1 = (embededTimestamp & 0xFFFFFFFF00000000L) >>> 32;
-			part2 = (embededTimestamp & 0x00000000FFFF0000L) << 16;
-			part3 = (embededTimestamp & 0x0000000000000FFFL) << 48;
-		} else if (version == 4) {
-			part1 = (embededTimestamp & 0xFFFFFFFF00000000L) >>> 4;
-			part2 = (embededTimestamp & 0x00000000FFFF0000L) >>> 4;
-			part3 = (embededTimestamp & 0x0000000000000FFFL);
-		} else {
-			return null;
-		}
-
-		timestamp = part1 | part2 | part3;
-
-		return UUIDGenerator.getGregorianCalendarInstant(timestamp);
 	}
 	
 	/**
@@ -585,25 +554,6 @@ public class UUIDGenerator {
 	 */
 	protected static boolean isMulticastHardwareAddress(final byte[] hardwareAddress) {
 		return (hardwareAddress[0] & 0x01) == 1;
-	}
-
-	/**
-	 * Get hardware address contained in the UUID.
-	 *
-	 * @param uuid
-	 * @return
-	 */
-	public static byte[] extractHardwareAddress(UUID uuid) {
-
-		byte[] bytes = UUIDGenerator.toBytes(uuid.toString().replaceAll("-", ""));
-
-		byte[] hardwareAddress = UUIDGenerator.getField(bytes, 5);
-
-		if (!UUIDGenerator.isMulticastHardwareAddress(hardwareAddress)) {
-			return hardwareAddress;
-		}
-
-		return null;
 	}
 
 	/**
