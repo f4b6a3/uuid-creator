@@ -49,7 +49,7 @@ System.out.println(uuid.toString());
 
 The DCE Security version 2 is out of scope.
 
-#### Version 3: Name-based UUID hashed with MD5
+### Version 3: Name-based UUID hashed with MD5
 
 The Name-based UUID version 3 is a MD5 hash of a name space and a name.
 
