@@ -268,6 +268,30 @@ public class UUIDGeneratorTest extends TestCase {
 		System.out.println("- Sequential UUID instant: " + UUIDGenerator.extractInstant(UUID.fromString(sequentialUUID)));
 	}
 	
+	public void testToNumberFromBytes() {
+		for(int i = 0; i < numbers.length; i++) {
+			assertEquals(numbers[i], UUIDGenerator.toNumber(bytes[i]));
+		}
+	}
+	
+	public void testToBytesFromHexadecimals() {
+		for(int i = 0; i < bytes.length; i++) {
+			assertTrue(UUIDGenerator.equals(bytes[i], UUIDGenerator.toBytes(hexadecimals[i])));
+		}
+	}
+	
+	public void testToHexadecimalFromBytes() {
+		for(int i = 0; i < hexadecimals.length; i++) {
+			assertEquals(hexadecimals[i], UUIDGenerator.toHexadecimal(bytes[i]));
+		}
+	}
+	
+	public void testToNumberFromHexadecimal() {
+		for(int i = 0; i < hexadecimals.length; i++) {
+			assertEquals(numbers[i], UUIDGenerator.toNumber(hexadecimals[i]));
+		}
+	}
+
 	/**
 	 * Test with many threads running at the same time.
 	 * 
@@ -286,10 +310,9 @@ public class UUIDGeneratorTest extends TestCase {
 		}
 	}
 	
-	private class RaceConditionException extends RuntimeException {
-		private static final long serialVersionUID = 7832373879543765269L;
-	}
-	
+	/**
+	 * Runnable to test if a UUID is used more than once.
+	 */
 	private class RaceConditionRunnable implements Runnable {
 		
 		private int id;
@@ -324,11 +347,79 @@ public class UUIDGeneratorTest extends TestCase {
 				if(!contains(uuid)) {
 					array[id][i] = uuid;
 				} else {
-				    System.out.println(String.format("[RaceConditionRunnable] UUID conflict: %s", uuid.toString()));
-					// Throw an exeption if the same UUID was used by other thread.
-					throw new RaceConditionException();
+					throw new RuntimeException(String.format("[RaceConditionRunnable] UUID conflict: %s", uuid.toString()));
 				}
 			}
 		}
 	}
+	
+	private long[] numbers = {
+			0x0000000000000000L,
+			0x0000000000000001L,
+			0x0000000000000012L,
+			0x0000000000000123L,
+			0x0000000000001234L,
+			0x0000000000012345L,
+			0x0000000000123456L,
+			0x0000000001234567L,
+			0x0000000012345678L,
+			0x0000000123456789L,
+			0x000000123456789aL,
+			0x00000123456789abL,
+			0x0000123456789abcL,
+			0x000123456789abcdL,
+			0x00123456789abcdeL,
+			0x0123456789abcdefL};
+	
+	private String[] hexadecimals = {
+			"0000000000000000",
+			"0000000000000001",
+			"0000000000000012",
+			"0000000000000123",
+			"0000000000001234",
+			"0000000000012345",
+			"0000000000123456",
+			"0000000001234567",
+			"0000000012345678",
+			"0000000123456789",
+			"000000123456789a",
+			"00000123456789ab",
+			"0000123456789abc",
+			"000123456789abcd",
+			"00123456789abcde",
+			"0123456789abcdef"};
+	
+	private byte[][] bytes = {
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x9a},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x9a, (byte) 0xbc},
+			{ (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab, (byte) 0xcd},
+			{ (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x9a, (byte) 0xbc, (byte) 0xde},
+			{ (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab, (byte) 0xcd, (byte) 0xef}};
+	
+//	public void testSpeed() {
+//		long max = (long) Math.pow(10, 6);
+//		Instant start = null;
+//		Instant end = null;
+//
+//		start = UUIDGenerator.getClockInstant();
+//		for (int n = 0; n < max; n++) {
+//			// Put some code to test here
+//		}
+//		end = UUIDGenerator.getClockInstant();
+//		long miliseconds1 = (end.toEpochMilli() - start.toEpochMilli());
+//		System.out.println("Time: " + miliseconds1 + " ms");
+//	}
+	
+	
 }

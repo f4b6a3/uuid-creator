@@ -36,8 +36,6 @@ public class UUIDGenerator {
 
 	private static final Instant GREGORIAN_EPOCH = UUIDGenerator.getGregorianCalendarBeginning();
 
-	private static final char[] HEXADECIMAL_CHARS = "0123456789abcdef".toCharArray();
-
 	private static SecureRandom random = UUIDGenerator.getSecureRandom();
 	private static long lastTimestamp = 0;
 	private static byte[] lastHardwareAddressBytes = null;
@@ -479,8 +477,6 @@ public class UUIDGenerator {
             }
         }
         
-        
-        
         UUIDGenerator.lastClockSequenceBytes = UUIDGenerator.copy(UUIDGenerator.toBytes(clockSequence), 6, 8);
         return UUIDGenerator.lastClockSequenceBytes;
     }
@@ -621,7 +617,7 @@ public class UUIDGenerator {
 		if(type == 0) {
 			// Version number not defined by RFC-4122. 
 			// Used to indicate a Sequential UUID.
-			bytes[6] = (byte) ((bytes[6] & 0x0f) | 0x00); // version 0
+			bytes[6] = (byte) (bytes[6] & 0x0f); // version 0
 		} else if(type == 1) {
 			bytes[6] = (byte) ((bytes[6] & 0x0f) | 0x10); // version 1
 		} else if (type == 2) {
@@ -706,27 +702,27 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Get a number from a given hexadevimal string.
+	 * Get a number from a given hexadecimal string.
 	 *
 	 * @param hexadecimal
 	 * @return
 	 */
 	protected static long toNumber(String hexadecimal) {
 		return Long.parseLong(hexadecimal, 16);
+		//return toNumber(toBytes(hexadecimal));
 	}
-
+	
+	/**
+	 * Get a number from a given array of bytes.
+	 * 
+	 * @param bytes
+	 * @return
+	 */
 	protected static long toNumber(byte[] bytes) {
-		byte[] b = bytes;
-
-		if (bytes.length < 8) {
-			b = UUIDGenerator.array(8, (byte) 0x00);
-			b = UUIDGenerator.replace(b, bytes, 8 - bytes.length);
-		}
-
 		long result = 0;
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < bytes.length; i++) {
 			result <<= 8;
-			result |= (b[i] & 0xFF);
+			result |= (bytes[i] & 0xFF);
 		}
 		return result;
 	}
@@ -744,7 +740,7 @@ public class UUIDGenerator {
 		}
 		return bytes;
 	}
-
+	
 	/**
 	 * Get an array of bytes from a given hexadecimal string.
 	 *
@@ -755,12 +751,11 @@ public class UUIDGenerator {
 		int len = hexadecimal.length();
 		byte[] bytes = new byte[len / 2];
 		for (int i = 0; i < len; i += 2) {
-			bytes[i / 2] = (byte) ((Character.digit(hexadecimal.charAt(i), 16) << 4)
-					+ Character.digit(hexadecimal.charAt(i + 1), 16));
+			bytes[i / 2] = (byte) ((fromHexChar(hexadecimal.charAt(i)) << 4) | fromHexChar(hexadecimal.charAt(i + 1)));
 		}
 		return bytes;
 	}
-
+	
 	/**
 	 * Get a hexadecimal string from given array of bytes.
 	 *
@@ -771,12 +766,53 @@ public class UUIDGenerator {
 		char[] hexadecimal = new char[bytes.length * 2];
 		for (int i = 0; i < bytes.length; i++) {
 			int v = bytes[i] & 0xFF;
-			hexadecimal[i * 2] = UUIDGenerator.HEXADECIMAL_CHARS[v >>> 4];
-			hexadecimal[(i * 2) + 1] = UUIDGenerator.HEXADECIMAL_CHARS[v & 0x0F];
+			hexadecimal[i * 2] = toHexChar(v >>> 4);
+			hexadecimal[(i * 2) + 1] = toHexChar(v & 0x0F);
 		}
 		return new String(hexadecimal);
 	}
+	
+	/**
+	 * Get a number value from a hexadecimal char.
+	 * 
+	 * @param chr
+	 * @return
+	 */
+	private static int fromHexChar(char chr) {
+		
+		if (chr >= 0x61 && chr <= 0x66) {
+			// ASCII codes from 'a' to 'f'
+			return (int) chr - 0x57;
+		} else if (chr >= 0x41 && chr <= 0x46) {
+			// ASCII codes from 'A' to 'F'
+			return (int) chr - 0x37;
+		} else if(chr >= 0x30 && chr <= 0x39) {
+			// ASCII codes from 0 to 9
+			return (int) chr - 0x30;
+		}
 
+		return 0;
+	}
+	
+	/**
+	 * Get a hexadecimal from a number value.
+	 * 
+	 * @param number
+	 * @return
+	 */
+	private static char toHexChar(int number) {
+
+		if (number >= 0x0a && number <= 0x0f) {
+			// ASCII codes from 'a' to 'f'
+			return (char) (0x57 + number);
+		} else if (number >= 0x00 && number <= 0x09) {
+			// ASCII codes from 0 to 9
+			return (char) (0x30 + number);
+		}
+
+		return 0;
+	}
+	
 	/**
 	 * Get a new array with a specific lenth and filled with a byte value.
 	 *
@@ -861,7 +897,6 @@ public class UUIDGenerator {
 		if (bytes1.length != bytes2.length) {
 			return false;
 		}
-
 		for (int i = 0; i < bytes1.length; i++) {
 			if (bytes1[i] != bytes2[i]) {
 				return false;
