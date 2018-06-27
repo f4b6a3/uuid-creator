@@ -233,8 +233,8 @@ public class UUIDGenerator {
 		long part3;
 		long timestamp;
 
-		byte[] timestampBytes = UUIDGenerator.toBytes(uuid.toString().replaceAll("-", ""));
-		long embededTimestamp = UUIDGenerator.toNumber(UUIDGenerator.copy(timestampBytes, 0, 8));
+		byte[] uuidBytes = UUIDGenerator.toBytes(uuid.toString().replaceAll("-", ""));
+		long embededTimestamp = UUIDGenerator.toNumber(UUIDGenerator.copy(uuidBytes, 0, 8));
 
 		long version = (embededTimestamp & 0x000000000000F000) >>> 12;
 
@@ -292,26 +292,24 @@ public class UUIDGenerator {
 	 */
 	protected static UUID getTimeBasedUUID(Instant instant, boolean standardTimestamp, boolean realHardwareAddress) {
 		
-		byte[] uuid;
-		byte[] timestampBytes;
-		byte[] clockSequenceBytes;
-		byte[] hardwareAddressBytes;
+		byte[] uuid = new byte[16];
+		byte[] timestampBytes = null;
+		byte[] clockSequenceBytes = null;
+		byte[] hardwareAddressBytes = null;
 		
 		long timestamp = UUIDGenerator.getGregorianCalendarTimestamp(instant);
+		
 		timestampBytes = UUIDGenerator.getUUIDTimestampBytes(timestamp, standardTimestamp);
-	    
 		clockSequenceBytes = UUIDGenerator.getClockSequenceBytes(timestamp);
-	    hardwareAddressBytes = getHardwareAddressBytes(realHardwareAddress);
-		
-		UUIDGenerator.lastTimestamp = timestamp;
-		
-		uuid = UUIDGenerator.copy(UUIDGenerator.NIL_UUID);
+		hardwareAddressBytes = UUIDGenerator.getHardwareAddressBytes(realHardwareAddress);
+			
 		uuid = UUIDGenerator.replaceField(uuid, UUIDGenerator.copy(timestampBytes, 0, 4), 1);
 		uuid = UUIDGenerator.replaceField(uuid, UUIDGenerator.copy(timestampBytes, 4, 6), 2);
 		uuid = UUIDGenerator.replaceField(uuid, UUIDGenerator.copy(timestampBytes, 6, 8), 3);
 		uuid = UUIDGenerator.replaceField(uuid, clockSequenceBytes, 4);
 		uuid = UUIDGenerator.replaceField(uuid, hardwareAddressBytes, 5);
 		
+		UUIDGenerator.lastTimestamp = timestamp;
 		return UUIDGenerator.toUUID(uuid);
 	}
 
@@ -469,7 +467,7 @@ public class UUIDGenerator {
                 return UUIDGenerator.lastClockSequenceBytes;
             } else {
                 // Increment clock sequence to avoid UUID repetition with the same timestamp
-                clockSequence = (short) (UUIDGenerator.toNumber(UUIDGenerator.lastClockSequenceBytes) + 1);
+                clockSequence = (short) (UUIDGenerator.toNumber(UUIDGenerator.lastClockSequenceBytes) + 1L);
                 
                 if(clockSequence > maxClockSequence) {
                     // Restart clock sequence
@@ -873,7 +871,13 @@ public class UUIDGenerator {
 	 * @return
 	 */
 	protected static byte[] replace(final byte[] bytes, final byte[] replacement, int index) {
-		byte[] result = UUIDGenerator.copy(bytes);
+
+		byte[] result = new byte[bytes.length];
+		
+		for(int i = 0; i < index; i++) {
+			result[i] = bytes[i];
+		}
+		
 		for (int i = 0; i < replacement.length; i++) {
 			result[index + i] = replacement[i];
 		}
