@@ -40,9 +40,10 @@ public class UUIDGenerator {
 	private static long lastTimestamp = 0;
 	private static byte[] lastHardwareAddressBytes = null;
 	private static byte[] lastClockSequenceBytes = null;
-    private static short minClockSequence = (short) 0x8000;
-    private static short maxClockSequence = (short) 0xbfff;
-    private static short rangeClockSequence = (short) (maxClockSequence - minClockSequence + 1);
+	
+    private static short minClockSequence = (short) 0x8000; // 32768
+    private static short maxClockSequence = (short) 0xbfff; // 49151
+    private static short rangeClockSequence = (short) (maxClockSequence - minClockSequence + 1); // 16384
 	
 	// Constants used to avoid long data type overflow
 	private static final long SECONDS_MULTIPLYER = (long) Math.pow(10, 7);
@@ -52,10 +53,10 @@ public class UUIDGenerator {
 	private static final byte[] NIL_UUID = UUIDGenerator.array(16, (byte) 0x00);
 	
 	// UUIDs for standard name spaces defined in RFC-4122
-	public static final UUID NAMESPACE_DNS = UUID.fromString("6ba7b810-9dad-11d1-80b4-00c04fd430c8");
-	public static final UUID NAMESPACE_URL = UUID.fromString("6ba7b811-9dad-11d1-80b4-00c04fd430c8");
-	public static final UUID NAMESPACE_ISO_OID = UUID.fromString("6ba7b812-9dad-11d1-80b4-00c04fd430c8");
-	public static final UUID NAMESPACE_X500 = UUID.fromString("6ba7b814-9dad-11d1-80b4-00c04fd430c8");
+	public static final UUID NAMESPACE_DNS = new UUID(0x6ba7b8109dad11d1L, 0x80b400c04fd430c8L);
+	public static final UUID NAMESPACE_URL = new UUID(0x6ba7b8119dad11d1L, 0x80b400c04fd430c8L);
+	public static final UUID NAMESPACE_ISO_OID = new UUID(0x6ba7b8129dad11d1L, 0x80b400c04fd430c8L);
+	public static final UUID NAMESPACE_X500 = new UUID(0x6ba7b8149dad11d1L, 0x80b400c04fd430c8L);
 	
 	/* ### PUBLIC UUID GENERATORS */
 
@@ -466,7 +467,7 @@ public class UUIDGenerator {
         } else {
             if (timestamp > UUIDGenerator.lastTimestamp) {
                 return UUIDGenerator.lastClockSequenceBytes;
-            } else {                
+            } else {
                 // Increment clock sequence to avoid UUID repetition with the same timestamp
                 clockSequence = (short) (UUIDGenerator.toNumber(UUIDGenerator.lastClockSequenceBytes) + 1);
                 
@@ -477,7 +478,7 @@ public class UUIDGenerator {
             }
         }
         
-        UUIDGenerator.lastClockSequenceBytes = UUIDGenerator.copy(UUIDGenerator.toBytes(clockSequence), 6, 8);
+        UUIDGenerator.lastClockSequenceBytes = UUIDGenerator.toBytes(clockSequence, 2);
         return UUIDGenerator.lastClockSequenceBytes;
     }
 	   
@@ -589,21 +590,6 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Format a string to UUID format.
-	 *
-	 * @param uuid
-	 * @return
-	 */
-	protected static String formatString(String uuid) {
-		StringBuffer buffer = new StringBuffer(uuid.substring(0, 32));
-		buffer.insert(8, '-');
-		buffer.insert(13, '-');
-		buffer.insert(18, '-');
-		buffer.insert(23, '-');
-		return buffer.toString();
-	}
-
-	/**
 	 * Set uuid version.
 	 * 
 	 * @param uuid
@@ -708,8 +694,7 @@ public class UUIDGenerator {
 	 * @return
 	 */
 	protected static long toNumber(String hexadecimal) {
-		return Long.parseLong(hexadecimal, 16);
-		//return toNumber(toBytes(hexadecimal));
+		return toNumber(toBytes(hexadecimal));
 	}
 	
 	/**
@@ -721,8 +706,7 @@ public class UUIDGenerator {
 	protected static long toNumber(byte[] bytes) {
 		long result = 0;
 		for (int i = 0; i < bytes.length; i++) {
-			result <<= 8;
-			result |= (bytes[i] & 0xFF);
+			result = (result << 8) | (bytes[i] & 0xff);
 		}
 		return result;
 	}
@@ -734,7 +718,17 @@ public class UUIDGenerator {
 	 * @return
 	 */
 	protected static byte[] toBytes(long number) {
-		byte[] bytes = new byte[8];
+		return toBytes(number, 8);
+	}
+	
+	/**
+	 * Get an array of bytes from a given number.
+	 *
+	 * @param number
+	 * @return
+	 */
+	protected static byte[] toBytes(long number, int size) {
+		byte[] bytes = new byte[size];
 		for (int i = 0; i < bytes.length; i++) {
 			bytes[i] = (byte) (number >>> (8 * ((bytes.length - 1) - i)));
 		}
@@ -778,7 +772,7 @@ public class UUIDGenerator {
 	 * @param chr
 	 * @return
 	 */
-	private static int fromHexChar(char chr) {
+	protected static int fromHexChar(char chr) {
 		
 		if (chr >= 0x61 && chr <= 0x66) {
 			// ASCII codes from 'a' to 'f'
@@ -800,7 +794,7 @@ public class UUIDGenerator {
 	 * @param number
 	 * @return
 	 */
-	private static char toHexChar(int number) {
+	protected static char toHexChar(int number) {
 
 		if (number >= 0x0a && number <= 0x0f) {
 			// ASCII codes from 'a' to 'f'
@@ -814,7 +808,7 @@ public class UUIDGenerator {
 	}
 	
 	/**
-	 * Get a new array with a specific lenth and filled with a byte value.
+	 * Get a new array with a specific length and filled with a byte value.
 	 *
 	 * @param length
 	 * @param value

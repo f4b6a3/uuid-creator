@@ -47,10 +47,7 @@ public class UUIDGeneratorTest extends TestCase {
 			long timestamp = (i % 2);
 			byte[] clockSequenceBytes = UUIDGenerator.getClockSequenceBytes(timestamp);
 			String clockSequenceString = UUIDGenerator.toHexadecimal(clockSequenceBytes);
-			
-			boolean isValidClockSequence = clockSequenceString.matches(UUIDGeneratorTest.ClOCK_SEQUENCE_PATTERN);
-			
-			Assert.assertTrue(isValidClockSequence);
+			Assert.assertTrue(clockSequenceString.matches(UUIDGeneratorTest.ClOCK_SEQUENCE_PATTERN));
 		}
 	}
 	
@@ -148,51 +145,6 @@ public class UUIDGeneratorTest extends TestCase {
 	}
 	
 	/**
-	 * This method only prints running times.
-	 */
-	public void testRunningTime() {
-
-		long max = (long) Math.pow(10, 5);
-		Instant start = null;
-		Instant end = null;
-
-		start = UUIDGenerator.getClockInstant();
-		for (int i = 0; i < max; i++) {
-			UUID.randomUUID(); // example
-		}
-		end = UUIDGenerator.getClockInstant();
-		long miliseconds1 = (end.toEpochMilli() - start.toEpochMilli());
-
-		start = UUIDGenerator.getClockInstant();
-		for (int i = 0; i < max; i++) {
-			UUIDGenerator.getRandomUUID(); // example
-		}
-		end = UUIDGenerator.getClockInstant();
-		long miliseconds2 = (end.toEpochMilli() - start.toEpochMilli());
-
-		start = UUIDGenerator.getClockInstant();
-		for (int i = 0; i < max; i++) {
-			UUIDGenerator.getTimeBasedUUID(); // example
-		}
-		end = UUIDGenerator.getClockInstant();
-		long miliseconds3 = (end.toEpochMilli() - start.toEpochMilli());
-		
-		start = UUIDGenerator.getClockInstant();
-		for (int i = 0; i < max; i++) {
-			UUIDGenerator.getSequentialUUID(); // example
-		}
-		end = UUIDGenerator.getClockInstant();
-		long miliseconds4 = (end.toEpochMilli() - start.toEpochMilli());
-
-		System.out.println();
-		System.out.println("Running times for 100,000 UUIDs generated:");
-		System.out.println("- java.util.UUID.randomUUID():       " + miliseconds1 + " ms");
-		System.out.println("- UUIDGenerator.getRandomUUID():     " + miliseconds2 + " ms");
-		System.out.println("- UUIDGenerator.getTimeBasedUUID():  " + miliseconds3 + " ms");
-		System.out.println("- UUIDGenerator.getSequentialUUID(): " + miliseconds4 + " ms");
-	}
-
-	/**
 	 * This method only prints average running times.
 	 */
 	public void testRunningTimeAverage() {
@@ -203,47 +155,50 @@ public class UUIDGeneratorTest extends TestCase {
 		long acum4 = 0;
 		long rounds = 10;
 
+		Instant start = null;
+		Instant end = null;
+		long max = (long) Math.pow(10, 5);
+		
 		for (int j = 0; j < rounds; j++) {
 
-			Instant start = null;
-			Instant end = null;
-			long max = (long) Math.pow(10, 5);
+			start = null;
+			end = null;
 
-			start = UUIDGenerator.getClockInstant();
+			start = Instant.now();
 			for (int i = 0; i < max; i++) {
-				UUID.randomUUID(); // example
+				UUID.randomUUID();
 			}
-			end = UUIDGenerator.getClockInstant();
+			end = Instant.now();
 			long miliseconds1 = (end.toEpochMilli() - start.toEpochMilli());
 			acum1 = acum1 + miliseconds1;
 
-			start = UUIDGenerator.getClockInstant();
+			start = Instant.now();
 			for (int i = 0; i < max; i++) {
-				UUIDGenerator.getRandomUUID(); // example
+				UUIDGenerator.getRandomUUID();
 			}
-			end = UUIDGenerator.getClockInstant();
+			end = Instant.now();
 			long miliseconds2 = (end.toEpochMilli() - start.toEpochMilli());
 			acum2 = acum2 + miliseconds2;
 
-			start = UUIDGenerator.getClockInstant();
+			start = Instant.now();
 			for (int i = 0; i < max; i++) {
-				UUIDGenerator.getTimeBasedUUID(); // example
+				UUIDGenerator.getTimeBasedUUID();
 			}
-			end = UUIDGenerator.getClockInstant();
+			end = Instant.now();
 			long miliseconds3 = (end.toEpochMilli() - start.toEpochMilli());
 			acum3 = acum3 + miliseconds3;
 			
-			start = UUIDGenerator.getClockInstant();
+			start = Instant.now();
 			for (int i = 0; i < max; i++) {
-				UUIDGenerator.getSequentialUUID(); // example
+				UUIDGenerator.getSequentialUUID();
 			}
-			end = UUIDGenerator.getClockInstant();
+			end = Instant.now();
 			long miliseconds4 = (end.toEpochMilli() - start.toEpochMilli());
 			acum4 = acum4 + miliseconds4;
 		}
 
 		System.out.println();
-		System.out.println("Average running times for 100,000 UUIDs generated:");
+		System.out.println(String.format("Average running times for %s UUIDs generated:", max));
 		System.out.println("- java.util.UUID.randomUUID():       " + (acum1 / rounds) + " ms");
 		System.out.println("- UUIDGenerator.getRandomUUID():     " + (acum2 / rounds) + " ms");
 		System.out.println("- UUIDGenerator.getTimeBasedUUID():  " + (acum3 / rounds) + " ms");
@@ -268,30 +223,6 @@ public class UUIDGeneratorTest extends TestCase {
 		System.out.println("- Sequential UUID instant: " + UUIDGenerator.extractInstant(UUID.fromString(sequentialUUID)));
 	}
 	
-	public void testToNumberFromBytes() {
-		for(int i = 0; i < numbers.length; i++) {
-			assertEquals(numbers[i], UUIDGenerator.toNumber(bytes[i]));
-		}
-	}
-	
-	public void testToBytesFromHexadecimals() {
-		for(int i = 0; i < bytes.length; i++) {
-			assertTrue(UUIDGenerator.equals(bytes[i], UUIDGenerator.toBytes(hexadecimals[i])));
-		}
-	}
-	
-	public void testToHexadecimalFromBytes() {
-		for(int i = 0; i < hexadecimals.length; i++) {
-			assertEquals(hexadecimals[i], UUIDGenerator.toHexadecimal(bytes[i]));
-		}
-	}
-	
-	public void testToNumberFromHexadecimal() {
-		for(int i = 0; i < hexadecimals.length; i++) {
-			assertEquals(numbers[i], UUIDGenerator.toNumber(hexadecimals[i]));
-		}
-	}
-
 	/**
 	 * Test with many threads running at the same time.
 	 * 
@@ -315,9 +246,9 @@ public class UUIDGeneratorTest extends TestCase {
 	 */
 	private class RaceConditionRunnable implements Runnable {
 		
-		private int id;
-		private Instant instant;
-		private UUID[][] array;
+		private int id = 0;
+		private Instant instant = null;
+		private UUID[][] array = null;
 		
 		private UUID uuid;
 		
@@ -350,6 +281,30 @@ public class UUIDGeneratorTest extends TestCase {
 					throw new RuntimeException(String.format("[RaceConditionRunnable] UUID conflict: %s", uuid.toString()));
 				}
 			}
+		}
+	}
+	
+	public void testToNumberFromBytes() {
+		for(int i = 0; i < numbers.length; i++) {
+			assertEquals(numbers[i], UUIDGenerator.toNumber(bytes[i]));
+		}
+	}
+	
+	public void testToBytesFromHexadecimals() {
+		for(int i = 0; i < bytes.length; i++) {
+			assertTrue(UUIDGenerator.equals(bytes[i], UUIDGenerator.toBytes(hexadecimals[i])));
+		}
+	}
+	
+	public void testToHexadecimalFromBytes() {
+		for(int i = 0; i < hexadecimals.length; i++) {
+			assertEquals(hexadecimals[i], UUIDGenerator.toHexadecimal(bytes[i]));
+		}
+	}
+	
+	public void testToNumberFromHexadecimal() {
+		for(int i = 0; i < hexadecimals.length; i++) {
+			assertEquals(numbers[i], UUIDGenerator.toNumber(hexadecimals[i]));
 		}
 	}
 	
@@ -412,14 +367,16 @@ public class UUIDGeneratorTest extends TestCase {
 //		Instant start = null;
 //		Instant end = null;
 //
-//		start = UUIDGenerator.getClockInstant();
+//		start = Instant.now();
 //		for (int n = 0; n < max; n++) {
 //			// Put some code to test here
+//			for(int i = 0; i < hexadecimals.length; i++) {
+//				assertEquals(numbers[i], UUIDGenerator.toNumber(hexadecimals[i]));
+//			}
 //		}
-//		end = UUIDGenerator.getClockInstant();
+//		end = Instant.now();
 //		long miliseconds1 = (end.toEpochMilli() - start.toEpochMilli());
 //		System.out.println("Time: " + miliseconds1 + " ms");
 //	}
-	
 	
 }
