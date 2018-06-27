@@ -49,6 +49,7 @@ public class UUIDGeneratorTest extends TestCase {
 			String clockSequenceString = UUIDGenerator.toHexadecimal(clockSequenceBytes);
 			
 			boolean isValidClockSequence = clockSequenceString.matches(UUIDGeneratorTest.ClOCK_SEQUENCE_PATTERN);
+			
 			Assert.assertTrue(isValidClockSequence);
 		}
 	}
@@ -84,7 +85,6 @@ public class UUIDGeneratorTest extends TestCase {
 	public void testGetSequentialUUID_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), SEQUENTIAL_UUID, FAKE_MAC);
-			System.out.println(uuid.toString());
 			Assert.assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
 		}
 	}
@@ -324,6 +324,7 @@ public class UUIDGeneratorTest extends TestCase {
 				if(!contains(uuid)) {
 					array[id][i] = uuid;
 				} else {
+				    System.out.println(String.format("[RaceConditionRunnable] UUID conflict: %s", uuid.toString()));
 					// Throw an exeption if the same UUID was used by other thread.
 					throw new RaceConditionException();
 				}

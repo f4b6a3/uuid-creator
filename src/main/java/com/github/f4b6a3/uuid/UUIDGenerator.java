@@ -42,6 +42,9 @@ public class UUIDGenerator {
 	private static long lastTimestamp = 0;
 	private static byte[] lastHardwareAddressBytes = null;
 	private static byte[] lastClockSequenceBytes = null;
+    private static short minClockSequence = (short) 0x8000;
+    private static short maxClockSequence = (short) 0xbfff;
+    private static short rangeClockSequence = (short) (maxClockSequence - minClockSequence + 1);
 	
 	// Constants used to avoid long data type overflow
 	private static final long SECONDS_MULTIPLYER = (long) Math.pow(10, 7);
@@ -297,15 +300,9 @@ public class UUIDGenerator {
 		
 		long timestamp = UUIDGenerator.getGregorianCalendarTimestamp(instant);
 		timestampBytes = UUIDGenerator.getUUIDTimestampBytes(timestamp, standardTimestamp);
-		
+	    
 		clockSequenceBytes = UUIDGenerator.getClockSequenceBytes(timestamp);
-		
-		if (timestamp > UUIDGenerator.lastTimestamp) {
-			hardwareAddressBytes = getHardwareAddressBytes(realHardwareAddress);
-		} else {
-			// generate a new random hardware address to avoid UUID repetition
-			hardwareAddressBytes = getRandomHardwareAddressBytes();
-		}
+	    hardwareAddressBytes = getHardwareAddressBytes(realHardwareAddress);
 		
 		UUIDGenerator.lastTimestamp = timestamp;
 		
@@ -450,30 +447,44 @@ public class UUIDGenerator {
 	}
 	
 	/**
-	 * Get the clock sequence.
-	 * 
-	 * @return
-	 */
-	protected static byte[] getClockSequenceBytes(long timestamp) {
-		
-		long clockSequence = 0;
-		
-		if (UUIDGenerator.lastClockSequenceBytes == null) {
-			clockSequence = UUIDGenerator.getRandomNumber();
-		} else {
-			if(timestamp > UUIDGenerator.lastTimestamp) {
-				return UUIDGenerator.lastClockSequenceBytes;
-			} else {
-				clockSequence = UUIDGenerator.toNumber(UUIDGenerator.lastClockSequenceBytes) + 1;
-			}
-		}
-		
-		clockSequence = ((clockSequence & 0x0000000000003FFFL) | 0x0000000000008000L);
-		
-		UUIDGenerator.lastClockSequenceBytes = UUIDGenerator.copy(UUIDGenerator.toBytes(clockSequence), 6, 8);
-		return UUIDGenerator.lastClockSequenceBytes;
-	}
-	
+     * Get the clock sequence.
+     * 
+     * The first clock sequence is a random number between 0x8000 and 0xbfff. It changes only to avoid UUID repetitions.
+     * 
+     * If the current timestamp is equal or lower than the last timestamp, the clock sequence is incremented by 1.
+     * 
+     * If after the incremented the next clock sequence is greater than 0xbfff, the next clock sequence is set to
+     * 0x8000, restarting it's cycle.
+     * 
+     * @return
+     */
+    protected static byte[] getClockSequenceBytes(long timestamp) {
+        
+        short clockSequence = 0;
+        
+        if (UUIDGenerator.lastClockSequenceBytes == null) {
+            // Get a random number in the range between minClockSequence and maxClockSequence.
+            clockSequence = (short)(minClockSequence + UUIDGenerator.random.nextInt(rangeClockSequence));
+        } else {
+            if (timestamp > UUIDGenerator.lastTimestamp) {
+                return UUIDGenerator.lastClockSequenceBytes;
+            } else {                
+                // Increment clock sequence to avoid UUID repetition with the same timestamp
+                clockSequence = (short) (UUIDGenerator.toNumber(UUIDGenerator.lastClockSequenceBytes) + 1);
+                
+                if(clockSequence > maxClockSequence) {
+                    // Restart clock sequence
+                    clockSequence = minClockSequence;
+                }
+            }
+        }
+        
+        
+        
+        UUIDGenerator.lastClockSequenceBytes = UUIDGenerator.copy(UUIDGenerator.toBytes(clockSequence), 6, 8);
+        return UUIDGenerator.lastClockSequenceBytes;
+    }
+	   
 	/**
 	 * Get hardware address from host machine.
 	 *
@@ -566,15 +577,6 @@ public class UUIDGenerator {
 		byte[] bytes = new byte[length];
 		UUIDGenerator.random.nextBytes(bytes);
 		return bytes;
-	}
-
-	/**
-	 * Get a random number.
-	 *
-	 * @return
-	 */
-	protected static long getRandomNumber() {
-		return UUIDGenerator.random.nextLong();
 	}
 
 	/**
