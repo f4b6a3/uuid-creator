@@ -58,6 +58,9 @@ public class UUIDGenerator {
 	public static final UUID NAMESPACE_ISO_OID = new UUID(0x6ba7b8129dad11d1L, 0x80b400c04fd430c8L);
 	public static final UUID NAMESPACE_X500 = new UUID(0x6ba7b8149dad11d1L, 0x80b400c04fd430c8L);
 	
+	private static MessageDigest mdMD5 = null;
+	private static MessageDigest mdSha1 = null;
+	
 	/* ### PUBLIC UUID GENERATORS */
 
 	/**
@@ -131,7 +134,7 @@ public class UUIDGenerator {
 	}
 	
 	/**
-	 * Returns a UUID with timestamp and machine adress, but the bytes
+	 * Returns a UUID with timestamp and machine address, but the bytes
 	 * corresponding to timestamp are arranged in the "natural" order, that is
 	 * not compatible with the version 1. For that reason it's returned as a
 	 * version 4 UUID.
@@ -150,7 +153,7 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Returns a UUID with based on a name, using MD5.
+	 * Returns a UUID based on a name, using MD5.
 	 *
 	 * It uses the NIL UUID as default name space.
 	 * 
@@ -169,7 +172,7 @@ public class UUIDGenerator {
 	}
 	
 	/**
-	 * Returns a UUID with based on a name space and a name, using MD5.
+	 * Returns a UUID based on a name space and a name, using MD5.
 	 *
 	 * Details: <br/>
 	 * - Version number: 3 <br/>
@@ -186,7 +189,7 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Returns a UUID with based on a name, using SHA1.
+	 * Returns a UUID based on a name, using SHA1.
 	 *
 	 * It uses the NIL UUID as default name space.
 	 *
@@ -204,7 +207,7 @@ public class UUIDGenerator {
 	}
 	
 	/**
-	 * Returns a UUID with based on a name space and a name, using SHA1.
+	 * Returns a UUID based on a name space and a name, using SHA1.
 	 *
 	 * Details: <br/>
 	 * - Version number: 5 <br/>
@@ -256,7 +259,7 @@ public class UUIDGenerator {
 	}
 	
 	/**
-	 * Get hardware address contained in the UUID.
+	 * Get the hardware address that is embedded in the UUID.
 	 *
 	 * @param uuid
 	 * @return
@@ -335,7 +338,7 @@ public class UUIDGenerator {
 		byte[] namespaceBytes = null;
 		byte[] nameBytes = null;
 		byte[] bytes = null;
-		MessageDigest md;
+		MessageDigest md = null;
 		
 		if(namespace != null) {
 			namespaceBytes = UUIDGenerator.toBytes(namespace.toString().replaceAll("[^0-9a-fA-F]", ""));
@@ -345,9 +348,15 @@ public class UUIDGenerator {
 		
 		try {
 			if(useSHA1) {
-				md = MessageDigest.getInstance("SHA1");
+				if(mdMD5 == null) {
+					mdMD5 = MessageDigest.getInstance("SHA1");
+				}
+				md = mdMD5;
 			} else {
-				md = MessageDigest.getInstance("MD5");
+				if(mdSha1 == null) {
+					mdSha1 = MessageDigest.getInstance("MD5");
+				}
+				md = mdSha1;
 			}
 		} catch (NoSuchAlgorithmException e) {
 			throw new InternalError("Message digest algorithm not supported.", e);
@@ -400,7 +409,7 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Get the Instant associated with the given timestamp.
+	 * Get the instant associated with the given timestamp.
 	 *
 	 * @param timestamp
 	 * @return
@@ -442,19 +451,22 @@ public class UUIDGenerator {
 
 		return UUIDGenerator.toBytes(timestampBytes);
 	}
-	
+
 	/**
-     * Get the clock sequence.
-     * 
-     * The first clock sequence is a random number between 0x8000 and 0xbfff. It changes only to avoid UUID repetitions.
-     * 
-     * If the current timestamp is equal or lower than the last timestamp, the clock sequence is incremented by 1.
-     * 
-     * If after the incremented the next clock sequence is greater than 0xbfff, the next clock sequence is set to
-     * 0x8000, restarting it's cycle.
-     * 
-     * @return
-     */
+	 * Get the clock sequence.
+	 * 
+	 * The first clock sequence is a random number between 0x8000 and 0xbfff. It
+	 * changes only to avoid UUID repetitions in the same timestamp.
+	 * 
+	 * If the current timestamp is equal or lower than the last timestamp, the
+	 * clock sequence is incremented by 1.
+	 * 
+	 * If after the incremented the next clock sequence is greater than 0xbfff,
+	 * the next clock sequence is set to 0x8000, restarting it's cycle.
+	 * 
+	 * @param timestamp 
+	 * @return
+	 */
     protected static byte[] getClockSequenceBytes(long timestamp) {
         
         short clockSequence = 0;
@@ -623,7 +635,9 @@ public class UUIDGenerator {
 	}
 	
 	/**
-	 * Get a field of a given UUID.
+	 * Get a field of a given UUID. 
+	 * 
+	 * A field is each set of chars separated by dashes.
 	 *
 	 * @param uuid
 	 * @param index
