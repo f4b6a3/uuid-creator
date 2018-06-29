@@ -226,12 +226,13 @@ public class UUIDGeneratorTest extends TestCase {
 	/**
 	 * Test with many threads running at the same time.
 	 * 
-	 * It basically tests if a UUID is generated twice for more than one thread.
-	 * A UUID should not be repeated.
+	 * It basically tests if a UUID is generated twice in the same timestamp
+	 * (100-nanoseconds) for more than one thread. A UUID should not be
+	 * repeated in the same timestamp.
 	 */
 	public void testRaceCondition() {
 		
-		int threadCount = (int) Math.pow(10, 2);
+		int threadCount = (int) Math.pow(10, 1);
 		int threadLoopLimit = (int) Math.pow(10, 2);
 		Instant instant = UUIDGenerator.getClockInstant();
 		

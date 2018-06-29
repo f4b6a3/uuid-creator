@@ -348,15 +348,15 @@ public class UUIDGenerator {
 		
 		try {
 			if(useSHA1) {
-				if(mdMD5 == null) {
-					mdMD5 = MessageDigest.getInstance("SHA1");
-				}
-				md = mdMD5;
-			} else {
 				if(mdSha1 == null) {
-					mdSha1 = MessageDigest.getInstance("MD5");
+					mdSha1 = MessageDigest.getInstance("SHA1");
 				}
 				md = mdSha1;
+			} else {
+				if(mdMD5 == null) {
+					mdMD5 = MessageDigest.getInstance("MD5");
+				}
+				md = mdMD5;
 			}
 		} catch (NoSuchAlgorithmException e) {
 			throw new InternalError("Message digest algorithm not supported.", e);
