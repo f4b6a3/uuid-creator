@@ -234,8 +234,12 @@ public class UUIDGeneratorTest extends TestCase {
 		
 		int threadCount = (int) Math.pow(10, 1);
 		int threadLoopLimit = (int) Math.pow(10, 2);
+		
+		// This instant won't change during this test
 		Instant instant = UUIDGenerator.getClockInstant();
 		
+		// Start many threads to generate a lot of UUIDs in the same instant
+		// (100-nanoseconds).
 		for (int i = 0; i < threadCount; i++) {
 			Thread thread = new Thread(new RaceConditionRunnable(i, instant, threadCount, threadLoopLimit));
 			thread.start();
@@ -279,6 +283,7 @@ public class UUIDGeneratorTest extends TestCase {
 				if(!contains(uuid)) {
 					array[id][i] = uuid;
 				} else {
+					// The current UUID have been generated before by another thread.
 					throw new RuntimeException(String.format("[RaceConditionRunnable] UUID conflict: %s", uuid.toString()));
 				}
 			}
