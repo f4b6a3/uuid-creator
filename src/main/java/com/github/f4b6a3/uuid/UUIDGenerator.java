@@ -17,45 +17,27 @@
 
 package com.github.f4b6a3.uuid;
 
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.time.Clock;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 public class UUIDGenerator {
-
+	
 	private static final UUIDClock clock = new UUIDClock();
-
-	private static final Instant GREGORIAN_EPOCH = UUIDGenerator.getGregorianCalendarBeginning();
+	private static final UUIDState state = new UUIDState();
+	private static final UUIDUtils utils = new UUIDUtils();
 
 	private static SecureRandom random = UUIDGenerator.getSecureRandom();
-	private static long lastTimestamp = 0;
-	private static byte[] lastHardwareAddressBytes = null;
-	private static byte[] lastClockSequenceBytes = null;
 	
-    private static short minClockSequence = (short) 0x8000; // 32768
-    private static short maxClockSequence = (short) 0xbfff; // 49151
-    private static short rangeClockSequence = (short) (maxClockSequence - minClockSequence + 1); // 16384
-	
-	// Constants used to avoid long data type overflow
-	private static final long SECONDS_MULTIPLYER = (long) Math.pow(10, 7);
-	private static final long NANOSECONDS_DIVISOR = (long) Math.pow(10, 2);
-
 	// NIL UUID has this value: 00000000-0000-0000-0000-000000000000
-	private static final byte[] NIL_UUID = UUIDGenerator.array(16, (byte) 0x00);
+	public static final UUID NIL_UUID = new UUID(0x0000000000000000L, 0x0000000000000000L);
 	
 	// UUIDs for standard name spaces defined in RFC-4122
 	public static final UUID NAMESPACE_DNS = new UUID(0x6ba7b8109dad11d1L, 0x80b400c04fd430c8L);
 	public static final UUID NAMESPACE_URL = new UUID(0x6ba7b8119dad11d1L, 0x80b400c04fd430c8L);
-	public static final UUID NAMESPACE_ISO_OID = new UUID(0x6ba7b8129dad11d1L, 0x80b400c04fd430c8L);
+	public static final UUID NAMESPACE_OID = new UUID(0x6ba7b8129dad11d1L, 0x80b400c04fd430c8L);
 	public static final UUID NAMESPACE_X500 = new UUID(0x6ba7b8149dad11d1L, 0x80b400c04fd430c8L);
 	
 	private static MessageDigest mdMD5 = null;
@@ -94,7 +76,7 @@ public class UUIDGenerator {
 	 * @return
 	 */
 	public static UUID getTimeBasedUUID() {
-		return UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), true, false);
+		return UUIDGenerator.getTimeBasedUUID(Instant.now(), true, false);
 	}
 
 	/**
@@ -110,7 +92,7 @@ public class UUIDGenerator {
 	 * @return
 	 */
 	public static UUID getTimeBasedMACUUID() {
-		return UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), true, true);
+		return UUIDGenerator.getTimeBasedUUID(Instant.now(), true, true);
 	}
 	
 	/**
@@ -130,7 +112,7 @@ public class UUIDGenerator {
 	 * @return
 	 */
 	public static UUID getSequentialUUID() {
-		return UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), false, false);
+		return UUIDGenerator.getTimeBasedUUID(Instant.now(), false, false);
 	}
 	
 	/**
@@ -149,7 +131,7 @@ public class UUIDGenerator {
 	 * @return
 	 */
 	public static UUID getSequentialMACUUID() {
-		return UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), false, true);
+		return UUIDGenerator.getTimeBasedUUID(Instant.now(), false, true);
 	}
 
 	/**
@@ -255,7 +237,7 @@ public class UUIDGenerator {
 
 		timestamp = part1 | part2 | part3;
 
-		return UUIDGenerator.getGregorianCalendarInstant(timestamp);
+		return UUIDClock.getInstant(timestamp);
 	}
 	
 	/**
@@ -264,18 +246,18 @@ public class UUIDGenerator {
 	 * @param uuid
 	 * @return
 	 */
-	public static byte[] extractHardwareAddress(UUID uuid) {
-
-		byte[] bytes = UUIDGenerator.toBytes(uuid.toString().replaceAll("-", ""));
-
-		byte[] hardwareAddress = UUIDGenerator.getField(bytes, 5);
-
-		if (!UUIDGenerator.isMulticastHardwareAddress(hardwareAddress)) {
-			return hardwareAddress;
-		}
-
-		return null;
-	}
+//	public static byte[] extractHardwareAddress(UUID uuid) {
+//
+//		byte[] bytes = UUIDGenerator.toBytes(uuid.toString().replaceAll("-", ""));
+//
+//		byte[] hardwareAddress = UUIDGenerator.getField(bytes, 5);
+//
+//		if (!UUIDGenerator.isMulticastHardwareAddress(hardwareAddress)) {
+//			return hardwareAddress;
+//		}
+//
+//		return null;
+//	}
 	
 	/**
 	 * Returns a time-based UUID with to options: to include or not hardware
@@ -290,32 +272,42 @@ public class UUIDGenerator {
 	 *
 	 * @param instant
 	 * @param standardTimestamp
-	 * @param realHardwareAddress
+	 * @param realNode
 	 * @return
 	 */
-	protected static UUID getTimeBasedUUID(Instant instant, boolean standardTimestamp, boolean realHardwareAddress) {
+	protected static UUID getTimeBasedUUID(Instant instant, boolean standardTimestamp, boolean realNode) {
 		
-		byte[] uuid = new byte[16];
-		byte[] timestampBytes = null;
-		byte[] clockSequenceBytes = null;
-		byte[] hardwareAddressBytes = null;
+		long version = 0;
+		long timestamp = 0;
+		long clockSeq1 = 0;
+		long clockSeq2 = 0;
+		long node = 0;
 		
-		long timestamp = UUIDGenerator.getGregorianCalendarTimestamp(instant);
+		version = standardTimestamp ? UUIDBuilder.VERSION_1 : UUIDBuilder.VERSION_0;
+		timestamp = clock.getTimestamp(instant, state);
+		clockSeq1 = clock.getSequence1(timestamp, state);
+		clockSeq2 = clock.getSequence2(timestamp, state);
 		
-		timestampBytes = UUIDGenerator.getUUIDTimestampBytes(timestamp, standardTimestamp);
-		clockSequenceBytes = UUIDGenerator.getClockSequenceBytes(timestamp);
-		hardwareAddressBytes = UUIDGenerator.getHardwareAddressBytes(realHardwareAddress);
-			
-		uuid = UUIDGenerator.replaceField(uuid, UUIDGenerator.copy(timestampBytes, 0, 4), 1);
-		uuid = UUIDGenerator.replaceField(uuid, UUIDGenerator.copy(timestampBytes, 4, 6), 2);
-		uuid = UUIDGenerator.replaceField(uuid, UUIDGenerator.copy(timestampBytes, 6, 8), 3);
-		uuid = UUIDGenerator.replaceField(uuid, clockSequenceBytes, 4);
-		uuid = UUIDGenerator.replaceField(uuid, hardwareAddressBytes, 5);
+		if(realNode) {
+			node = utils.getRealNode(state);
+		} else {
+			node = utils.getRandomNode(state);
+		}
 		
-		UUIDGenerator.lastTimestamp = timestamp;
-		return UUIDGenerator.toUUID(uuid);
+		UUIDBuilder builder = UUIDBuilder.getUUIDBuilder(version)
+				.setTimestamp(timestamp)
+				.setClockSeq1(clockSeq1)
+//				.setClockSeq2(clockSeq2)
+				.setNode(node);
+		
+		state.setTimestamp(timestamp);
+		state.setClockSeq1(clockSeq1);
+		state.setClockSeq2(clockSeq2);
+		state.setNode(node);
+		
+		return builder.getUUID();
 	}
-
+	
 	/**
 	 * Get a name-based UUID using name space, a name and a specific hash algorithm.
 	 * 
@@ -342,8 +334,6 @@ public class UUIDGenerator {
 		
 		if(namespace != null) {
 			namespaceBytes = UUIDGenerator.toBytes(namespace.toString().replaceAll("[^0-9a-fA-F]", ""));
-		} else {
-			namespaceBytes = NIL_UUID;
 		}
 		
 		try {
@@ -376,53 +366,6 @@ public class UUIDGenerator {
 	}
 	
 	/**
-	 * Get the clock instance used to get timestamps.
-	 *
-	 * @return
-	 */
-	protected static Instant getClockInstant() {
-		return Instant.now(UUIDGenerator.clock);
-	}
-
-	/**
-	 * Get the beggining of the Gregorian Calendar: 1582-10-15 00:00:00Z.
-	 *
-	 * @return
-	 */
-	protected static Instant getGregorianCalendarBeginning() {
-		LocalDate localDate = LocalDate.parse("1582-10-15");
-		return localDate.atStartOfDay(ZoneId.of("UTC")).toInstant();
-	}
-
-	/**
-	 * Get the timestamp associated with the given instant.
-	 *
-	 * @param instant
-	 * @return
-	 */
-	protected static long getGregorianCalendarTimestamp(Instant instant) {
-		long seconds = UUIDGenerator.GREGORIAN_EPOCH.until(instant, ChronoUnit.SECONDS);
-		long nanoseconds = instant.getLong(ChronoField.NANO_OF_SECOND);
-		long hundredNanoseconds = ((seconds * UUIDGenerator.SECONDS_MULTIPLYER)
-				+ ((nanoseconds) / UUIDGenerator.NANOSECONDS_DIVISOR));
-		return hundredNanoseconds; // Discard the last 4 bits;
-	}
-
-	/**
-	 * Get the instant associated with the given timestamp.
-	 *
-	 * @param timestamp
-	 * @return
-	 */
-	protected static Instant getGregorianCalendarInstant(long timestamp) {
-		long nanoseconds = timestamp % UUIDGenerator.SECONDS_MULTIPLYER;
-		long seconds = timestamp - nanoseconds;
-		Instant instant = UUIDGenerator.GREGORIAN_EPOCH.plus(seconds / UUIDGenerator.SECONDS_MULTIPLYER,
-				ChronoUnit.SECONDS);
-		return instant.plus(nanoseconds * UUIDGenerator.NANOSECONDS_DIVISOR, ChronoUnit.NANOS);
-	}
-
-	/**
 	 * Get a byte array that contains the timestamp that will be embedded in the
 	 * UUID.
 	 *
@@ -451,129 +394,7 @@ public class UUIDGenerator {
 
 		return UUIDGenerator.toBytes(timestampBytes);
 	}
-
-	/**
-	 * Get the clock sequence.
-	 * 
-	 * The first clock sequence is a random number between 0x8000 and 0xbfff. It
-	 * changes only to avoid UUID repetitions in the same timestamp.
-	 * 
-	 * If the current timestamp is equal or lower than the last timestamp, the
-	 * clock sequence is incremented by 1.
-	 * 
-	 * If after the incremented the next clock sequence is greater than 0xbfff,
-	 * the next clock sequence is set to 0x8000, restarting it's cycle.
-	 * 
-	 * @param timestamp 
-	 * @return
-	 */
-    protected static byte[] getClockSequenceBytes(long timestamp) {
-        
-        short clockSequence = 0;
-        
-        if (UUIDGenerator.lastClockSequenceBytes == null) {
-            // Get a random number in the range between minClockSequence and maxClockSequence.
-            clockSequence = (short)(minClockSequence + UUIDGenerator.random.nextInt(rangeClockSequence));
-        } else {
-            if (timestamp > UUIDGenerator.lastTimestamp) {
-                return UUIDGenerator.lastClockSequenceBytes;
-            } else {
-                // Increment clock sequence to avoid UUID repetition with the same timestamp
-                clockSequence = (short) (UUIDGenerator.toNumber(UUIDGenerator.lastClockSequenceBytes) + 1L);
-                
-                if(clockSequence > maxClockSequence) {
-                    // Restart clock sequence
-                    clockSequence = minClockSequence;
-                }
-            }
-        }
-        
-        UUIDGenerator.lastClockSequenceBytes = UUIDGenerator.toBytes(clockSequence, 2);
-        return UUIDGenerator.lastClockSequenceBytes;
-    }
-	   
-	/**
-	 * Get hardware address from host machine.
-	 *
-	 * If 'realHardwareAddress' is true, it tries to get the first MAC,
-	 * otherwise, a multicast machine address is returned.
-	 *
-	 * @param realHardwareAddress
-	 * @return
-	 */
-	protected static byte[] getHardwareAddressBytes(boolean realHardwareAddress) {
-		
-		if (realHardwareAddress) {
-			return getRealHardwareAddressBytes();
-		}
-		
-		if (lastHardwareAddressBytes != null && UUIDGenerator.isMulticastHardwareAddress(lastHardwareAddressBytes)) {
-			return UUIDGenerator.lastHardwareAddressBytes;
-		}
-		
-		return getRandomHardwareAddressBytes();
-	}
 	
-	/**
-	 * Get real hardware address.
-	 * 
-	 * If no real hardware address is found, a multicast machine address is
-	 * returned.
-	 * 
-	 * @return
-	 */
-	protected static byte[] getRealHardwareAddressBytes() {
-		
-		try {
-			NetworkInterface nic = NetworkInterface.getNetworkInterfaces().nextElement();
-			byte[] realHardwareAddress = nic.getHardwareAddress();
-			if (realHardwareAddress != null) {
-				UUIDGenerator.lastHardwareAddressBytes = realHardwareAddress;
-				return UUIDGenerator.lastHardwareAddressBytes;
-			}
-		} catch (SocketException | NullPointerException e) {
-			// If exception occurs, return a random hardware address.
-		}
-		
-		if (UUIDGenerator.lastHardwareAddressBytes != null) {
-			return UUIDGenerator.lastHardwareAddressBytes;
-		}
-		
-		return getRandomHardwareAddressBytes();
-	}
-	
-	/**
-	 * Get a random multicast hardware address.
-	 * 
-	 * @return
-	 */
-	protected static byte[] getRandomHardwareAddressBytes() {
-		UUIDGenerator.lastHardwareAddressBytes = UUIDGenerator.setMulticastHardwareAddress(UUIDGenerator.getRandomBytes(6));
-		return UUIDGenerator.lastHardwareAddressBytes;
-	}
-	
-	/**
-	 * Set a hardware address as multicast.
-	 *
-	 * @param hardwareAddress
-	 * @return
-	 */
-	protected static byte[] setMulticastHardwareAddress(final byte[] hardwareAddress) {
-		byte[] result = UUIDGenerator.copy(hardwareAddress);
-		result[0] = (byte) (result[0] | 0x01);
-		return result;
-	}
-
-	/**
-	 * Returns true if the hardware address is a multicast address.
-	 *
-	 * @param hardwareAddress
-	 * @return
-	 */
-	protected static boolean isMulticastHardwareAddress(final byte[] hardwareAddress) {
-		return (hardwareAddress[0] & 0x01) == 1;
-	}
-
 	/**
 	 * Get a random array of bytes.
 	 *
@@ -915,59 +736,5 @@ public class UUIDGenerator {
 			}
 		}
 		return true;
-	}
-
-	/**
-	 * Clock class responsible to create instants with nanoseconds.
-	 */
-	public static class UUIDClock extends Clock {
-		
-		private final Clock clock;
-
-		private Instant initialInstant;
-		private long initialNanoseconds;
-
-		private static final int SYNC_THRESHOLD = 1_000_000; // 1ms
-		
-		public UUIDClock() {
-			this(Clock.systemUTC());
-		}
-
-		public UUIDClock(final Clock clock) {
-			this.clock = clock;
-			this.sync();
-		}
-
-		@Override
-		public ZoneId getZone() {
-			return this.clock.getZone();
-		}
-
-		@Override
-		public Instant instant() {
-			return this.initialInstant.plusNanos(this.getSystemNanos() - this.initialNanoseconds);
-		}
-
-		@Override
-		public Clock withZone(final ZoneId zone) {
-			return new UUIDClock(this.clock.withZone(zone));
-		}
-		
-		protected long getSystemNanos() {
-			
-			long currentNanoseconds = System.nanoTime();
-			
-			if ((currentNanoseconds - this.initialNanoseconds) > SYNC_THRESHOLD) {
-				this.sync();
-				return this.initialNanoseconds;
-			}
-
-			return currentNanoseconds;
-		}
-		
-		protected void sync() {
-			this.initialInstant = this.clock.instant();
-			this.initialNanoseconds = System.nanoTime();
-		}
 	}
 }

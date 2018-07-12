@@ -85,16 +85,6 @@ public class UUIDGeneratorTest {
 			{ (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab, (byte) 0xcd, (byte) 0xef}};
 	
 	@Test
-	public void testGetClockSequence() {
-		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			long timestamp = (i % 2);
-			byte[] clockSequenceBytes = UUIDGenerator.getClockSequenceBytes(timestamp);
-			String clockSequenceString = UUIDGenerator.toHexadecimal(clockSequenceBytes);
-			assertTrue(clockSequenceString.matches(UUIDGeneratorTest.ClOCK_SEQUENCE_PATTERN));
-		}
-	}
-	
-	@Test
 	public void testGetRandomUUIDStringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			String uuid = UUIDGenerator.getRandomUUID().toString();
@@ -105,7 +95,7 @@ public class UUIDGeneratorTest {
 	@Test
 	public void testGetTimeBasedMACUUIDStringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), TIMEBASED_UUID, REAL_MAC);
+			UUID uuid = UUIDGenerator.getTimeBasedUUID(Instant.now(), TIMEBASED_UUID, REAL_MAC);
 			assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
 		}
 	}
@@ -113,7 +103,7 @@ public class UUIDGeneratorTest {
 	@Test
 	public void testGetSequentialMACUUIDStringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), SEQUENTIAL_UUID, REAL_MAC);
+			UUID uuid = UUIDGenerator.getTimeBasedUUID(Instant.now(), SEQUENTIAL_UUID, REAL_MAC);
 			assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
 		}
 	}
@@ -121,7 +111,7 @@ public class UUIDGeneratorTest {
 	@Test
 	public void testGetTimeBasedUUID_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), TIMEBASED_UUID, FAKE_MAC);
+			UUID uuid = UUIDGenerator.getTimeBasedUUID(Instant.now(), TIMEBASED_UUID, FAKE_MAC);
 			assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
 		}
 	}
@@ -129,7 +119,7 @@ public class UUIDGeneratorTest {
 	@Test
 	public void testGetSequentialUUID_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), SEQUENTIAL_UUID, FAKE_MAC);
+			UUID uuid = UUIDGenerator.getTimeBasedUUID(Instant.now(), SEQUENTIAL_UUID, FAKE_MAC);
 			assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
 		}
 	}
@@ -141,13 +131,13 @@ public class UUIDGeneratorTest {
 	public void testGetTimeBasedMACUUID_TimestampIsCorrect() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			
-			Instant instant1 = UUIDGenerator.getClockInstant();
+			Instant instant1 = Instant.now();
 			
 			UUID uuid = UUIDGenerator.getTimeBasedUUID(instant1, TIMEBASED_UUID, REAL_MAC);
 			Instant instant2 = UUIDGenerator.extractInstant(uuid);
 			
-			long timestamp1 = UUIDGenerator.getGregorianCalendarTimestamp(instant1);
-			long timestamp2 = UUIDGenerator.getGregorianCalendarTimestamp(instant2);
+			long timestamp1 = UUIDClock.getTimestamp(instant1);
+			long timestamp2 = UUIDClock.getTimestamp(instant2);
 			
 			assertEquals(timestamp1, timestamp2);
 		}
@@ -160,13 +150,13 @@ public class UUIDGeneratorTest {
 	public void testGetSequentialMACUUID_TimestampIsCorrect() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			
-			Instant instant1 = UUIDGenerator.getClockInstant();
+			Instant instant1 = Instant.now();
 			
 			UUID uuid = UUIDGenerator.getTimeBasedUUID(instant1, SEQUENTIAL_UUID, REAL_MAC);
 			Instant instant2 = UUIDGenerator.extractInstant(uuid);
 
-			long timestamp1 = UUIDGenerator.getGregorianCalendarTimestamp(instant1);
-			long timestamp2 = UUIDGenerator.getGregorianCalendarTimestamp(instant2);
+			long timestamp1 = UUIDClock.getTimestamp(instant1);
+			long timestamp2 = UUIDClock.getTimestamp(instant2);
 			
 			assertEquals(timestamp1, timestamp2);
 		}
@@ -201,7 +191,7 @@ public class UUIDGeneratorTest {
 	@Test
 	public void testDemoDifferenceBetweenTimeBasedAndSequentialUUID() {
 
-		Instant instant = UUIDGenerator.getClockInstant();
+		Instant instant = Instant.now();
 		String timeBasedUUID = UUIDGenerator.getTimeBasedUUID(instant, true, false).toString();
 		String sequentialUUID = UUIDGenerator.getTimeBasedUUID(instant, false, false).toString();
 
@@ -221,14 +211,14 @@ public class UUIDGeneratorTest {
 	 * (100-nanoseconds) for more than one thread. A UUID should not be
 	 * repeated in the same timestamp.
 	 */
-	@Ignore
+	@Test
 	public void testRaceCondition() {
 		
-		int threadCount = (int) Math.pow(10, 1);
+		int threadCount = (int) Math.pow(10, 2);
 		int threadLoopLimit = (int) Math.pow(10, 2);
 		
 		// This instant won't change during this test
-		Instant instant = UUIDGenerator.getClockInstant();
+		Instant instant = Instant.now();
 		
 		// Start many threads to generate a lot of UUIDs in the same instant
 		// (100-nanoseconds).
