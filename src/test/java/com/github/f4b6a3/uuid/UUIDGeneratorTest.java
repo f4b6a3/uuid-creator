@@ -5,15 +5,18 @@ import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.UUID;
 
-import junit.framework.Assert;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * Unit test for simple App.
  */
-public class UUIDGeneratorTest extends TestCase {
+public class UUIDGeneratorTest {
 
 	private static final long DEFAULT_LOOP_LIMIT = (long) Math.pow(10, 3);
 	
@@ -81,70 +84,60 @@ public class UUIDGeneratorTest extends TestCase {
 			{ (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x9a, (byte) 0xbc, (byte) 0xde},
 			{ (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab, (byte) 0xcd, (byte) 0xef}};
 	
-	/**
-	 * Create the test case
-	 *
-	 * @param testName
-	 *            name of the test case
-	 */
-	public UUIDGeneratorTest(String testName) {
-		super(testName);
-	}
-
-	/**
-	 * @return the suite of tests being tested
-	 */
-	public static Test suite() {
-		return new TestSuite(UUIDGeneratorTest.class);
-	}
-
+	@Test
 	public void testGetClockSequence() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			long timestamp = (i % 2);
 			byte[] clockSequenceBytes = UUIDGenerator.getClockSequenceBytes(timestamp);
 			String clockSequenceString = UUIDGenerator.toHexadecimal(clockSequenceBytes);
-			Assert.assertTrue(clockSequenceString.matches(UUIDGeneratorTest.ClOCK_SEQUENCE_PATTERN));
+			assertTrue(clockSequenceString.matches(UUIDGeneratorTest.ClOCK_SEQUENCE_PATTERN));
 		}
 	}
 	
+	@Test
 	public void testGetRandomUUIDStringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			String uuid = UUIDGenerator.getRandomUUID().toString();
-			Assert.assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
+			assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
 		}
 	}
 	
+	@Test
 	public void testGetTimeBasedMACUUIDStringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), TIMEBASED_UUID, REAL_MAC);
-			Assert.assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
+			assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
 		}
 	}
 
+	@Test
 	public void testGetSequentialMACUUIDStringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), SEQUENTIAL_UUID, REAL_MAC);
-			Assert.assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
+			assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
 		}
 	}
 
+	@Test
 	public void testGetTimeBasedUUID_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), TIMEBASED_UUID, FAKE_MAC);
-			Assert.assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
+			assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
 		}
 	}
 
+	@Test
 	public void testGetSequentialUUID_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUIDGenerator.getTimeBasedUUID(UUIDGenerator.getClockInstant(), SEQUENTIAL_UUID, FAKE_MAC);
-			Assert.assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
+			assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
 		}
 	}
 
 	/**
 	 * Test if a time based UUID version 1 is has the correct timestamp.
 	 */
+	@Test
 	public void testGetTimeBasedMACUUID_TimestampIsCorrect() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			
@@ -156,13 +149,14 @@ public class UUIDGeneratorTest extends TestCase {
 			long timestamp1 = UUIDGenerator.getGregorianCalendarTimestamp(instant1);
 			long timestamp2 = UUIDGenerator.getGregorianCalendarTimestamp(instant2);
 			
-			Assert.assertEquals(timestamp1, timestamp2);
+			assertEquals(timestamp1, timestamp2);
 		}
 	}
 
 	/**
 	 * Test if a sequential UUID version 4 is has the correct timestamp.
 	 */
+	@Test
 	public void testGetSequentialMACUUID_TimestampIsCorrect() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			
@@ -174,13 +168,14 @@ public class UUIDGeneratorTest extends TestCase {
 			long timestamp1 = UUIDGenerator.getGregorianCalendarTimestamp(instant1);
 			long timestamp2 = UUIDGenerator.getGregorianCalendarTimestamp(instant2);
 			
-			Assert.assertEquals(timestamp1, timestamp2);
+			assertEquals(timestamp1, timestamp2);
 		}
 	}
 	
 	/**
 	 * Test if a name-based UUID version 3 with name space is correct.
 	 */
+	@Test
 	public void testGetNameBasedMD5UUID() {
 		
 		UUID namespace = UUIDGenerator.NAMESPACE_URL;
@@ -203,6 +198,7 @@ public class UUIDGeneratorTest extends TestCase {
 	/**
 	 * Just prints UUIDs generated to a specific instant.
 	 */
+	@Test
 	public void testDemoDifferenceBetweenTimeBasedAndSequentialUUID() {
 
 		Instant instant = UUIDGenerator.getClockInstant();
@@ -225,6 +221,7 @@ public class UUIDGeneratorTest extends TestCase {
 	 * (100-nanoseconds) for more than one thread. A UUID should not be
 	 * repeated in the same timestamp.
 	 */
+	@Ignore
 	public void testRaceCondition() {
 		
 		int threadCount = (int) Math.pow(10, 1);
@@ -285,24 +282,28 @@ public class UUIDGeneratorTest extends TestCase {
 		}
 	}
 	
+	@Test
 	public void testToNumberFromBytes() {
 		for(int i = 0; i < numbers.length; i++) {
 			assertEquals(numbers[i], UUIDGenerator.toNumber(bytes[i]));
 		}
 	}
 	
+	@Test
 	public void testToBytesFromHexadecimals() {
 		for(int i = 0; i < bytes.length; i++) {
 			assertTrue(UUIDGenerator.equals(bytes[i], UUIDGenerator.toBytes(hexadecimals[i])));
 		}
 	}
 	
+	@Test
 	public void testToHexadecimalFromBytes() {
 		for(int i = 0; i < hexadecimals.length; i++) {
 			assertEquals(hexadecimals[i], UUIDGenerator.toHexadecimal(bytes[i]));
 		}
 	}
 	
+	@Test
 	public void testToNumberFromHexadecimal() {
 		for(int i = 0; i < hexadecimals.length; i++) {
 			assertEquals(numbers[i], UUIDGenerator.toNumber(hexadecimals[i]));
@@ -356,6 +357,7 @@ public class UUIDGeneratorTest extends TestCase {
 	/**
 	 * This method only prints average running times.
 	 */
+	@Test
 	public void testEstimateRunningTimes() {
 		long loopMax = 100_000;
 		long randomUUID = (estimateMethodExecutionTime(UUID.class, "randomUUID", loopMax) * loopMax) / 1_000_000;
