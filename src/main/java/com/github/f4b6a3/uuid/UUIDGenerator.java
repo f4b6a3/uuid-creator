@@ -921,20 +921,21 @@ public class UUIDGenerator {
 	 * Clock class responsible to create instants with nanoseconds.
 	 */
 	public static class UUIDClock extends Clock {
-
+		
 		private final Clock clock;
 
 		private Instant initialInstant;
 		private long initialNanoseconds;
-		private long lastNanoseconds;
 
+		private static final int SYNC_THRESHOLD = 1_000_000; // 1ms
+		
 		public UUIDClock() {
 			this(Clock.systemUTC());
 		}
 
 		public UUIDClock(final Clock clock) {
 			this.clock = clock;
-			this.reset();
+			this.sync();
 		}
 
 		@Override
@@ -951,23 +952,22 @@ public class UUIDGenerator {
 		public Clock withZone(final ZoneId zone) {
 			return new UUIDClock(this.clock.withZone(zone));
 		}
-
+		
 		protected long getSystemNanos() {
+			
 			long currentNanoseconds = System.nanoTime();
-
-			if (currentNanoseconds > this.lastNanoseconds) {
-				this.lastNanoseconds = currentNanoseconds;
-			} else {
-				this.reset(); // You can't go back!
+			
+			if ((currentNanoseconds - this.initialNanoseconds) > SYNC_THRESHOLD) {
+				this.sync();
+				return this.initialNanoseconds;
 			}
 
 			return currentNanoseconds;
 		}
-
-		protected void reset() {
+		
+		protected void sync() {
 			this.initialInstant = this.clock.instant();
 			this.initialNanoseconds = System.nanoTime();
-			this.lastNanoseconds = this.initialNanoseconds;
 		}
 	}
 }
