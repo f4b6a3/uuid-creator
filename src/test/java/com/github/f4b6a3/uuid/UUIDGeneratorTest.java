@@ -1,5 +1,7 @@
 package com.github.f4b6a3.uuid;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -13,7 +15,7 @@ import junit.framework.TestSuite;
  */
 public class UUIDGeneratorTest extends TestCase {
 
-	private static final long DEFAULT_LOOP_LIMIT = (int) Math.pow(10, 3);
+	private static final long DEFAULT_LOOP_LIMIT = (long) Math.pow(10, 3);
 	
 	private static final String ClOCK_SEQUENCE_PATTERN = "^[89ab][0-9a-fA-F]{3}$";
 	
@@ -24,6 +26,60 @@ public class UUIDGeneratorTest extends TestCase {
 	
 	private static final boolean REAL_MAC = true;
 	private static final boolean FAKE_MAC = false;
+	
+	private long[] numbers = {
+			0x0000000000000000L,
+			0x0000000000000001L,
+			0x0000000000000012L,
+			0x0000000000000123L,
+			0x0000000000001234L,
+			0x0000000000012345L,
+			0x0000000000123456L,
+			0x0000000001234567L,
+			0x0000000012345678L,
+			0x0000000123456789L,
+			0x000000123456789aL,
+			0x00000123456789abL,
+			0x0000123456789abcL,
+			0x000123456789abcdL,
+			0x00123456789abcdeL,
+			0x0123456789abcdefL};
+	
+	private String[] hexadecimals = {
+			"0000000000000000",
+			"0000000000000001",
+			"0000000000000012",
+			"0000000000000123",
+			"0000000000001234",
+			"0000000000012345",
+			"0000000000123456",
+			"0000000001234567",
+			"0000000012345678",
+			"0000000123456789",
+			"000000123456789a",
+			"00000123456789ab",
+			"0000123456789abc",
+			"000123456789abcd",
+			"00123456789abcde",
+			"0123456789abcdef"};
+	
+	private byte[][] bytes = {
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x9a},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab},
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x9a, (byte) 0xbc},
+			{ (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab, (byte) 0xcd},
+			{ (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x9a, (byte) 0xbc, (byte) 0xde},
+			{ (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab, (byte) 0xcd, (byte) 0xef}};
 	
 	/**
 	 * Create the test case
@@ -143,67 +199,6 @@ public class UUIDGeneratorTest extends TestCase {
 			assertEquals(UUID.nameUUIDFromBytes(bytes).toString(), uuid.toString());
 		}
 	}
-	
-	/**
-	 * This method only prints average running times.
-	 */
-	public void testRunningTimeAverage() {
-
-		long acum1 = 0;
-		long acum2 = 0;
-		long acum3 = 0;
-		long acum4 = 0;
-		long rounds = 10;
-
-		Instant start = null;
-		Instant end = null;
-		long max = (long) Math.pow(10, 5);
-		
-		for (int j = 0; j < rounds; j++) {
-
-			start = null;
-			end = null;
-
-			start = Instant.now();
-			for (int i = 0; i < max; i++) {
-				UUID.randomUUID();
-			}
-			end = Instant.now();
-			long miliseconds1 = (end.toEpochMilli() - start.toEpochMilli());
-			acum1 = acum1 + miliseconds1;
-
-			start = Instant.now();
-			for (int i = 0; i < max; i++) {
-				UUIDGenerator.getRandomUUID();
-			}
-			end = Instant.now();
-			long miliseconds2 = (end.toEpochMilli() - start.toEpochMilli());
-			acum2 = acum2 + miliseconds2;
-
-			start = Instant.now();
-			for (int i = 0; i < max; i++) {
-				UUIDGenerator.getTimeBasedUUID();
-			}
-			end = Instant.now();
-			long miliseconds3 = (end.toEpochMilli() - start.toEpochMilli());
-			acum3 = acum3 + miliseconds3;
-			
-			start = Instant.now();
-			for (int i = 0; i < max; i++) {
-				UUIDGenerator.getSequentialUUID();
-			}
-			end = Instant.now();
-			long miliseconds4 = (end.toEpochMilli() - start.toEpochMilli());
-			acum4 = acum4 + miliseconds4;
-		}
-
-		System.out.println();
-		System.out.println(String.format("Average running times for %s UUIDs generated:", max));
-		System.out.println("- java.util.UUID.randomUUID():       " + (acum1 / rounds) + " ms");
-		System.out.println("- UUIDGenerator.getRandomUUID():     " + (acum2 / rounds) + " ms");
-		System.out.println("- UUIDGenerator.getTimeBasedUUID():  " + (acum3 / rounds) + " ms");
-		System.out.println("- UUIDGenerator.getSequentialUUID(): " + (acum4 / rounds) + " ms");
-	}
 
 	/**
 	 * Just prints UUIDs generated to a specific instant.
@@ -314,75 +309,65 @@ public class UUIDGeneratorTest extends TestCase {
 		}
 	}
 	
-	private long[] numbers = {
-			0x0000000000000000L,
-			0x0000000000000001L,
-			0x0000000000000012L,
-			0x0000000000000123L,
-			0x0000000000001234L,
-			0x0000000000012345L,
-			0x0000000000123456L,
-			0x0000000001234567L,
-			0x0000000012345678L,
-			0x0000000123456789L,
-			0x000000123456789aL,
-			0x00000123456789abL,
-			0x0000123456789abcL,
-			0x000123456789abcdL,
-			0x00123456789abcdeL,
-			0x0123456789abcdefL};
-	
-	private String[] hexadecimals = {
-			"0000000000000000",
-			"0000000000000001",
-			"0000000000000012",
-			"0000000000000123",
-			"0000000000001234",
-			"0000000000012345",
-			"0000000000123456",
-			"0000000001234567",
-			"0000000012345678",
-			"0000000123456789",
-			"000000123456789a",
-			"00000123456789ab",
-			"0000123456789abc",
-			"000123456789abcd",
-			"00123456789abcde",
-			"0123456789abcdef"};
-	
-	private byte[][] bytes = {
-			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00},
-			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01},
-			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12},
-			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23},
-			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34},
-			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45},
-			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56},
-			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67},
-			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78},
-			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89},
-			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x9a},
-			{ (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab},
-			{ (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x9a, (byte) 0xbc},
-			{ (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab, (byte) 0xcd},
-			{ (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x9a, (byte) 0xbc, (byte) 0xde},
-			{ (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab, (byte) 0xcd, (byte) 0xef}};
-	
-//	public void testSpeed() {
-//		long max = (long) Math.pow(10, 6);
-//		Instant start = null;
-//		Instant end = null;
-//
-//		start = Instant.now();
-//		for (int n = 0; n < max; n++) {
-//			// Put some code to test here
-//			for(int i = 0; i < hexadecimals.length; i++) {
-//				assertEquals(numbers[i], UUIDGenerator.toNumber(hexadecimals[i]));
-//			}
-//		}
-//		end = Instant.now();
-//		long miliseconds1 = (end.toEpochMilli() - start.toEpochMilli());
-//		System.out.println("Time: " + miliseconds1 + " ms");
-//	}
-	
+	/**
+	 * This method estimates the average running time for a method in nanoseconds.
+	 */
+	private static long estimateMethodExecutionTime(Class<?> clazz, String methodName, long max) {
+		
+		long elapsedSum = 0;
+		long elapsedAvg = 0;
+
+		long extraSum = 0;
+		long extraAvg = 0;
+		
+		long beforeTime = 0;
+		long afterTime = 0;
+
+		try {
+			Method method = clazz.getDeclaredMethod(methodName);
+			
+			for (int i = 0; i < Math.pow(10, 5); i++) {
+				method.invoke(null);
+			}
+			
+			for (int i = 0; i < max; i++) {
+				beforeTime = System.nanoTime();
+				if(i > 0) {
+					extraSum += (beforeTime - afterTime);
+				}
+				method.invoke(null);
+				afterTime = System.nanoTime();
+				elapsedSum += (afterTime - beforeTime);
+			}
+
+			elapsedAvg = elapsedSum / (max - 1);
+			extraAvg = extraSum / (max - 1);
+			
+		} catch (NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		} 
+		catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		return elapsedAvg - extraAvg;
+	}
+
+	/**
+	 * This method only prints average running times.
+	 */
+	public void testEstimateRunningTimes() {
+		long loopMax = 100_000;
+		long randomUUID = (estimateMethodExecutionTime(UUID.class, "randomUUID", loopMax) * loopMax) / 1_000_000;
+		long getRandomUUID = (estimateMethodExecutionTime(UUIDGenerator.class, "getRandomUUID", loopMax) * loopMax) / 1_000_000;
+		long getTimeBasedUUID = (estimateMethodExecutionTime(UUIDGenerator.class, "getTimeBasedUUID", loopMax) * loopMax) / 1_000_000;
+		long getSequentialUUID = (estimateMethodExecutionTime(UUIDGenerator.class, "getSequentialUUID", loopMax) * loopMax) / 1_000_000;
+
+		System.out.println();
+		System.out.println(String.format("Average running times for %,d UUIDs generated:", loopMax));
+		System.out.println(String.format("* java.util.UUID.randomUUID():        %s ms", randomUUID));
+		System.out.println(String.format("* java.util.UUID.getRandomUUID():     %s ms", getRandomUUID));
+		System.out.println(String.format("* java.util.UUID.getTimeBasedUUID():  %s ms", getTimeBasedUUID));
+		System.out.println(String.format("* java.util.UUID.getSequentialUUID(): %s ms", getSequentialUUID));
+	}
 }
