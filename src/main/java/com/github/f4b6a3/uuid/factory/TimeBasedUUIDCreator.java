@@ -23,9 +23,9 @@ import java.time.Instant;
 import java.util.Random;
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.clock.UUIDClock;
-import com.github.f4b6a3.uuid.clock.UUIDState;
+import com.github.f4b6a3.uuid.state.UUIDState;
 import com.github.f4b6a3.uuid.util.ByteUtils;
+import com.github.f4b6a3.uuid.util.TimestampUtils;
 import com.github.f4b6a3.uuid.util.UUIDUtils;
 
 /**
@@ -49,10 +49,9 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	private Instant instant;
 	private long nodeIdentifier;
 	
-	private Random random;
 	private UUIDState state;
-	private UUIDClock clock;
 	
+	private static Random random;
 	
 	/* 
 	 * -------------------------
@@ -62,9 +61,7 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	
 	public TimeBasedUUIDCreator(int version) {
 		super(version);
-		this.random = new Random();
 		this.state = new UUIDState();
-		this.clock = new UUIDClock(this.state);
 	}
 	
 	/* 
@@ -80,47 +77,37 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	@Override
 	public UUID create() {
 		
+		long msb = 0x0000000000000000L;
+		long lsb = 0x0000000000000000L;
+		
 		if (instant == null) {
 			instant = Instant.now();
 		}
 		
-		long timestamp = UUIDClock.getTimestamp(instant);
-		long clockSeq1 = clock.getSequence1(timestamp);
-		long clockSeq2 = clock.getSequence2(timestamp);
+		// Get new values
+		long timestamp = TimestampUtils.getTimestamp(instant);
+		long sequence1 = state.nextSequence1(timestamp);
+		long sequence2 = state.nextSequence2(timestamp);
 		long nodeIdentifier = getNodeIdentifier();
 		
-		setTimestamp(timestamp);
-		setClockSeq1(clockSeq1);
-		setClockSeq2(clockSeq2);
-		setNodeIdentifier(nodeIdentifier);
-		
+		// Update state with new values
 		state.setTimestamp(timestamp);
-		state.setClockSeq1(clockSeq1);
-		state.setClockSeq2(clockSeq2);
+		state.setSequence1(sequence1);
+		state.setSequence2(sequence2);
 		state.setNodeIdentifier(nodeIdentifier);
 		
-		return super.create();
-	}
-	
-	public long getHardwareAddressNodeIdentifier() {
-		try {
-			NetworkInterface nic = NetworkInterface.getNetworkInterfaces().nextElement();
-			byte[] realHardwareAddress = nic.getHardwareAddress();
-			if (realHardwareAddress != null) {
-				return ByteUtils.toNumber(realHardwareAddress);
-			}
-		} catch (SocketException | NullPointerException e) {
-			// If exception occurs, return a random hardware address.
-		}
+		// Set the most significant bits
+		msb = insertTimestampBits(msb, timestamp);
+		msb = insertSequence2Bits(msb, sequence2);
 		
-		return getRandomNodeIdentifier();
+		// Set the least significant bits
+		lsb = insertSequence1Bits(lsb, sequence1);
+		lsb = insertNodeIdentifierBits(lsb, nodeIdentifier);
+		
+		return new UUID(msb, lsb);
 	}
 	
-	public long getRandomNodeIdentifier() {
-		long node = random.nextLong();
-		return setMulticastNode(node);
-	}
-
+	
 	/* 
 	 * --------------------------------
 	 * Public fluent interface methods
@@ -137,96 +124,194 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 		return this;
 	}
 	
-	/* 
-	 * -------------------------
-	 * Protected methods
-	 * -------------------------
+	/*
+	 * ------------------------------------------
+	 * Public static methods for node identifiers
+	 * ------------------------------------------
 	 */
 	
-	protected void setTimestamp(long timestamp) {
-		if(this.version == VERSION_1) {
-			setStandardTimestamp(timestamp);
-		} else {
-			setSequentialTimestamp(timestamp);
+	/**
+	 * Returns a hardware address (MAC) as a node identifier.
+	 * 
+	 * If no hardware address is found, it returns a random node identifier.
+	 * 
+	 * @param state
+	 * @return
+	 */
+	public static long getHardwareAddressNodeIdentifier() {
+		try {
+			NetworkInterface nic = NetworkInterface.getNetworkInterfaces().nextElement();
+			byte[] realHardwareAddress = nic.getHardwareAddress();
+			if (realHardwareAddress != null) {
+				return ByteUtils.toNumber(realHardwareAddress);
+			}
+		} catch (SocketException | NullPointerException e) {
+			// If exception occurs, return a random hardware address.
 		}
+		
+		return getRandomNodeIdentifier();
 	}
 	
-	protected void setSequentialTimestamp(long timestamp) {
+	/**
+	 * Returns a random node identifier.
+	 * 
+	 * @param state
+	 * @return
+	 */
+	public static long getRandomNodeIdentifier() {
 		
-		long hii = (timestamp & 0x0fff000000000000L) << 4;
-		long mid = (timestamp & 0x0000ffff00000000L) << 4;
-		long lo1 = (timestamp & 0x00000000fffff000L) << 4;
-		long lo2 = (timestamp & 0x0000000000000fffL);
-		
-		this.msb = (hii | mid | lo1 | lo2);
-	}
-	
-	protected void setStandardTimestamp(long timestamp) {
-		
-		long hii = (timestamp & 0x0fff000000000000L) >>> 48;
-		long mid = (timestamp & 0x0000ffff00000000L) >>> 16;
-		long low = (timestamp & 0x00000000ffffffffL) << 32;
-
-		this.msb = (low | mid | hii);
-		setVersionBits();
-	}
-	
-	protected void setClockSeq1(long clockSeq1) {
-		
-		long lsb = this.lsb;
-		long cs1 = clockSeq1 << 48;
-		
-		lsb &= 0x0000ffffffffffffL;
-		cs1 &= 0xffff000000000000L;
-
-		this.lsb = (lsb | cs1);
-	}
-	
-	protected void setClockSeq2(long clockSeq2) {
-		long timestamp;
-		if(version == VERSION_1) {
-			timestamp = UUIDUtils.extractStandardTimestamp(this.msb) + clockSeq2;	
-		} else {
-			timestamp = UUIDUtils.extractSequentialTimestamp(this.msb) + clockSeq2;
+		if(random == null) {
+			 random = new Random();
 		}
-		setTimestamp(timestamp);
+		
+		long node = random.nextLong();
+		return setMulticastNodeIdentifier(node);
 	}
 	
-	protected void setNodeIdentifier(long nodeIdentifier) {
-		
-		long lsb = this.lsb;
-		long nod = nodeIdentifier;
-		
-		lsb &= 0xffff000000000000L;
-		nod &= 0x0000ffffffffffffL;
+	/*
+	 * ------------------------------------------
+	 * Private static methods for node identifiers
+	 * ------------------------------------------
+	 */
+	
+	/**
+	 * Sets the the multicast bit of a node identifier.
+	 * 
+	 * @param nodeIdentifier
+	 * @return
+	 */
+	private static long setMulticastNodeIdentifier(long nodeIdentifier) {
+		return nodeIdentifier | 0x0000010000000000L;
+	}
 
-		this.lsb = (lsb | nod);
+	/**
+	 * Checks whether a node identifier has it's multicast bit set.
+	 * 
+	 * @param nodeIdentifier
+	 * @return
+	 */
+	private static boolean isMulticastNodeIdentifier(long nodeIdentifier) {
+		return ((nodeIdentifier & 0x0000010000000000L) >>> 40) == 1;
 	}
 	
-	protected long getNodeIdentifier() {
+	/**
+	 * Returns a node identifier.
+	 * 
+	 * If the UUID version is 1, it returns the hardware address of the machine.
+	 * If the hardware address counldnt be fould, it returns a random number.
+	 * 
+	 * If the UUID version is 0, it returns a random number.
+	 * 
+	 * @return
+	 */
+	private long getNodeIdentifier() {
 		
 		if (this.nodeIdentifier != 0 && state.getNodeIdentifier() == 0) {
 			return this.nodeIdentifier;
 		}
 		
 		if (version == VERSION_1) {
-			if ((state.getNodeIdentifier() != 0) && !isMulticastNode(state.getNodeIdentifier())) {
+			if ((state.getNodeIdentifier() != 0) && !isMulticastNodeIdentifier(state.getNodeIdentifier())) {
 				return state.getNodeIdentifier();
 			}
 			return getHardwareAddressNodeIdentifier();
 		} else {
-			if ((state.getNodeIdentifier() != 0) && isMulticastNode(state.getNodeIdentifier())) {
+			if ((state.getNodeIdentifier() != 0) && isMulticastNodeIdentifier(state.getNodeIdentifier())) {
 				return state.getNodeIdentifier();
 			}
 			return getRandomNodeIdentifier();
 		}
 	}
 	
-	protected static long setMulticastNode(long nodeIdentifier) {
-		return nodeIdentifier | 0x0000010000000000L;
+	/* 
+	 * -------------------------------------
+	 * Private methods for setting bits of the UUID parts
+	 * -------------------------------------
+	 */
+	
+	/**
+	 * Set the timestamp bits of the UUID.
+	 * 
+	 * @param timestamp
+	 */
+	private long insertTimestampBits(long msb, long timestamp) {
+		if(this.version == VERSION_1) {
+			return insertStandardTimestamp(msb, timestamp);
+		} else {
+			return insertSequentialTimestamp(msb, timestamp);
+		}
+	}
+	
+	/**
+	 * Set the timestamp bits of the UUID in the natural order of bytes.
+	 * 
+	 * @see {@link TimeBasedUUIDCreator#embedTimestampBits(long)}
+	 * 
+	 * @param timestamp
+	 */
+	private long insertSequentialTimestamp(long msb, long timestamp) {
+		
+		long himid = (timestamp & 0x0ffffffffffff000L) << 4;
+		long low = (timestamp & 0x0000000000000fffL);
+		
+		msb = (himid | low);
+		
+		return msb;
+	}
+	
+	/**
+	 * Set the timestamp bits of the UUID in the order defined in the RFC-4122.
+	 * 
+	 * @param timestamp
+	 */
+	private long insertStandardTimestamp(long msb, long timestamp) {
+
+		long hii = (timestamp & 0x0fff000000000000L) >>> 48;
+		long mid = (timestamp & 0x0000ffff00000000L) >>> 16;
+		long low = (timestamp & 0x00000000ffffffffL) << 32;
+
+		msb = (low | mid | hii);
+		msb = setVersionBits(msb);
+		
+		return msb;
+	}
+	
+	/**
+	 * Set the first clock sequence bits of the UUID.
+	 *  
+	 * @param clockSequence1
+	 */
+	private long insertSequence1Bits(long lsb, long clockSequence1) {
+		
+		long nodeId = lsb & 0x0000ffffffffffffL;
+		long clkSeq = clockSequence1 << 48;
+
+		return (clkSeq | nodeId);
 	}
 
-	protected static boolean isMulticastNode(long nodeIdentifier) {
-		return ((nodeIdentifier & 0x0000010000000000L) >>> 40) == 1;
+	/**
+	 * Set the second clock sequence bits of the UUID.
+	 * 
+	 * It is a extension suggested by the RFC-4122.
+	 *  
+	 * @param clockSequence2
+	 */
+	private long insertSequence2Bits(long msb, long clockSequence2) {
+		UUID temp = new UUID(msb, 0);
+		long timestamp = UUIDUtils.extractTimestamp(temp);
+		return insertTimestampBits(msb, timestamp + clockSequence2);
+	}
+	
+	/**
+	 * Set the node identifier bits of the UUID.
+	 * 
+	 * @param nodeIdentifier
+	 */
+	private long insertNodeIdentifierBits(long lsb, long nodeIdentifier) {
+		
+		long clkSeq = lsb & 0xffff000000000000L;
+		long nodeId = nodeIdentifier & 0x0000ffffffffffffL;
+
+		return (clkSeq | nodeId);
 	}
 }

@@ -9,8 +9,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.clock.UUIDClock;
 import com.github.f4b6a3.uuid.factory.UUIDCreator;
+import com.github.f4b6a3.uuid.util.TimestampUtils;
 import com.github.f4b6a3.uuid.util.UUIDUtils;
 
 import static com.github.f4b6a3.uuid.util.ByteUtils.*;
@@ -79,6 +79,12 @@ public class UUIDGeneratorTest {
 			{ (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab, (byte) 0xcd, (byte) 0xef}};
 	
 	@Test
+	public void testTest() {
+		UUIDGenerator.getTimeBasedUUID();
+		//UUIDGenerator.getSequentialUUID();
+	}
+	
+	@Test
 	public void testGetRandomUUID_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUIDGenerator.getRandomUUID();
@@ -130,8 +136,8 @@ public class UUIDGeneratorTest {
 			UUID uuid = UUIDGenerator.getTimeBasedUUIDCreator().withInstant(instant1).create();
 			Instant instant2 = UUIDUtils.extractInstant(uuid);
 			
-			long timestamp1 = UUIDClock.getTimestamp(instant1);
-			long timestamp2 = UUIDClock.getTimestamp(instant2);
+			long timestamp1 = TimestampUtils.getTimestamp(instant1);
+			long timestamp2 = TimestampUtils.getTimestamp(instant2);
 			
 			assertEquals(timestamp1, timestamp2);
 		}
@@ -149,8 +155,8 @@ public class UUIDGeneratorTest {
 			UUID uuid = UUIDGenerator.getSequentialUUIDCreator().withInstant(instant1).create();
 			Instant instant2 = UUIDUtils.extractInstant(uuid);
 
-			long timestamp1 = UUIDClock.getTimestamp(instant1);
-			long timestamp2 = UUIDClock.getTimestamp(instant2);
+			long timestamp1 = TimestampUtils.getTimestamp(instant1);
+			long timestamp2 = TimestampUtils.getTimestamp(instant2);
 			
 			assertEquals(timestamp1, timestamp2);
 		}
@@ -218,7 +224,7 @@ public class UUIDGeneratorTest {
 	public void testRaceCondition() {
 		
 		int threadCount = 100;
-		int threadLoopLimit = 100;
+		int threadLoopLimit = 1000;
 		
 		// This instant won't change during this test
 		Instant instant = Instant.now();
@@ -226,53 +232,9 @@ public class UUIDGeneratorTest {
 		// Start many threads to generate a lot of UUIDs in the same instant
 		// (100-nanoseconds).
 		for (int i = 0; i < threadCount; i++) {
-			Thread thread = new Thread(new RaceConditionRunnable(i, instant, threadCount, threadLoopLimit));
+			Thread thread = new Thread(new SimpleRunnable(i, instant, threadCount, threadLoopLimit));
 			thread.start();
 		}
-	}
-	
-	/**
-	 * This method estimates the average running time for a method in nanoseconds.
-	 */
-	private static long estimateMethodExecutionTime(Class<?> clazz, String methodName, long max) {
-		
-		long elapsedSum = 0;
-		long elapsedAvg = 0;
-
-		long extraSum = 0;
-		long extraAvg = 0;
-		
-		long beforeTime = 0;
-		long afterTime = 0;
-
-		try {
-			Method method = clazz.getDeclaredMethod(methodName);
-			
-			for (int i = 0; i < 100_000; i++) {
-				method.invoke(null);
-			}
-			
-			for (int i = 0; i < max; i++) {
-				beforeTime = System.nanoTime();
-				if(i > 0) {
-					extraSum += (beforeTime - afterTime);
-				}
-				method.invoke(null);
-				afterTime = System.nanoTime();
-				elapsedSum += (afterTime - beforeTime);
-			}
-
-			elapsedAvg = elapsedSum / (max - 1);
-			extraAvg = extraSum / (max - 1);
-			
-		} catch (NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
-		} 
-		catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
-		}
-
-		return elapsedAvg - extraAvg;
 	}
 
 	/**
@@ -281,10 +243,10 @@ public class UUIDGeneratorTest {
 	@Test
 	public void testEstimateRunningTimes() {
 		long loopMax = 100_000;
-		long randomUUID = (estimateMethodExecutionTime(UUID.class, "randomUUID", loopMax) * loopMax) / 1_000_000;
-		long getRandomUUID = (estimateMethodExecutionTime(UUIDGenerator.class, "getRandomUUID", loopMax) * loopMax) / 1_000_000;
-		long getTimeBasedUUID = (estimateMethodExecutionTime(UUIDGenerator.class, "getTimeBasedUUID", loopMax) * loopMax) / 1_000_000;
-		long getSequentialUUID = (estimateMethodExecutionTime(UUIDGenerator.class, "getSequentialUUID", loopMax) * loopMax) / 1_000_000;
+		long randomUUID = (SimpleBenchmark.run(UUID.class, "randomUUID", loopMax) * loopMax) / 1_000_000;
+		long getRandomUUID = (SimpleBenchmark.run(UUIDGenerator.class, "getRandomUUID", loopMax) * loopMax) / 1_000_000;
+		long getTimeBasedUUID = (SimpleBenchmark.run(UUIDGenerator.class, "getTimeBasedUUID", loopMax) * loopMax) / 1_000_000;
+		long getSequentialUUID = (SimpleBenchmark.run(UUIDGenerator.class, "getSequentialUUID", loopMax) * loopMax) / 1_000_000;
 
 		System.out.println();
 		System.out.println(String.format("Average running times for %,d UUIDs generated:", loopMax));

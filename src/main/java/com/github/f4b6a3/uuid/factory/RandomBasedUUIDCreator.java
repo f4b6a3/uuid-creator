@@ -56,11 +56,16 @@ public class RandomBasedUUIDCreator extends UUIDCreator {
 	 */
 	@Override
 	public UUID create() {
-		this.msb = this.random.nextLong();
-		this.lsb = this.random.nextLong();
-		setVariantBits();
-		setVersionBits();
-		return super.create();
+		long msb = 0x0000000000000000L;
+		long lsb = 0x0000000000000000L;
+		
+		msb = this.random.nextLong();
+		lsb = this.random.nextLong();
+		
+		lsb = setVariantBits(lsb);
+		msb = setVersionBits(msb);
+		
+		return new UUID(msb, lsb);
 	}
 	
 	/* 

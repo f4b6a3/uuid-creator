@@ -61,8 +61,6 @@ public abstract class UUIDCreator implements IUUIDCreator, Serializable {
 	 * -------------------------
 	 */
 	protected int version; // intended version to be created
-	protected long msb; // most significant bits
-	protected long lsb; // least significant bits
 	
 	/*
 	 * -------------------------
@@ -79,8 +77,6 @@ public abstract class UUIDCreator implements IUUIDCreator, Serializable {
 	 * -------------------------
 	 */
 	public UUIDCreator(int version) {
-		this.msb = 0x0000000000000000L;
-		this.lsb = 0x0000000000000000L;
 		this.version = version;
 	}
 	
@@ -89,23 +85,6 @@ public abstract class UUIDCreator implements IUUIDCreator, Serializable {
 	 * Public methods
 	 * -------------------------
 	 */
-
-	/**
-	 * Creates and returns a {@link UUID}.
-	 * 
-	 * It simply passes it's private "Most Significant Bits" and "Least
-	 * Significant Bits" to the constructor {@link UUID#UUID(long, long)}.
-	 * 
-	 * @return {@link UUID}
-	 * @throws {@link
-	 *             RuntimeException} It throws and exception if an invalid UUID
-	 *             was created for some reason, for example, the user passed
-	 *             wrong parameters to the factory.
-	 */
-	@Override
-	public UUID create() {
-		return new UUID(this.msb, this.lsb);
-	}
 	
 	/**
 	 * Check if the {@link UUID} to been created is valid.
@@ -114,10 +93,9 @@ public abstract class UUIDCreator implements IUUIDCreator, Serializable {
 	 * 
 	 * @return boolean
 	 */
-	@Override
-	public boolean valid() {
-		long variantBits = getVariantBits();
-		long versionBits = getVersionBits();
+	public boolean valid(long msb, long lsb) {
+		long variantBits = getVariantBits(lsb);
+		long versionBits = getVersionBits(msb);
 		return variantBits == VARIANT_BITS && versionBits == VERSION_BITS[version];
 	}
 
@@ -126,15 +104,15 @@ public abstract class UUIDCreator implements IUUIDCreator, Serializable {
 	 * 
 	 * @return long
 	 */
-	protected long getVariantBits() {
-		return (this.lsb & 0xc000000000000000L);
+	protected long getVariantBits(long lsb) {
+		return (lsb & 0xc000000000000000L);
 	}
 	
 	/**
 	 * Set UUID variant bits into the "Least Significant Bits".
 	 */
-	protected void setVariantBits() {
-		this.lsb = (this.lsb & 0x3fffffffffffffffL) | VARIANT_BITS;
+	protected long setVariantBits(long lsb) {
+		return (lsb & 0x3fffffffffffffffL) | VARIANT_BITS;
 	}
 	
 	/**
@@ -142,14 +120,14 @@ public abstract class UUIDCreator implements IUUIDCreator, Serializable {
 	 * 
 	 * @return long
 	 */
-	protected long getVersionBits() {
-		return (this.msb & 0x000000000000f000L);
+	protected long getVersionBits(long msb) {
+		return (msb & 0x000000000000f000L);
 	}
 	
 	/**
 	 * Set UUID version bits into the "Most Significant Bits".
 	 */
-	protected void setVersionBits() {
-		this.msb = (this.msb & 0xffffffffffff0fffL) | VERSION_BITS[this.version];
+	protected long setVersionBits(long msb) {
+		return (msb & 0xffffffffffff0fffL) | VERSION_BITS[this.version];
 	}
 }

@@ -96,6 +96,9 @@ public class NameBasedUUIDCreator extends UUIDCreator {
 	@Override
 	public UUID create() {
 		
+		long msb = 0x0000000000000000L;
+		long lsb = 0x0000000000000000L;
+		
 		byte[] namespaceBytes = null;
 		byte[] nameBytes = null;
 		byte[] bytes = null;
@@ -111,11 +114,12 @@ public class NameBasedUUIDCreator extends UUIDCreator {
 		
 		hash = md.digest(bytes);
 		
-		this.msb = toNumber(copy(hash, 0, 8));
-		this.lsb = toNumber(copy(hash, 8, 16));
+		msb = toNumber(copy(hash, 0, 8));
+		lsb = toNumber(copy(hash, 8, 16));
 		
-		setVariantBits();
-		setVersionBits();
-		return super.create();
+		lsb = setVariantBits(lsb);
+		msb = setVersionBits(msb);
+		
+		return new UUID(msb, lsb);
 	}
 }

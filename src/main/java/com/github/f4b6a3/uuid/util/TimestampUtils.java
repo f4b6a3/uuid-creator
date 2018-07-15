@@ -15,14 +15,13 @@
  *
  */
 
-package com.github.f4b6a3.uuid.clock;
+package com.github.f4b6a3.uuid.util;
 
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.Random;
 
 /**
  * Class that provides methods related to timestamps.
@@ -32,36 +31,15 @@ import java.util.Random;
  * @author fabiolimace
  *
  */
-public class UUIDClock implements Serializable {
+public class TimestampUtils implements Serializable {
 
 	private static final long serialVersionUID = -2664354707894888058L;
 	
-	private int sequence1 = 0;
-	private int sequence2 = 0;
-	
-	private static final int SEQUENCE1_MIN = 0x8000;
-	private static final int SEQUENCE1_MAX = 0xbfff;
-	
-	private static final int SEQUENCE2_MIN = 0;
-	private static final int SEQUENCE2_MAX = 10_000;
-	
-	private Random random;
-	private UUIDState state;
-	
 	public static final Instant GREGORIAN_EPOCH = getGregorianEpoch();
 	
-	public UUIDClock(UUIDState state) {
-		this.random = new Random();
-		this.state = state;
-		reset();
-	}
+	private static final long MILLISECONDS_MULTIPLIER = 10_000;
 	
-	/**
-	 * Reset both clock sequences.
-	 */
-	private void reset() {
-		this.sequence1 = random.nextInt(SEQUENCE1_MAX - SEQUENCE1_MIN) + SEQUENCE1_MIN;
-		this.sequence2 = random.nextInt(SEQUENCE2_MAX - 1);
+	public TimestampUtils() {
 	}
 	
 	/**
@@ -81,7 +59,7 @@ public class UUIDClock implements Serializable {
 	/**
 	 * Get the number of milliseconds since the Gregorian Epoch.
 	 * 
-	 * @see {@link UUIDClock#getGregorianEpoch()}
+	 * @see {@link TimestampUtils#getGregorianEpoch()}
 	 * 
 	 * @return
 	 */
@@ -93,12 +71,20 @@ public class UUIDClock implements Serializable {
 	 * Returns a {@link Instant} calculated from the number of milliseconds
 	 * since the Gregorian Epoch.
 	 * 
-	 * @see {@link UUIDClock#getGregorianEpoch()}
+	 * @see {@link TimestampUtils#getGregorianEpoch()}
 	 * 
 	 * @return
 	 */	
 	public static Instant getGregorianEpochInstant(long milliseconds) {
 		return GREGORIAN_EPOCH.plus(milliseconds, ChronoUnit.MILLIS);
+	}
+	
+	/**
+	 * @see {@link TimestampUtils#getTimestamp(Instant)}
+	 * @return
+	 */
+	public long getTimestamp() {
+		return TimestampUtils.getTimestamp(Instant.now());
 	}
 	
 	/**
@@ -120,7 +106,7 @@ public class UUIDClock implements Serializable {
 	 */
 	public static long getTimestamp(Instant instant) {
 		long milliseconds = getGregorianEpochMillis(instant);
-		long hundredNanoseconds = milliseconds * SEQUENCE2_MAX;
+		long hundredNanoseconds = milliseconds * MILLISECONDS_MULTIPLIER;
 		return hundredNanoseconds;
 	}
 	
@@ -135,68 +121,14 @@ public class UUIDClock implements Serializable {
 	 * 
 	 * The instant returned has milliseconds accuracy.
 	 * 
-	 * @see {@link UUIDClock#getTimestamp(Instant)}
+	 * @see {@link TimestampUtils#getTimestamp(Instant)}
 	 *
 	 * @param timestamp
 	 * @return
 	 */
 	public static Instant getInstant(long timestamp) {
 		long hundredNanoseconds = timestamp;
-		long milliseconds = hundredNanoseconds / SEQUENCE2_MAX;
+		long milliseconds = hundredNanoseconds / MILLISECONDS_MULTIPLIER;
 		return getGregorianEpochInstant(milliseconds);
-	}
-	
-	/**
-	 * Returns the first clock sequence (clock-seq in the RFC-4122).
-	 * 
-	 * Clock sequence is a number defined by RFC-4122 used to prevent UUID
-	 * collisions.
-	 * 
-	 * The first clock sequence is a random number between 0x8000 and 0xbfff.
-	 * This number is incremented every time the timestamp is repeated.
-	 * 
-	 * @param timestamp
-	 * @return
-	 */
-	public long getSequence1(long timestamp) {
-		if(state.getTimestamp() != 0 && timestamp > state.getTimestamp()) {
-			return this.sequence1;
-		} else {
-			synchronized (this) {
-				this.sequence1++;
-				if (this.sequence1 > SEQUENCE1_MAX - 1) {
-					this.sequence1 = SEQUENCE1_MIN;
-				}
-				return this.sequence1;
-			}
-		}
-	}
-	
-	/**
-	 * Returns the second clock sequence (a counter in the RFC-4122).
-	 * 
-	 * The second clock sequence is a random number between 0 and 100000. Both
-	 * clock sequences are incremented at the same time when a timestamp is
-	 * repeated.
-	 * 
-	 * This second clock sequence was created because in Java there's no
-	 * garantee to get accurate nanoseconds. So the least bits of timestamps are
-	 * filled with a counter.
-	 * 
-	 * @param timestamp
-	 * @return
-	 */
-	public long getSequence2(long timestamp) {
-		if(state.getTimestamp() != 0 && timestamp > state.getTimestamp()) {
-			return this.sequence2;
-		} else {
-			synchronized (this) {
-				this.sequence2++;
-				if (this.sequence2 > SEQUENCE2_MAX - 1) {
-					this.sequence2 = SEQUENCE2_MIN;
-				}
-				return this.sequence2;
-			}
-		}
 	}
 }

@@ -17,19 +17,12 @@
 
 package com.github.f4b6a3.uuid.util;
 
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.time.Instant;
-import java.util.Random;
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.clock.UUIDClock;
-import com.github.f4b6a3.uuid.clock.UUIDState;
 import com.github.f4b6a3.uuid.factory.UUIDCreator;
 
 public class UUIDUtils {
-	
-	private static Random random;
 	
 	/*
 	 * ------------------------------------------
@@ -55,8 +48,7 @@ public class UUIDUtils {
 	 * @return boolean
 	 */
 	public static boolean isRandomBasedVersion(UUID uuid) {
-		int version = uuid.version();
-		return (isRFC4122Variant(uuid) && (version == 4));
+		return (uuid.version() == 4);
 	}
 	
 	/**
@@ -67,7 +59,7 @@ public class UUIDUtils {
 	 */
 	public static boolean isNameBasedVersion(UUID uuid) {
 		int version = uuid.version();
-		return (isRFC4122Variant(uuid) && ((version == 3) || (version == 5)));
+		return ((version == 3) || (version == 5));
 	}
 	
 	/**
@@ -78,7 +70,7 @@ public class UUIDUtils {
 	 */
 	public static boolean isTimeBasedVersion(UUID uuid) {
 		int version = uuid.version();
-		return (isRFC4122Variant(uuid) && ((version == 0) || (version == 1)));
+		return ((version == 0) || (version == 1));
 	}
 	
 	/*
@@ -88,74 +80,6 @@ public class UUIDUtils {
 	 */
 	
 	/**
-	 * Sets the the multicast bit of a node identifier.
-	 * 
-	 * @param nodeIdentifier
-	 * @return
-	 */
-	public static long setMulticastNode(long nodeIdentifier) {
-		return nodeIdentifier | 0x0000010000000000L;
-	}
-
-	/**
-	 * Checks whether a node identifier has it's multicast bit set.
-	 * 
-	 * @param nodeIdentifier
-	 * @return
-	 */
-	public static boolean isMulticastNode(long nodeIdentifier) {
-		return ((nodeIdentifier & 0x0000010000000000L) >>> 40) == 1;
-	}
-	
-	/**
-	 * Returns a random node identifier.
-	 * 
-	 * @param state
-	 * @return
-	 */
-	public static long getRandomNodeIdentifier(UUIDState state) {
-		
-		if(random == null) {
-			 random = new Random();
-		}
-		
-		if(state.getNodeIdentifier() != 0 && isMulticastNode(state.getNodeIdentifier())) {
-			return state.getNodeIdentifier();
-		}
-		
-		long node = random.nextLong();
-		return setMulticastNode(node);
-	}
-	
-	/**
-	 * Returns a hardware address (MAC) as a node identifier.
-	 * 
-	 * If no hardware address is found, it returns a random node identifier.
-	 * 
-	 * @param state
-	 * @return
-	 */
-	public long getHardwareAdressNodeIdentifier(UUIDState state) {
-		
-		if(state.getNodeIdentifier() != 0 && !isMulticastNode(state.getNodeIdentifier())) {
-			return state.getNodeIdentifier();
-		}
-		
-		try {
-			// Get only the first network interface available
-			NetworkInterface nic = NetworkInterface.getNetworkInterfaces().nextElement();
-			byte[] realHardwareAddress = nic.getHardwareAddress();
-			if (realHardwareAddress != null) {
-				return ByteUtils.toNumber(realHardwareAddress);
-			}
-		} catch (SocketException | NullPointerException e) {
-			// If exception occurs, return a random hardware address.
-		}
-		
-		return getRandomNodeIdentifier(state);
-	}
-	
-	/**
 	 * Get the hardware address that is embedded in the UUID.
 	 *
 	 * @param uuid
@@ -163,7 +87,7 @@ public class UUIDUtils {
 	 */
 	public static long extractNodeIdentifier(UUID uuid) {
 		
-		if(!isTimeBasedVersion(uuid)) {
+		if(!UUIDUtils.isTimeBasedVersion(uuid)) {
 			throw new UnsupportedOperationException(String.format("Not a time-based UUID: ", uuid.toString()));
 		}
 		
@@ -172,7 +96,7 @@ public class UUIDUtils {
 	
 	/*
 	 * ------------------------------------------
-	 * Public static methods for timestamps
+	 * Protected static methods for timestamps
 	 * ------------------------------------------
 	 */
 	
@@ -184,11 +108,14 @@ public class UUIDUtils {
 	 */
 	public static Instant extractInstant(UUID uuid) {
 		long timestamp = extractTimestamp(uuid);
-		return UUIDClock.getInstant(timestamp);
+		return TimestampUtils.getInstant(timestamp);
 	}
 	
 	/**
 	 * Get the timestamp that is embedded in the UUID.
+	 *
+	 * The timestamps returned by this method are the number of 100-nanos since
+	 * Gregorian Epoch.
 	 *
 	 * @param uuid
 	 * @return long
@@ -196,7 +123,7 @@ public class UUIDUtils {
 	public static long extractTimestamp(UUID uuid) {
 
 		if(!isTimeBasedVersion(uuid)) {
-			throw new UnsupportedOperationException(String.format("Not a time-based UUID: ", uuid.toString()));
+			throw new UnsupportedOperationException(String.format("Not a time-based UUID v%s: %s", uuid.version(), uuid.toString()));
 		}
 
 		if (uuid.version() == 1) {
@@ -213,24 +140,23 @@ public class UUIDUtils {
 	 *            a long value that has the "Most Significant Bits" of the UUID.
 	 * @return long
 	 */
-	public static long extractSequentialTimestamp(long msb) {
+	private static long extractSequentialTimestamp(long msb) {
 		
-		long hii = (msb & 0xffffffff00000000L) >>> 4;
-		long mid = (msb & 0x00000000ffff0000L) >>> 4;
+		long himid = (msb & 0xffffffffffff0000L) >>> 4;
 		long low = (msb & 0x0000000000000fffL);
 
-		long timestamp = hii | mid | low;
+		long timestamp = himid | low;
 		return timestamp;
 	}
 	
 	/**
-	 * Get the timestamp that is embedded in the Sequential UUID.
+	 * Get the timestamp that is embedded in the standard Time-based UUID.
 	 *
 	 * @param msb
 	 *            a long value that has the "Most Significant Bits" of the UUID.
 	 * @return long
 	 */
-	public static long extractStandardTimestamp(long msb) {
+	private static long extractStandardTimestamp(long msb) {
 		
 		long hii = (msb & 0xffffffff00000000L) >>> 32;
 		long mid = (msb & 0x00000000ffff0000L) << 16;

@@ -107,7 +107,7 @@ public class UUIDGenerator {
 		if (sequentialWithHardwarAddressUUIDCreator == null) {
 			sequentialWithHardwarAddressUUIDCreator = getSequentialUUIDCreator();
 			sequentialWithHardwarAddressUUIDCreator
-					.withNodeIdentifier(sequentialWithHardwarAddressUUIDCreator.getHardwareAddressNodeIdentifier());
+					.withNodeIdentifier(TimeBasedUUIDCreator.getHardwareAddressNodeIdentifier());
 		}
 		return sequentialWithHardwarAddressUUIDCreator.create();
 	}
@@ -127,7 +127,7 @@ public class UUIDGenerator {
 	public static UUID getTimeBasedUUID() {
 		if (timeBasedUUIDCreator == null) {
 			timeBasedUUIDCreator = getTimeBasedUUIDCreator();
-			timeBasedUUIDCreator.withNodeIdentifier(timeBasedUUIDCreator.getRandomNodeIdentifier());
+			timeBasedUUIDCreator.withNodeIdentifier(TimeBasedUUIDCreator.getRandomNodeIdentifier());
 		}
 		return timeBasedUUIDCreator.create();
 	}

@@ -21,5 +21,4 @@ import java.util.UUID;
 
 public interface IUUIDCreator {
 	public UUID create();
-	public boolean valid();
 }
