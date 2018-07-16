@@ -48,7 +48,7 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 */
 	private UUIDState state;
 	// Values to be provided by fluent interface methods
-	private Instant initialInstant;
+	private Instant instant;
 	private long nodeIdentifier;
 	private long sequence;
 
@@ -106,23 +106,15 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * 
 	 * (9a) Format a UUID from the current timestamp, clock sequence, and node
 	 * ID values according to the steps in Section 4.2.2.
-	 * 
-	 * #### RFC-4122 - 4.2.1.2. System Clock Resolution
-	 * 
-	 * (4b) A high resolution timestamp can be simulated by keeping a count of
-	 * the number of UUIDs that have been generated with the same value of the
-	 * system time, and using it to construct the low order bits of the
-	 * timestamp. The count will range between zero and the number of
-	 * 100-nanosecond intervals per system time interval.
-	 * 
+	 *  
 	 * @return {@link UUID}
 	 */
 	@Override
 	public synchronized UUID create() {
 		
 		// apply parameters provaded via fluent interface
-		if (initialInstant == null) {
-			initialInstant = Instant.now();
+		if (instant == null) {
+			instant = Instant.now();
 		}
 		if (this.sequence != 0) {
 			state.setSequence(this.sequence);
@@ -142,17 +134,16 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 		long sequence = 0x0000000000000000L;
 		
 		// (3a) get the timestamp
-		timestamp = TimestampUtils.getTimestamp(initialInstant);
-		
+		timestamp = TimestampUtils.getTimestamp(instant);
+
 		// (4b) get the node identifier
 		nodeIdentifier = getNodeIdentifier();
 		
-		// (4b) get the counter value and add to the timestamp
+		// (4b) get the counter value
 		counter = state.getCurrentCounterValue(timestamp);
-		timestamp = timestamp + counter;
 		
 		// (5a)(6a) get the sequence value
-		sequence = state.getCurrentSequenceValue(timestamp, nodeIdentifier);
+		sequence = state.getCurrentSequenceValue(nodeIdentifier);
 		
 		// (7a) save the state
 		state.setTimestamp(timestamp);
@@ -178,7 +169,7 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 */
 	
 	public TimeBasedUUIDCreator withInstant(Instant instant) {
-		this.initialInstant = instant;
+		this.instant = instant;
 		return this;
 	}
 	
@@ -253,7 +244,7 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * @return
 	 */
 	private long getNodeIdentifier() {
-
+		
 		if (state.getNodeIdentifier() != 0) {
 			return state.getNodeIdentifier();
 		}
@@ -385,12 +376,21 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * Returns the second clock sequence bits of the UUID.
 	 * 
 	 * It is a extension suggested by the RFC-4122.
-	 *  
+	 * 
+	 * #### RFC-4122 - 4.2.1.2. System Clock Resolution
+	 * 
+	 * (4) A high resolution timestamp can be simulated by keeping a count of
+	 * the number of UUIDs that have been generated with the same value of the
+	 * system time, and using it to construct the low order bits of the
+	 * timestamp. The count will range between zero and the number of
+	 * 100-nanosecond intervals per system time interval.
+	 * 
 	 * @param counter
 	 */
 	private long getCounterBits(long msb, long counter) {
 		UUID temp = new UUID(msb, 0);
 		long timestamp = UUIDUtils.extractTimestamp(temp);
+		// (4) add the counter to the timestamp
 		return getTimestampBits(timestamp + counter);
 	}
 	
@@ -406,9 +406,9 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 */
 	private long getNodeIdentifierBits(long lsb, long nodeIdentifier) {
 		
-		long clkSeq = lsb & 0xffff000000000000L;
-		long nodeId = nodeIdentifier & 0x0000ffffffffffffL;
+		long seq = lsb & 0xffff000000000000L;
+		long nod = nodeIdentifier & 0x0000ffffffffffffL;
 
-		return (clkSeq | nodeId);
+		return (seq | nod);
 	}
 }

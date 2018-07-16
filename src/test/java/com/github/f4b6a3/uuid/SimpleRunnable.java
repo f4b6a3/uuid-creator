@@ -5,6 +5,8 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.junit.Test;
+
 import com.github.f4b6a3.uuid.factory.UUIDCreator;
 
 /**
@@ -12,22 +14,28 @@ import com.github.f4b6a3.uuid.factory.UUIDCreator;
  */
 public class SimpleRunnable implements Runnable {
 
-	private int id = 0;
-	private UUID[][] cache = null;
+	private int id;
 	private UUID uuid;
-	private static UUIDCreator creator = null;
+	
+	public static int threadCount = 100;
+	public static int threadLoopLimit = 100;
+	
+	// This instant won't change during this test
+	private static Instant instant = Instant.now();
+	
+	private static UUID[][] cache = new UUID[threadCount][threadLoopLimit];
+	private static UUIDCreator creator = UUIDGenerator.getTimeBasedUUIDCreator().withInstant(instant);
+	
 	private static final Logger LOGGER = Logger.getAnonymousLogger();
 
-	public SimpleRunnable(int id, Instant instant, int threadCount, int threadLoopLimit) {
+	public SimpleRunnable(int id) {
 		this.id = id;
-		this.cache = new UUID[threadCount][threadLoopLimit];
-		creator = UUIDGenerator.getTimeBasedUUIDCreator().withInstant(instant);
 	}
 
 	private boolean contains(UUID uuid) {
 		for (int i = 0; i < cache.length; i++) {
 			for (int j = 0; j < cache[0].length; j++) {
-				if (this.cache[i][j] != null && this.cache[i][j].equals(uuid)) {
+				if (cache[i][j] != null && cache[i][j].equals(uuid)) {
 					return true;
 				}
 			}
@@ -35,9 +43,9 @@ public class SimpleRunnable implements Runnable {
 		return false;
 	}
 
-	@Override
+	@Test
 	public void run() {
-
+		
 		for (int i = 0; i < cache[0].length; i++) {
 
 			uuid = creator.create();

@@ -44,13 +44,15 @@ public class UUIDState implements Serializable {
 	private long counter = 0;
 	private long sequence = 0;
 
+	private boolean enableSequenceIncrement = false;
+	private long lastOverranTimestamp = 0;
+	
 	/*
 	 * -------------------------
 	 * Private static fields
 	 * -------------------------
 	 */
 	private static Random random;
-	private static long lastLogTimestamp = 0;
 	private static final Logger LOGGER = Logger.getAnonymousLogger();
 
 	/*
@@ -124,7 +126,7 @@ public class UUIDState implements Serializable {
 			this.sequence = sequence;
 		}
 	}
-
+	
 	/* 
 	 * -------------------------
 	 * Public methods
@@ -132,7 +134,7 @@ public class UUIDState implements Serializable {
 	 */
 	
 	/**
-	 * Returns the second clock sequence (a counter in the RFC-4122).
+	 * Returns the counter value (a counter in the RFC-4122).
 	 * 
 	 * The counter range is between 0 and 10,000.
 	 * 
@@ -155,31 +157,34 @@ public class UUIDState implements Serializable {
 
 		// (4) increment counter if timestemp is backwards or is repeated
 		if (timestamp <= this.timestamp) {
+			
 			this.counter++;
+			
 			if (this.counter > COUNTER_MAX) {
-				this.counter = COUNTER_MIN;
-				// (3) log a warning if overrun occurs (just once per timestamp)
-				if (timestamp > lastLogTimestamp) {
-					lastLogTimestamp = timestamp;
+				
+				// (3) log overrun warning just once
+				if (timestamp > this.lastOverranTimestamp) {
+					this.lastOverranTimestamp = timestamp;
 					LOGGER.log(Level.WARNING,
 							String.format("Timestamp counter overrun at \"%s\"", TimestampUtils.getInstant(timestamp)));
 				}
+				this.enableSequenceIncrement = true;
+				this.counter = COUNTER_MIN;
 			}
 			return this.counter;
 		}
-
+		
 		this.counter = COUNTER_MIN;
 		return this.counter;
 	}
 
 	/**
-	 * Returns the first clock sequence (clock-seq in the RFC-4122).
+	 * Returns the sequence value (clock-seq in the RFC-4122).
 	 * 
 	 * Clock sequence is a number defined by RFC-4122 used to prevent UUID
 	 * collisions.
 	 * 
 	 * The first clock sequence is a random number between 0x8000 and 0xbfff.
-	 * This number is incremented every time the timestamp is repeated.
 	 * 
 	 * ### RFC-4122 - 4.1.5. Clock Sequence
 	 * 
@@ -211,17 +216,18 @@ public class UUIDState implements Serializable {
 	 * @param timestamp
 	 * @return
 	 */
-	public long getCurrentSequenceValue(long timestamp, long nodeIdentifier) {
+	public long getCurrentSequenceValue(long nodeIdentifier) {
 
 		// (2a) increment sequence if timestemp is backwards or is repeated
-		if (timestamp <= this.timestamp) {
+		if (this.enableSequenceIncrement) {
 			this.sequence++;
 			if (this.sequence > SEQUENCE_MAX) {
 				this.sequence = SEQUENCE_MIN;
 			}
+			this.enableSequenceIncrement = false;
 			return this.sequence;
 		}
-
+		
 		// (3a) set a random value to the sequence if the node ID has changed
 		if (nodeIdentifier != this.nodeIdentifier) {
 			resetSequence();
@@ -230,7 +236,7 @@ public class UUIDState implements Serializable {
 
 		return this.sequence;
 	}
-
+	
 	@Override
 	public UUIDState clone() {
 		return new UUIDState(this.timestamp, this.sequence, this.counter, this.nodeIdentifier);

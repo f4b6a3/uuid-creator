@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.factory.UUIDCreator;
@@ -18,7 +17,7 @@ import static com.github.f4b6a3.uuid.util.ByteUtils.*;
  */
 public class UUIDGeneratorTest {
 
-	private static final long DEFAULT_LOOP_LIMIT = 1_000;  
+	private static final long DEFAULT_LOOP_LIMIT = 1_000;
 	
 	private static final String UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
 	
@@ -75,12 +74,6 @@ public class UUIDGeneratorTest {
 			{ (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab, (byte) 0xcd},
 			{ (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x9a, (byte) 0xbc, (byte) 0xde},
 			{ (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab, (byte) 0xcd, (byte) 0xef}};
-	
-	@Test
-	public void testTest() {
-		UUIDGenerator.getTimeBasedUUID();
-		//UUIDGenerator.getSequentialUUID();
-	}
 	
 	@Test
 	public void testGetRandomUUID_StringIsValid() {
@@ -259,16 +252,10 @@ public class UUIDGeneratorTest {
 	@Test
 	public void testRaceCondition() {
 		
-		int threadCount = 100;
-		int threadLoopLimit = 1000;
-		
-		// This instant won't change during this test
-		Instant instant = Instant.now();
-		
 		// Start many threads to generate a lot of UUIDs in the same instant
 		// (100-nanoseconds).
-		for (int i = 0; i < threadCount; i++) {
-			Thread thread = new Thread(new SimpleRunnable(i, instant, threadCount, threadLoopLimit));
+		for (int i = 0; i < SimpleRunnable.threadCount; i++) {
+			Thread thread = new Thread(new SimpleRunnable(i));
 			thread.start();
 		}
 	}
