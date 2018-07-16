@@ -33,6 +33,13 @@ public abstract class UUIDCreator implements IUUIDCreator, Serializable {
 	
 	/*
 	 * -------------------------
+	 * Private fields
+	 * -------------------------
+	 */
+	protected int version; // intended version to be created
+	
+	/*
+	 * -------------------------
 	 * Public constants
 	 * -------------------------
 	 */
@@ -54,13 +61,6 @@ public abstract class UUIDCreator implements IUUIDCreator, Serializable {
 	public static final UUID NAMESPACE_URL = new UUID(0x6ba7b8119dad11d1L, 0x80b400c04fd430c8L);
 	public static final UUID NAMESPACE_OID = new UUID(0x6ba7b8129dad11d1L, 0x80b400c04fd430c8L);
 	public static final UUID NAMESPACE_X500 = new UUID(0x6ba7b8149dad11d1L, 0x80b400c04fd430c8L);
-	
-	/*
-	 * -------------------------
-	 * Private fields
-	 * -------------------------
-	 */
-	protected int version; // intended version to be created
 	
 	/*
 	 * -------------------------

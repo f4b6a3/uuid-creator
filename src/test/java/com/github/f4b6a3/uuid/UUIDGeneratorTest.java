@@ -1,7 +1,5 @@
 package com.github.f4b6a3.uuid;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -16,7 +14,7 @@ import com.github.f4b6a3.uuid.util.UUIDUtils;
 import static com.github.f4b6a3.uuid.util.ByteUtils.*;
 
 /**
- * Unit test for simple App.
+ * Unit test for uuid-generator.
  */
 public class UUIDGeneratorTest {
 
@@ -212,30 +210,6 @@ public class UUIDGeneratorTest {
 			assertEquals(numbers[i], toNumber(hexadecimals[i]));
 		}
 	}
-	
-	/**
-	 * Test with many threads running at the same time.
-	 * 
-	 * It basically tests if a UUID is generated twice in the same timestamp
-	 * (100-nanoseconds) for more than one thread. A UUID should not be
-	 * repeated in the same timestamp.
-	 */
-	@Test
-	public void testRaceCondition() {
-		
-		int threadCount = 100;
-		int threadLoopLimit = 1000;
-		
-		// This instant won't change during this test
-		Instant instant = Instant.now();
-		
-		// Start many threads to generate a lot of UUIDs in the same instant
-		// (100-nanoseconds).
-		for (int i = 0; i < threadCount; i++) {
-			Thread thread = new Thread(new SimpleRunnable(i, instant, threadCount, threadLoopLimit));
-			thread.start();
-		}
-	}
 
 	/**
 	 * This method only prints average running times.
@@ -255,7 +229,6 @@ public class UUIDGeneratorTest {
 		System.out.println(String.format("* UUIDGenerator.getTimeBasedUUID():  %s ms", getTimeBasedUUID));
 		System.out.println(String.format("* UUIDGenerator.getSequentialUUID(): %s ms", getSequentialUUID));
 	}
-	
 
 	/**
 	 * Just prints UUIDs generated to a specific instant.
@@ -264,8 +237,8 @@ public class UUIDGeneratorTest {
 	public void testDemoDifferenceBetweenTimeBasedAndSequentialUUID() {
 
 		Instant instant = Instant.now();
-		String timeBasedUUID = UUIDGenerator.getTimeBasedUUID().toString();
-		String sequentialUUID = UUIDGenerator.getSequentialUUID().toString();
+		String timeBasedUUID = UUIDGenerator.getTimeBasedUUIDCreator().withInstant(instant).create().toString();
+		String sequentialUUID = UUIDGenerator.getSequentialUUIDCreator().withInstant(instant).create().toString();
 
 		System.out.println();
 		System.out.println("Demonstration:");
@@ -274,5 +247,29 @@ public class UUIDGeneratorTest {
 		System.out.println("- Original instant:        " + instant.toString());
 		System.out.println("- TimeBased UUID instant:  " + UUIDUtils.extractInstant(UUID.fromString(timeBasedUUID)));
 		System.out.println("- Sequential UUID instant: " + UUIDUtils.extractInstant(UUID.fromString(sequentialUUID)));
+	}
+	
+	/**
+	 * Test with many threads running at the same time.
+	 * 
+	 * It basically tests if a UUID is generated twice in the same timestamp
+	 * (100-nanoseconds) for more than one thread. A UUID should not be repeated
+	 * in the same timestamp.
+	 */
+	@Test
+	public void testRaceCondition() {
+		
+		int threadCount = 100;
+		int threadLoopLimit = 1000;
+		
+		// This instant won't change during this test
+		Instant instant = Instant.now();
+		
+		// Start many threads to generate a lot of UUIDs in the same instant
+		// (100-nanoseconds).
+		for (int i = 0; i < threadCount; i++) {
+			Thread thread = new Thread(new SimpleRunnable(i, instant, threadCount, threadLoopLimit));
+			thread.start();
+		}
 	}
 }

@@ -67,12 +67,10 @@ public class UUIDGenerator {
 	
 	/**
 	 * Returns a UUID with timestamp and without machine address, but the bytes
-	 * corresponding to timestamp are arranged in the "natural" order, that is
-	 * not compatible with the version 1. For that reason it's returned as a
-	 * version 4 UUID.
+	 * corresponding to timestamp are arranged in the "natural" order.
 	 *
 	 * Details: <br/>
-	 * - Version number: 4 <br/>
+	 * - Version number: 0 (zero) <br/>
 	 * - Variant number: 1 <br/>
 	 * - Has timestamp?: YES <br/>
 	 * - Has hardware address (MAC)?: NO <br/>
@@ -90,12 +88,10 @@ public class UUIDGenerator {
 	
 	/**
 	 * Returns a UUID with timestamp and machine address, but the bytes
-	 * corresponding to timestamp are arranged in the "natural" order, that is
-	 * not compatible with the version 1. For that reason it's returned as a
-	 * version 4 UUID.
+	 * corresponding to timestamp are arranged in the "natural" order.
 	 *
 	 * Details: <br/>
-	 * - Version number: 4 <br/>
+	 * - Version number: 0 (zero) <br/>
 	 * - Variant number: 1 <br/>
 	 * - Has timestamp?: YES <br/>
 	 * - Has hardware address (MAC)?: YES <br/>

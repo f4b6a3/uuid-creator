@@ -2,6 +2,8 @@ package com.github.f4b6a3.uuid;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.github.f4b6a3.uuid.factory.UUIDCreator;
 
@@ -14,6 +16,7 @@ public class SimpleRunnable implements Runnable {
 	private UUID[][] cache = null;
 	private UUID uuid;
 	private static UUIDCreator creator = null;
+	private static final Logger LOGGER = Logger.getAnonymousLogger();
 
 	public SimpleRunnable(int id, Instant instant, int threadCount, int threadLoopLimit) {
 		this.id = id;
@@ -43,7 +46,7 @@ public class SimpleRunnable implements Runnable {
 				cache[id][i] = uuid;
 			} else {
 				// The current UUID have been created before by another thread.
-				throw new RuntimeException(String.format("UUID conflict: %s", uuid.toString()));
+				LOGGER.log(Level.WARNING, String.format("UUID conflict: %s", uuid.toString()));
 			}
 		}
 	}
