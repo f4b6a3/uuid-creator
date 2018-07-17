@@ -124,7 +124,7 @@ public class UUIDGeneratorTest {
 			
 			Instant instant1 = Instant.now();
 			
-			UUID uuid = UUIDGenerator.getTimeBasedUUIDCreator().withInstant(instant1).create();
+			UUID uuid = UUIDGenerator.getTimeBasedUUIDCreator().withFixedInstant(instant1).create();
 			Instant instant2 = UUIDUtils.extractInstant(uuid);
 			
 			long timestamp1 = TimestampUtils.getTimestamp(instant1);
@@ -143,7 +143,7 @@ public class UUIDGeneratorTest {
 			
 			Instant instant1 = Instant.now();
 			
-			UUID uuid = UUIDGenerator.getSequentialUUIDCreator().withInstant(instant1).create();
+			UUID uuid = UUIDGenerator.getSequentialUUIDCreator().withFixedInstant(instant1).create();
 			Instant instant2 = UUIDUtils.extractInstant(uuid);
 
 			long timestamp1 = TimestampUtils.getTimestamp(instant1);
@@ -230,8 +230,8 @@ public class UUIDGeneratorTest {
 	public void testDemoDifferenceBetweenTimeBasedAndSequentialUUID() {
 
 		Instant instant = Instant.now();
-		String timeBasedUUID = UUIDGenerator.getTimeBasedUUIDCreator().withInstant(instant).create().toString();
-		String sequentialUUID = UUIDGenerator.getSequentialUUIDCreator().withInstant(instant).create().toString();
+		String timeBasedUUID = UUIDGenerator.getTimeBasedUUIDCreator().withFixedInstant(instant).create().toString();
+		String sequentialUUID = UUIDGenerator.getSequentialUUIDCreator().withFixedInstant(instant).create().toString();
 
 		System.out.println();
 		System.out.println("Demonstration:");

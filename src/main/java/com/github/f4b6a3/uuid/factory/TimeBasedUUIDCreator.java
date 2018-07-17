@@ -48,9 +48,9 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 */
 	private UUIDState state;
 	// Values to be provided by fluent interface methods
-	private Instant instant;
-	private long nodeIdentifier;
-	private long sequence;
+	private Instant fixedInstant;
+	private long fixedNodeIdentifier;
+	private long initialSequence;
 
 	/*
 	 * -------------------------
@@ -113,14 +113,14 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	public synchronized UUID create() {
 		
 		// apply parameters provaded via fluent interface
-		if (instant == null) {
-			instant = Instant.now();
+		if (fixedInstant == null) {
+			fixedInstant = Instant.now();
 		}
-		if (this.sequence != 0) {
-			state.setSequence(this.sequence);
+		if (this.initialSequence != 0) {
+			state.setSequence(this.initialSequence);
 		}
-		if (this.nodeIdentifier != 0) {
-			state.setNodeIdentifier(this.nodeIdentifier);
+		if (this.fixedNodeIdentifier != 0) {
+			state.setNodeIdentifier(this.fixedNodeIdentifier);
 		}
 		
 		// most and least significant bits of UUID
@@ -134,7 +134,7 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 		long sequence = 0x0000000000000000L;
 		
 		// (3a) get the timestamp
-		timestamp = TimestampUtils.getTimestamp(instant);
+		timestamp = TimestampUtils.getTimestamp(fixedInstant);
 
 		// (4b) get the node identifier
 		nodeIdentifier = getNodeIdentifier();
@@ -168,26 +168,124 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * --------------------------------
 	 */
 	
-	public TimeBasedUUIDCreator withInstant(Instant instant) {
-		this.instant = instant;
+	/**
+	 * Set a fixed instant to generate UUIDs.
+	 * 
+	 * This method is intended to unit tests only. There's no use out of this
+	 * purpose.
+	 * 
+	 * @param instant
+	 * @return
+	 */
+	public TimeBasedUUIDCreator withFixedInstant(Instant instant) {
+		this.fixedInstant = instant;
 		return this;
 	}
 	
-	public TimeBasedUUIDCreator withNodeIdentifier(long nodeIdentifier) {
-		this.nodeIdentifier = nodeIdentifier;
+	/**
+	 * Set a fixed node identifier to generate UUIDs.
+	 * 
+	 * Every time a factory is instantiated a random value is set to the node
+	 * identifier by default. Someone may think it's useful in some special case
+	 * to use a fixed node identifier other than random value.
+	 * 
+	 * This method will always set the multicast bit to indicate that the value
+	 * is not a real MAC address.
+	 * 
+	 * If you want to inform a fixed value that is real MAC address, use the
+	 * method {@link TimeBasedUUIDCreator#withFixedNodeIdentifier(long)}, which
+	 * doesn't change the multicast bit.
+	 * 
+	 * @param nodeIdentifier
+	 * @return
+	 */
+	public TimeBasedUUIDCreator withFixedMulticastNodeIdentifier(long nodeIdentifier) {
+		this.fixedNodeIdentifier = setMulticastNodeIdentifier(nodeIdentifier) | 0x0000FFFFFFFFFFFFL;
 		return this;
 	}
 
-	public TimeBasedUUIDCreator withInitialSequence(long sequence) {
-		this.sequence = sequence;
+	/**
+	 * Set a fixed node identifier to generate UUIDs.
+	 * 
+	 * Every time a factory is instantiated a random value is set to the node
+	 * identifier by default. Someone may think it's useful in some special case
+	 * to use a fixed node identifier other than random value.
+	 * 
+	 * It may be useful in some cases that the real hardware address can't be
+	 * found correctly by this class. In these cases someone can inform the MAC
+	 * address with this method.
+	 * 
+	 * If you want to inform a fixed value that is NOT a real MAC address, use
+	 * the method
+	 * {@link TimeBasedUUIDCreator#withFixedMulticastNodeIdentifier(long)},
+	 * which DOES change the multicast bit.
+	 * 
+	 * @param nodeIdentifier
+	 * @return
+	 */
+	public TimeBasedUUIDCreator withFixedNodeIdentifier(long nodeIdentifier) {
+		this.fixedNodeIdentifier = nodeIdentifier | 0x0000FFFFFFFFFFFFL;
 		return this;
 	}
 	
+	/**
+	 * Set the node identifier to be a real hardware address of the host
+	 * machine.
+	 * 
+	 * Every time a factory is instantiated a random value is set to the node
+	 * identifier by default. Today to use a real hardware address is
+	 * not recommended anymore. But someone may prefer to use a real MAC
+	 * address.
+	 * 
+	 * @return
+	 */
+	public TimeBasedUUIDCreator withHardwareAddressNodeIdentifier() {
+		return this.withFixedNodeIdentifier(getHardwareAddressNodeIdentifier());
+	}
+	
+	/**
+	 * Set a fixed initial sequence value to generate UUIDs.
+	 * 
+	 * Every time a factory is instantiated a random value is set to the sequence
+	 * by default. This method allows someone to change this value with a
+	 * desired one. It is called "initial" because during the lifetime of the
+	 * factory instance, this value may be incremented or even replaced by
+	 * another random value to avoid repetition of UUIDs.
+	 * 
+	 * @param sequence
+	 * @return
+	 */
+	public TimeBasedUUIDCreator withInitialSequence(long sequence) {
+		this.initialSequence = sequence | 0x0000000000003FFFL;
+		return this;
+	}
+		
 	/*
 	 * ------------------------------------------
-	 * Public static methods for node identifiers
+	 * Private static methods for node identifiers
 	 * ------------------------------------------
 	 */
+	
+	/**
+	 * Returns a node identifier.
+	 * 
+	 * If no fixed value was informed or if there's no previous value, a random
+	 * value is returned.
+	 * 
+	 * @return
+	 */
+	private long getNodeIdentifier() {
+		
+		if (this.fixedNodeIdentifier != 0) {
+			return this.fixedNodeIdentifier;
+		}
+
+		if (state.getNodeIdentifier() != 0) {
+			return state.getNodeIdentifier();
+		}
+
+		return getRandomNodeIdentifier();
+	}
 	
 	/**
 	 * Returns a hardware address (MAC) as a node identifier.
@@ -197,7 +295,7 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * @param state
 	 * @return
 	 */
-	public static long getHardwareAddressNodeIdentifier() {
+	private static long getHardwareAddressNodeIdentifier() {
 		try {
 			NetworkInterface nic = NetworkInterface.getNetworkInterfaces().nextElement();
 			byte[] realHardwareAddress = nic.getHardwareAddress();
@@ -217,7 +315,7 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * @param state
 	 * @return
 	 */
-	public static long getRandomNodeIdentifier() {
+	private static long getRandomNodeIdentifier() {
 		
 		if(random == null) {
 			 random = new Random();
@@ -225,35 +323,6 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 		
 		long node = random.nextLong();
 		return setMulticastNodeIdentifier(node);
-	}
-	
-	/*
-	 * ------------------------------------------
-	 * Private static methods for node identifiers
-	 * ------------------------------------------
-	 */
-	
-	/**
-	 * Returns a node identifier.
-	 * 
-	 * If the UUID version is 1, it returns the hardware address of the machine.
-	 * If the hardware address counldnt be fould, it returns a random number.
-	 * 
-	 * If the UUID version is 0, it returns a random number.
-	 * 
-	 * @return
-	 */
-	private long getNodeIdentifier() {
-		
-		if (state.getNodeIdentifier() != 0) {
-			return state.getNodeIdentifier();
-		}
-		
-		if (version == VERSION_1) {
-			return getHardwareAddressNodeIdentifier();
-		} else {
-			return getRandomNodeIdentifier();
-		}
 	}
 	
 	/**

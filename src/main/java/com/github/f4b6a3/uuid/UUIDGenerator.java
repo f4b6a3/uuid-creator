@@ -33,9 +33,9 @@ import com.github.f4b6a3.uuid.factory.UUIDCreator;
 public class UUIDGenerator {
 	
 	private static TimeBasedUUIDCreator sequentialUUIDCreator;
-	private static TimeBasedUUIDCreator timeBasedUUIDCreator;
 	private static TimeBasedUUIDCreator sequentialWithHardwarAddressUUIDCreator;
-	private static TimeBasedUUIDCreator timeBasedUUIDWithHardwarAddressCreator;
+	private static TimeBasedUUIDCreator timeBasedUUIDCreator;
+	private static TimeBasedUUIDCreator timeBasedWithHardwarAddressUUIDCreator;
 	private static NameBasedUUIDCreator md5NameBasedUUIDCreator;
 	private static NameBasedUUIDCreator sha1NameBasedUUIDCreator;
 	private static RandomBasedUUIDCreator randomBasedUUIDCreator;
@@ -102,8 +102,7 @@ public class UUIDGenerator {
 	public static UUID getSequentialWithHardwareAddressUUID() {
 		if (sequentialWithHardwarAddressUUIDCreator == null) {
 			sequentialWithHardwarAddressUUIDCreator = getSequentialUUIDCreator();
-			sequentialWithHardwarAddressUUIDCreator
-					.withNodeIdentifier(TimeBasedUUIDCreator.getHardwareAddressNodeIdentifier());
+			sequentialWithHardwarAddressUUIDCreator.withHardwareAddressNodeIdentifier();
 		}
 		return sequentialWithHardwarAddressUUIDCreator.create();
 	}
@@ -123,7 +122,6 @@ public class UUIDGenerator {
 	public static UUID getTimeBasedUUID() {
 		if (timeBasedUUIDCreator == null) {
 			timeBasedUUIDCreator = getTimeBasedUUIDCreator();
-			timeBasedUUIDCreator.withNodeIdentifier(TimeBasedUUIDCreator.getRandomNodeIdentifier());
 		}
 		return timeBasedUUIDCreator.create();
 	}
@@ -141,10 +139,11 @@ public class UUIDGenerator {
 	 * @return
 	 */
 	public static UUID getTimeBasedWithHardwareAddressUUID() {
-		if (timeBasedUUIDWithHardwarAddressCreator == null) {
-			timeBasedUUIDWithHardwarAddressCreator = getTimeBasedUUIDCreator();
+		if (timeBasedWithHardwarAddressUUIDCreator == null) {
+			timeBasedWithHardwarAddressUUIDCreator = getTimeBasedUUIDCreator();
+			timeBasedWithHardwarAddressUUIDCreator.withHardwareAddressNodeIdentifier();
 		}
-		return timeBasedUUIDWithHardwarAddressCreator.create();
+		return timeBasedWithHardwarAddressUUIDCreator.create();
 	}
 
 	/**

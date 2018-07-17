@@ -44,6 +44,7 @@ public class UUIDState implements Serializable {
 	private long counter = 0;
 	private long sequence = 0;
 
+	private boolean enableCounterIncrement = false;
 	private boolean enableSequenceIncrement = false;
 	private long lastOverranTimestamp = 0;
 	
@@ -155,14 +156,15 @@ public class UUIDState implements Serializable {
 	 */
 	public long getCurrentCounterValue(long timestamp) {
 
-		// (4) increment counter if timestemp is backwards or is repeated
-		if (timestamp <= this.timestamp) {
+		// (4) increment the counter if timestemp is backwards or is repeated.
+		// also increment the counter when the sequence is overrun.
+		if (timestamp <= this.timestamp || this.enableCounterIncrement) {
 			
 			this.counter++;
 			
 			if (this.counter > COUNTER_MAX) {
 				
-				// (3) log overrun warning just once
+				// (3) log a warning (just once per timestamp)
 				if (timestamp > this.lastOverranTimestamp) {
 					this.lastOverranTimestamp = timestamp;
 					LOGGER.log(Level.WARNING,
@@ -171,6 +173,8 @@ public class UUIDState implements Serializable {
 				this.enableSequenceIncrement = true;
 				this.counter = COUNTER_MIN;
 			}
+			
+			this.enableCounterIncrement = false;
 			return this.counter;
 		}
 		
@@ -223,6 +227,9 @@ public class UUIDState implements Serializable {
 			this.sequence++;
 			if (this.sequence > SEQUENCE_MAX) {
 				this.sequence = SEQUENCE_MIN;
+				
+				// force the counter to be incremented
+				this.enableCounterIncrement = true;
 			}
 			this.enableSequenceIncrement = false;
 			return this.sequence;

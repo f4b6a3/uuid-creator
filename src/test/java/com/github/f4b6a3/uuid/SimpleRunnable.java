@@ -24,7 +24,7 @@ public class SimpleRunnable implements Runnable {
 	private static Instant instant = Instant.now();
 	
 	private static UUID[][] cache = new UUID[threadCount][threadLoopLimit];
-	private static UUIDCreator creator = UUIDGenerator.getTimeBasedUUIDCreator().withInstant(instant);
+	private static UUIDCreator creator = UUIDGenerator.getTimeBasedUUIDCreator().withFixedInstant(instant);
 	
 	private static final Logger LOGGER = Logger.getAnonymousLogger();
 
