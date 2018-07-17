@@ -23,7 +23,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.github.f4b6a3.uuid.util.TimestampUtils;
-import com.github.f4b6a3.uuid.util.XorshiftRandom;
 
 /**
  * Class that stores the last status of a time-based creator (factory).
@@ -50,7 +49,7 @@ public class UUIDState implements Serializable {
 	private boolean enableSequenceIncrement = false;
 	private long lastOverranTimestamp = 0;
 
-	// random generator that can be replaced (default: xorshift)
+	// injectable random generator
 	private Random random;
 	
 	/*
@@ -78,7 +77,8 @@ public class UUIDState implements Serializable {
 	 * -------------------------
 	 */
 	
-	public UUIDState() {
+	public UUIDState(Random random) {
+		this.random = random;
 		resetSequence();
 	}
 
@@ -274,9 +274,6 @@ public class UUIDState implements Serializable {
 	 * could just be incremented, but that is unlikely.
 	 */
 	private void resetSequence() {
-		if (random == null) {
-			random = new XorshiftRandom();
-		}
 		this.sequence = random.nextInt(UUIDState.SEQUENCE_MAX - UUIDState.SEQUENCE_MIN) + UUIDState.SEQUENCE_MIN;
 	}
 }

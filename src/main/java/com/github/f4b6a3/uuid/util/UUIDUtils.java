@@ -145,8 +145,7 @@ public class UUIDUtils {
 		long himid = (msb & 0xffffffffffff0000L) >>> 4;
 		long low = (msb & 0x0000000000000fffL);
 
-		long timestamp = himid | low;
-		return timestamp;
+		return (himid | low);
 	}
 	
 	/**
@@ -162,7 +161,6 @@ public class UUIDUtils {
 		long mid = (msb & 0x00000000ffff0000L) << 16;
 		long low = (msb & 0x0000000000000fffL) << 48;
 
-		long timestamp = hii | mid | low;
-		return timestamp;
+		return (hii | mid | low);
 	}
 }

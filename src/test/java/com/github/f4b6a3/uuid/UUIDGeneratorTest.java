@@ -270,7 +270,7 @@ public class UUIDGeneratorTest {
 	
 	@Ignore
 	public void testPrintList() {
-		int max = 100_000;
+		int max = 100;
 		
 		System.out.println("------------------------------------");
 		System.out.println("### Random UUID");

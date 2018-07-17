@@ -49,6 +49,7 @@ public class SimpleRunnable implements Runnable {
 		for (int i = 0; i < cache[0].length; i++) {
 
 			uuid = creator.create();
+			// System.out.println(uuid);
 			
 			if (!contains(uuid)) {
 				cache[id][i] = uuid;
