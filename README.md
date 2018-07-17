@@ -132,17 +132,34 @@ Now see the three fields that contain timestamp information separated from the o
 
 In short, that is the is the difference between both.
 
-Timings compared to java.util.UUID
+Benchmark using JMH
 ------------------------------------------------------
 
-A simple time measurement was done to test how long each methods take to generate 100,000 (a hundred thousand) UUIDs. These are the average results:
+Here is a table showing the results of a simple benchmark using JMH:
 
-* java.util.UUID.randomUUID(): 47 ms
-* UUIDGenerator.getRandomUUID(): 34 ms
-* UUIDGenerator.getTimeBasedUUID(): 22 ms
-* UUIDGenerator.getSequentialUUID(): 22 ms
+| Benchmark | Mode | Cnt | Score | Error | Units |
+|-----------|------|-----|-------|-------|-------|
+| java.util.UUID.randomUUID() | ss | 100 | 56,200 | ±5,334 | ms/op |
+| UUIDGenerator.getRandomUUID() | ss | 100 | 48,534 | ±3,726 | ms/op |
+| UUIDGenerator.getTimeBasedUUID() | ss | 100 | 9,250 | ±4,651 | ms/op |
+| UUIDGenerator.getSequentialUUID() | ss | 100 | 9,359 | ±4,512 | ms/op |
+| UUIDGenerator.getNameBasedMD5UUID(name) | ss | 100 | 47,153 | ±5,419 | ms/op |
+| UUIDGenerator.getNameBasedSHA1UUID(name) | ss | 100 | 56,507 | ±5,385 | ms/op |
+| UUIDGenerator.getTimeBasedWithHardwareAddressUUID() | ss | 100 | 9,342 | ±4,585 | ms/op |
+| UUIDGenerator.getSequentialWithHardwareAddressUUID() | ss | 100 | 9,350 | ±4,585 | ms/op | 
+|Total time: 00:00:49|
+
+These are the configurations used to run this benchmark:
+
+```java
+@State(Scope.Thread)
+@Warmup(iterations = 1, batchSize = 1000)
+@Measurement(iterations = 10, batchSize = 100000 )
+@BenchmarkMode(Mode.SingleShotTime)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
+```
 
 The method getRandomUUID() uses SecureRandom (java.security.SecureRandom).
 
-The machine used to do this test was an Intel i5-3330 with 16GB RAM.
+The machine used to do this test is an Intel i5-3330 with 16GB RAM.
 
