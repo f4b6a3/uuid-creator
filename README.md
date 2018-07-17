@@ -140,14 +140,14 @@ Here is a table showing the results of a simple benchmark using JMH:
 |Benchmark|Mode|Cnt|Score|Error|Units|
 |:---|:---:|:---:|---:|---:|:---:|
 |java.util.UUID.randomUUID()|ss|100|55,240|±4,955|ms/op|
-|UUIDGenerator.getNameBasedMD5UUID(namespace,name)|ss|100|48,489|±4,815|ms/op|
-|UUIDGenerator.getNameBasedSHA1UUID(namespace,name)|ss|100|57,981|±5,237|ms/op|
 |UUIDGenerator.getRandomUUID()|ss|100|48,127|±3,359|ms/op|
 |UUIDGenerator.getRandomFastUUID()|ss|100|3,195|±0,582|ms/op|
-|UUIDGenerator.getSequentialUUID()|ss|100|7,540|±3,926|ms/op|
-|UUIDGenerator.getSequentialWithHardwareAddressUUID()|ss|100|7,462|±3,915|ms/op|
 |UUIDGenerator.getTimeBasedUUID()|ss|100|7,678|±3,937|ms/op|
+|UUIDGenerator.getSequentialUUID()|ss|100|7,540|±3,926|ms/op|
+|UUIDGenerator.getNameBasedMD5UUID(namespace,name)|ss|100|48,489|±4,815|ms/op|
+|UUIDGenerator.getNameBasedSHA1UUID(namespace,name)|ss|100|57,981|±5,237|ms/op|
 |UUIDGenerator.getTimeBasedWithHardwareAddressUUID()|ss|100|7,578|±3,911|ms/op|
+|UUIDGenerator.getSequentialWithHardwareAddressUUID()|ss|100|7,462|±3,915|ms/op|
 |Total time: 00:00:52|
 
 These are the configurations used to run this benchmark:
