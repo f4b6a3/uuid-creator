@@ -138,7 +138,7 @@ Benchmark using JMH
 Here is a table showing the results of a simple benchmark using JMH:
 
 | Benchmark | Mode | Cnt | Score | Error | Units |
-|-----------|------|-----|-------|-------|-------|
+| :---      | :---: | :---: | ---: | ---: | :---: |
 | java.util.UUID.randomUUID() | ss | 100 | 56,200 | ±5,334 | ms/op |
 | UUIDGenerator.getRandomUUID() | ss | 100 | 48,534 | ±3,726 | ms/op |
 | UUIDGenerator.getTimeBasedUUID() | ss | 100 | 9,250 | ±4,651 | ms/op |
