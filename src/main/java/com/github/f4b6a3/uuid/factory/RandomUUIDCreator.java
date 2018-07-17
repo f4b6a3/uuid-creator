@@ -23,12 +23,12 @@ import java.util.Random;
 import java.util.UUID;
 
 /**
- * Factory that creates random-based UUIDs version 4.
+ * Factory that creates random UUIDs version 4.
  * 
  * @author fabiolimace
  *
  */
-public class RandomBasedUUIDCreator extends UUIDCreator {
+public class RandomUUIDCreator extends UUIDCreator {
 
 	private static final long serialVersionUID = -5686288990673774098L;
 	
@@ -44,9 +44,8 @@ public class RandomBasedUUIDCreator extends UUIDCreator {
 	 * Public constructors
 	 * -------------------------
 	 */
-	public RandomBasedUUIDCreator() {
+	public RandomUUIDCreator() {
 		super(UUIDCreator.VERSION_4);
-		random = getSecureRandom();
 	}
 
 	/* 
@@ -56,6 +55,11 @@ public class RandomBasedUUIDCreator extends UUIDCreator {
 	 */
 	@Override
 	public UUID create() {
+		
+		if(random == null) {
+			random = getSecureRandom();
+		}
+		
 		long msb = 0x0000000000000000L;
 		long lsb = 0x0000000000000000L;
 		
@@ -76,11 +80,13 @@ public class RandomBasedUUIDCreator extends UUIDCreator {
 	/**
 	 * Change the default random generator in a fluent way to another that extends {@link Random}.
 	 * 
+	 * The default random generator is {@link java.security.SecureRandom} with SHA1PRNG algorithm.
+	 * 
 	 * {@link Random}.
 	 * 
 	 * @param random {@link Random}
 	 */
-	public RandomBasedUUIDCreator withRandomGenerator(Random random) {
+	public RandomUUIDCreator withRandomGenerator(Random random) {
 		this.random = random;
 		return this;
 	}

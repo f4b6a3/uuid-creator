@@ -20,9 +20,10 @@ package com.github.f4b6a3.uuid;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.factory.NameBasedUUIDCreator;
-import com.github.f4b6a3.uuid.factory.RandomBasedUUIDCreator;
+import com.github.f4b6a3.uuid.factory.RandomUUIDCreator;
 import com.github.f4b6a3.uuid.factory.TimeBasedUUIDCreator;
 import com.github.f4b6a3.uuid.factory.UUIDCreator;
+import com.github.f4b6a3.uuid.util.XorshiftRandom;
 
 /**
  * Facade to the UUID factories.
@@ -38,7 +39,8 @@ public class UUIDGenerator {
 	private static TimeBasedUUIDCreator timeBasedWithHardwarAddressUUIDCreator;
 	private static NameBasedUUIDCreator md5NameBasedUUIDCreator;
 	private static NameBasedUUIDCreator sha1NameBasedUUIDCreator;
-	private static RandomBasedUUIDCreator randomBasedUUIDCreator;
+	private static RandomUUIDCreator randomUUIDCreator;
+	private static RandomUUIDCreator randomFastUUIDCreator;
 
 	/* 
 	 * ----------------------------------------------------------------------
@@ -47,22 +49,40 @@ public class UUIDGenerator {
 	 */
 	
 	/**
-	 * Returns a random UUID with no timestamp and no machine address.
-	 *
-	 * Details: <br/>
+	 * Returns a random UUID.
+	 * 
+	 * The random generator used is {@link java.security.SecureRandom} with
+	 * SHA1PRNG algorithm.
+	 * 
+	 * It uses the Details: <br/>
 	 * - Version number: 4 <br/>
 	 * - Variant number: 1 <br/>
-	 * - Has timestamp?: NO <br/>
-	 * - Has hardware address (MAC)?: NO <br/>
-	 * - Timestamp bytes are in the RFC-4122 order: NO <br/>
 	 *
 	 * @return
 	 */
 	public static UUID getRandomUUID() {
-		if (randomBasedUUIDCreator == null) {
-			randomBasedUUIDCreator = getRandomBasedUUIDCreator();
+		if (randomUUIDCreator == null) {
+			randomUUIDCreator = getRandomUUIDCreator();
 		}
-		return randomBasedUUIDCreator.create();
+		return randomUUIDCreator.create();
+	}
+
+	/**
+	 * Returns a fast random UUID.
+	 *
+	 * The random generator used is {@link XorshiftRandom}.
+	 * 
+	 * Details: <br/>
+	 * - Version number: 4 <br/>
+	 * - Variant number: 1 <br/>
+	 *
+	 * @return
+	 */
+	public static UUID getRandomFastUUID() {
+		if (randomFastUUIDCreator == null) {
+			randomFastUUIDCreator = getRandomUUIDCreator().withRandomGenerator(new XorshiftRandom());
+		}
+		return randomFastUUIDCreator.create();
 	}
 	
 	/**
@@ -236,12 +256,12 @@ public class UUIDGenerator {
 	 */
 	
 	/**
-	 * Returns a {@link RandomBasedUUIDCreator} that creates UUID version 4.
+	 * Returns a {@link RandomUUIDCreator} that creates UUID version 4.
 	 * 
-	 * @return {@link RandomBasedUUIDCreator}
+	 * @return {@link RandomUUIDCreator}
 	 */
-	public static RandomBasedUUIDCreator getRandomBasedUUIDCreator() {
-		return new RandomBasedUUIDCreator();
+	public static RandomUUIDCreator getRandomUUIDCreator() {
+		return new RandomUUIDCreator();
 	}
 	
 	/**

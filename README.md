@@ -141,6 +141,7 @@ Here is a table showing the results of a simple benchmark using JMH:
 | :---      | :---: | :---: | ---: | ---: | :---: |
 | java.util.UUID.randomUUID() | ss | 100 | 56,200 | ±5,334 | ms/op |
 | UUIDGenerator.getRandomUUID() | ss | 100 | 48,534 | ±3,726 | ms/op |
+| UUIDGenerator.getRandomFastUUID() | ss | 100 | 3,142 | ±0,554 | ms/op |
 | UUIDGenerator.getTimeBasedUUID() | ss | 100 | 9,250 | ±4,651 | ms/op |
 | UUIDGenerator.getSequentialUUID() | ss | 100 | 9,359 | ±4,512 | ms/op |
 | UUIDGenerator.getNameBasedMD5UUID(name) | ss | 100 | 47,153 | ±5,419 | ms/op |

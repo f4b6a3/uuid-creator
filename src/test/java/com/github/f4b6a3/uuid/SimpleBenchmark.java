@@ -8,7 +8,7 @@ public class SimpleBenchmark {
 	/**
 	 * This method estimates the average running time for a method in nanoseconds.
 	 */
-	public static long run(Class<?> clazz, String methodName, long rounds) {
+	public static long run(Object obj, Class<?> clazz, String methodName, long rounds) {
 		
 		long elapsedSum = 0;
 		long elapsedAvg = 0;
@@ -22,14 +22,21 @@ public class SimpleBenchmark {
 		long max = min + rounds;
 
 		try {
-			Method method = clazz.getDeclaredMethod(methodName);
+			
+			Method method = null;
+			
+			if(obj != null) {
+				method = obj.getClass().getMethod(methodName);
+			} else {
+				method = clazz.getDeclaredMethod(methodName);
+			}
 			
 			for (int i = 0; i < max; i++) {
 				beforeTime = System.nanoTime();
 				if(i > min) {
 					extraSum += (beforeTime - afterTime);
 				}
-				method.invoke(null);
+				method.invoke(obj);
 				afterTime = System.nanoTime();
 				if(i > min) {
 					elapsedSum += (afterTime - beforeTime);

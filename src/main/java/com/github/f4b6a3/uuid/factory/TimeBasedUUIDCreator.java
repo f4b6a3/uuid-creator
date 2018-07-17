@@ -27,6 +27,7 @@ import com.github.f4b6a3.uuid.state.UUIDState;
 import com.github.f4b6a3.uuid.util.ByteUtils;
 import com.github.f4b6a3.uuid.util.TimestampUtils;
 import com.github.f4b6a3.uuid.util.UUIDUtils;
+import com.github.f4b6a3.uuid.util.XorshiftRandom;
 
 /**
  * Factory that create time-based UUIDs version 0 and 1.
@@ -52,12 +53,8 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	private long fixedNodeIdentifier;
 	private long initialSequence;
 
-	/*
-	 * -------------------------
-	 * Private static fields
-	 * -------------------------
-	 */
-	private static Random random;
+	// random generator that can be replaced (default: xorshift)
+	private Random random;
 	
 	/* 
 	 * -------------------------
@@ -116,34 +113,18 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 		if (fixedInstant == null) {
 			fixedInstant = Instant.now();
 		}
-		if (this.initialSequence != 0) {
-			state.setSequence(this.initialSequence);
-		}
-		if (this.fixedNodeIdentifier != 0) {
-			state.setNodeIdentifier(this.fixedNodeIdentifier);
-		}
-		
-		// most and least significant bits of UUID
-		long msb = 0x0000000000000000L;
-		long lsb = 0x0000000000000000L;
-		
-		// parts of the UUID
-		long timestamp = 0x0000000000000000L;
-		long nodeIdentifier = 0x0000000000000000L;
-		long counter = 0x0000000000000000L;
-		long sequence = 0x0000000000000000L;
 		
 		// (3a) get the timestamp
-		timestamp = TimestampUtils.getTimestamp(fixedInstant);
+		long timestamp = TimestampUtils.getTimestamp(fixedInstant);
 
 		// (4b) get the node identifier
-		nodeIdentifier = getNodeIdentifier();
+		long nodeIdentifier = getNodeIdentifier();
 		
 		// (4b) get the counter value
-		counter = state.getCurrentCounterValue(timestamp);
+		long counter = state.getCurrentCounterValue(timestamp);
 		
 		// (5a)(6a) get the sequence value
-		sequence = state.getCurrentSequenceValue(nodeIdentifier);
+		long sequence = state.getCurrentSequenceValue(nodeIdentifier);
 		
 		// (7a) save the state
 		state.setTimestamp(timestamp);
@@ -152,11 +133,11 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 		state.setSequence(sequence);
 		
 		// (9a) format the most significant bits
-		msb = getTimestampBits(timestamp);
+		long msb = getTimestampBits(timestamp);
 		msb = getCounterBits(msb, counter);
 		
 		// (9a) format the least significant bits
-		lsb = getSequenceBits(lsb, sequence);
+		long lsb = getSequenceBits(sequence);
 		lsb = getNodeIdentifierBits(lsb, nodeIdentifier);
 		
 		return new UUID(msb, lsb);
@@ -181,28 +162,6 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 		this.fixedInstant = instant;
 		return this;
 	}
-	
-	/**
-	 * Set a fixed node identifier to generate UUIDs.
-	 * 
-	 * Every time a factory is instantiated a random value is set to the node
-	 * identifier by default. Someone may think it's useful in some special case
-	 * to use a fixed node identifier other than random value.
-	 * 
-	 * This method will always set the multicast bit to indicate that the value
-	 * is not a real MAC address.
-	 * 
-	 * If you want to inform a fixed value that is real MAC address, use the
-	 * method {@link TimeBasedUUIDCreator#withFixedNodeIdentifier(long)}, which
-	 * doesn't change the multicast bit.
-	 * 
-	 * @param nodeIdentifier
-	 * @return
-	 */
-	public TimeBasedUUIDCreator withFixedMulticastNodeIdentifier(long nodeIdentifier) {
-		this.fixedNodeIdentifier = setMulticastNodeIdentifier(nodeIdentifier) | 0x0000FFFFFFFFFFFFL;
-		return this;
-	}
 
 	/**
 	 * Set a fixed node identifier to generate UUIDs.
@@ -224,8 +183,30 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * @return
 	 */
 	public TimeBasedUUIDCreator withFixedNodeIdentifier(long nodeIdentifier) {
-		this.fixedNodeIdentifier = nodeIdentifier | 0x0000FFFFFFFFFFFFL;
+		this.fixedNodeIdentifier = nodeIdentifier & 0x0000FFFFFFFFFFFFL;
+		state.setNodeIdentifier(this.fixedNodeIdentifier);
 		return this;
+	}
+	
+	/**
+	 * Set a fixed node identifier to generate UUIDs.
+	 * 
+	 * Every time a factory is instantiated a random value is set to the node
+	 * identifier by default. Someone may think it's useful in some special case
+	 * to use a fixed node identifier other than random value.
+	 * 
+	 * This method will always set the multicast bit to indicate that the value
+	 * is not a real MAC address.
+	 * 
+	 * If you want to inform a fixed value that is real MAC address, use the
+	 * method {@link TimeBasedUUIDCreator#withFixedNodeIdentifier(long)}, which
+	 * doesn't change the multicast bit.
+	 * 
+	 * @param nodeIdentifier
+	 * @return
+	 */
+	public TimeBasedUUIDCreator withFixedMulticastNodeIdentifier(long nodeIdentifier) {
+		return this.withFixedNodeIdentifier(setMulticastNodeIdentifier(nodeIdentifier));
 	}
 	
 	/**
@@ -246,6 +227,8 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	/**
 	 * Set a fixed initial sequence value to generate UUIDs.
 	 * 
+	 * The sequence has a range from 0 to 16,383.
+	 * 
 	 * Every time a factory is instantiated a random value is set to the sequence
 	 * by default. This method allows someone to change this value with a
 	 * desired one. It is called "initial" because during the lifetime of the
@@ -255,14 +238,28 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * @param sequence
 	 * @return
 	 */
-	public TimeBasedUUIDCreator withInitialSequence(long sequence) {
-		this.initialSequence = sequence | 0x0000000000003FFFL;
+	public TimeBasedUUIDCreator withFixedInitialSequence(long sequence) {
+		this.initialSequence = sequence & 0x0000000000003FFFL;
+		state.setInitialSequence(this.initialSequence);
+		return this;
+	}
+	
+	/**
+	 * Change the default random generator in a fluent way to another that extends {@link Random}.
+	 * 
+	 * The default random generator is {@link XorshiftRandom}.
+	 * 
+	 * @param random {@link Random}
+	 */
+	public TimeBasedUUIDCreator withRandomGenerator(Random random) {
+		this.random = random;
+		state.setRandom(this.random);
 		return this;
 	}
 		
 	/*
 	 * ------------------------------------------
-	 * Private static methods for node identifiers
+	 * Private methods for node identifiers
 	 * ------------------------------------------
 	 */
 	
@@ -295,7 +292,7 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * @param state
 	 * @return
 	 */
-	private static long getHardwareAddressNodeIdentifier() {
+	private long getHardwareAddressNodeIdentifier() {
 		try {
 			NetworkInterface nic = NetworkInterface.getNetworkInterfaces().nextElement();
 			byte[] realHardwareAddress = nic.getHardwareAddress();
@@ -315,10 +312,11 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * @param state
 	 * @return
 	 */
-	private static long getRandomNodeIdentifier() {
+	private long getRandomNodeIdentifier() {
 		
 		if(random == null) {
-			 random = new Random();
+			this.random = new XorshiftRandom();
+			state.setRandom(this.random);
 		}
 		
 		long node = random.nextLong();
@@ -331,7 +329,7 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * @param nodeIdentifier
 	 * @return
 	 */
-	private static long setMulticastNodeIdentifier(long nodeIdentifier) {
+	private long setMulticastNodeIdentifier(long nodeIdentifier) {
 		return nodeIdentifier | 0x0000010000000000L;
 	}
 	
@@ -430,14 +428,11 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * 
 	 * @param sequence
 	 */
-	private long getSequenceBits(long lsb, long sequence) {
+	private long getSequenceBits(long sequence) {
 		
-		long nod = lsb & 0x0000ffffffffffffL;
 		long seq = sequence << 48;
+		long lsb = setVariantBits(seq);
 		
-		lsb = (seq | nod); 
-		lsb = setVariantBits(lsb);
-
 		return lsb;
 	}
 

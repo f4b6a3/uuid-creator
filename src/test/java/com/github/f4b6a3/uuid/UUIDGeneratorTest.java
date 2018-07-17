@@ -1,14 +1,18 @@
 package com.github.f4b6a3.uuid;
 
 import java.time.Instant;
+import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.factory.UUIDCreator;
 import com.github.f4b6a3.uuid.util.TimestampUtils;
 import com.github.f4b6a3.uuid.util.UUIDUtils;
+import com.github.f4b6a3.uuid.util.XorshiftRandom;
 
 import static com.github.f4b6a3.uuid.util.ByteUtils.*;
 
@@ -210,10 +214,12 @@ public class UUIDGeneratorTest {
 	@Test
 	public void testEstimateRunningTimes() {
 		long loopMax = 100_000;
-		long randomUUID = (SimpleBenchmark.run(UUID.class, "randomUUID", loopMax) * loopMax) / 1_000_000;
-		long getRandomUUID = (SimpleBenchmark.run(UUIDGenerator.class, "getRandomUUID", loopMax) * loopMax) / 1_000_000;
-		long getTimeBasedUUID = (SimpleBenchmark.run(UUIDGenerator.class, "getTimeBasedUUID", loopMax) * loopMax) / 1_000_000;
-		long getSequentialUUID = (SimpleBenchmark.run(UUIDGenerator.class, "getSequentialUUID", loopMax) * loopMax) / 1_000_000;
+		long randomUUID = (SimpleBenchmark.run(null, UUID.class, "randomUUID", loopMax) * loopMax) / 1_000_000;
+		long getRandomUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getRandomUUID", loopMax) * loopMax) / 1_000_000;
+		long getTimeBasedUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getTimeBasedUUID", loopMax) * loopMax) / 1_000_000;
+		long getSequentialUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getSequentialUUID", loopMax) * loopMax) / 1_000_000;
+		long javaNextLong = (SimpleBenchmark.run(new Random(), null, "nextLong", loopMax) * loopMax) / 1_000_000;
+		long XorshiftNextLong = (SimpleBenchmark.run(new XorshiftRandom(), null, "nextLong", loopMax) * loopMax) / 1_000_000;
 
 		System.out.println();
 		System.out.println(String.format("Average running times for %,d UUIDs generated:", loopMax));
@@ -221,6 +227,8 @@ public class UUIDGeneratorTest {
 		System.out.println(String.format("* UUIDGenerator.getRandomUUID():     %s ms", getRandomUUID));
 		System.out.println(String.format("* UUIDGenerator.getTimeBasedUUID():  %s ms", getTimeBasedUUID));
 		System.out.println(String.format("* UUIDGenerator.getSequentialUUID(): %s ms", getSequentialUUID));
+		System.out.println(String.format("* java.util.Random.nextLong(): %s ms", javaNextLong));
+		System.out.println(String.format("* XorshiftRandom.nextLong(): %s ms", XorshiftNextLong));
 	}
 
 	/**
@@ -257,6 +265,32 @@ public class UUIDGeneratorTest {
 		for (int i = 0; i < SimpleRunnable.threadCount; i++) {
 			Thread thread = new Thread(new SimpleRunnable(i));
 			thread.start();
+		}
+	}
+	
+	@Ignore
+	public void testPrintList() {
+		int max = 100_000;
+		
+		System.out.println("------------------------------------");
+		System.out.println("### Random UUID");
+		System.out.println("------------------------------------");
+		for (int i = 0; i < max; i++) {
+			System.out.println(UUIDGenerator.getRandomFastUUID());
+		}
+		
+		System.out.println("------------------------------------");
+		System.out.println("### Time-based UUID");
+		System.out.println("------------------------------------");
+		for (int i = 0; i < max; i++) {
+			System.out.println(UUIDGenerator.getTimeBasedUUID());
+		}
+		
+		System.out.println("------------------------------------");
+		System.out.println("### Sequential UUID");
+		System.out.println("------------------------------------");
+		for (int i = 0; i < max; i++) {
+			System.out.println(UUIDGenerator.getSequentialUUID());
 		}
 	}
 }

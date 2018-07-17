@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.github.f4b6a3.uuid.util.TimestampUtils;
+import com.github.f4b6a3.uuid.util.XorshiftRandom;
 
 /**
  * Class that stores the last status of a time-based creator (factory).
@@ -43,17 +44,21 @@ public class UUIDState implements Serializable {
 	private long nodeIdentifier = 0;
 	private long counter = 0;
 	private long sequence = 0;
-
+	
+	// variables for overrun control
 	private boolean enableCounterIncrement = false;
 	private boolean enableSequenceIncrement = false;
 	private long lastOverranTimestamp = 0;
+
+	// random generator that can be replaced (default: xorshift)
+	private Random random;
 	
 	/*
 	 * -------------------------
 	 * Private static fields
 	 * -------------------------
 	 */
-	private static Random random;
+
 	private static final Logger LOGGER = Logger.getAnonymousLogger();
 
 	/*
@@ -65,7 +70,7 @@ public class UUIDState implements Serializable {
 	protected static final int COUNTER_MAX = 10_000;
 
 	protected static final int SEQUENCE_MIN = 0x0000;
-	protected static final int SEQUENCE_MAX = 0x3fff;
+	protected static final int SEQUENCE_MAX = 0x3fff; // 16,383
 
 	/* 
 	 * -------------------------
@@ -75,13 +80,6 @@ public class UUIDState implements Serializable {
 	
 	public UUIDState() {
 		resetSequence();
-	}
-
-	public UUIDState(long timestamp, long sequence, long counter, long nodeIdentifier) {
-		this.timestamp = timestamp;
-		this.sequence = sequence;
-		this.counter = counter;
-		this.nodeIdentifier = nodeIdentifier;
 	}
 
 	/* 
@@ -127,6 +125,14 @@ public class UUIDState implements Serializable {
 			this.sequence = sequence;
 		}
 	}
+
+	public void setInitialSequence(long sequence) {
+		this.sequence = sequence;
+	}
+	
+	public void setRandom(Random random) {
+		this.random = random;
+	}
 	
 	/* 
 	 * -------------------------
@@ -157,27 +163,28 @@ public class UUIDState implements Serializable {
 	public long getCurrentCounterValue(long timestamp) {
 
 		// (4) increment the counter if timestemp is backwards or is repeated.
-		// also increment the counter when the sequence is overrun.
 		if (timestamp <= this.timestamp || this.enableCounterIncrement) {
-			
+
 			this.counter++;
 			
 			if (this.counter > COUNTER_MAX) {
-				
+				this.counter = COUNTER_MIN;
+
+				// force the sequence to be incremented
+				this.enableSequenceIncrement = true;
+
 				// (3) log a warning (just once per timestamp)
 				if (timestamp > this.lastOverranTimestamp) {
 					this.lastOverranTimestamp = timestamp;
 					LOGGER.log(Level.WARNING,
 							String.format("Timestamp counter overrun at \"%s\"", TimestampUtils.getInstant(timestamp)));
 				}
-				this.enableSequenceIncrement = true;
-				this.counter = COUNTER_MIN;
 			}
-			
+
 			this.enableCounterIncrement = false;
 			return this.counter;
 		}
-		
+
 		this.counter = COUNTER_MIN;
 		return this.counter;
 	}
@@ -221,43 +228,31 @@ public class UUIDState implements Serializable {
 	 * @return
 	 */
 	public long getCurrentSequenceValue(long nodeIdentifier) {
-
 		// (2a) increment sequence if timestemp is backwards or is repeated
 		if (this.enableSequenceIncrement) {
+			
 			this.sequence++;
-			if (this.sequence > SEQUENCE_MAX) {
-				this.sequence = SEQUENCE_MIN;
-				
-				// force the counter to be incremented
-				this.enableCounterIncrement = true;
+			
+			if (this.sequence >= SEQUENCE_MAX) {				
+				if (this.sequence > SEQUENCE_MAX) {
+					this.sequence = SEQUENCE_MIN;
+				} else {
+					// force the counter to be incremented
+					this.enableCounterIncrement = true;
+				}
 			}
+			
 			this.enableSequenceIncrement = false;
 			return this.sequence;
 		}
 		
 		// (3a) set a random value to the sequence if the node ID has changed
-		if (nodeIdentifier != this.nodeIdentifier) {
+		if (nodeIdentifier != this.nodeIdentifier && this.nodeIdentifier != 0) {
 			resetSequence();
 			return this.sequence;
 		}
 
 		return this.sequence;
-	}
-	
-	@Override
-	public UUIDState clone() {
-		return new UUIDState(this.timestamp, this.sequence, this.counter, this.nodeIdentifier);
-	}
-
-	@Override
-	public boolean equals(Object other) {
-		if (this == other) {
-			return true;
-		}
-		return (other != null) && (other instanceof UUIDState) && (this.timestamp == ((UUIDState) other).getTimestamp())
-				&& (this.sequence == ((UUIDState) other).getSequence())
-				&& (this.counter == ((UUIDState) other).getCounter())
-				&& (this.nodeIdentifier == ((UUIDState) other).getNodeIdentifier());
 	}
 	
 	/* 
@@ -280,7 +275,7 @@ public class UUIDState implements Serializable {
 	 */
 	private void resetSequence() {
 		if (random == null) {
-			random = new Random();
+			random = new XorshiftRandom();
 		}
 		this.sequence = random.nextInt(UUIDState.SEQUENCE_MAX - UUIDState.SEQUENCE_MIN) + UUIDState.SEQUENCE_MIN;
 	}
