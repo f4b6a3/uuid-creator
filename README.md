@@ -24,9 +24,9 @@ How to Use
 
 ### Version 0: Sequential UUID
 
-The Sequential UUID is a modified time-based UUID. The bytes of timestamp part are arrenged in the 'natural' order. The version number 0 (zero) was chosen to identify Sequential UUIDs. It may be considered as a non-standard 'extension' of the RFC-4122.
+The Sequential UUID is a modified time-based UUID. The bytes of timestamp part are arrenged in the 'natural' order. The version number 0 (zero) was chosen to identify Sequential UUIDs. It may be considered as an 'extension' of the RFC-4122.
 
-**Example:**
+**Example 1:**
 
 ```java
 UUID uuid = UUIDGenerator.getSequentialUUID();
@@ -34,59 +34,119 @@ System.out.println(uuid.toString());
 // Output: 1e879099-a413-0e81-9888-737f8d128eed
 ```
 
+**Example 2:**
+
+```java
+UUID uuid = UUIDGenerator.getSequentialWithHardwareAddressUUID();
+System.out.println(uuid.toString());
+// Output: 1e88c441-5711-0fa2-aaac-bf66xxxxxxxx
+```
+
+**Example 3:**
+
+```java
+// Using a fixed node identifier: 0x111111111111L
+UUID uuid = UUIDGenerator.getSequentialUUIDCreator().withFixedNodeIdentifier(0x111111111111L).create();
+System.out.println(uuid.toString());
+// Output: 1e88c46f-e5df-0550-8e9d-111111111111
+```
+
 ### Version 1: Time-based UUID
 
 The Time-based UUID embeds a timestamp and may embed a hardware address.
 
-**Example:**
+**Example 1:**
 
 ```java
 UUID uuid = UUIDGenerator.getTimeBasedUUID();
 System.out.println(uuid.toString());
 // Output: 8caea7c7-7909-11e8-a919-4b43423cffc9
 ```
-### Version 2: DCE Security
 
-The DCE Security version 2 is out of scope.
+**Example 2:**
+
+```java
+UUID uuid = UUIDGenerator.getTimeBasedWithHardwareAddressUUID();
+System.out.println(uuid.toString());
+// Output: 15670d26-8c44-11e8-bda5-47f8xxxxxxxx
+```
+
+**Example 3:**
+
+```java
+// Using a fixed node identifier: 0x111111111111L
+uuid = UUIDGenerator.getTimeBasedUUIDCreator().withFixedNodeIdentifier(0x111111111111L).create();
+System.out.println(uuid.toString());
+// Output: fe682e80-8c46-11e8-98d5-111111111111
+```
 
 ### Version 3: Name-based UUID hashed with MD5
 
 The Name-based UUID version 3 is a MD5 hash of a name space and a name.
 
-**Example:**
+**Example 1:**
 
 ```java
-UUID namespace = UUIDGenerator.NAMESPACE_URL;
+UUID namespace = UUIDCreator.NAMESPACE_URL;
 String name = "https://github.com/";
 UUID uuid = UUIDGenerator.getNameBasedMD5UUID(namespace, name);
 System.out.println(uuid.toString());
 // Output: 295df05a-2c43-337c-b6b8-4b84826e4a94
 ```
 
+**Example 2:**
+
+```java
+// Without name space.
+String name = "https://github.com/";
+UUID uuid = UUIDGenerator.getNameBasedMD5UUID(name);
+System.out.println(uuid.toString());
+// Output: 008ec445-3ff3-3513-b438-93cba7aa31c8
+```
+
 ### Version 4: Random UUID
 
-The Random UUID is a simple random array of 16 bytes.
+The Random UUID is a simple random array of 16 bytes. The default random generator is SecureRandom, but any one can be used.
 
-**Example:**
+**Example 1:**
 
 ```java
 UUID uuid = UUIDGenerator.getRandomUUID();
 System.out.println(uuid.toString());
-// Output: f390cc68-6004-417b-81df-4514e4a7323b
+// Output: 1133483a-df21-47a6-b667-7482d6ceae39
+```
+
+**Example 2:**
+
+```java
+// With Xorshift fast random generator
+UUID uuid = UUIDGenerator.getRandomUUIDCreator().withRandomGenerator(new XorshiftRandom()).create();
+System.out.println(uuid.toString());
+// Output: d08b9aca-41c9-4e72-bc9d-95bda46c9730
 ```
 
 ### Version 5: Name-based UUID hashed with SHA-1
 
-The Name-based UUID version 5 is a SHA-1 hash of a name space and a name. 
+The Name-based UUID version 5 is a SHA-1 hash of a name space and a name.
 
-**Example:**
+**Example 1:**
 
 ```java
-UUID namespace = UUIDGenerator.NAMESPACE_URL;
+UUID namespace = UUIDCreator.NAMESPACE_URL;
 String name = "https://github.com/";
 UUID uuid = UUIDGenerator.getNameBasedSHA1UUID(namespace, name);
 System.out.println(uuid.toString());
 // Output: 39983165-606c-5d83-abfa-b97af8b1ae8d
+```
+
+**Example 2:**
+
+```java
+// Without name space
+String name = "https://github.com/";
+UUID uuid = UUIDGenerator.getNameBasedSHA1UUID(name);
+System.out.println(uuid.toString());
+// Output: d7b3438d-97f3-55e6-92a5-66a731eea5ac
 ```
 
 Differences between Time-based UUID and Sequential UUID
@@ -127,8 +187,8 @@ Note that the byte order of the first three fields are different in both example
 
 Now see the three fields that contain timestamp information separated from the other fields. The lowest bytes of the timestamp are highlighted (the "V" is for version).
 
-* Time-based UUID: **79592ca7**4d7fV1e8
-* Sequential UUID: 1e84d7f**79592**V**ca7**
+* Time-based UUID: **79592ca7**4d7f11e8
+* Sequential UUID: 1e84d7f**79592**0**ca7**
 
 In short, that is the is the difference between both.
 
@@ -161,6 +221,8 @@ These are the configurations used to run this benchmark:
 ```
 
 The method getRandomUUID() uses SecureRandom (java.security.SecureRandom).
+
+The method getRandomFastUUID() uses a [Xorshift](https://en.wikipedia.org/wiki/Xorshift) random generator.
 
 The machine used to do this test is an Intel i5-3330 with 16GB RAM.
 

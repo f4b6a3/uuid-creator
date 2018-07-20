@@ -17,8 +17,5 @@
 
 package com.github.f4b6a3.uuid.factory;
 
-import java.util.UUID;
-
 public interface IUUIDCreator {
-	public UUID create();
 }

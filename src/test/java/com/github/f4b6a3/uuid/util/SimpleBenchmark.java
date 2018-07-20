@@ -1,4 +1,4 @@
-package com.github.f4b6a3.uuid;
+package com.github.f4b6a3.uuid.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

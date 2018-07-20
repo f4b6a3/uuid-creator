@@ -1,13 +1,12 @@
-package com.github.f4b6a3.uuid;
+package com.github.f4b6a3.uuid.util;
 
 import java.time.Instant;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.factory.UUIDCreator;
+import com.github.f4b6a3.uuid.UUIDGenerator;
+import com.github.f4b6a3.uuid.factory.TimeBasedUUIDCreator;
 
 /**
  * Runnable to test if a UUID is created more than once.
@@ -18,16 +17,14 @@ public class SimpleRunnable implements Runnable {
 	private UUID uuid;
 	
 	public static int threadCount = 100;
-	public static int threadLoopLimit = 100;
+	public static int threadLoopLimit = 1000;
 	
 	// This instant won't change during this test
 	private static Instant instant = Instant.now();
 	
 	private static UUID[][] cache = new UUID[threadCount][threadLoopLimit];
-	private static UUIDCreator creator = UUIDGenerator.getTimeBasedUUIDCreator().withFixedInstant(instant);
+	private static TimeBasedUUIDCreator creator = UUIDGenerator.getTimeBasedUUIDCreator().withFixedInstant(instant);
 	
-	private static final Logger LOGGER = Logger.getAnonymousLogger();
-
 	public SimpleRunnable(int id) {
 		this.id = id;
 	}
@@ -55,7 +52,7 @@ public class SimpleRunnable implements Runnable {
 				cache[id][i] = uuid;
 			} else {
 				// The current UUID have been created before by another thread.
-				LOGGER.log(Level.WARNING, String.format("UUID conflict: %s", uuid.toString()));
+				throw new RuntimeException(String.format("UUID conflict: %s", uuid.toString())); 
 			}
 		}
 	}

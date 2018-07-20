@@ -23,11 +23,10 @@ import java.time.Instant;
 import java.util.Random;
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.uuid.state.UUIDState;
 import com.github.f4b6a3.uuid.util.ByteUtils;
 import com.github.f4b6a3.uuid.util.TimestampUtils;
-import com.github.f4b6a3.uuid.util.UUIDUtils;
-import com.github.f4b6a3.uuid.util.XorshiftRandom;
 
 /**
  * Factory that create time-based UUIDs version 0 and 1.
@@ -64,7 +63,7 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	
 	public TimeBasedUUIDCreator(int version) {
 		super(version);
-		random = new XorshiftRandom();
+		random = new Xorshift128PlusRandom();
 		this.state = new UUIDState(random);
 	}
 	
@@ -107,7 +106,6 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 *  
 	 * @return {@link UUID}
 	 */
-	@Override
 	public synchronized UUID create() {
 		
 		// (3a) get the timestamp
@@ -241,7 +239,7 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	/**
 	 * Change the default random generator in a fluent way to another that extends {@link Random}.
 	 * 
-	 * The default random generator is {@link XorshiftRandom}.
+	 * The default random generator is {@link Xorshift128PlusRandom}.
 	 * 
 	 * @param random {@link Random}
 	 */
@@ -334,12 +332,6 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * @return
 	 */
 	private long getRandomNodeIdentifier() {
-		
-		if(random == null) {
-			this.random = new XorshiftRandom();
-			state.setRandom(this.random);
-		}
-		
 		return setMulticastNodeIdentifier(random.nextLong());
 	}
 	

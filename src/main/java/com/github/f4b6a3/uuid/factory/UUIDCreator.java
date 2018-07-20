@@ -48,7 +48,7 @@ public abstract class UUIDCreator implements IUUIDCreator, Serializable {
 	public static final int VARIANT_RFC4122 = 2;
 	public static final int VARIANT_RESERVED_MICROSOFT = 6;
 	public static final int VARIANT_RESERVED_FUTURE = 7;
-	// UUID versions defined by RFC-4122, plus a extension (zero)
+	// UUID versions defined by RFC-4122, plus an extension (zero)
 	public static final int VERSION_0 = 0;
 	public static final int VERSION_1 = 1;
 	public static final int VERSION_2 = 2;
@@ -69,7 +69,10 @@ public abstract class UUIDCreator implements IUUIDCreator, Serializable {
 	 */
 	// Values to be used in bitwise operations
 	protected static final long VARIANT_BITS = 0x8000000000000000L;
-	protected static final long[] VERSION_BITS = { 0x0000000000000000L, 0x0000000000001000L, 0x0000000000002000L, 0x0000000000003000L, 0x0000000000004000L, 0x0000000000005000L };
+	protected static final long[] VERSION_BITS = { 
+			0x0000000000000000L, 0x0000000000001000L, 
+			0x0000000000002000L, 0x0000000000003000L, 
+			0x0000000000004000L, 0x0000000000005000L };
 	
 	/* 
 	 * -------------------------

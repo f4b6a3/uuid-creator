@@ -22,6 +22,8 @@ import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.random.XorshiftRandom;
+
 /**
  * Factory that creates random UUIDs version 4.
  * 
@@ -53,21 +55,34 @@ public class RandomUUIDCreator extends UUIDCreator {
 	 * Public methods
 	 * -------------------------
 	 */
-	@Override
+	
+	/**
+	 * Return a UUID with random value.
+	 * 
+	 * ### RFC-4122 - 4.4. Algorithms for Creating a UUID from Truly Random or
+	 * Pseudo-Random Numbers
+	 * 
+	 * Set the two most significant bits (bits 6 and 7) of the
+	 * clock_seq_hi_and_reserved to zero and one, respectively.
+	 * 
+	 * Set the four most significant bits (bits 12 through 15) of the
+	 * time_hi_and_version field to the 4-bit version number from Section 4.1.3.
+	 * 
+	 * Set all the other bits to randomly (or pseudo-randomly) chosen values.
+	 * 
+	 * @return UUID
+	 */
 	public UUID create() {
 		
 		if(random == null) {
 			random = getSecureRandom();
 		}
 		
-		long msb = 0x0000000000000000L;
-		long lsb = 0x0000000000000000L;
+		long msb = this.random.nextLong();
+		long lsb = this.random.nextLong();
 		
-		msb = this.random.nextLong();
-		lsb = this.random.nextLong();
-		
-		lsb = setVariantBits(lsb);
 		msb = setVersionBits(msb);
+		lsb = setVariantBits(lsb);
 		
 		return new UUID(msb, lsb);
 	}
@@ -78,13 +93,19 @@ public class RandomUUIDCreator extends UUIDCreator {
 	 * -------------------------
 	 */
 	/**
-	 * Change the default random generator in a fluent way to another that extends {@link Random}.
+	 * Change the default random generator in a fluent way to another that
+	 * extends {@link Random}.
 	 * 
-	 * The default random generator is {@link java.security.SecureRandom} with SHA1PRNG algorithm.
+	 * The default random generator is {@link java.security.SecureRandom} with
+	 * SHA1PRNG algorithm.
+	 * 
+	 * For other faster pseudo-random generators, see {@link XorshiftRandom} and
+	 * its variations.
 	 * 
 	 * {@link Random}.
 	 * 
-	 * @param random {@link Random}
+	 * @param random
+	 *            {@link Random}
 	 */
 	public RandomUUIDCreator withRandomGenerator(Random random) {
 		this.random = random;

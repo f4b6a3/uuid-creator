@@ -23,7 +23,7 @@ import com.github.f4b6a3.uuid.factory.NameBasedUUIDCreator;
 import com.github.f4b6a3.uuid.factory.RandomUUIDCreator;
 import com.github.f4b6a3.uuid.factory.TimeBasedUUIDCreator;
 import com.github.f4b6a3.uuid.factory.UUIDCreator;
-import com.github.f4b6a3.uuid.util.XorshiftRandom;
+import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 
 /**
  * Facade to the UUID factories.
@@ -70,7 +70,7 @@ public class UUIDGenerator {
 	/**
 	 * Returns a fast random UUID.
 	 *
-	 * The random generator used is {@link XorshiftRandom}.
+	 * The random generator used is {@link Xorshift128PlusRandom}.
 	 * 
 	 * Details: <br/>
 	 * - Version number: 4 <br/>
@@ -80,7 +80,7 @@ public class UUIDGenerator {
 	 */
 	public static UUID getRandomFastUUID() {
 		if (randomFastUUIDCreator == null) {
-			randomFastUUIDCreator = getRandomUUIDCreator().withRandomGenerator(new XorshiftRandom());
+			randomFastUUIDCreator = getRandomUUIDCreator().withRandomGenerator(new Xorshift128PlusRandom());
 		}
 		return randomFastUUIDCreator.create();
 	}
@@ -168,14 +168,12 @@ public class UUIDGenerator {
 
 	/**
 	 * Returns a UUID based on a name, using MD5.
-	 *
-	 * It uses the NIL UUID as default name space.
 	 * 
 	 * Details: <br/>
 	 * - Version number: 3 <br/>
 	 * - Variant number: 1 <br/>
 	 * - Hash Algorithm: MD5 <br/>
-	 * - Name Space: NIL UUID (default) <br/>
+	 * - Name Space: none <br/>
 	 *
 	 * @param name
 	 * @return
@@ -185,7 +183,7 @@ public class UUIDGenerator {
 		if (md5NameBasedUUIDCreator == null) {
 			md5NameBasedUUIDCreator = getMD5NameBasedUUIDCreator();
 		}
-		return md5NameBasedUUIDCreator.withNamespace(UUIDCreator.NIL_UUID).withName(name).create();
+		return md5NameBasedUUIDCreator.create(name);
 	}
 	
 	/**
@@ -205,19 +203,17 @@ public class UUIDGenerator {
 		if (md5NameBasedUUIDCreator == null) {
 			md5NameBasedUUIDCreator = getMD5NameBasedUUIDCreator();
 		}
-		return md5NameBasedUUIDCreator.withNamespace(namespace).withName(name).create();
+		return md5NameBasedUUIDCreator.create(namespace, name);
 	}
 
 	/**
 	 * Returns a UUID based on a name, using SHA1.
 	 *
-	 * It uses the NIL UUID as default name space.
-	 *
 	 * Details: <br/>
 	 * - Version number: 5 <br/>
 	 * - Variant number: 1 <br/>
 	 * - Hash Algorithm: SHA1 <br/>
-	 * - Name Space: NIL UUID (default) <br/>
+	 * - Name Space: none <br/>
 	 *
 	 * @param name
 	 * @return
@@ -226,7 +222,7 @@ public class UUIDGenerator {
 		if (sha1NameBasedUUIDCreator == null) {
 			sha1NameBasedUUIDCreator = getSHA1NameBasedUUIDCreator();
 		}
-		return sha1NameBasedUUIDCreator.withNamespace(UUIDCreator.NIL_UUID).withName(name).create();
+		return sha1NameBasedUUIDCreator.create(name);
 	}
 	
 	/**
@@ -246,7 +242,7 @@ public class UUIDGenerator {
 		if (sha1NameBasedUUIDCreator == null) {
 			sha1NameBasedUUIDCreator = getSHA1NameBasedUUIDCreator();
 		}
-		return sha1NameBasedUUIDCreator.withNamespace(namespace).withName(name).create();
+		return sha1NameBasedUUIDCreator.create(namespace, name);
 	}
 	
 	/* 
