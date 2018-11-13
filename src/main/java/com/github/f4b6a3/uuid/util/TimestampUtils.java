@@ -51,7 +51,7 @@ public class TimestampUtils implements Serializable {
 	 * @see {@link TimestampUtils#getTimestamp(Instant)}
 	 * @return
 	 */
-	public long getTimestamp() {
+	public static long getTimestamp() {
 		return TimestampUtils.getTimestamp(Instant.now());
 	}
 	
@@ -108,20 +108,6 @@ public class TimestampUtils implements Serializable {
 		long milliseconds = hundredNanoseconds / TIMESTAMP_MULTIPLIER;
 		return getGregorianEpochInstant(milliseconds);
 	}
-	
-	/**
-	 * Get the beggining of the Gregorian Calendar: 1582-10-15 00:00:00Z.
-	 * 
-	 * The expression "Gregorian Epoch" means the date and time the Gregorian
-	 * Calendar started. This expression is similar to "Unix Epoch", started in
-	 * 1970-01-01 00:00:00Z.
-	 *
-	 * @return
-	 */
-	public static Instant getGregorianEpoch() {
-		LocalDate localDate = LocalDate.parse("1582-10-15");
-		return localDate.atStartOfDay(ZoneId.of("UTC")).toInstant();
-	}
 
 	/**
 	 * Get the number of milliseconds since the Gregorian Epoch.
@@ -144,5 +130,19 @@ public class TimestampUtils implements Serializable {
 	 */	
 	public static Instant getGregorianEpochInstant(long milliseconds) {
 		return GREGORIAN_EPOCH.plus(milliseconds, ChronoUnit.MILLIS);
+	}
+	
+	/**
+	 * Get the beggining of the Gregorian Calendar: 1582-10-15 00:00:00Z.
+	 * 
+	 * The expression "Gregorian Epoch" means the date and time the Gregorian
+	 * Calendar started. This expression is similar to "Unix Epoch", started in
+	 * 1970-01-01 00:00:00Z.
+	 *
+	 * @return
+	 */
+	private static Instant getGregorianEpoch() {
+		LocalDate localDate = LocalDate.parse("1582-10-15");
+		return localDate.atStartOfDay(ZoneId.of("UTC")).toInstant();
 	}
 }
