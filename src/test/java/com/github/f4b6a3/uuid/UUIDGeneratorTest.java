@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import com.github.f4b6a3.uuid.factory.UUIDCreator;
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
-import com.github.f4b6a3.uuid.random.Xoroshirot128PlusRandom;
+import com.github.f4b6a3.uuid.random.Xoroshiro128PlusRandom;
 import com.github.f4b6a3.uuid.random.XorshiftRandom;
 import com.github.f4b6a3.uuid.random.XorshiftStarRandom;
 import com.github.f4b6a3.uuid.util.RandomImage;
@@ -346,8 +346,8 @@ private byte[][] bytes = {
 		RandomImage.createRandomImageFile("/tmp/java.security.SecureRandom.png", new SecureRandom(), 0, 0);
 		RandomImage.createRandomImageFile("/tmp/XorshiftRandom.png", new XorshiftRandom(), 0, 0);
 		RandomImage.createRandomImageFile("/tmp/XorshiftStarRandom.png", new XorshiftStarRandom(), 0, 0);
-		RandomImage.createRandomImageFile("/tmp/Xorshift128PlusRandom.png", new Xoroshirot128PlusRandom(), 0, 0);
-		RandomImage.createRandomImageFile("/tmp/Xoroshiro128PlusRandom.png", new Xorshift128PlusRandom(), 0, 0);
+		RandomImage.createRandomImageFile("/tmp/Xorshift128PlusRandom.png", new Xorshift128PlusRandom(), 0, 0);
+		RandomImage.createRandomImageFile("/tmp/Xoroshiro128PlusRandom.png", new Xoroshiro128PlusRandom(), 0, 0);
 		
 		System.out.println("----------------------------------------");
 	}

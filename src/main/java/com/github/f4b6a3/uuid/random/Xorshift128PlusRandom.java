@@ -34,7 +34,7 @@ public class Xorshift128PlusRandom extends Random {
 	@Override
 	public long nextLong() {
 		long x = seed[0];
-		long y = seed[1];
+		final long y = seed[1];
 		seed[0] = y;
 		x ^= x << 23; // a
 		seed[1] = x ^ y ^ (x >>> 17) ^ (y >>> 26); // b, c

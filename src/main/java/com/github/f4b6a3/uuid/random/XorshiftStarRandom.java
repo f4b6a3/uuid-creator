@@ -33,7 +33,7 @@ public class XorshiftStarRandom extends Random {
 	public long nextLong() {
 		long x = this.seed;
 		x ^= (x >>> 12);
-		x ^= (x << 15);
+		x ^= (x << 25);
 		x ^= (x >>> 27);
 		this.seed = x;
 		return x * 0x2545F4914F6CDD1DL;
