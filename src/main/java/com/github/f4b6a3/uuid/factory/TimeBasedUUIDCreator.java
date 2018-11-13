@@ -255,12 +255,6 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * ------------------------------------------
 	 */
 	
-	/*
-	 * ------------------------------------------
-	 * Private methods for node identifiers
-	 * ------------------------------------------
-	 */
-	
 	/**
 	 * Returns a timestamp.
 	 * 
@@ -276,11 +270,17 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 		}
 		
 		if(this.state.getTimestamp() != 0) {
-			return this.state.getTimestamp(); 
+			return this.state.getTimestamp();
 		}
 		
-		return TimestampUtils.getTimestamp(Instant.now());
+		return TimestampUtils.getTimestamp();
 	}
+	
+	/*
+	 * ------------------------------------------
+	 * Private methods for node identifiers
+	 * ------------------------------------------
+	 */
 	
 	/**
 	 * Returns a node identifier.
@@ -358,9 +358,9 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 */
 	private long getTimestampBits(long timestamp) {
 		if(this.version == VERSION_1) {
-			return getStandardTimestamp(timestamp);
+			return getStandardTimestampBits(timestamp);
 		} else {
-			return getSequentialTimestamp(timestamp);
+			return getSequentialTimestampBits(timestamp);
 		}
 	}
 	
@@ -369,7 +369,7 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * 
 	 * @param timestamp
 	 */
-	private long getSequentialTimestamp(long timestamp) {
+	private long getSequentialTimestampBits(long timestamp) {
 		
 		long himid = (timestamp & 0x0ffffffffffff000L) << 4;
 		long low = (timestamp & 0x0000000000000fffL);
@@ -407,7 +407,7 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * 
 	 * @param timestamp
 	 */
-	private long getStandardTimestamp(long timestamp) {
+	private long getStandardTimestampBits(long timestamp) {
 
 		long hii = (timestamp & 0x0fff000000000000L) >>> 48;
 		long mid = (timestamp & 0x0000ffff00000000L) >>> 16;
@@ -423,7 +423,7 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * 
 	 * It is a extension suggested by the RFC-4122.
 	 * 
-	 * {@link TimeBasedUUIDCreator#getStandardTimestamp(long)}
+	 * {@link TimeBasedUUIDCreator#getStandardTimestampBits(long)}
 	 * 
 	 * #### RFC-4122 - 4.2.1.2. System Clock Resolution
 	 * 

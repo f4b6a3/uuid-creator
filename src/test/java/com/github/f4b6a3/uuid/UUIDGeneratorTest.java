@@ -334,7 +334,7 @@ private byte[][] bytes = {
 	/**
 	 * Generate images with random pixels.
 	 */
-	@Test
+	@Ignore
 	public void testCreateRandomImage() {
 		
 		System.out.println();

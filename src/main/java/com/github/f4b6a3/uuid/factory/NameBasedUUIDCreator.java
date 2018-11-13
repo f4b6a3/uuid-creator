@@ -75,6 +75,20 @@ public class NameBasedUUIDCreator extends UUIDCreator {
 		this.fixedNamespace = namespace;
 		return this;
 	}
+	
+	/**
+	 * Sets a fixed namespace with in a fluent way.
+	 * 
+	 * The namespace string is converted to namespace UUID.
+	 * 
+	 * @param namespace
+	 * @return
+	 */
+	public NameBasedUUIDCreator withFixedNamespace(String namespace) {
+		UUID namespaceUUID = create(namespace);
+		this.fixedNamespace = namespaceUUID;
+		return this;
+	}
 
 	/*
 	 * ------------------------- 
@@ -94,6 +108,20 @@ public class NameBasedUUIDCreator extends UUIDCreator {
 		return create(this.fixedNamespace, name);
 	}
 
+	/**
+	 * Return a name-based UUID
+	 * 
+	 * The namespace string is converted to namespace UUID.
+	 * 
+	 * @param namespace
+	 * @param name
+	 * @return
+	 */
+	public UUID create(String namespace, String name) {
+		UUID namespaceUUID = create(namespace);
+		return create(namespaceUUID, name);
+	}
+	
 	/**
 	 * Return a name-based UUID.
 	 * 
