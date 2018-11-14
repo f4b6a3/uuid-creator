@@ -177,7 +177,7 @@ public class UUIDState implements Serializable {
 				if (timestamp > this.lastOverranTimestamp) {
 					this.lastOverranTimestamp = timestamp;
 					LOGGER.log(Level.WARNING,
-							String.format("Sequence will be incremented because of counter overrun at '%s'.", TimestampUtils.getInstant(timestamp)));
+							String.format("Sequence will be incremented because of counter overrun at '%s'.", TimestampUtils.toInstant(timestamp)));
 				}
 			}
 

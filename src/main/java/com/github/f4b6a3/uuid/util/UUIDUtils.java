@@ -108,7 +108,7 @@ public class UUIDUtils {
 	 */
 	public static Instant extractInstant(UUID uuid) {
 		long timestamp = extractTimestamp(uuid);
-		return TimestampUtils.getInstant(timestamp);
+		return TimestampUtils.toInstant(timestamp);
 	}
 	
 	/**

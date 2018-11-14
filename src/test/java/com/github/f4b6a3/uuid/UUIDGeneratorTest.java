@@ -139,8 +139,8 @@ private byte[][] bytes = {
 			UUID uuid = UUIDGenerator.getTimeBasedUUIDCreator().withFixedInstant(instant1).create();
 			Instant instant2 = UUIDUtils.extractInstant(uuid);
 
-			long timestamp1 = TimestampUtils.getTimestamp(instant1);
-			long timestamp2 = TimestampUtils.getTimestamp(instant2);
+			long timestamp1 = TimestampUtils.toTimestamp(instant1);
+			long timestamp2 = TimestampUtils.toTimestamp(instant2);
 
 			assertEquals(timestamp1, timestamp2);
 		}
@@ -158,8 +158,8 @@ private byte[][] bytes = {
 			UUID uuid = UUIDGenerator.getSequentialUUIDCreator().withFixedInstant(instant1).create();
 			Instant instant2 = UUIDUtils.extractInstant(uuid);
 
-			long timestamp1 = TimestampUtils.getTimestamp(instant1);
-			long timestamp2 = TimestampUtils.getTimestamp(instant2);
+			long timestamp1 = TimestampUtils.toTimestamp(instant1);
+			long timestamp2 = TimestampUtils.toTimestamp(instant2);
 
 			assertEquals(timestamp1, timestamp2);
 		}

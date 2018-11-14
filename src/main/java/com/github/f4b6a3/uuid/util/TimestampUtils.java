@@ -21,7 +21,6 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 
 /**
  * Class that provides methods related to timestamps.
@@ -38,8 +37,14 @@ public class TimestampUtils implements Serializable {
 	 * Private static constants
 	 * -------------------------
 	 */
-	private static final Instant GREGORIAN_EPOCH = getGregorianEpoch();
-	private static final long TIMESTAMP_MULTIPLIER = 10_000;
+	private static final long GREGORIAN_EPOCH_SECONDS = getGregorianEpochSeconds();
+	
+	private static final long ONE_HUNDRED = 100L;
+	private static final long MILLI_MULTIPLIER = 1_000L;
+	private static final long MICRO_MULTIPLIER = 1_000_000L;
+	private static final long NANOS_MULTIPLIER = 1_000_000_000L;
+	
+	private static final long TIMESTAMP_MULTIPLIER = NANOS_MULTIPLIER / ONE_HUNDRED;
 	
 	/* 
 	 * -------------------------
@@ -48,20 +53,9 @@ public class TimestampUtils implements Serializable {
 	 */
 	
 	/**
-	 * @see {@link TimestampUtils#getTimestamp(Instant)}
-	 * @return
-	 */
-	public static long getTimestamp() {
-		return TimestampUtils.getTimestamp(Instant.now());
-	}
-	
-	/**
-	 * Get the timestamp associated with a given instant.
-	 *
-	 * UUID timestamp is a number of 100-nanos since gregorian epoch.
+	 * Get the current timestamp.
 	 * 
-	 * The total of milliseconds since gregorian epoch is multiplied by 10,000
-	 * to get the timestamp precision.
+	 * The UUID timestamp is a number of 100-nanos since gregorian epoch.
 	 *
 	 * Although it has 100-nanos precision, the timestamp returned has
 	 * milliseconds accuracy.
@@ -77,63 +71,41 @@ public class TimestampUtils implements Serializable {
 	 * If UUIDs do not need to be frequently generated, the timestamp can simply
 	 * be the system time multiplied by the number of 100-nanosecond intervals
 	 * per system time interval.
+	 * 
+	 * @return
+	 */
+	public static long getCurrentTimestamp() {
+		long milliseconds = System.currentTimeMillis();
+		long seconds = (milliseconds / MILLI_MULTIPLIER) - GREGORIAN_EPOCH_SECONDS;
+		long nanoseconds = (milliseconds % MILLI_MULTIPLIER) * MICRO_MULTIPLIER;
+		return (seconds * TIMESTAMP_MULTIPLIER) + (nanoseconds / ONE_HUNDRED);
+	}
+	
+	/**
+	 * Get the timestamp associated with a given instant.
 	 *
 	 * @param instant
 	 * @return
 	 */
-	public static long getTimestamp(Instant instant) {
-		long milliseconds = getGregorianEpochMillis(instant);
-		long hundredNanoseconds = milliseconds * TIMESTAMP_MULTIPLIER;
-		return hundredNanoseconds;
+	public static long toTimestamp(Instant instant) {
+		long seconds = instant.getEpochSecond() - GREGORIAN_EPOCH_SECONDS;
+		return (seconds * TIMESTAMP_MULTIPLIER) + (instant.getNano() / ONE_HUNDRED);
 	}
 	
 	/**
 	 * Get the instant associated with the given timestamp.
-	 * 
-	 * The timestamp value MUST be a UUID timestamp.
-	 * 
-	 * The timestamp is divided by 10,000 to get the milliseconds since
-	 * gregorian epoch. That is, the timestamp is TRUNCATED to milliseconds
-	 * precision. The instant is calculated from these milliseconds.
-	 * 
-	 * The instant returned has milliseconds accuracy.
-	 * 
-	 * @see {@link TimestampUtils#getTimestamp(Instant)}
 	 *
 	 * @param timestamp
 	 * @return
 	 */
-	public static Instant getInstant(long timestamp) {
-		long hundredNanoseconds = timestamp;
-		long milliseconds = hundredNanoseconds / TIMESTAMP_MULTIPLIER;
-		return getGregorianEpochInstant(milliseconds);
+	public static Instant toInstant(long timestamp) {
+		long seconds = (timestamp / TIMESTAMP_MULTIPLIER) + GREGORIAN_EPOCH_SECONDS;
+		long nanoseconds = (timestamp % TIMESTAMP_MULTIPLIER) * ONE_HUNDRED;
+		return Instant.ofEpochSecond(seconds, nanoseconds);
 	}
-
+		
 	/**
-	 * Get the number of milliseconds since the Gregorian Epoch.
-	 * 
-	 * @see {@link TimestampUtils#getGregorianEpoch()}
-	 * 
-	 * @return
-	 */
-	public static long getGregorianEpochMillis(Instant instant) {
-		return GREGORIAN_EPOCH.until(instant, ChronoUnit.MILLIS);
-	}
-	
-	/**
-	 * Returns a {@link Instant} calculated from the number of milliseconds
-	 * since the Gregorian Epoch.
-	 * 
-	 * @see {@link TimestampUtils#getGregorianEpoch()}
-	 * 
-	 * @return
-	 */	
-	public static Instant getGregorianEpochInstant(long milliseconds) {
-		return GREGORIAN_EPOCH.plus(milliseconds, ChronoUnit.MILLIS);
-	}
-	
-	/**
-	 * Get the beggining of the Gregorian Calendar: 1582-10-15 00:00:00Z.
+	 * Get the beggining of the Gregorian Calendar in seconds: 1582-10-15 00:00:00Z.
 	 * 
 	 * The expression "Gregorian Epoch" means the date and time the Gregorian
 	 * Calendar started. This expression is similar to "Unix Epoch", started in
@@ -141,8 +113,8 @@ public class TimestampUtils implements Serializable {
 	 *
 	 * @return
 	 */
-	private static Instant getGregorianEpoch() {
+	private static long getGregorianEpochSeconds() {
 		LocalDate localDate = LocalDate.parse("1582-10-15");
-		return localDate.atStartOfDay(ZoneId.of("UTC")).toInstant();
+		return localDate.atStartOfDay(ZoneId.of("UTC")).toInstant().getEpochSecond();
 	}
 }

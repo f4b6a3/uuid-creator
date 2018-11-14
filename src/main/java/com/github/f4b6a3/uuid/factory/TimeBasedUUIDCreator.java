@@ -151,7 +151,7 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * @return
 	 */
 	public TimeBasedUUIDCreator withFixedInstant(Instant instant) {
-		this.fixedTimestamp = TimestampUtils.getTimestamp(instant);
+		this.fixedTimestamp = TimestampUtils.toTimestamp(instant);
 		return this;
 	}
 
@@ -273,7 +273,7 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 			return this.state.getTimestamp();
 		}
 		
-		return TimestampUtils.getTimestamp();
+		return TimestampUtils.getCurrentTimestamp();
 	}
 	
 	/*
