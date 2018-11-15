@@ -68,8 +68,8 @@ public abstract class UUIDCreator implements IUUIDCreator, Serializable {
 	 * -------------------------
 	 */
 	// Values to be used in bitwise operations
-	protected static final long VARIANT_BITS = 0x8000000000000000L;
-	protected static final long[] VERSION_BITS = { 
+	public static final long RFC4122_VARIANT_BITS = 0x8000000000000000L;
+	public static final long[] VERSION_BITS_ARRAY = {
 			0x0000000000000000L, 0x0000000000001000L, 
 			0x0000000000002000L, 0x0000000000003000L, 
 			0x0000000000004000L, 0x0000000000005000L };
@@ -99,7 +99,7 @@ public abstract class UUIDCreator implements IUUIDCreator, Serializable {
 	public boolean valid(long msb, long lsb) {
 		long variantBits = getVariantBits(lsb);
 		long versionBits = getVersionBits(msb);
-		return variantBits == VARIANT_BITS && versionBits == VERSION_BITS[version];
+		return variantBits == RFC4122_VARIANT_BITS && versionBits == VERSION_BITS_ARRAY[version];
 	}
 
 	/**
@@ -115,7 +115,7 @@ public abstract class UUIDCreator implements IUUIDCreator, Serializable {
 	 * Set UUID variant bits into the "Least Significant Bits".
 	 */
 	protected long setVariantBits(long lsb) {
-		return (lsb & 0x3fffffffffffffffL) | VARIANT_BITS;
+		return (lsb & 0x3fffffffffffffffL) | RFC4122_VARIANT_BITS;
 	}
 	
 	/**
@@ -131,6 +131,6 @@ public abstract class UUIDCreator implements IUUIDCreator, Serializable {
 	 * Set UUID version bits into the "Most Significant Bits".
 	 */
 	protected long setVersionBits(long msb) {
-		return (msb & 0xffffffffffff0fffL) | VERSION_BITS[this.version];
+		return (msb & 0xffffffffffff0fffL) | VERSION_BITS_ARRAY[this.version];
 	}
 }

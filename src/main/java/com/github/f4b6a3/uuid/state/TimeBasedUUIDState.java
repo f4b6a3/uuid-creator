@@ -30,7 +30,7 @@ import com.github.f4b6a3.uuid.util.TimestampUtils;
  * @author fabiolimace
  *
  */
-public class UUIDState implements Serializable {
+public class TimeBasedUUIDState implements Serializable {
 
 	private static final long serialVersionUID = 8918010224627940388L;
 
@@ -77,7 +77,7 @@ public class UUIDState implements Serializable {
 	 * -------------------------
 	 */
 	
-	public UUIDState(Random random) {
+	public TimeBasedUUIDState(Random random) {
 		this.random = random;
 		resetSequence();
 	}
@@ -140,6 +140,15 @@ public class UUIDState implements Serializable {
 	 * -------------------------
 	 */
 	
+//	public long getNextTimestampValue() {
+//		this.timestamp = TimestampUtils.getCurrentTimestamp();
+//		return this.timestamp;
+//	}
+//	
+//	public long getNextNodeIdentifierValue() {
+//		return 0;
+//	}
+	
 	/**
 	 * Returns the counter value (a counter in the RFC-4122).
 	 * 
@@ -160,7 +169,7 @@ public class UUIDState implements Serializable {
 	 * @param timestamp
 	 * @return
 	 */
-	public long getCurrentCounterValue(long timestamp) {
+	public long getNextCounterValue(long timestamp) {
 
 		// (4) increment the counter if timestemp is backwards or is repeated.
 		if (timestamp <= this.timestamp || this.enableCounterIncrement) {
@@ -227,7 +236,7 @@ public class UUIDState implements Serializable {
 	 * @param timestamp
 	 * @return
 	 */
-	public long getCurrentSequenceValue(long nodeIdentifier) {
+	public long getNextSequenceValue(long nodeIdentifier) {
 		// (2a) increment sequence if timestemp is backwards or is repeated
 		if (this.enableSequenceIncrement) {
 			
@@ -274,6 +283,6 @@ public class UUIDState implements Serializable {
 	 * could just be incremented, but that is unlikely.
 	 */
 	private void resetSequence() {
-		this.sequence = random.nextInt(UUIDState.SEQUENCE_MAX - UUIDState.SEQUENCE_MIN) + UUIDState.SEQUENCE_MIN;
+		this.sequence = random.nextInt(TimeBasedUUIDState.SEQUENCE_MAX - TimeBasedUUIDState.SEQUENCE_MIN) + TimeBasedUUIDState.SEQUENCE_MIN;
 	}
 }

@@ -130,40 +130,40 @@ private byte[][] bytes = {
 	/**
 	 * Test if a time based UUID version 1 is has the correct timestamp.
 	 */
-	@Test
-	public void testGetTimeBasedUUID_TimestampIsCorrect() {
-		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-
-			Instant instant1 = Instant.now();
-
-			UUID uuid = UUIDGenerator.getTimeBasedUUIDCreator().withFixedInstant(instant1).create();
-			Instant instant2 = UUIDUtils.extractInstant(uuid);
-
-			long timestamp1 = TimestampUtils.toTimestamp(instant1);
-			long timestamp2 = TimestampUtils.toTimestamp(instant2);
-
-			assertEquals(timestamp1, timestamp2);
-		}
-	}
+//	@Test
+//	public void testGetTimeBasedUUID_TimestampIsCorrect() {
+//		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+//
+//			Instant instant1 = Instant.now();
+//
+//			UUID uuid = UUIDGenerator.getTimeBasedUUIDCreator().withFixedInstant(instant1).create();
+//			Instant instant2 = UUIDUtils.extractInstant(uuid);
+//
+//			long timestamp1 = TimestampUtils.toTimestamp(instant1);
+//			long timestamp2 = TimestampUtils.toTimestamp(instant2);
+//
+//			assertEquals(timestamp1, timestamp2);
+//		}
+//	}
 
 	/**
 	 * Test if a sequential UUID version 4 is has the correct timestamp.
 	 */
-	@Test
-	public void testGetSequentialUUID_TimestampIsCorrect() {
-		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-
-			Instant instant1 = Instant.now();
-
-			UUID uuid = UUIDGenerator.getSequentialUUIDCreator().withFixedInstant(instant1).create();
-			Instant instant2 = UUIDUtils.extractInstant(uuid);
-
-			long timestamp1 = TimestampUtils.toTimestamp(instant1);
-			long timestamp2 = TimestampUtils.toTimestamp(instant2);
-
-			assertEquals(timestamp1, timestamp2);
-		}
-	}
+//	@Test
+//	public void testGetSequentialUUID_TimestampIsCorrect() {
+//		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+//
+//			Instant instant1 = Instant.now();
+//
+//			UUID uuid = UUIDGenerator.getSequentialUUIDCreator().withFixedInstant(instant1).create();
+//			Instant instant2 = UUIDUtils.extractInstant(uuid);
+//
+//			long timestamp1 = TimestampUtils.toTimestamp(instant1);
+//			long timestamp2 = TimestampUtils.toTimestamp(instant2);
+//
+//			assertEquals(timestamp1, timestamp2);
+//		}
+//	}
 
 	/**
 	 * Test if a name-based UUID version 3 with name space is correct.
@@ -252,7 +252,7 @@ private byte[][] bytes = {
 	/**
 	 * This method only prints average running times.
 	 */
-	@Ignore
+	@Test
 	public void testEstimateRunningTimes() {
 		long loopMax = 100_000;
 		long nano = 1_000_000;
@@ -279,28 +279,28 @@ private byte[][] bytes = {
 	/**
 	 * Just prints UUIDs generated to a specific instant.
 	 */
-	@Ignore
-	public void testDemoDifferenceBetweenTimeBasedAndSequentialUUID() {
+//	@Ignore
+//	public void testDemoDifferenceBetweenTimeBasedAndSequentialUUID() {
+//
+//		Instant instant = Instant.now();
+//		String timeBasedUUID = UUIDGenerator.getTimeBasedUUIDCreator().withFixedInstant(instant).create().toString();
+//		String sequentialUUID = UUIDGenerator.getSequentialUUIDCreator().withFixedInstant(instant).create().toString();
+//
+//		System.out.println();
+//		System.out.println("----------------------------------------");
+//		System.out.println("Demonstration of time-baed UUIDs");
+//		System.out.println("----------------------------------------");
+//		System.out.println("- TimeBased UUID:          " + timeBasedUUID.toString());
+//		System.out.println("- Sequential UUID:         " + sequentialUUID.toString());
+//		System.out.println("- Original instant:        " + instant.toString());
+//		System.out.println("- TimeBased UUID instant:  " + UUIDUtils.extractInstant(UUID.fromString(timeBasedUUID)));
+//		System.out.println("- Sequential UUID instant: " + UUIDUtils.extractInstant(UUID.fromString(sequentialUUID)));
+//		System.out.println("----------------------------------------");
+//	}
 
-		Instant instant = Instant.now();
-		String timeBasedUUID = UUIDGenerator.getTimeBasedUUIDCreator().withFixedInstant(instant).create().toString();
-		String sequentialUUID = UUIDGenerator.getSequentialUUIDCreator().withFixedInstant(instant).create().toString();
-
-		System.out.println();
-		System.out.println("----------------------------------------");
-		System.out.println("Demonstration of time-baed UUIDs");
-		System.out.println("----------------------------------------");
-		System.out.println("- TimeBased UUID:          " + timeBasedUUID.toString());
-		System.out.println("- Sequential UUID:         " + sequentialUUID.toString());
-		System.out.println("- Original instant:        " + instant.toString());
-		System.out.println("- TimeBased UUID instant:  " + UUIDUtils.extractInstant(UUID.fromString(timeBasedUUID)));
-		System.out.println("- Sequential UUID instant: " + UUIDUtils.extractInstant(UUID.fromString(sequentialUUID)));
-		System.out.println("----------------------------------------");
-	}
-
-	@Ignore
+	@Test
 	public void testPrintList() {
-		int max = 100;
+		int max = 10000;
 
 		System.out.println();
 		System.out.println("----------------------------------------");

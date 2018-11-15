@@ -23,7 +23,7 @@ public class SimpleRunnable implements Runnable {
 	private static Instant instant = Instant.now();
 	
 	private static UUID[][] cache = new UUID[threadCount][threadLoopLimit];
-	private static TimeBasedUUIDCreator creator = UUIDGenerator.getTimeBasedUUIDCreator().withFixedInstant(instant);
+	//private static TimeBasedUUIDCreator creator = UUIDGenerator.getTimeBasedUUIDCreator().withFixedInstant(instant);
 	
 	public SimpleRunnable(int id) {
 		this.id = id;
@@ -45,7 +45,7 @@ public class SimpleRunnable implements Runnable {
 		
 		for (int i = 0; i < cache[0].length; i++) {
 
-			uuid = creator.create();
+			//uuid = creator.create();
 			// System.out.println(uuid);
 			
 			if (!contains(uuid)) {

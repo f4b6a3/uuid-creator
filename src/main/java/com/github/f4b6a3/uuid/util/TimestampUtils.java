@@ -37,14 +37,14 @@ public class TimestampUtils implements Serializable {
 	 * Private static constants
 	 * -------------------------
 	 */
-	private static final long GREGORIAN_EPOCH_SECONDS = getGregorianEpochSeconds();
+	public static final long GREGORIAN_EPOCH_SECONDS = getGregorianEpochSeconds();
 	
-	private static final long ONE_HUNDRED = 100L;
-	private static final long MILLI_MULTIPLIER = 1_000L;
-	private static final long MICRO_MULTIPLIER = 1_000_000L;
-	private static final long NANOS_MULTIPLIER = 1_000_000_000L;
+	public static final long ONE_HUNDRED = 100L;
+	public static final long MILLI_MULTIPLIER = 1_000L;
+	public static final long MICRO_MULTIPLIER = 1_000_000L;
+	public static final long NANOS_MULTIPLIER = 1_000_000_000L;
 	
-	private static final long TIMESTAMP_MULTIPLIER = NANOS_MULTIPLIER / ONE_HUNDRED;
+	public static final long TIMESTAMP_MULTIPLIER = NANOS_MULTIPLIER / ONE_HUNDRED;
 	
 	/* 
 	 * -------------------------

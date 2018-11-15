@@ -17,16 +17,19 @@
 
 package com.github.f4b6a3.uuid.factory;
 
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.time.Instant;
-import java.util.Random;
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
-import com.github.f4b6a3.uuid.state.UUIDState;
-import com.github.f4b6a3.uuid.util.ByteUtils;
-import com.github.f4b6a3.uuid.util.TimestampUtils;
+import com.github.f4b6a3.uuid.increment.ClockSequence;
+import com.github.f4b6a3.uuid.increment.TimestampCounter;
+import com.github.f4b6a3.uuid.strategy.lsb.LeastSignificantBitsStrategy;
+import com.github.f4b6a3.uuid.strategy.lsb.TimeBasedLeastSignificantBitsStrategy;
+import com.github.f4b6a3.uuid.strategy.msb.MostSignificantBitsStrategy;
+import com.github.f4b6a3.uuid.strategy.msb.TimeBasedMostSignificantBitsStrategy;
+import com.github.f4b6a3.uuid.strategy.nodeid.HardwareAddressNodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.strategy.nodeid.MulticastNodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.strategy.nodeid.NodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.strategy.timestamp.MillisecondsTimestampStrategy;
+import com.github.f4b6a3.uuid.strategy.timestamp.TimestampStrategy;
 
 /**
  * Factory that create time-based UUIDs version 0 and 1.
@@ -46,25 +49,33 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * Private fields
 	 * -------------------------
 	 */
-	private UUIDState state;
-	// Values to be provided by fluent interface methods
-	private long fixedTimestamp;
-	private long fixedNodeIdentifier;
-	private long initialSequence;
+	// State fields
 	
-	// default random generator: xorshift
-	private Random random;
+	// Strategies
+	protected TimestampStrategy timestampStrategy;
+	protected NodeIdentifierStrategy nodeIdentifierStrategy;
+	protected MostSignificantBitsStrategy mostSignificantBitsStrategy;
+	protected LeastSignificantBitsStrategy leastSignificantBitsStrategy;
+	
+	// incrementable fields
+	protected TimestampCounter timestampCounter;
+	protected ClockSequence clockSequence;
 	
 	/* 
 	 * -------------------------
 	 * Public constructors
 	 * -------------------------
 	 */
-	
-	public TimeBasedUUIDCreator(int version) {
-		super(version);
-		random = new Xorshift128PlusRandom();
-		this.state = new UUIDState(random);
+	public TimeBasedUUIDCreator() {
+		super(VERSION_1);
+		
+		this.timestampStrategy = new MillisecondsTimestampStrategy();
+		this.nodeIdentifierStrategy = new HardwareAddressNodeIdentifierStrategy();
+		this.mostSignificantBitsStrategy = new TimeBasedMostSignificantBitsStrategy();
+		this.leastSignificantBitsStrategy = new TimeBasedLeastSignificantBitsStrategy();
+		
+		this.timestampCounter = new TimestampCounter();
+		this.clockSequence = new ClockSequence();
 	}
 	
 	/* 
@@ -109,28 +120,23 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	public synchronized UUID create() {
 		
 		// (3a) get the timestamp
-		long timestamp = getTimestamp();
+		long timestamp = timestampStrategy.getTimestamp();
+		//long timestamp = 0;
 
 		// (4b) get the node identifier
-		long nodeIdentifier = getNodeIdentifier();
+		long nodeIdentifier = nodeIdentifierStrategy.getNodeIdentifier();
 		
 		// (4b) get the counter value
-		long counter = state.getCurrentCounterValue(timestamp);
+		long counter = timestampCounter.getNextFor(timestamp);
 		
 		// (5a)(6a) get the sequence value
-		long sequence = state.getCurrentSequenceValue(nodeIdentifier);
-		
-		// (7a) save the state
-		state.setTimestamp(timestamp);
-		state.setNodeIdentifier(nodeIdentifier);
-		state.setCounter(counter);
-		state.setSequence(sequence);
+		long sequence = clockSequence.getNextFor(timestamp, nodeIdentifier);
 		
 		// (9a) format the most significant bits
-		long msb = getMostSignificantBits(timestamp, counter);
+		long msb = this.mostSignificantBitsStrategy.getMostSignificantBits(timestamp, counter);
 		
 		// (9a) format the least significant bits
-		long lsb = getLeastSignificantBits(nodeIdentifier, sequence);
+		long lsb = this.leastSignificantBitsStrategy.getLeastSignificantBits(nodeIdentifier, sequence);
 		
 		return new UUID(msb, lsb);
 	}
@@ -140,45 +146,6 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * Public fluent interface methods
 	 * --------------------------------
 	 */
-	
-	/**
-	 * Set a fixed instant to generate UUIDs.
-	 * 
-	 * This method is intended to unit tests only. There's no use out of this
-	 * purpose.
-	 * 
-	 * @param instant
-	 * @return
-	 */
-	public TimeBasedUUIDCreator withFixedInstant(Instant instant) {
-		this.fixedTimestamp = TimestampUtils.toTimestamp(instant);
-		return this;
-	}
-
-	/**
-	 * Set a fixed node identifier to generate UUIDs.
-	 * 
-	 * Every time a factory is instantiated a random value is set to the node
-	 * identifier by default. Someone may think it's useful in some special case
-	 * to use a fixed node identifier other than random value.
-	 * 
-	 * It may be useful in some cases that the real hardware address can't be
-	 * found correctly by this class. In these cases someone can inform the MAC
-	 * address with this method.
-	 * 
-	 * If you want to inform a fixed value that is NOT a real MAC address, use
-	 * the method
-	 * {@link TimeBasedUUIDCreator#withFixedMulticastNodeIdentifier(long)},
-	 * which DOES change the multicast bit.
-	 * 
-	 * @param nodeIdentifier
-	 * @return
-	 */
-	public TimeBasedUUIDCreator withFixedNodeIdentifier(long nodeIdentifier) {
-		this.fixedNodeIdentifier = nodeIdentifier & 0x0000FFFFFFFFFFFFL;
-		state.setNodeIdentifier(this.fixedNodeIdentifier);
-		return this;
-	}
 	
 	/**
 	 * Set a fixed node identifier to generate UUIDs.
@@ -191,14 +158,20 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * is not a real MAC address.
 	 * 
 	 * If you want to inform a fixed value that is real MAC address, use the
-	 * method {@link TimeBasedUUIDCreator#withFixedNodeIdentifier(long)}, which
+	 * method {@link TimeBasedUUIDCreator#withMulticastNodeIdentifier(long)}, which
 	 * doesn't change the multicast bit.
 	 * 
 	 * @param nodeIdentifier
 	 * @return
 	 */
-	public TimeBasedUUIDCreator withFixedMulticastNodeIdentifier(long nodeIdentifier) {
-		return this.withFixedNodeIdentifier(setMulticastNodeIdentifier(nodeIdentifier));
+	public TimeBasedUUIDCreator withMulticastNodeIdentifier(long nodeIdentifier) {
+		this.nodeIdentifierStrategy = new MulticastNodeIdentifierStrategy(nodeIdentifier);
+		return this;
+	}
+	
+	public TimeBasedUUIDCreator withMulticastNodeIdentifier() {
+		this.nodeIdentifierStrategy = new MulticastNodeIdentifierStrategy();
+		return this;
 	}
 	
 	/**
@@ -213,7 +186,8 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * @return
 	 */
 	public TimeBasedUUIDCreator withHardwareAddressNodeIdentifier() {
-		return this.withFixedNodeIdentifier(getHardwareAddressNodeIdentifier());
+		this.nodeIdentifierStrategy = new HardwareAddressNodeIdentifierStrategy();
+		return this;
 	}
 	
 	/**
@@ -230,245 +204,8 @@ public class TimeBasedUUIDCreator extends UUIDCreator {
 	 * @param sequence
 	 * @return
 	 */
-	public TimeBasedUUIDCreator withFixedInitialSequence(long sequence) {
-		this.initialSequence = sequence & 0x0000000000003FFFL;
-		state.setInitialSequence(this.initialSequence);
+	public TimeBasedUUIDCreator withInitialClockSequence(int sequence) {
+		this.clockSequence = new ClockSequence(sequence);
 		return this;
 	}
-	
-	/**
-	 * Change the default random generator in a fluent way to another that extends {@link Random}.
-	 * 
-	 * The default random generator is {@link Xorshift128PlusRandom}.
-	 * 
-	 * @param random {@link Random}
-	 */
-	public TimeBasedUUIDCreator withRandomGenerator(Random random) {
-		this.random = random;
-		state.setRandom(this.random);
-		return this;
-	}
-	
-	/*
-	 * ------------------------------------------
-	 * Private methods for timestamps
-	 * ------------------------------------------
-	 */
-	
-	/**
-	 * Returns a timestamp.
-	 * 
-	 * If no fixed value was informed or if there's no previous value, the
-	 * timestamp value is returned.
-	 * 
-	 * @return
-	 */
-	private long getTimestamp() {
-		
-		if (this.fixedTimestamp != 0) {
-			return this.fixedTimestamp;
-		}
-		
-		if(this.state.getTimestamp() != 0) {
-			return this.state.getTimestamp();
-		}
-		
-		return TimestampUtils.getCurrentTimestamp();
-	}
-	
-	/*
-	 * ------------------------------------------
-	 * Private methods for node identifiers
-	 * ------------------------------------------
-	 */
-	
-	/**
-	 * Returns a node identifier.
-	 * 
-	 * If no fixed value was informed or if there's no previous value, a random
-	 * value is returned.
-	 * 
-	 * @return
-	 */
-	private long getNodeIdentifier() {
-		
-		if (this.fixedNodeIdentifier != 0) {
-			return this.fixedNodeIdentifier;
-		}
-
-		if (state.getNodeIdentifier() != 0) {
-			return state.getNodeIdentifier();
-		}
-
-		return getRandomNodeIdentifier();
-	}
-	
-	/**
-	 * Returns a hardware address (MAC) as a node identifier.
-	 * 
-	 * If no hardware address is found, it returns a random node identifier.
-	 * 
-	 * @param state
-	 * @return
-	 */
-	private long getHardwareAddressNodeIdentifier() {
-		try {
-			NetworkInterface nic = NetworkInterface.getNetworkInterfaces().nextElement();
-			byte[] realHardwareAddress = nic.getHardwareAddress();
-			if (realHardwareAddress != null) {
-				return ByteUtils.toNumber(realHardwareAddress);
-			}
-		} catch (SocketException | NullPointerException e) {
-			// If exception occurs, return a random hardware address.
-		}
-		
-		return getRandomNodeIdentifier();
-	}
-	
-	/**
-	 * Returns a random node identifier.
-	 * 
-	 * @param state
-	 * @return
-	 */
-	private long getRandomNodeIdentifier() {
-		return setMulticastNodeIdentifier(random.nextLong());
-	}
-	
-	/**
-	 * Sets the the multicast bit of a node identifier.
-	 * 
-	 * @param nodeIdentifier
-	 * @return
-	 */
-	private long setMulticastNodeIdentifier(long nodeIdentifier) {
-		return nodeIdentifier | 0x0000010000000000L;
-	}
-	
-	/* 
-	 * -------------------------------------
-	 * Private methods for setting bits of the UUID parts
-	 * -------------------------------------
-	 */
-	
-	/**
-	 * Returns the timestamp bits of the UUID.
-	 * 
-	 * @param timestamp
-	 */
-	private long getTimestampBits(long timestamp) {
-		if(this.version == VERSION_1) {
-			return getStandardTimestampBits(timestamp);
-		} else {
-			return getSequentialTimestampBits(timestamp);
-		}
-	}
-	
-	/**
-	 * Returns the timestamp bits of the UUID in the natural order of bytes.
-	 * 
-	 * @param timestamp
-	 */
-	private long getSequentialTimestampBits(long timestamp) {
-		
-		long himid = (timestamp & 0x0ffffffffffff000L) << 4;
-		long low = (timestamp & 0x0000000000000fffL);
-		
-		return (himid | low);
-	}
-
-	/**
-	 * Returns the timestamp bits of the UUID in the order defined in the
-	 * RFC-4122.
-	 * 
-	 * ### RFC-4122 - 4.2.2. Generation Details
-	 * 
-	 * Determine the values for the UTC-based timestamp and clock sequence to be
-	 * used in the UUID, as described in Section 4.2.1.
-	 * 
-	 * For the purposes of this algorithm, consider the timestamp to be a 60-bit
-	 * unsigned integer and the clock sequence to be a 14-bit unsigned integer.
-	 * Sequentially number the bits in a field, starting with zero for the least
-	 * significant bit.
-	 * 
-	 * "Set the time_low field equal to the least significant 32 bits (bits zero
-	 * through 31) of the timestamp in the same order of significance.
-	 * 
-	 * Set the time_mid field equal to bits 32 through 47 from the timestamp in
-	 * the same order of significance.
-	 * 
-	 * Set the 12 least significant bits (bits zero through 11) of the
-	 * time_hi_and_version field equal to bits 48 through 59 from the timestamp
-	 * in the same order of significance.
-	 * 
-	 * Set the four most significant bits (bits 12 through 15) of the
-	 * time_hi_and_version field to the 4-bit version number corresponding to
-	 * the UUID version being created, as shown in the table above."
-	 * 
-	 * @param timestamp
-	 */
-	private long getStandardTimestampBits(long timestamp) {
-
-		long hii = (timestamp & 0x0fff000000000000L) >>> 48;
-		long mid = (timestamp & 0x0000ffff00000000L) >>> 16;
-		long low = (timestamp & 0x00000000ffffffffL) << 32;
-
-		long msb = (low | mid | hii);
-		
-		return setVersionBits(msb);
-	}
-	
-	/**
-	 * Returns the most significant bits of the UUID.
-	 * 
-	 * It is a extension suggested by the RFC-4122.
-	 * 
-	 * {@link TimeBasedUUIDCreator#getStandardTimestampBits(long)}
-	 * 
-	 * #### RFC-4122 - 4.2.1.2. System Clock Resolution
-	 * 
-	 * (4) A high resolution timestamp can be simulated by keeping a count of
-	 * the number of UUIDs that have been generated with the same value of the
-	 * system time, and using it to construct the low order bits of the
-	 * timestamp. The count will range between zero and the number of
-	 * 100-nanosecond intervals per system time interval.
-	 * 
-	 * @param counter
-	 */
-	private long getMostSignificantBits(long timestamp, long counter) {
-		// (4) add the counter to the timestamp
-		return getTimestampBits(timestamp + counter);
-	}
-	
-	
-	/**
-	 * Returns the least significant bits of the UUID.
-	 * 
-	 * ### RFC-4122 - 4.2.2. Generation Details
-	 * 
-	 * Set the clock_seq_low field to the eight least significant bits (bits
-	 * zero through 7) of the clock sequence in the same order of significance.
-	 * 
-	 * Set the 6 least significant bits (bits zero through 5) of the
-	 * clock_seq_hi_and_reserved field to the 6 most significant bits (bits 8
-	 * through 13) of the clock sequence in the same order of significance.
-	 * 
-	 * Set the two most significant bits (bits 6 and 7) of the
-	 * clock_seq_hi_and_reserved to zero and one, respectively.
-	 * 
-	 * Set the node field to the 48-bit IEEE address in the same order of
-	 * significance as the address.
-	 * 
-	 * @param nodeIdentifier
-	 */
-	private long getLeastSignificantBits(long nodeIdentifier, long sequence) {
-		
-		long seq = sequence << 48;
-		seq = setVariantBits(seq);
-		
-		long nod = nodeIdentifier & 0x0000ffffffffffffL;
-		
-		return (seq | nod);
-	}
-
 }

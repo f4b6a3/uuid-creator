@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import com.github.f4b6a3.uuid.factory.NameBasedUUIDCreator;
 import com.github.f4b6a3.uuid.factory.RandomUUIDCreator;
+import com.github.f4b6a3.uuid.factory.SequentialUUIDCreator;
 import com.github.f4b6a3.uuid.factory.TimeBasedUUIDCreator;
 import com.github.f4b6a3.uuid.factory.UUIDCreator;
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
@@ -266,7 +267,7 @@ public class UUIDGenerator {
 	 * @return {@link TimeBasedUUIDCreator}
 	 */
 	public static TimeBasedUUIDCreator getSequentialUUIDCreator() {
-		return new TimeBasedUUIDCreator(UUIDCreator.VERSION_0);
+		return new SequentialUUIDCreator();
 	}
 	
 	/**
@@ -275,7 +276,7 @@ public class UUIDGenerator {
 	 * @return {@link TimeBasedUUIDCreator}
 	 */
 	public static TimeBasedUUIDCreator getTimeBasedUUIDCreator() {
-		return new TimeBasedUUIDCreator(UUIDCreator.VERSION_1);
+		return new TimeBasedUUIDCreator();
 	}
 
 	/**
