@@ -19,11 +19,13 @@ package com.github.f4b6a3.uuid;
 
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.factory.NameBasedUUIDCreator;
+import com.github.f4b6a3.uuid.factory.DCESecurityUUIDCreator;
+import com.github.f4b6a3.uuid.factory.MD5UUIDCreator;
 import com.github.f4b6a3.uuid.factory.RandomUUIDCreator;
+import com.github.f4b6a3.uuid.factory.SHA1UUIDCreator;
 import com.github.f4b6a3.uuid.factory.SequentialUUIDCreator;
 import com.github.f4b6a3.uuid.factory.TimeBasedUUIDCreator;
-import com.github.f4b6a3.uuid.factory.UUIDCreator;
+import com.github.f4b6a3.uuid.factory.abst.AbstractNameBasedUUIDCreator;
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 
 /**
@@ -34,14 +36,15 @@ import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
  */
 public class UUIDGenerator {
 	
-	private static TimeBasedUUIDCreator sequentialUUIDCreator;
-	private static TimeBasedUUIDCreator sequentialWithHardwarAddressUUIDCreator;
+	private static SequentialUUIDCreator sequentialUUIDCreator;
+	private static SequentialUUIDCreator sequentialWithHardwarAddressUUIDCreator;
 	private static TimeBasedUUIDCreator timeBasedUUIDCreator;
 	private static TimeBasedUUIDCreator timeBasedWithHardwarAddressUUIDCreator;
-	private static NameBasedUUIDCreator md5NameBasedUUIDCreator;
-	private static NameBasedUUIDCreator sha1NameBasedUUIDCreator;
+	private static AbstractNameBasedUUIDCreator md5NameBasedUUIDCreator;
+	private static AbstractNameBasedUUIDCreator sha1NameBasedUUIDCreator;
 	private static RandomUUIDCreator randomUUIDCreator;
 	private static RandomUUIDCreator randomFastUUIDCreator;
+	private static DCESecurityUUIDCreator dceSecurityUUIDCreator;
 
 	/* 
 	 * ----------------------------------------------------------------------
@@ -81,7 +84,7 @@ public class UUIDGenerator {
 	 */
 	public static UUID getRandomFastUUID() {
 		if (randomFastUUIDCreator == null) {
-			randomFastUUIDCreator = getRandomUUIDCreator().withRandomGenerator(new Xorshift128PlusRandom());
+			randomFastUUIDCreator = getRandomUUIDCreator().withFastRandomGenerator();
 		}
 		return randomFastUUIDCreator.create();
 	}
@@ -166,6 +169,45 @@ public class UUIDGenerator {
 		}
 		return timeBasedWithHardwarAddressUUIDCreator.create();
 	}
+	
+	/**
+	 * Returns a DCE Security UUID based on a local identifier.
+	 *
+	 * Details: <br/>
+	 * - Version number: 2 <br/>
+	 * - Variant number: 1 <br/>
+	 * - Local domain: none <br/>
+	 *
+	 * @param localDomain
+	 * @param localIdentification
+	 * @return
+	 */
+	public static UUID getDCESecurityUUID(int localIdentification) {
+		if (dceSecurityUUIDCreator == null) {
+			dceSecurityUUIDCreator = new DCESecurityUUIDCreator();
+		}
+		return dceSecurityUUIDCreator.create(localIdentification);
+	}
+	
+	/**
+	 * Returns a DCE Security UUID based on a local domain and a local
+	 * identifier.
+	 *
+	 * Details: <br/>
+	 * - Version number: 2 <br/>
+	 * - Variant number: 1 <br/>
+	 * - Local domain: informed by user <br/>
+	 *
+	 * @param localDomain
+	 * @param localIdentification
+	 * @return
+	 */
+	public static UUID getDCESecurityUUID(byte localDomain, int localIdentification) {
+		if (dceSecurityUUIDCreator == null) {
+			dceSecurityUUIDCreator = new DCESecurityUUIDCreator();
+		}
+		return dceSecurityUUIDCreator.create(localDomain, localIdentification);
+	}
 
 	/**
 	 * Returns a UUID based on a name, using MD5.
@@ -182,7 +224,7 @@ public class UUIDGenerator {
 	 */
 	public static UUID getNameBasedMD5UUID(String name) {
 		if (md5NameBasedUUIDCreator == null) {
-			md5NameBasedUUIDCreator = getMD5NameBasedUUIDCreator();
+			md5NameBasedUUIDCreator = getMD5UUIDCreator();
 		}
 		return md5NameBasedUUIDCreator.create(name);
 	}
@@ -202,7 +244,7 @@ public class UUIDGenerator {
 	 */
 	public static UUID getNameBasedMD5UUID(UUID namespace, String name) {
 		if (md5NameBasedUUIDCreator == null) {
-			md5NameBasedUUIDCreator = getMD5NameBasedUUIDCreator();
+			md5NameBasedUUIDCreator = getMD5UUIDCreator();
 		}
 		return md5NameBasedUUIDCreator.create(namespace, name);
 	}
@@ -221,7 +263,7 @@ public class UUIDGenerator {
 	 */
 	public static UUID getNameBasedSHA1UUID(String name) {
 		if (sha1NameBasedUUIDCreator == null) {
-			sha1NameBasedUUIDCreator = getSHA1NameBasedUUIDCreator();
+			sha1NameBasedUUIDCreator = getSHA1UUIDCreator();
 		}
 		return sha1NameBasedUUIDCreator.create(name);
 	}
@@ -241,7 +283,7 @@ public class UUIDGenerator {
 	 */
 	public static UUID getNameBasedSHA1UUID(UUID namespace, String name) {
 		if (sha1NameBasedUUIDCreator == null) {
-			sha1NameBasedUUIDCreator = getSHA1NameBasedUUIDCreator();
+			sha1NameBasedUUIDCreator = getSHA1UUIDCreator();
 		}
 		return sha1NameBasedUUIDCreator.create(namespace, name);
 	}
@@ -262,11 +304,11 @@ public class UUIDGenerator {
 	}
 	
 	/**
-	 * Returns a {@link TimeBasedUUIDCreator} that creates UUID version 0.
+	 * Returns a {@link SequentialUUIDCreator} that creates UUID version 0.
 	 * 
-	 * @return {@link TimeBasedUUIDCreator}
+	 * @return {@link SequentialUUIDCreator}
 	 */
-	public static TimeBasedUUIDCreator getSequentialUUIDCreator() {
+	public static SequentialUUIDCreator getSequentialUUIDCreator() {
 		return new SequentialUUIDCreator();
 	}
 	
@@ -280,20 +322,29 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Returns a {@link NameBasedUUIDCreator} that creates UUID version 3.
+	 * Returns a {@link MD5UUIDCreator} that creates UUID version 3.
 	 * 
-	 * @return {@link NameBasedUUIDCreator}
+	 * @return {@link MD5UUIDCreator}
 	 */
-	public static NameBasedUUIDCreator getMD5NameBasedUUIDCreator() {
-		return new NameBasedUUIDCreator(UUIDCreator.VERSION_3);
+	public static MD5UUIDCreator getMD5UUIDCreator() {
+		return new MD5UUIDCreator();
 	}
 	
 	/**
-	 * Returns a {@link NameBasedUUIDCreator} that creates UUID version 5.
+	 * Returns a {@link SHA1UUIDCreator} that creates UUID version 5.
 	 * 
-	 * @return {@link NameBasedUUIDCreator}
+	 * @return {@link SHA1UUIDCreator}
 	 */
-	public static NameBasedUUIDCreator getSHA1NameBasedUUIDCreator() {
-		return new NameBasedUUIDCreator(UUIDCreator.VERSION_5);
+	public static SHA1UUIDCreator getSHA1UUIDCreator() {
+		return new SHA1UUIDCreator();
+	}
+	
+	/**
+	 * Returns a {@link DCESecurityUUIDCreator} that creates UUID version 2.
+	 * 
+	 * @return {@link DCESecurityUUIDCreator}
+	 */
+	public static DCESecurityUUIDCreator getDCESecurityUUIDCreator() {
+		return new DCESecurityUUIDCreator();
 	}
 }

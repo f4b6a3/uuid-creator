@@ -1,7 +1,5 @@
 package com.github.f4b6a3.uuid.increment;
 
-import com.github.f4b6a3.uuid.increment.AbstractIncrementable;
-
 public class TimestampCounter extends AbstractIncrementable {
 
 	private long timestamp = 0;

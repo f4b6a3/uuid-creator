@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.UUIDGenerator;
-import com.github.f4b6a3.uuid.factory.TimeBasedUUIDCreator;
+import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUUIDCreator;
 
 /**
  * Runnable to test if a UUID is created more than once.
@@ -23,7 +23,7 @@ public class SimpleRunnable implements Runnable {
 	private static Instant instant = Instant.now();
 	
 	private static UUID[][] cache = new UUID[threadCount][threadLoopLimit];
-	//private static TimeBasedUUIDCreator creator = UUIDGenerator.getTimeBasedUUIDCreator().withFixedInstant(instant);
+	private static AbstractTimeBasedUUIDCreator creator = UUIDGenerator.getTimeBasedUUIDCreator().withInstant(instant);
 	
 	public SimpleRunnable(int id) {
 		this.id = id;
@@ -45,7 +45,7 @@ public class SimpleRunnable implements Runnable {
 		
 		for (int i = 0; i < cache[0].length; i++) {
 
-			//uuid = creator.create();
+			uuid = creator.create();
 			// System.out.println(uuid);
 			
 			if (!contains(uuid)) {

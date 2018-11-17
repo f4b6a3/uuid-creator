@@ -2,7 +2,6 @@ package com.github.f4b6a3.uuid.increment;
 
 import java.util.Random;
 
-import com.github.f4b6a3.uuid.increment.AbstractIncrementable;
 import com.github.f4b6a3.uuid.random.Xoroshiro128PlusRandom;
 
 public class ClockSequence extends AbstractIncrementable {

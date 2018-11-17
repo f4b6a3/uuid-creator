@@ -15,7 +15,7 @@
  *
  */
 
-package com.github.f4b6a3.uuid.factory;
+package com.github.f4b6a3.uuid.factory.abst;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -29,7 +29,7 @@ import static com.github.f4b6a3.uuid.util.ByteUtils.*;
  * @author fabiolimace
  *
  */
-public class NameBasedUUIDCreator extends UUIDCreator {
+public abstract class AbstractNameBasedUUIDCreator extends AbstractUUIDCreator {
 
 	private static final long serialVersionUID = -1626930139360985025L;
 
@@ -40,20 +40,20 @@ public class NameBasedUUIDCreator extends UUIDCreator {
 	 */
 	private UUID fixedNamespace;
 	private MessageDigest md = null;
+	
+	protected static final String MESSAGE_DIGEST_MD5 = "MD5";
+	protected static final String MESSAGE_DIGEST_SHA1 = "SHA-1";
 
 	/*
 	 * ------------------------- 
 	 * Public constructors 
 	 * -------------------------
 	 */
-	public NameBasedUUIDCreator(int version) {
+	public AbstractNameBasedUUIDCreator(int version, String messageDigest) {
 		super(version);
+
 		try {
-			if (this.version == VERSION_3) {
-				this.md = MessageDigest.getInstance("MD5");
-			} else {
-				this.md = MessageDigest.getInstance("SHA-1");
-			}
+			this.md = MessageDigest.getInstance(messageDigest);
 		} catch (NoSuchAlgorithmException e) {
 			throw new InternalError("Message digest algorithm not supported.", e);
 		}
@@ -71,7 +71,7 @@ public class NameBasedUUIDCreator extends UUIDCreator {
 	 * @param namespace
 	 * @return
 	 */
-	public NameBasedUUIDCreator withFixedNamespace(UUID namespace) {
+	public AbstractNameBasedUUIDCreator withFixedNamespace(UUID namespace) {
 		this.fixedNamespace = namespace;
 		return this;
 	}
@@ -84,7 +84,7 @@ public class NameBasedUUIDCreator extends UUIDCreator {
 	 * @param namespace
 	 * @return
 	 */
-	public NameBasedUUIDCreator withFixedNamespace(String namespace) {
+	public AbstractNameBasedUUIDCreator withFixedNamespace(String namespace) {
 		UUID namespaceUUID = create(namespace);
 		this.fixedNamespace = namespaceUUID;
 		return this;
@@ -99,7 +99,7 @@ public class NameBasedUUIDCreator extends UUIDCreator {
 	/**
 	 * Return a name-based UUID.
 	 * 
-	 * @see {@link NameBasedUUIDCreator#create(UUID, String)}
+	 * @see {@link AbstractNameBasedUUIDCreator#create(UUID, String)}
 	 * 
 	 * @param name
 	 * @return

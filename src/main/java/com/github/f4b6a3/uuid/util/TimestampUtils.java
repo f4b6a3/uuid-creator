@@ -31,27 +31,12 @@ import java.time.ZoneId;
 public class TimestampUtils implements Serializable {
 
 	private static final long serialVersionUID = -2664354707894888058L;
+
+	public static final long GREGORIAN_MILLISECONDS = getGregorianEpochMilliseconds();
 	
-	/*
-	 * -------------------------
-	 * Private static constants
-	 * -------------------------
-	 */
-	public static final long GREGORIAN_EPOCH_SECONDS = getGregorianEpochSeconds();
-	
-	public static final long ONE_HUNDRED = 100L;
-	public static final long MILLI_MULTIPLIER = 1_000L;
-	public static final long MICRO_MULTIPLIER = 1_000_000L;
-	public static final long NANOS_MULTIPLIER = 1_000_000_000L;
-	
-	public static final long TIMESTAMP_MULTIPLIER = NANOS_MULTIPLIER / ONE_HUNDRED;
-	
-	/* 
-	 * -------------------------
-	 * Public static methods
-	 * -------------------------
-	 */
-	
+	public static final long MILLISECONDS_MULTIPLIER = 1_000L;
+	public static final long TIMESTAMP_MULTIPLIER = 10_000L;
+
 	/**
 	 * Get the current timestamp.
 	 * 
@@ -75,12 +60,9 @@ public class TimestampUtils implements Serializable {
 	 * @return
 	 */
 	public static long getCurrentTimestamp() {
-		long milliseconds = System.currentTimeMillis();
-		long seconds = (milliseconds / MILLI_MULTIPLIER) - GREGORIAN_EPOCH_SECONDS;
-		long nanoseconds = (milliseconds % MILLI_MULTIPLIER) * MICRO_MULTIPLIER;
-		return (seconds * TIMESTAMP_MULTIPLIER) + (nanoseconds / ONE_HUNDRED);
+		return (System.currentTimeMillis() - GREGORIAN_MILLISECONDS) * TIMESTAMP_MULTIPLIER;
 	}
-	
+
 	/**
 	 * Get the timestamp associated with a given instant.
 	 *
@@ -88,10 +70,9 @@ public class TimestampUtils implements Serializable {
 	 * @return
 	 */
 	public static long toTimestamp(Instant instant) {
-		long seconds = instant.getEpochSecond() - GREGORIAN_EPOCH_SECONDS;
-		return (seconds * TIMESTAMP_MULTIPLIER) + (instant.getNano() / ONE_HUNDRED);
+		return (instant.toEpochMilli() - GREGORIAN_MILLISECONDS) * TIMESTAMP_MULTIPLIER;
 	}
-	
+
 	/**
 	 * Get the instant associated with the given timestamp.
 	 *
@@ -99,13 +80,12 @@ public class TimestampUtils implements Serializable {
 	 * @return
 	 */
 	public static Instant toInstant(long timestamp) {
-		long seconds = (timestamp / TIMESTAMP_MULTIPLIER) + GREGORIAN_EPOCH_SECONDS;
-		long nanoseconds = (timestamp % TIMESTAMP_MULTIPLIER) * ONE_HUNDRED;
-		return Instant.ofEpochSecond(seconds, nanoseconds);
+		return Instant.ofEpochMilli((timestamp / TIMESTAMP_MULTIPLIER) + GREGORIAN_MILLISECONDS);
 	}
-		
+
 	/**
-	 * Get the beggining of the Gregorian Calendar in seconds: 1582-10-15 00:00:00Z.
+	 * Get the beggining of the Gregorian Calendar in seconds: 1582-10-15
+	 * 00:00:00Z.
 	 * 
 	 * The expression "Gregorian Epoch" means the date and time the Gregorian
 	 * Calendar started. This expression is similar to "Unix Epoch", started in
@@ -113,8 +93,8 @@ public class TimestampUtils implements Serializable {
 	 *
 	 * @return
 	 */
-	private static long getGregorianEpochSeconds() {
-		LocalDate localDate = LocalDate.parse("1582-10-15");
-		return localDate.atStartOfDay(ZoneId.of("UTC")).toInstant().getEpochSecond();
+	private static long getGregorianEpochMilliseconds() {
+		return LocalDate.parse("1582-10-15").atStartOfDay(ZoneId.of("UTC")).toInstant().getEpochSecond() * MILLISECONDS_MULTIPLIER;
 	}
+
 }

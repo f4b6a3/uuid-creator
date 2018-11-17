@@ -14,7 +14,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import com.github.f4b6a3.uuid.UUIDGenerator;
-import com.github.f4b6a3.uuid.factory.NameBasedUUIDCreator;
+import com.github.f4b6a3.uuid.factory.abst.AbstractNameBasedUUIDCreator;
 
 @State(Scope.Thread)
 @Warmup(iterations = 1, batchSize = 1000)
@@ -23,13 +23,13 @@ import com.github.f4b6a3.uuid.factory.NameBasedUUIDCreator;
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class BenchmarkRunner {
 
-	/*
+	/**/
 	private UUID namespace;
     private String name;
 
     @Setup
     public void setUp() {
-    	namespace = NameBasedUUIDCreator.NAMESPACE_URL;
+    	namespace = AbstractNameBasedUUIDCreator.NAMESPACE_URL;
         name = "https://github.com/";
     }
     
@@ -41,11 +41,6 @@ public class BenchmarkRunner {
     @Benchmark
     public UUID random() {
         return UUIDGenerator.getRandomUUID();
-    }
-    
-    @Benchmark
-    public UUID randomFast() {
-        return UUIDGenerator.getRandomFastUUID();
     }
     
     @Benchmark
@@ -71,13 +66,27 @@ public class BenchmarkRunner {
     @Benchmark
     public UUID sequential() {
     	return UUIDGenerator.getSequentialUUID();
-    } 
-    */
+    }
+    
+     
+    @Benchmark
+    public UUID randomFast() {
+        return UUIDGenerator.getRandomFastUUID();
+    }
+    
+    
+    @Benchmark
+    public UUID dceSecurity() {
+    	return UUIDGenerator.getDCESecurityUUID(1701);
+    }
+    
+    /**/
 	
     @Benchmark
     public UUID timeBased() {
         return UUIDGenerator.getTimeBasedUUID();
     }
+     
     
     public static void main(String[] args) throws Exception {
         org.openjdk.jmh.Main.main(args);

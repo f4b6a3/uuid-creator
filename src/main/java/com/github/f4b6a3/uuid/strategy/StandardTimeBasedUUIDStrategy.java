@@ -1,10 +1,8 @@
-package com.github.f4b6a3.uuid.strategy.msb;
+package com.github.f4b6a3.uuid.strategy;
 
 import com.github.f4b6a3.uuid.factory.TimeBasedUUIDCreator;
 
-public class TimeBasedMostSignificantBitsStrategy implements MostSignificantBitsStrategy {
-
-	public static final long VERSION_BITS = 0x0000000000001000L;
+public class StandardTimeBasedUUIDStrategy implements TimeBasedUUIDStrategy {
 	
 	// TODO: merge these two commentaries.
 	
@@ -57,15 +55,15 @@ public class TimeBasedMostSignificantBitsStrategy implements MostSignificantBits
 	 * @param counter
 	 */
 	@Override
-	public long getMostSignificantBits(long timestamp, long counter) {
+	public long getMostSignificantBits(long timestamp) {
 		
 		// (4) add the counter to the timestamp
-		long ts = timestamp + counter;
+		long ts = timestamp;
 
 		long hii = (ts & 0x0fff000000000000L) >>> 48;
 		long mid = (ts & 0x0000ffff00000000L) >>> 16;
 		long low = (ts & 0x00000000ffffffffL) << 32;
 
-		return (low | mid | hii | VERSION_BITS);
+		return (low | mid | hii | 0x0000000000001000L);
 	}
 }

@@ -22,6 +22,8 @@ import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.factory.abst.AbstractUUIDCreator;
+import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.uuid.random.XorshiftRandom;
 
 /**
@@ -30,7 +32,7 @@ import com.github.f4b6a3.uuid.random.XorshiftRandom;
  * @author fabiolimace
  *
  */
-public class RandomUUIDCreator extends UUIDCreator {
+public class RandomUUIDCreator extends AbstractUUIDCreator {
 
 	private static final long serialVersionUID = -5686288990673774098L;
 	
@@ -47,7 +49,7 @@ public class RandomUUIDCreator extends UUIDCreator {
 	 * -------------------------
 	 */
 	public RandomUUIDCreator() {
-		super(UUIDCreator.VERSION_4);
+		super(VERSION_4);
 	}
 
 	/* 
@@ -109,6 +111,11 @@ public class RandomUUIDCreator extends UUIDCreator {
 	 */
 	public RandomUUIDCreator withRandomGenerator(Random random) {
 		this.random = random;
+		return this;
+	}
+	
+	public RandomUUIDCreator withFastRandomGenerator() {
+		this.random = new Xorshift128PlusRandom();
 		return this;
 	}
 	

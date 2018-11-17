@@ -15,7 +15,8 @@
  *
  */
 
-package com.github.f4b6a3.uuid.factory;
+package com.github.f4b6a3.uuid.factory.abst;
 
-public interface IUUIDCreator {
+public interface UUIDCreator {
+	
 }
