@@ -1,7 +1,5 @@
 package com.github.f4b6a3.uuid.strategy;
 
-import com.github.f4b6a3.uuid.factory.TimeBasedUUIDCreator;
-
 public class StandardTimeBasedUUIDStrategy implements TimeBasedUUIDStrategy {
 	
 	// TODO: merge these two commentaries.
@@ -36,33 +34,12 @@ public class StandardTimeBasedUUIDStrategy implements TimeBasedUUIDStrategy {
 	 * 
 	 * @param timestamp
 	 */
-	
-	/**
-	 * Returns the most significant bits of the UUID.
-	 * 
-	 * It is a extension suggested by the RFC-4122.
-	 * 
-	 * {@link TimeBasedUUIDCreator#getStandardTimestampBits(long)}
-	 * 
-	 * #### RFC-4122 - 4.2.1.2. System Clock Resolution
-	 * 
-	 * (4) A high resolution timestamp can be simulated by keeping a count of
-	 * the number of UUIDs that have been generated with the same value of the
-	 * system time, and using it to construct the low order bits of the
-	 * timestamp. The count will range between zero and the number of
-	 * 100-nanosecond intervals per system time interval.
-	 * 
-	 * @param counter
-	 */
 	@Override
 	public long getMostSignificantBits(long timestamp) {
 		
-		// (4) add the counter to the timestamp
-		long ts = timestamp;
-
-		long hii = (ts & 0x0fff000000000000L) >>> 48;
-		long mid = (ts & 0x0000ffff00000000L) >>> 16;
-		long low = (ts & 0x00000000ffffffffL) << 32;
+		long hii = (timestamp & 0x0fff000000000000L) >>> 48;
+		long mid = (timestamp & 0x0000ffff00000000L) >>> 16;
+		long low = (timestamp & 0x00000000ffffffffL) << 32;
 
 		return (low | mid | hii | 0x0000000000001000L);
 	}

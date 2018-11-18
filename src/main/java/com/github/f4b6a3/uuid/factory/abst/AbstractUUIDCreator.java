@@ -31,23 +31,14 @@ public abstract class AbstractUUIDCreator implements Serializable {
 
 	private static final long serialVersionUID = 174136732581039569L;
 	
-	/*
-	 * -------------------------
-	 * Private fields
-	 * -------------------------
-	 */
 	protected final int version;
 	
-	/*
-	 * -------------------------
-	 * Public constants
-	 * -------------------------
-	 */
 	// UUID variants defined by RFC-4122
 	public static final int VARIANT_RESERVED_NCS = 0;
 	public static final int VARIANT_RFC4122 = 2;
 	public static final int VARIANT_RESERVED_MICROSOFT = 6;
 	public static final int VARIANT_RESERVED_FUTURE = 7;
+	
 	// UUID versions defined by RFC-4122, plus an extension (zero)
 	public static final int VERSION_0 = 0;
 	public static final int VERSION_1 = 1;
@@ -55,6 +46,7 @@ public abstract class AbstractUUIDCreator implements Serializable {
 	public static final int VERSION_3 = 3;
 	public static final int VERSION_4 = 4;
 	public static final int VERSION_5 = 5;
+	
 	// UUIDs objects defined by RFC-4122
 	public static final UUID NIL_UUID = new UUID(0x0000000000000000L, 0x0000000000000000L);
 	public static final UUID NAMESPACE_DNS = new UUID(0x6ba7b8109dad11d1L, 0x80b400c04fd430c8L);
@@ -62,11 +54,6 @@ public abstract class AbstractUUIDCreator implements Serializable {
 	public static final UUID NAMESPACE_OID = new UUID(0x6ba7b8129dad11d1L, 0x80b400c04fd430c8L);
 	public static final UUID NAMESPACE_X500 = new UUID(0x6ba7b8149dad11d1L, 0x80b400c04fd430c8L);
 	
-	/*
-	 * -------------------------
-	 * Private constants
-	 * -------------------------
-	 */
 	// Values to be used in bitwise operations
 	public static final long RFC4122_VARIANT_BITS = 0x8000000000000000L;
 	public static final long[] VERSION_BITS = {
@@ -74,20 +61,9 @@ public abstract class AbstractUUIDCreator implements Serializable {
 			0x0000000000002000L, 0x0000000000003000L, 
 			0x0000000000004000L, 0x0000000000005000L };
 	
-	/* 
-	 * -------------------------
-	 * Public constructors
-	 * -------------------------
-	 */
 	public AbstractUUIDCreator(int version) {
 		this.version = version;
 	}
-	
-	/* 
-	 * -------------------------
-	 * Public methods
-	 * -------------------------
-	 */
 
 	public int getVersion() {
 		return version;

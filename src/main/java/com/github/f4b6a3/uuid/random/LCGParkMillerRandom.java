@@ -18,7 +18,7 @@ import java.util.Random;
  * Correspondence: Response" (PDF). Communications of the ACM. 36 (7): 108–110.
  * {@link http://www.firstpr.com.au/dsp/rand31/p105-crawford.pdf#page=4}
  */
-public class LCGLehmerRandom extends Random {
+public class LCGParkMillerRandom extends Random {
 
 	private static final long serialVersionUID = 5084310156945573858L;
 
@@ -30,16 +30,12 @@ public class LCGLehmerRandom extends Random {
 	// Mersenne prime: (2^31 - 1) or 2,147,483,647
 	private static final int N = 0x7fffffff;
 
-	public LCGLehmerRandom() {
+	public LCGParkMillerRandom() {
 		this(System.nanoTime());
 	}
-
-	/*
-	 * "This function can be called repeatedly to generate pseudorandom numbers,
-	 * as long as the caller is careful to initialize the state to any number
-	 * greater than zero and less than the modulus (N)."
-	 */
-	public LCGLehmerRandom(long seed) {
+	
+	public LCGParkMillerRandom(long seed) {
+		// 0 < seed < N
 		this.seed = seed % N;
 	}
 

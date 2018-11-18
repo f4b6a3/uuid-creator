@@ -25,28 +25,22 @@ import java.time.ZoneId;
 /**
  * Class that provides methods related to timestamps.
  * 
- * @author fabiolimace
+ * All its public methods have milliseconds precision. 
  *
  */
-public class TimestampUtils implements Serializable {
+public class TimestampUtil implements Serializable {
 
 	private static final long serialVersionUID = -2664354707894888058L;
 
 	public static final long GREGORIAN_MILLISECONDS = getGregorianEpochMilliseconds();
-	
-	public static final long MILLISECONDS_MULTIPLIER = 1_000L;
-	public static final long TIMESTAMP_MULTIPLIER = 10_000L;
+
+	public static final long MILLISECONDS_PER_SECOND = 1_000L;
+	public static final long TIMESTAMP_RESOLUTION = 10_000L;
 
 	/**
-	 * Get the current timestamp.
+	 * Get the current timestamp with milliseconds precision.
 	 * 
 	 * The UUID timestamp is a number of 100-nanos since gregorian epoch.
-	 *
-	 * Although it has 100-nanos precision, the timestamp returned has
-	 * milliseconds accuracy.
-	 * 
-	 * "Precision" refers to the number of significant digits, and "accuracy" is
-	 * whether the number is correct.
 	 * 
 	 * ### RFC-4122 - 4.2.1.2. System Clock Resolution
 	 * 
@@ -57,34 +51,40 @@ public class TimestampUtils implements Serializable {
 	 * be the system time multiplied by the number of 100-nanosecond intervals
 	 * per system time interval.
 	 * 
+	 * (4) A high resolution timestamp can be simulated by keeping a count of
+	 * the number of UUIDs that have been generated with the same value of the
+	 * system time, and using it to construct the low order bits of the
+	 * timestamp. The count will range between zero and the number of
+	 * 100-nanosecond intervals per system time interval.
+	 * 
 	 * @return
 	 */
 	public static long getCurrentTimestamp() {
-		return (System.currentTimeMillis() - GREGORIAN_MILLISECONDS) * TIMESTAMP_MULTIPLIER;
+		return (System.currentTimeMillis() - GREGORIAN_MILLISECONDS) * TIMESTAMP_RESOLUTION;
 	}
 
 	/**
-	 * Get the timestamp associated with a given instant.
+	 * Get the timestamp of a given instant with milliseconds precision.
 	 *
 	 * @param instant
 	 * @return
 	 */
 	public static long toTimestamp(Instant instant) {
-		return (instant.toEpochMilli() - GREGORIAN_MILLISECONDS) * TIMESTAMP_MULTIPLIER;
+		return (instant.toEpochMilli() - GREGORIAN_MILLISECONDS) * TIMESTAMP_RESOLUTION;
 	}
 
 	/**
-	 * Get the instant associated with the given timestamp.
+	 * Get the instant of the given timestamp with milliseconds precision.
 	 *
 	 * @param timestamp
 	 * @return
 	 */
 	public static Instant toInstant(long timestamp) {
-		return Instant.ofEpochMilli((timestamp / TIMESTAMP_MULTIPLIER) + GREGORIAN_MILLISECONDS);
+		return Instant.ofEpochMilli((timestamp / TIMESTAMP_RESOLUTION) + GREGORIAN_MILLISECONDS);
 	}
 
 	/**
-	 * Get the beggining of the Gregorian Calendar in seconds: 1582-10-15
+	 * Get the beggining of the Gregorian Calendar in milliseconds: 1582-10-15
 	 * 00:00:00Z.
 	 * 
 	 * The expression "Gregorian Epoch" means the date and time the Gregorian
@@ -94,7 +94,8 @@ public class TimestampUtils implements Serializable {
 	 * @return
 	 */
 	private static long getGregorianEpochMilliseconds() {
-		return LocalDate.parse("1582-10-15").atStartOfDay(ZoneId.of("UTC")).toInstant().getEpochSecond() * MILLISECONDS_MULTIPLIER;
+		return LocalDate.parse("1582-10-15").atStartOfDay(ZoneId.of("UTC")).toInstant().getEpochSecond()
+				* MILLISECONDS_PER_SECOND;
 	}
 
 }

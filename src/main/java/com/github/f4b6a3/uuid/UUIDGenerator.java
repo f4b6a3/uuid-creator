@@ -17,12 +17,13 @@
 
 package com.github.f4b6a3.uuid;
 
+import java.security.SecureRandom;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.factory.DCESecurityUUIDCreator;
-import com.github.f4b6a3.uuid.factory.MD5UUIDCreator;
+import com.github.f4b6a3.uuid.factory.NameBasedMD5UUIDCreator;
 import com.github.f4b6a3.uuid.factory.RandomUUIDCreator;
-import com.github.f4b6a3.uuid.factory.SHA1UUIDCreator;
+import com.github.f4b6a3.uuid.factory.NameBasedSHA1UUIDCreator;
 import com.github.f4b6a3.uuid.factory.SequentialUUIDCreator;
 import com.github.f4b6a3.uuid.factory.TimeBasedUUIDCreator;
 import com.github.f4b6a3.uuid.factory.abst.AbstractNameBasedUUIDCreator;
@@ -35,7 +36,7 @@ import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
  *
  */
 public class UUIDGenerator {
-	
+
 	private static SequentialUUIDCreator sequentialUUIDCreator;
 	private static SequentialUUIDCreator sequentialWithHardwarAddressUUIDCreator;
 	private static TimeBasedUUIDCreator timeBasedUUIDCreator;
@@ -43,15 +44,13 @@ public class UUIDGenerator {
 	private static AbstractNameBasedUUIDCreator md5NameBasedUUIDCreator;
 	private static AbstractNameBasedUUIDCreator sha1NameBasedUUIDCreator;
 	private static RandomUUIDCreator randomUUIDCreator;
-	private static RandomUUIDCreator randomFastUUIDCreator;
+	private static RandomUUIDCreator fastRandomUUIDCreator;
 	private static DCESecurityUUIDCreator dceSecurityUUIDCreator;
 
-	/* 
-	 * ----------------------------------------------------------------------
+	/*
 	 * Public static methods for creating UUIDs
-	 * ----------------------------------------------------------------------
 	 */
-	
+
 	/**
 	 * Returns a random UUID.
 	 * 
@@ -61,6 +60,7 @@ public class UUIDGenerator {
 	 * It uses the Details: <br/>
 	 * - Version number: 4 <br/>
 	 * - Variant number: 1 <br/>
+	 * - Random generator: {@link SecureRandom}
 	 *
 	 * @return
 	 */
@@ -79,16 +79,17 @@ public class UUIDGenerator {
 	 * Details: <br/>
 	 * - Version number: 4 <br/>
 	 * - Variant number: 1 <br/>
-	 *
+	 * - Random generator: {@link Xorshift128PlusRandom}
+	 * 
 	 * @return
 	 */
-	public static UUID getRandomFastUUID() {
-		if (randomFastUUIDCreator == null) {
-			randomFastUUIDCreator = getRandomUUIDCreator().withFastRandomGenerator();
+	public static UUID getFastRandomUUID() {
+		if (fastRandomUUIDCreator == null) {
+			fastRandomUUIDCreator = getFastRandomUUIDCreator();
 		}
-		return randomFastUUIDCreator.create();
+		return fastRandomUUIDCreator.create();
 	}
-	
+
 	/**
 	 * Returns a UUID with timestamp and without machine address, but the bytes
 	 * corresponding to timestamp are arranged in the "natural" order.
@@ -98,7 +99,7 @@ public class UUIDGenerator {
 	 * - Variant number: 1 <br/>
 	 * - Has timestamp?: YES <br/>
 	 * - Has hardware address (MAC)?: NO <br/>
-	 * - Timestamp bytes are in the RFC-4122 order: NO <br/>
+	 * - Timestamp bytes are in the RFC-4122 order?: NO <br/>
 	 *
 	 * @param instant
 	 * @return
@@ -109,7 +110,7 @@ public class UUIDGenerator {
 		}
 		return sequentialUUIDCreator.create();
 	}
-	
+
 	/**
 	 * Returns a UUID with timestamp and machine address, but the bytes
 	 * corresponding to timestamp are arranged in the "natural" order.
@@ -119,7 +120,7 @@ public class UUIDGenerator {
 	 * - Variant number: 1 <br/>
 	 * - Has timestamp?: YES <br/>
 	 * - Has hardware address (MAC)?: YES <br/>
-	 * - Timestamp bytes are in the RFC-4122 order: NO <br/>
+	 * - Timestamp bytes are in the RFC-4122 order?: NO <br/>
 	 *
 	 * @return
 	 */
@@ -130,7 +131,7 @@ public class UUIDGenerator {
 		}
 		return sequentialWithHardwarAddressUUIDCreator.create();
 	}
-	
+
 	/**
 	 * Returns a UUID with timestamp and without machine address.
 	 *
@@ -139,7 +140,7 @@ public class UUIDGenerator {
 	 * - Variant number: 1 <br/>
 	 * - Has timestamp?: YES <br/>
 	 * - Has hardware address (MAC)?: NO <br/>
-	 * - Timestamp bytes are in the RFC-4122 order: YES <br/>
+	 * - Timestamp bytes are in the RFC-4122 order?: YES <br/>
 	 *
 	 * @return
 	 */
@@ -158,7 +159,7 @@ public class UUIDGenerator {
 	 * - Variant number: 1 <br/>
 	 * - Has timestamp?: YES <br/>
 	 * - Has hardware address (MAC)?: YES <br/>
-	 * - Timestamp bytes are in the RFC-4122 order: YES <br/>
+	 * - Timestamp bytes are in the RFC-4122 order?: YES <br/>
 	 *
 	 * @return
 	 */
@@ -169,14 +170,16 @@ public class UUIDGenerator {
 		}
 		return timeBasedWithHardwarAddressUUIDCreator.create();
 	}
-	
+
 	/**
 	 * Returns a DCE Security UUID based on a local identifier.
 	 *
 	 * Details: <br/>
 	 * - Version number: 2 <br/>
 	 * - Variant number: 1 <br/>
-	 * - Local domain: none <br/>
+	 * - Local domain: POSIX UserID <br/>
+	 * - Has hardware address (MAC)?: YES <br/>
+	 * - Timestamp bytes are in the RFC-4122 order?: YES <br/>
 	 *
 	 * @param localDomain
 	 * @param localIdentification
@@ -188,15 +191,22 @@ public class UUIDGenerator {
 		}
 		return dceSecurityUUIDCreator.create(localIdentification);
 	}
-	
+
 	/**
 	 * Returns a DCE Security UUID based on a local domain and a local
 	 * identifier.
+	 *
+	 * Domain identifiers listed in the RFC-4122: <br/>
+	 * - Local Domain Person (POSIX UserID) = 0;<br/>
+	 * - Local Domain Group (POSIX GroupID) = 1;<br/>
+	 * - Local Domain Org = 2.<br/>
 	 *
 	 * Details: <br/>
 	 * - Version number: 2 <br/>
 	 * - Variant number: 1 <br/>
 	 * - Local domain: informed by user <br/>
+	 * - Has hardware address (MAC)?: YES <br/>
+	 * - Timestamp bytes are in the RFC-4122 order?: YES <br/>
 	 *
 	 * @param localDomain
 	 * @param localIdentification
@@ -208,7 +218,7 @@ public class UUIDGenerator {
 		}
 		return dceSecurityUUIDCreator.create(localDomain, localIdentification);
 	}
-
+	
 	/**
 	 * Returns a UUID based on a name, using MD5.
 	 * 
@@ -220,11 +230,10 @@ public class UUIDGenerator {
 	 *
 	 * @param name
 	 * @return
-	 * @return
 	 */
 	public static UUID getNameBasedMD5UUID(String name) {
 		if (md5NameBasedUUIDCreator == null) {
-			md5NameBasedUUIDCreator = getMD5UUIDCreator();
+			md5NameBasedUUIDCreator = getNameBasedMD5UUIDCreator();
 		}
 		return md5NameBasedUUIDCreator.create(name);
 	}
@@ -244,7 +253,7 @@ public class UUIDGenerator {
 	 */
 	public static UUID getNameBasedMD5UUID(UUID namespace, String name) {
 		if (md5NameBasedUUIDCreator == null) {
-			md5NameBasedUUIDCreator = getMD5UUIDCreator();
+			md5NameBasedUUIDCreator = getNameBasedMD5UUIDCreator();
 		}
 		return md5NameBasedUUIDCreator.create(namespace, name);
 	}
@@ -263,7 +272,7 @@ public class UUIDGenerator {
 	 */
 	public static UUID getNameBasedSHA1UUID(String name) {
 		if (sha1NameBasedUUIDCreator == null) {
-			sha1NameBasedUUIDCreator = getSHA1UUIDCreator();
+			sha1NameBasedUUIDCreator = getNameBasedSHA1UUIDCreator();
 		}
 		return sha1NameBasedUUIDCreator.create(name);
 	}
@@ -283,26 +292,15 @@ public class UUIDGenerator {
 	 */
 	public static UUID getNameBasedSHA1UUID(UUID namespace, String name) {
 		if (sha1NameBasedUUIDCreator == null) {
-			sha1NameBasedUUIDCreator = getSHA1UUIDCreator();
+			sha1NameBasedUUIDCreator = getNameBasedSHA1UUIDCreator();
 		}
 		return sha1NameBasedUUIDCreator.create(namespace, name);
 	}
-	
-	/* 
-	 * ----------------------------------------------------------------------
+
+	/*
 	 * Public static methods for creating FACTORIES of UUIDs
-	 * ----------------------------------------------------------------------
 	 */
-	
-	/**
-	 * Returns a {@link RandomUUIDCreator} that creates UUID version 4.
-	 * 
-	 * @return {@link RandomUUIDCreator}
-	 */
-	public static RandomUUIDCreator getRandomUUIDCreator() {
-		return new RandomUUIDCreator();
-	}
-	
+
 	/**
 	 * Returns a {@link SequentialUUIDCreator} that creates UUID version 0.
 	 * 
@@ -311,7 +309,7 @@ public class UUIDGenerator {
 	public static SequentialUUIDCreator getSequentialUUIDCreator() {
 		return new SequentialUUIDCreator();
 	}
-	
+
 	/**
 	 * Returns a {@link TimeBasedUUIDCreator} that creates UUID version 1.
 	 * 
@@ -322,29 +320,47 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Returns a {@link MD5UUIDCreator} that creates UUID version 3.
-	 * 
-	 * @return {@link MD5UUIDCreator}
-	 */
-	public static MD5UUIDCreator getMD5UUIDCreator() {
-		return new MD5UUIDCreator();
-	}
-	
-	/**
-	 * Returns a {@link SHA1UUIDCreator} that creates UUID version 5.
-	 * 
-	 * @return {@link SHA1UUIDCreator}
-	 */
-	public static SHA1UUIDCreator getSHA1UUIDCreator() {
-		return new SHA1UUIDCreator();
-	}
-	
-	/**
 	 * Returns a {@link DCESecurityUUIDCreator} that creates UUID version 2.
 	 * 
 	 * @return {@link DCESecurityUUIDCreator}
 	 */
 	public static DCESecurityUUIDCreator getDCESecurityUUIDCreator() {
 		return new DCESecurityUUIDCreator();
+	}
+
+	/**
+	 * Returns a {@link NameBasedMD5UUIDCreator} that creates UUID version 3.
+	 * 
+	 * @return {@link NameBasedMD5UUIDCreator}
+	 */
+	public static NameBasedMD5UUIDCreator getNameBasedMD5UUIDCreator() {
+		return new NameBasedMD5UUIDCreator();
+	}
+
+	/**
+	 * Returns a {@link RandomUUIDCreator} that creates UUID version 4.
+	 * 
+	 * @return {@link RandomUUIDCreator}
+	 */
+	public static RandomUUIDCreator getRandomUUIDCreator() {
+		return new RandomUUIDCreator();
+	}
+
+	/**
+	 * Returns a {@link RandomUUIDCreator} that creates UUID version 4.
+	 * 
+	 * @return {@link RandomUUIDCreator}
+	 */
+	public static RandomUUIDCreator getFastRandomUUIDCreator() {
+		return new RandomUUIDCreator().withFastRandomGenerator();
+	}
+
+	/**
+	 * Returns a {@link NameBasedSHA1UUIDCreator} that creates UUID version 5.
+	 * 
+	 * @return {@link NameBasedSHA1UUIDCreator}
+	 */
+	public static NameBasedSHA1UUIDCreator getNameBasedSHA1UUIDCreator() {
+		return new NameBasedSHA1UUIDCreator();
 	}
 }

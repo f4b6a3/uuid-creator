@@ -33,22 +33,12 @@ public abstract class AbstractNameBasedUUIDCreator extends AbstractUUIDCreator {
 
 	private static final long serialVersionUID = -1626930139360985025L;
 
-	/*
-	 * ------------------------- 
-	 * Private fields 
-	 * -------------------------
-	 */
 	private UUID fixedNamespace;
 	private MessageDigest md = null;
-	
+
 	protected static final String MESSAGE_DIGEST_MD5 = "MD5";
 	protected static final String MESSAGE_DIGEST_SHA1 = "SHA-1";
 
-	/*
-	 * ------------------------- 
-	 * Public constructors 
-	 * -------------------------
-	 */
 	public AbstractNameBasedUUIDCreator(int version, String messageDigest) {
 		super(version);
 
@@ -59,23 +49,18 @@ public abstract class AbstractNameBasedUUIDCreator extends AbstractUUIDCreator {
 		}
 	}
 
-	/*
-	 * -------------------------------- 
-	 * Public fluent interface methods
-	 * --------------------------------
-	 */
-
 	/**
 	 * Sets a fixed namespace with in a fluent way.
 	 * 
 	 * @param namespace
 	 * @return
 	 */
-	public AbstractNameBasedUUIDCreator withFixedNamespace(UUID namespace) {
+	@SuppressWarnings("unchecked")
+	public <T extends AbstractNameBasedUUIDCreator> T withNamespace(UUID namespace) {
 		this.fixedNamespace = namespace;
-		return this;
+		return (T) this;
 	}
-	
+
 	/**
 	 * Sets a fixed namespace with in a fluent way.
 	 * 
@@ -84,20 +69,15 @@ public abstract class AbstractNameBasedUUIDCreator extends AbstractUUIDCreator {
 	 * @param namespace
 	 * @return
 	 */
-	public AbstractNameBasedUUIDCreator withFixedNamespace(String namespace) {
+	@SuppressWarnings("unchecked")
+	public <T extends AbstractNameBasedUUIDCreator> T withNamespace(String namespace) {
 		UUID namespaceUUID = create(namespace);
 		this.fixedNamespace = namespaceUUID;
-		return this;
+		return (T) this;
 	}
 
-	/*
-	 * ------------------------- 
-	 * Public methods 
-	 * -------------------------
-	 */
-
 	/**
-	 * Return a name-based UUID.
+	 * Returns a name-based UUID without namespace.
 	 * 
 	 * @see {@link AbstractNameBasedUUIDCreator#create(UUID, String)}
 	 * 
@@ -109,9 +89,11 @@ public abstract class AbstractNameBasedUUIDCreator extends AbstractUUIDCreator {
 	}
 
 	/**
-	 * Return a name-based UUID
+	 * Returns a name-based UUID with a namespace and a name.
 	 * 
 	 * The namespace string is converted to namespace UUID.
+	 * 
+	 * @see {@link AbstractNameBasedUUIDCreator#create(UUID, String)}
 	 * 
 	 * @param namespace
 	 * @param name
@@ -121,14 +103,15 @@ public abstract class AbstractNameBasedUUIDCreator extends AbstractUUIDCreator {
 		UUID namespaceUUID = create(namespace);
 		return create(namespaceUUID, name);
 	}
-	
+
 	/**
-	 * Return a name-based UUID.
+	 * Returns a name-based UUID with a namespace and a name.
 	 * 
-	 * ### RFC-4122 - 4.3.  Algorithm for Creating a Name-Based UUID
+	 * ### RFC-4122 - 4.3. Algorithm for Creating a Name-Based UUID
 	 * 
-	 * (1) Allocate a UUID to use as a "name space ID" for all UUIDs generated from
-	 * names in that name space; see Appendix C for some pre-defined values.
+	 * (1) Allocate a UUID to use as a "name space ID" for all UUIDs generated
+	 * from names in that name space; see Appendix C for some pre-defined
+	 * values.
 	 * 
 	 * (2) Choose either MD5 [4] or SHA-1 [8] as the hash algorithm; If backward
 	 * compatibility is not an issue, SHA-1 is preferred.
@@ -139,14 +122,14 @@ public abstract class AbstractNameBasedUUIDCreator extends AbstractUUIDCreator {
 	 * 
 	 * (4) Compute the hash of the name space ID concatenated with the name.
 	 * 
-	 * (5) Set octets zero through 3 of the time_low field to octets zero through 3
-	 * of the hash.
+	 * (5) Set octets zero through 3 of the time_low field to octets zero
+	 * through 3 of the hash.
 	 * 
-	 * (6) Set octets zero and one of the time_mid field to octets 4 and 5 of the
-	 * hash.
+	 * (6) Set octets zero and one of the time_mid field to octets 4 and 5 of
+	 * the hash.
 	 * 
-	 * (7) Set octets zero and one of the time_hi_and_version field to octets 6 and
-	 * 7 of the hash.
+	 * (7) Set octets zero and one of the time_hi_and_version field to octets 6
+	 * and 7 of the hash.
 	 * 
 	 * (8) Set the four most significant bits (bits 12 through 15) of the
 	 * time_hi_and_version field to the appropriate 4-bit version number from
@@ -159,8 +142,8 @@ public abstract class AbstractNameBasedUUIDCreator extends AbstractUUIDCreator {
 	 * 
 	 * (11) Set the clock_seq_low field to octet 9 of the hash.
 	 * 
-	 * (12) Set octets zero through five of the node field to octets 10 through 15 of
-	 * the hash.
+	 * (12) Set octets zero through five of the node field to octets 10 through
+	 * 15 of the hash.
 	 * 
 	 * (13) Convert the resulting UUID to local byte order.
 	 * 
@@ -179,19 +162,19 @@ public abstract class AbstractNameBasedUUIDCreator extends AbstractUUIDCreator {
 		byte[] hash = null;
 
 		nameBytes = name.getBytes();
-		
-		if (this.fixedNamespace != null) {
-			namespaceBytes = toBytes(this.fixedNamespace.getMostSignificantBits());
-			namespaceBytes = concat(namespaceBytes, toBytes(this.fixedNamespace.getLeastSignificantBits()));
-		} else if (namespace != null) {
+
+		if (namespace != null) {
 			namespaceBytes = toBytes(namespace.getMostSignificantBits());
 			namespaceBytes = concat(namespaceBytes, toBytes(namespace.getLeastSignificantBits()));
+		} else if (this.fixedNamespace != null) {
+			namespaceBytes = toBytes(this.fixedNamespace.getMostSignificantBits());
+			namespaceBytes = concat(namespaceBytes, toBytes(this.fixedNamespace.getLeastSignificantBits()));
 		} else {
 			namespaceBytes = new byte[0];
 		}
 
 		bytes = concat(namespaceBytes, nameBytes);
-		
+
 		hash = md.digest(bytes);
 
 		msb = toNumber(copy(hash, 0, 8));

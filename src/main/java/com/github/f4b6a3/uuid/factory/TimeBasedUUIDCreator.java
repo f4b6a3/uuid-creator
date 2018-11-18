@@ -21,13 +21,7 @@ import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUUIDCreator;
 import com.github.f4b6a3.uuid.strategy.StandardTimeBasedUUIDStrategy;
 
 /**
- * Factory that create time-based UUIDs version 0 and 1.
- * 
- * The version 0 is a extension of the RFC-4122. It's just a modification of the
- * UUID version 1 that sorts the timestamp bytes to the natural order.
- * 
- * @author fabiolimace
- *
+ * Factory that create time-based UUIDs 1 of the RFC-4122.
  */
 public class TimeBasedUUIDCreator extends AbstractTimeBasedUUIDCreator {
 

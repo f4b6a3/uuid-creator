@@ -10,12 +10,14 @@ UUID Generator can generate UUIDs (Universally Unique Identifiers), also known a
 These types of UUIDs can be generated:
 
 * __Random__: the pseudo-randomly generated version;
+* __Fast Random__: the pseudo-randomly generated version, using a fast RNG;
 * __Time-based:__ the time-based version;
 * __Time-based MAC:__ the time-based version with hardware address;
 * __Sequential:__ a modified time-based version;
 * __Sequential MAC:__ a modified time-based version with hardware address;
 * __Name-based MD5:__ a base-named version that uses MD5;
 * __Name-based SHA1:__ a base-named version that uses SHA-1.
+* __DCE Security:__ a modified time-based version that uses local domains and identifiers;
 
 The sequential UUID is a different implementation of the standard time-based UUIDs.
 
@@ -46,7 +48,7 @@ System.out.println(uuid.toString());
 
 ```java
 // Using a fixed node identifier: 0x111111111111L
-UUID uuid = UUIDGenerator.getSequentialUUIDCreator().withFixedNodeIdentifier(0x111111111111L).create();
+UUID uuid = UUIDGenerator.getSequentialUUIDCreator().withNodeIdentifier(0x111111111111L).create();
 System.out.println(uuid.toString());
 // Output: 1e88c46f-e5df-0550-8e9d-111111111111
 ```
@@ -75,9 +77,21 @@ System.out.println(uuid.toString());
 
 ```java
 // Using a fixed node identifier: 0x111111111111L
-uuid = UUIDGenerator.getTimeBasedUUIDCreator().withFixedNodeIdentifier(0x111111111111L).create();
+uuid = UUIDGenerator.getTimeBasedUUIDCreator().withNodeIdentifier(0x111111111111L).create();
 System.out.println(uuid.toString());
 // Output: fe682e80-8c46-11e8-98d5-111111111111
+```
+
+### Version 2: DCE Security
+
+The DCE Security is a Time-based UUID that also embeds local domain and local identifier.
+
+**Example 1:**
+
+```java
+UUID uuid = UUIDGenerator.getDCESecurityUUID(1, 1701);
+System.out.println(uuid.toString());
+// Output: 1e88c441-5711-0fa2-aaac-bf66xxxxxxxx
 ```
 
 ### Version 3: Name-based UUID hashed with MD5
@@ -195,20 +209,28 @@ In short, that is the is the difference between both.
 Benchmark using JMH
 ------------------------------------------------------
 
-Here is a table showing the results of a simple benchmark using JMH:
+Here is a table showing the results of a simple benchmark using JMH. My implementation is compared to Java, JUG and EAIO implementations.
 
-|Benchmark|Mode|Cnt|Score|Error|Units|
-|:---|:---:|:---:|---:|---:|:---:|
-|java.util.UUID.randomUUID()|ss|100|55,240|±4,955|ms/op|
-|UUIDGenerator.getRandomUUID()|ss|100|48,127|±3,359|ms/op|
-|UUIDGenerator.getRandomFastUUID()|ss|100|3,195|±0,582|ms/op|
-|UUIDGenerator.getTimeBasedUUID()|ss|100|7,678|±3,937|ms/op|
-|UUIDGenerator.getSequentialUUID()|ss|100|7,540|±3,926|ms/op|
-|UUIDGenerator.getNameBasedMD5UUID(namespace,name)|ss|100|48,489|±4,815|ms/op|
-|UUIDGenerator.getNameBasedSHA1UUID(namespace,name)|ss|100|57,981|±5,237|ms/op|
-|UUIDGenerator.getTimeBasedWithHardwareAddressUUID()|ss|100|7,578|±3,911|ms/op|
-|UUIDGenerator.getSequentialWithHardwareAddressUUID()|ss|100|7,462|±3,915|ms/op|
-|Total time: 00:00:52|
+```text
+Benchmark                                  Mode  Cnt   Score   Error  Units
+BenchmarkRunner.EAIO_TimeAndEthernetBased    ss  100   7,420 ± 0,607  ms/op
+BenchmarkRunner.JUG_NameBased                ss  100  39,994 ± 3,404  ms/op
+BenchmarkRunner.JUG_Random                   ss  100  55,310 ± 4,542  ms/op
+BenchmarkRunner.JUG_TimeAndEthernetBased     ss  100   7,911 ± 0,971  ms/op
+BenchmarkRunner.JUG_TimeBased                ss  100   7,965 ± 0,995  ms/op
+BenchmarkRunner.Java_Random                  ss  100  56,029 ± 4,891  ms/op
+BenchmarkRunner.Java_nameBased               ss  100  52,180 ± 9,047  ms/op
+BenchmarkRunner.UUIDGenerator_DCESecurity    ss  100   9,727 ± 1,116  ms/op
+BenchmarkRunner.UUIDGenerator_FastRandom     ss  100   3,333 ± 0,606  ms/op
+BenchmarkRunner.UUIDGenerator_NameBasedMD5   ss  100  47,711 ± 4,385  ms/op
+BenchmarkRunner.UUIDGenerator_NameBasedSHA1  ss  100  57,742 ± 5,205  ms/op
+BenchmarkRunner.UUIDGenerator_Sequential     ss  100   7,719 ± 0,926  ms/op
+BenchmarkRunner.UUIDGenerator_SequentialMAC  ss  100   7,880 ± 1,013  ms/op
+BenchmarkRunner.UUIDGenerator_TimeBased      ss  100   7,799 ± 1,034  ms/op
+BenchmarkRunner.UUIDGenerator_TimeBasedMAC   ss  100   7,583 ± 1,050  ms/op
+BenchmarkRunner.UUIDGenerator_Random         ss  100  47,358 ± 2,550  ms/op
+Run complete. Total time: 00:01:33
+```
 
 These are the configurations used to run this benchmark:
 
@@ -222,7 +244,7 @@ These are the configurations used to run this benchmark:
 
 The method getRandomUUID() uses SecureRandom (java.security.SecureRandom).
 
-The method getRandomFastUUID() uses a [Xorshift](https://en.wikipedia.org/wiki/Xorshift) random generator.
+The method getFastRandomUUID() uses a [Xorshift](https://en.wikipedia.org/wiki/Xorshift) random generator.
 
 The machine used to do this test is an Intel i5-3330 with 16GB RAM.
 

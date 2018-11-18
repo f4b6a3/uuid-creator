@@ -29,73 +29,58 @@ import com.github.f4b6a3.uuid.random.XorshiftRandom;
 /**
  * Factory that creates random UUIDs version 4.
  * 
- * @author fabiolimace
- *
+ * The default random generator is {@link java.security.SecureRandom}, but it
+ * can be replaced by any random generator that extends
+ * {@link java.util.Random}.
+ * 
+ * Some fast random generators are provided along with this project, for
+ * example, {@link Xorshift128PlusRandom}, which is default RNG for some web
+ * browsers.
+ * 
  */
 public class RandomUUIDCreator extends AbstractUUIDCreator {
 
 	private static final long serialVersionUID = -5686288990673774098L;
-	
-	/*
-	 * -------------------------
-	 * Private fields
-	 * -------------------------
-	 */
+
 	private Random random;
-	
-	/* 
-	 * -------------------------
-	 * Public constructors
-	 * -------------------------
-	 */
+
 	public RandomUUIDCreator() {
 		super(VERSION_4);
+		random = getSecureRandom();
 	}
 
-	/* 
-	 * -------------------------
-	 * Public methods
-	 * -------------------------
-	 */
-	
 	/**
 	 * Return a UUID with random value.
 	 * 
 	 * ### RFC-4122 - 4.4. Algorithms for Creating a UUID from Truly Random or
 	 * Pseudo-Random Numbers
 	 * 
-	 * Set the two most significant bits (bits 6 and 7) of the
+	 * (1) Set the two most significant bits (bits 6 and 7) of the
 	 * clock_seq_hi_and_reserved to zero and one, respectively.
 	 * 
-	 * Set the four most significant bits (bits 12 through 15) of the
+	 * (2) Set the four most significant bits (bits 12 through 15) of the
 	 * time_hi_and_version field to the 4-bit version number from Section 4.1.3.
 	 * 
-	 * Set all the other bits to randomly (or pseudo-randomly) chosen values.
+	 * (3) Set all the other bits to randomly (or pseudo-randomly) chosen
+	 * values.
 	 * 
 	 * @return UUID
 	 */
 	public UUID create() {
-		
-		if(random == null) {
-			random = getSecureRandom();
-		}
-		
+
+		// (3) set all bit randomly
 		long msb = this.random.nextLong();
 		long lsb = this.random.nextLong();
-		
+
+		// (1)(2) Set the version and variant bits
 		msb = setVersionBits(msb);
 		lsb = setVariantBits(lsb);
-		
+
 		return new UUID(msb, lsb);
 	}
-	
-	/* 
-	 * -------------------------
-	 * Public fluent interface methods
-	 * -------------------------
-	 */
+
 	/**
-	 * Change the default random generator in a fluent way to another that
+	 * Replace the default random generator, in a fluent way, to another that
 	 * extends {@link Random}.
 	 * 
 	 * The default random generator is {@link java.security.SecureRandom} with
@@ -107,27 +92,31 @@ public class RandomUUIDCreator extends AbstractUUIDCreator {
 	 * {@link Random}.
 	 * 
 	 * @param random
-	 *            {@link Random}
 	 */
 	public RandomUUIDCreator withRandomGenerator(Random random) {
 		this.random = random;
 		return this;
 	}
-	
+
+	/**
+	 * Replaces the default random generator with a fester one.
+	 * 
+	 * @see {@link Xorshift128PlusRandom}
+	 * 
+	 * @return
+	 */
 	public RandomUUIDCreator withFastRandomGenerator() {
 		this.random = new Xorshift128PlusRandom();
 		return this;
 	}
-	
-	/* 
-	 * -------------------------
-	 * Private static methods
-	 * -------------------------
-	 */
+
 	/**
 	 * Create a secure random instance with SHA1PRNG algorithm.
 	 *
 	 * If this algorithm is not present, it uses JVM's default.
+	 * 
+	 * @see {@link java.security.SecureRandom}
+	 * 
 	 */
 	private static SecureRandom getSecureRandom() {
 		try {

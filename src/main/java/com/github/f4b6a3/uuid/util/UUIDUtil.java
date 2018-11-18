@@ -22,12 +22,10 @@ import java.util.UUID;
 
 import com.github.f4b6a3.uuid.factory.abst.AbstractUUIDCreator;
 
-public class UUIDUtils {
+public class UUIDUtil {
 	
 	/*
-	 * ------------------------------------------
 	 * Public static methods for version check
-	 * ------------------------------------------
 	 */
 	
 	/**
@@ -85,9 +83,7 @@ public class UUIDUtils {
 	}
 	
 	/*
-	 * ------------------------------------------
 	 * Public static methods for node identifiers
-	 * ------------------------------------------
 	 */
 	
 	/**
@@ -98,7 +94,7 @@ public class UUIDUtils {
 	 */
 	public static long extractNodeIdentifier(UUID uuid) {
 		
-		if(!UUIDUtils.isTimeBasedVersion(uuid) && !UUIDUtils.isDCESecurityVersion(uuid)) {
+		if(!UUIDUtil.isTimeBasedVersion(uuid) && !UUIDUtil.isDCESecurityVersion(uuid)) {
 			throw new UnsupportedOperationException(String.format("Not a time-based or DCE Security UUID: ", uuid.toString()));
 		}
 		
@@ -106,9 +102,7 @@ public class UUIDUtils {
 	}
 	
 	/*
-	 * ------------------------------------------
 	 * Protected static methods for timestamps
-	 * ------------------------------------------
 	 */
 	
 	/**
@@ -119,7 +113,7 @@ public class UUIDUtils {
 	 */
 	public static Instant extractInstant(UUID uuid) {
 		long timestamp = extractTimestamp(uuid);
-		return TimestampUtils.toInstant(timestamp);
+		return TimestampUtil.toInstant(timestamp);
 	}
 	
 	/**
@@ -183,7 +177,7 @@ public class UUIDUtils {
 	 */
 	public static byte extractDCESecurityLocalDomain(UUID uuid) {
 		
-		if(!UUIDUtils.isDCESecurityVersion(uuid)) {
+		if(!UUIDUtil.isDCESecurityVersion(uuid)) {
 			throw new UnsupportedOperationException(String.format("Not a DCE Security UUID: ", uuid.toString()));
 		}
 		
@@ -191,14 +185,14 @@ public class UUIDUtils {
 	}
 	
 	/**
-	 * Get the local identification number that is embedded in the DCE Security UUID.
+	 * Get the local identifier number that is embedded in the DCE Security UUID.
 	 *
 	 * @param uuid
 	 * @return int
 	 */
-	public static int extractDCESecurityLocalIdentification(UUID uuid) {
+	public static int extractDCESecurityLocalIdentifier(UUID uuid) {
 		
-		if(!UUIDUtils.isDCESecurityVersion(uuid)) {
+		if(!UUIDUtil.isDCESecurityVersion(uuid)) {
 			throw new UnsupportedOperationException(String.format("Not a DCE Security UUID: ", uuid.toString()));
 		}
 		
@@ -213,7 +207,7 @@ public class UUIDUtils {
 	 */
 	public static long extractDCESecurityTimestamp(UUID uuid) {
 		
-		if(!UUIDUtils.isDCESecurityVersion(uuid)) {
+		if(!UUIDUtil.isDCESecurityVersion(uuid)) {
 			throw new UnsupportedOperationException(String.format("Not a DCE Security UUID: ", uuid.toString()));
 		}
 		
@@ -228,6 +222,6 @@ public class UUIDUtils {
 	 */
 	public static Instant extractDCESecurityInstant(UUID uuid) {
 		long timestamp = extractDCESecurityTimestamp(uuid);
-		return TimestampUtils.toInstant(timestamp);
+		return TimestampUtil.toInstant(timestamp);
 	}
 }

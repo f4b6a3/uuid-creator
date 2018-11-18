@@ -18,28 +18,32 @@ public class DCESecurityUUIDCreator extends AbstractUUIDCreator {
 
 	protected byte localDomain;
 
+	/**
+	 * Facoty that creates DCE Security UUIDs, version 2.
+	 */
 	public DCESecurityUUIDCreator() {
 		super(VERSION_2);
-		timeBasedUUIDCreator = new TimeBasedUUIDCreator();
+		timeBasedUUIDCreator = new TimeBasedUUIDCreator().withHardwareAddressNodeIdentifier();
 		timestampCounter = new DCESTimestampCounter();
 	}
 
 	/**
 	 * 
-	 * Returns a new DCE Security UUID.
+	 * Returns a DCE Security UUID based in a local domain and a local
+	 * identifier.
 	 * 
-	 * A DCE Security (version 2) is a modified Time-based (version 1). It
-	 * embeds a local domain (8 bits) and a local identifier (32 bits).
+	 * A DCE Security UUID (version 2) is a modified Time-based one (version 1).
+	 * It embeds a local domain (8 bits) and a local identifier (32 bits).
 	 * 
 	 * Steps of creation:
 	 * 
-	 * 1) Create a Time-based UUID (version 1);
+	 * (1a) Create a Time-based UUID (version 1);
 	 * 
-	 * 2) Replace the least significant 8 bits of the clock sequence with the
+	 * (2a) Replace the least significant 8 bits of the clock sequence with the
 	 * local domain;
 	 * 
-	 * 3) Replace the least significant 32 bits of the timestamp with the local
-	 * identifier..
+	 * (3a) Replace the least significant 32 bits of the timestamp with the
+	 * local identifier.
 	 * 
 	 * 
 	 * ### DCE 1.1: Authentication and Security Services Security-Version
@@ -51,9 +55,9 @@ public class DCESecurityUUIDCreator extends AbstractUUIDCreator {
 	 * except that they have the following special properties and
 	 * interpretations:
 	 * 
-	 * 1) The version number is 2;
+	 * (1b) The version number is 2;
 	 * 
-	 * 2) The clock_seq_low field (which represents an integer in the range [0,
+	 * (2) The clock_seq_low field (which represents an integer in the range [0,
 	 * 2^8-1]) is interpreted as a local domain (as represented by
 	 * sec_rgy_domain_t; see sec_rgy_domain_t ); that is, an identifier domain
 	 * meaningful to the local host. (Note that the data type sec_rgy_domain_t
@@ -64,7 +68,7 @@ public class DCESecurityUUIDCreator extends AbstractUUIDCreator {
 	 * domain", and the value sec_rgy_domain_group is to be interpreted as the
 	 * "POSIX GID domain".
 	 * 
-	 * 3) The time_low field (which represents an integer in the range [0,
+	 * (3) The time_low field (which represents an integer in the range [0,
 	 * 2^32-1]) is interpreted as a local-ID; that is, an identifier (within the
 	 * domain specified by clock_seq_low) meaningful to the local host. In the
 	 * particular case of a POSIX host, when combined with a POSIX UID or POSIX
@@ -105,58 +109,116 @@ public class DCESecurityUUIDCreator extends AbstractUUIDCreator {
 	 */
 	public synchronized UUID create(byte localDomain, int localIdentifier) {
 
+		// (1a) Create a Time-based UUID (version 1)
 		UUID uuid = timeBasedUUIDCreator.create();
-		int counter = timestampCounter.getNext();
+
+		// (2a) Insert de local identifier bits
 		long msb = setLocalIdentifierBits(uuid.getMostSignificantBits(), localIdentifier);
+
+		// (3a) Insert the local domain bits
+		int counter = timestampCounter.getNext();
 		long lsb = setLocalDomainBits(uuid.getLeastSignificantBits(), localDomain, counter);
-		
-		return new UUID(msb, lsb);
+
+		// (1b) set version 2;
+		return new UUID(setVersionBits(msb), lsb);
 	}
 
+	/**
+	 * Returns a DCE Security UUID based in a local identifier.
+	 * 
+	 * The default local domain is POSIX User ID.
+	 * 
+	 * @see {@link DCESecurityUUIDCreator#create(byte, int)}
+	 * 
+	 * @param localIdentifier
+	 * @return
+	 */
 	public UUID create(int localIdentifier) {
-		return create(this.localDomain, localIdentifier);
+		return create(LOCAL_DOMAIN_PERSON, localIdentifier);
 	}
 
-	protected static long setLocalIdentifierBits(long msb, long localIdentifier) {
-		return (msb & 0x00000000ffffffffL) | localIdentifier;
+	/**
+	 * Insert the local identifier bits in the most significant bits.
+	 * 
+	 * #### Security-Version (Version 2) UUIDs
+	 * 
+	 * (3) The time_low field (which represents an integer in the range [0,
+	 * 2^32-1]) is interpreted as a local-ID; that is, an identifier (within the
+	 * domain specified by clock_seq_low) meaningful to the local host. In the
+	 * particular case of a POSIX host, when combined with a POSIX UID or POSIX
+	 * GID domain in the clock_seq_low field (above), the time_low field
+	 * represents a POSIX UID or POSIX GID, respectively.
+	 * 
+	 * @param msb
+	 * @param localIdentifier
+	 * @return
+	 */
+	protected static long setLocalIdentifierBits(long msb, int localIdentifier) {
+		return (msb & 0x00000000ffffffffL) | ((long) localIdentifier << 32);
 	}
 
-	protected static long setLocalDomainBits(long lsb, long localDomain, int counter) {
-		return lsb | (localDomain << 48) | (counter << 56);
+	/**
+	 * Insert the local domain bits in the most significant bits.
+	 * 
+	 * #### Security-Version (Version 2) UUIDs
+	 * 
+	 * (2) The clock_seq_low field (which represents an integer in the range [0,
+	 * 2^8-1]) is interpreted as a local domain (as represented by
+	 * sec_rgy_domain_t; see sec_rgy_domain_t ); that is, an identifier domain
+	 * meaningful to the local host. (Note that the data type sec_rgy_domain_t
+	 * can potentially hold values outside the range [0, 2^8-1]; however, the
+	 * only values currently registered are in the range [0, 2], so this type
+	 * mismatch is not significant.) In the particular case of a POSIX host, the
+	 * value sec_rgy_domain_person is to be interpreted as the "POSIX UID
+	 * domain", and the value sec_rgy_domain_group is to be interpreted as the
+	 * "POSIX GID domain".
+	 * 
+	 * @param msb
+	 * @param localIdentifier
+	 * @return
+	 */
+	protected static long setLocalDomainBits(long lsb, byte localDomain, int counter) {
+		return ((lsb & 0xff00ffffffffffffL) | (long) localDomain << 48) | ((long) counter << 56);
 	}
-	
-	
+
+	/**
+	 * Set a fixed local domain.
+	 * 
+	 * @param localDomain
+	 * @return
+	 */
 	public DCESecurityUUIDCreator withLocalDomain(byte localDomain) {
 		this.localDomain = localDomain;
 		return this;
 	}
 
-	public DCESecurityUUIDCreator withPosixUserDomain() {
-		this.localDomain = LOCAL_DOMAIN_PERSON;
-		return this;
-	}
-
-	public DCESecurityUUIDCreator withPosixGroupDomain() {
-		this.localDomain = LOCAL_DOMAIN_GROUP;
-		return this;
-	}
-	
+	/**
+	 * Class used to keep a counter to simulate minimize repetition.
+	 */
 	protected class DCESTimestampCounter extends AbstractIncrementable {
 
 		private long timestamp = 0;
 
+		// COUNTER_MAX: 2^6 (14 bits of the clock sequence minus 8 bytes)
 		private static final int COUNTER_MIN = 0;
-		private static final int COUNTER_MAX = 63; // 2^64
+		private static final int COUNTER_MAX = 63;
 
 		public DCESTimestampCounter() {
 			super(COUNTER_MIN, COUNTER_MAX);
 		}
 
+		/**
+		 * Returns how many times a timestamp was used.
+		 * 
+		 * @param timestamp
+		 * @return
+		 */
 		public int getNextFor(long timestamp) {
 			if (timestamp <= this.timestamp) {
-				this.timestamp = timestamp;
 				return this.getNext();
 			}
+			this.timestamp = timestamp;
+			this.reset();
 			return this.getCurrent();
 		}
 	}

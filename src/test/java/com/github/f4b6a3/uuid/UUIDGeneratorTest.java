@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.uuid.factory.abst.AbstractUUIDCreator;
+import com.github.f4b6a3.uuid.random.LCGParkMillerRandom;
 import com.github.f4b6a3.uuid.random.Xoroshiro128PlusRandom;
 import com.github.f4b6a3.uuid.random.XorshiftRandom;
 import com.github.f4b6a3.uuid.random.XorshiftStarRandom;
@@ -19,8 +20,8 @@ import com.github.f4b6a3.uuid.util.RandomImage;
 import com.github.f4b6a3.uuid.util.RandomnesTest;
 import com.github.f4b6a3.uuid.util.SimpleBenchmark;
 import com.github.f4b6a3.uuid.util.SimpleRunnable;
-import com.github.f4b6a3.uuid.util.TimestampUtils;
-import com.github.f4b6a3.uuid.util.UUIDUtils;
+import com.github.f4b6a3.uuid.util.TimestampUtil;
+import com.github.f4b6a3.uuid.util.UUIDUtil;
 
 import static com.github.f4b6a3.uuid.util.ByteUtils.*;
 
@@ -33,59 +34,34 @@ public class UUIDGeneratorTest {
 
 	private static final String UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
 
-    private long[] numbers = {
-            0x0000000000000000L,
-            0x0000000000000001L,
-            0x0000000000000012L,
-            0x0000000000000123L,
-            0x0000000000001234L,
-            0x0000000000012345L,
-            0x0000000000123456L,
-            0x0000000001234567L,
-            0x0000000012345678L,
-            0x0000000123456789L,
-            0x000000123456789aL,
-            0x00000123456789abL,
-            0x0000123456789abcL,
-            0x000123456789abcdL,
-            0x00123456789abcdeL,
-            0x0123456789abcdefL};
+	private long[] numbers = { 0x0000000000000000L, 0x0000000000000001L, 0x0000000000000012L, 0x0000000000000123L,
+			0x0000000000001234L, 0x0000000000012345L, 0x0000000000123456L, 0x0000000001234567L, 0x0000000012345678L,
+			0x0000000123456789L, 0x000000123456789aL, 0x00000123456789abL, 0x0000123456789abcL, 0x000123456789abcdL,
+			0x00123456789abcdeL, 0x0123456789abcdefL };
 
-private String[] hexadecimals = {
-            "0000000000000000",
-            "0000000000000001",
-            "0000000000000012",
-            "0000000000000123",
-            "0000000000001234",
-            "0000000000012345",
-            "0000000000123456",
-            "0000000001234567",
-            "0000000012345678",
-            "0000000123456789",
-            "000000123456789a",
-            "00000123456789ab",
-            "0000123456789abc",
-            "000123456789abcd",
-            "00123456789abcde",
-            "0123456789abcdef"};
+	private String[] hexadecimals = { "0000000000000000", "0000000000000001", "0000000000000012", "0000000000000123",
+			"0000000000001234", "0000000000012345", "0000000000123456", "0000000001234567", "0000000012345678",
+			"0000000123456789", "000000123456789a", "00000123456789ab", "0000123456789abc", "000123456789abcd",
+			"00123456789abcde", "0123456789abcdef" };
 
-private byte[][] bytes = {
-            { (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00},
-            { (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01},
-            { (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12},
-            { (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23},
-            { (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34},
-            { (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45},
-            { (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56},
-            { (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67},
-            { (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78},
-            { (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89},
-            { (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x9a},
-            { (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab},
-            { (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x9a, (byte) 0xbc},
-            { (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab, (byte) 0xcd},
-            { (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x9a, (byte) 0xbc, (byte) 0xde},
-            { (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab, (byte) 0xcd, (byte) 0xef}};
+	private byte[][] bytes = {
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00 },
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01 },
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12 },
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23 },
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34 },
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45 },
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56 },
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67 },
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78 },
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89 },
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x9a },
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab },
+			{ (byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x9a, (byte) 0xbc },
+			{ (byte) 0x00, (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab, (byte) 0xcd },
+			{ (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x9a, (byte) 0xbc, (byte) 0xde },
+			{ (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab, (byte) 0xcd,
+					(byte) 0xef } };
 
 	@Test
 	public void testGetRandomUUID_StringIsValid() {
@@ -127,6 +103,29 @@ private byte[][] bytes = {
 		}
 	}
 
+	@Test
+	public void testGetSequentialUUID_TimestampBitsAreSequential() {
+
+		long oldTimestemp = 0;
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			UUID uuid = UUIDGenerator.getSequentialUUID();
+			long newTimestamp = UUIDUtil.extractTimestamp(uuid);
+			assertTrue(newTimestamp > oldTimestemp);
+		}
+	}
+
+	@Test
+	public void testGetSequentialUUID_MostSignificantBitsAreSequential() {
+
+		long oldMsb = 0;
+
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			UUID uuid = UUIDGenerator.getSequentialUUID();
+			long newMsb = uuid.getMostSignificantBits();
+			assertTrue(newMsb > oldMsb);
+		}
+	}
+
 	/**
 	 * Test if a time based UUID version 1 is has the correct timestamp.
 	 */
@@ -137,10 +136,10 @@ private byte[][] bytes = {
 			Instant instant1 = Instant.now();
 
 			UUID uuid = UUIDGenerator.getTimeBasedUUIDCreator().withInstant(instant1).create();
-			Instant instant2 = UUIDUtils.extractInstant(uuid);
+			Instant instant2 = UUIDUtil.extractInstant(uuid);
 
-			long timestamp1 = TimestampUtils.toTimestamp(instant1);
-			long timestamp2 = TimestampUtils.toTimestamp(instant2);
+			long timestamp1 = TimestampUtil.toTimestamp(instant1);
+			long timestamp2 = TimestampUtil.toTimestamp(instant2);
 
 			assertEquals(timestamp1, timestamp2);
 		}
@@ -156,12 +155,32 @@ private byte[][] bytes = {
 			Instant instant1 = Instant.now();
 
 			UUID uuid = UUIDGenerator.getSequentialUUIDCreator().withInstant(instant1).create();
-			Instant instant2 = UUIDUtils.extractInstant(uuid);
+			Instant instant2 = UUIDUtil.extractInstant(uuid);
 
-			long timestamp1 = TimestampUtils.toTimestamp(instant1);
-			long timestamp2 = TimestampUtils.toTimestamp(instant2);
+			long timestamp1 = TimestampUtil.toTimestamp(instant1);
+			long timestamp2 = TimestampUtil.toTimestamp(instant2);
 
 			assertEquals(timestamp1, timestamp2);
+		}
+	}
+
+	/**
+	 * Test if a DCE Security version 2 has correct local domain and identifier.
+	 */
+	@Test
+	public void testGetDCESecuritylUUID_DomainAndIdentifierAreCorrect() {
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+
+			byte localDomain = (byte) i;
+			int localIdentifier = 1701;
+
+			UUID uuid = UUIDGenerator.getDCESecurityUUID(localDomain, localIdentifier);
+
+			byte localDomain2 = UUIDUtil.extractDCESecurityLocalDomain(uuid);
+			int localIdentifier2 = UUIDUtil.extractDCESecurityLocalIdentifier(uuid);
+
+			assertEquals(localDomain, localDomain2);
+			assertEquals(localIdentifier, localIdentifier2);
 		}
 	}
 
@@ -239,16 +258,16 @@ private byte[][] bytes = {
 		System.out.println("----------------------------------------");
 		System.out.println("Race condition test");
 		System.out.println("----------------------------------------");
-		
+
 		for (int i = 0; i < SimpleRunnable.threadCount; i++) {
 			Thread thread = new Thread(new SimpleRunnable(i));
 			thread.start();
 		}
-		
+
 		System.out.println("Note: warnings are expected.");
 		System.out.println("----------------------------------------");
 	}
-	
+
 	/**
 	 * This method only prints average running times.
 	 */
@@ -257,9 +276,12 @@ private byte[][] bytes = {
 		long loopMax = 100_000;
 		long nano = 1_000_000;
 		long randomUUID = (SimpleBenchmark.run(null, UUID.class, "randomUUID", loopMax) * loopMax) / nano;
-		long getRandomUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getRandomUUID", loopMax) * loopMax) / nano;
-		long getTimeBasedUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getTimeBasedUUID", loopMax) * loopMax) / nano;
-		long getSequentialUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getSequentialUUID", loopMax) * loopMax) / nano;
+		long getRandomUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getRandomUUID", loopMax) * loopMax)
+				/ nano;
+		long getTimeBasedUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getTimeBasedUUID", loopMax) * loopMax)
+				/ nano;
+		long getSequentialUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getSequentialUUID", loopMax)
+				* loopMax) / nano;
 		long javaNextLong = (SimpleBenchmark.run(new Random(), null, "nextLong", loopMax) * loopMax) / nano;
 		long XorshiftNextLong = (SimpleBenchmark.run(new XorshiftRandom(), null, "nextLong", loopMax) * loopMax) / nano;
 
@@ -293,8 +315,8 @@ private byte[][] bytes = {
 		System.out.println("- TimeBased UUID:          " + timeBasedUUID.toString());
 		System.out.println("- Sequential UUID:         " + sequentialUUID.toString());
 		System.out.println("- Original instant:        " + instant.toString());
-		System.out.println("- TimeBased UUID instant:  " + UUIDUtils.extractInstant(UUID.fromString(timeBasedUUID)));
-		System.out.println("- Sequential UUID instant: " + UUIDUtils.extractInstant(UUID.fromString(sequentialUUID)));
+		System.out.println("- TimeBased UUID instant:  " + UUIDUtil.extractInstant(UUID.fromString(timeBasedUUID)));
+		System.out.println("- Sequential UUID instant: " + UUIDUtil.extractInstant(UUID.fromString(sequentialUUID)));
 		System.out.println("----------------------------------------");
 	}
 
@@ -306,28 +328,28 @@ private byte[][] bytes = {
 		System.out.println("----------------------------------------");
 		System.out.println("Print list of UUIDs");
 		System.out.println("----------------------------------------");
-		
+
 		System.out.println();
 		System.out.println("### Random UUID");
-		
+
 		for (int i = 0; i < max; i++) {
-			System.out.println(UUIDGenerator.getRandomFastUUID());
+			System.out.println(UUIDGenerator.getFastRandomUUID());
 		}
 
 		System.out.println();
 		System.out.println("### Time-based UUID");
-		
+
 		for (int i = 0; i < max; i++) {
 			System.out.println(UUIDGenerator.getTimeBasedUUID());
 		}
 
 		System.out.println();
 		System.out.println("### Sequential UUID");
-		
+
 		for (int i = 0; i < max; i++) {
 			System.out.println(UUIDGenerator.getSequentialUUID());
 		}
-		
+
 		System.out.println("----------------------------------------");
 	}
 
@@ -336,22 +358,22 @@ private byte[][] bytes = {
 	 */
 	@Ignore
 	public void testCreateRandomImage() {
-		
+
 		System.out.println();
 		System.out.println("----------------------------------------");
 		System.out.println("Creating images from random numbers...");
 		System.out.println("----------------------------------------");
-		
+
 		RandomImage.createRandomImageFile("/tmp/java.util.Random.png", new Random(), 0, 0);
 		RandomImage.createRandomImageFile("/tmp/java.security.SecureRandom.png", new SecureRandom(), 0, 0);
 		RandomImage.createRandomImageFile("/tmp/XorshiftRandom.png", new XorshiftRandom(), 0, 0);
 		RandomImage.createRandomImageFile("/tmp/XorshiftStarRandom.png", new XorshiftStarRandom(), 0, 0);
 		RandomImage.createRandomImageFile("/tmp/Xorshift128PlusRandom.png", new Xorshift128PlusRandom(), 0, 0);
 		RandomImage.createRandomImageFile("/tmp/Xoroshiro128PlusRandom.png", new Xoroshiro128PlusRandom(), 0, 0);
-		
+
 		System.out.println("----------------------------------------");
 	}
-		
+
 	/**
 	 * Test randomness of a random number generator.
 	 * 
@@ -362,24 +384,25 @@ private byte[][] bytes = {
 	 */
 	@Ignore
 	public void testPseudoNumberSequence() throws Exception {
-		
-		// Random random = new SecureRandom();
+
+		Random random = new SecureRandom();
 		// Random random = new Random();
 		// Random random = new XorshiftRandom();
 		// Random random = new XorshiftStarRandom();
-		Random random = new Xorshift128PlusRandom();
+		// Random random = new Xorshift128PlusRandom();
 		// Random random = new Xoroshirot128PlusRandom();
-		 
+		// Random random = new LCGParkerMiller();
+
 		String path = "/tmp/testPseudoNumberSequence.dat";
-		
+
 		System.out.println();
 		System.out.println("----------------------------------------");
 		System.out.println("Test pseudo-number sequence");
 		System.out.println("----------------------------------------");
-		
+
 		System.out.println(String.format("ent %s\n", path));
 		RandomnesTest.runPseudoNumberSequenceTestProgram(path, random);
-		
+
 		System.out.println("----------------------------------------");
 	}
 }

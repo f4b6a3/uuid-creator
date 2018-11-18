@@ -1,10 +1,15 @@
 package com.github.f4b6a3.uuid.increment;
 
+/**
+ * This abstract class may represent circular a counter or sequence.
+ * 
+ * If the maximum value is reached the value is reset to the minimum.
+ */
 public abstract class AbstractIncrementable implements Incrementable {
 
 	protected int value;
-	protected final int MIN_VALUE;
-	protected final int MAX_VALUE;
+	public final int MIN_VALUE;
+	public final int MAX_VALUE;
 
 	protected AbstractIncrementable(int min, int max) {
 		this.MIN_VALUE = min;
@@ -18,7 +23,13 @@ public abstract class AbstractIncrementable implements Incrementable {
 
 	@Override
 	public int getNext() {
-		this.value = ++this.value % MAX_VALUE;
+
+		if (this.value >= MAX_VALUE) {
+			this.value = MIN_VALUE;
+		} else {
+			this.value++;
+		}
+
 		return this.value;
 	}
 
