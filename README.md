@@ -48,7 +48,7 @@ System.out.println(uuid.toString());
 
 ```java
 // Using a fixed node identifier: 0x111111111111L
-UUID uuid = UUIDGenerator.getSequentialUUIDCreator().withNodeIdentifier(0x111111111111L).create();
+UUID uuid = UUIDGenerator.getSequentialUUIDCreator().withMulticastNodeIdentifier(0x111111111111L).create();
 System.out.println(uuid.toString());
 // Output: 1e88c46f-e5df-0550-8e9d-111111111111
 ```
@@ -77,7 +77,7 @@ System.out.println(uuid.toString());
 
 ```java
 // Using a fixed node identifier: 0x111111111111L
-uuid = UUIDGenerator.getTimeBasedUUIDCreator().withNodeIdentifier(0x111111111111L).create();
+uuid = UUIDGenerator.getTimeBasedUUIDCreator().withMulticastNodeIdentifier(0x111111111111L).create();
 System.out.println(uuid.toString());
 // Output: fe682e80-8c46-11e8-98d5-111111111111
 ```
@@ -125,6 +125,7 @@ The Random UUID is a simple random array of 16 bytes. The default random generat
 **Example 1:**
 
 ```java
+// With the default SecureRandom generator
 UUID uuid = UUIDGenerator.getRandom();
 System.out.println(uuid.toString());
 // Output: 1133483a-df21-47a6-b667-7482d6ceae39
@@ -133,8 +134,8 @@ System.out.println(uuid.toString());
 **Example 2:**
 
 ```java
-// With Xorshift fast random generator
-UUID uuid = UUIDGenerator.getRandomUUIDCreator().withRandomGenerator(new XorshiftRandom()).create();
+// With the fast Xorshift128Plus generator
+UUID uuid = UUIDGenerator.getFastRandom();
 System.out.println(uuid.toString());
 // Output: d08b9aca-41c9-4e72-bc9d-95bda46c9730
 ```
