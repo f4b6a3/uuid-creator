@@ -1,4 +1,4 @@
-package com.github.f4b6a3.uuid.util;
+package com.github.f4b6a3.uuid.other;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -16,14 +16,14 @@ public class SimpleRunnable implements Runnable {
 	private int id;
 	private UUID uuid;
 	
-	public static int threadCount = 100;
-	public static int threadLoopLimit = 1000;
+	public static int threadCount = 10;
+	public static int threadLoopLimit = 10000;
 	
 	// This instant won't change during this test
 	private static Instant instant = Instant.now();
 	
 	private static UUID[][] cache = new UUID[threadCount][threadLoopLimit];
-	private static AbstractTimeBasedUUIDCreator creator = UUIDGenerator.getTimeBasedUUIDCreator().withInstant(instant);
+	private static AbstractTimeBasedUUIDCreator creator = UUIDGenerator.getTimeBasedCreator().withInstant(instant);
 	
 	public SimpleRunnable(int id) {
 		this.id = id;

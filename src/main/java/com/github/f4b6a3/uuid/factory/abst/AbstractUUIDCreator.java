@@ -18,7 +18,6 @@
 package com.github.f4b6a3.uuid.factory.abst;
 
 
-import java.io.Serializable;
 import java.util.UUID;
 
 /**
@@ -27,9 +26,7 @@ import java.util.UUID;
  * @author fabiolimace
  *
  */
-public abstract class AbstractUUIDCreator implements Serializable {
-
-	private static final long serialVersionUID = 174136732581039569L;
+public abstract class AbstractUUIDCreator {
 	
 	protected final int version;
 	
@@ -56,7 +53,7 @@ public abstract class AbstractUUIDCreator implements Serializable {
 	
 	// Values to be used in bitwise operations
 	public static final long RFC4122_VARIANT_BITS = 0x8000000000000000L;
-	public static final long[] VERSION_BITS = {
+	public static final long[] RFC4122_VERSION_BITS = {
 			0x0000000000000000L, 0x0000000000001000L, 
 			0x0000000000002000L, 0x0000000000003000L, 
 			0x0000000000004000L, 0x0000000000005000L };
@@ -79,7 +76,7 @@ public abstract class AbstractUUIDCreator implements Serializable {
 	public boolean valid(long msb, long lsb) {
 		long variantBits = getVariantBits(lsb);
 		long versionBits = getVersionBits(msb);
-		return variantBits == RFC4122_VARIANT_BITS && versionBits == VERSION_BITS[version];
+		return variantBits == RFC4122_VARIANT_BITS && versionBits == RFC4122_VERSION_BITS[version];
 	}
 
 	/**
@@ -111,6 +108,6 @@ public abstract class AbstractUUIDCreator implements Serializable {
 	 * Set UUID version bits into the "Most Significant Bits".
 	 */
 	protected long setVersionBits(long msb) {
-		return (msb & 0xffffffffffff0fffL) | VERSION_BITS[this.version];
+		return (msb & 0xffffffffffff0fffL) | RFC4122_VERSION_BITS[this.version];
 	}
 }

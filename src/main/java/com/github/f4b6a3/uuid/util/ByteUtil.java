@@ -23,7 +23,7 @@ package com.github.f4b6a3.uuid.util;
  * @author fabiolimace
  *
  */
-public class ByteUtils {
+public class ByteUtil {
 	
 	/**
 	 * Get a number from a given hexadecimal string.

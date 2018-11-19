@@ -37,15 +37,15 @@ import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
  */
 public class UUIDGenerator {
 
-	private static SequentialUUIDCreator sequentialUUIDCreator;
-	private static SequentialUUIDCreator sequentialWithHardwarAddressUUIDCreator;
-	private static TimeBasedUUIDCreator timeBasedUUIDCreator;
-	private static TimeBasedUUIDCreator timeBasedWithHardwarAddressUUIDCreator;
-	private static AbstractNameBasedUUIDCreator md5NameBasedUUIDCreator;
-	private static AbstractNameBasedUUIDCreator sha1NameBasedUUIDCreator;
-	private static RandomUUIDCreator randomUUIDCreator;
-	private static RandomUUIDCreator fastRandomUUIDCreator;
-	private static DCESecurityUUIDCreator dceSecurityUUIDCreator;
+	private static SequentialUUIDCreator sequentialCreator;
+	private static SequentialUUIDCreator sequentialWithMACCreator;
+	private static TimeBasedUUIDCreator timeBasedCreator;
+	private static TimeBasedUUIDCreator timeBasedWithMACCreator;
+	private static AbstractNameBasedUUIDCreator nameBasedMD5Creator;
+	private static AbstractNameBasedUUIDCreator nameBasedSHA1Creator;
+	private static RandomUUIDCreator randomCreator;
+	private static RandomUUIDCreator fastRandomCreator;
+	private static DCESecurityUUIDCreator dceSecurityCreator;
 
 	/*
 	 * Public static methods for creating UUIDs
@@ -64,11 +64,11 @@ public class UUIDGenerator {
 	 *
 	 * @return
 	 */
-	public static UUID getRandomUUID() {
-		if (randomUUIDCreator == null) {
-			randomUUIDCreator = getRandomUUIDCreator();
+	public static UUID getRandom() {
+		if (randomCreator == null) {
+			randomCreator = getRandomCreator();
 		}
-		return randomUUIDCreator.create();
+		return randomCreator.create();
 	}
 
 	/**
@@ -83,11 +83,11 @@ public class UUIDGenerator {
 	 * 
 	 * @return
 	 */
-	public static UUID getFastRandomUUID() {
-		if (fastRandomUUIDCreator == null) {
-			fastRandomUUIDCreator = getFastRandomUUIDCreator();
+	public static UUID getFastRandom() {
+		if (fastRandomCreator == null) {
+			fastRandomCreator = getFastRandomCreator();
 		}
-		return fastRandomUUIDCreator.create();
+		return fastRandomCreator.create();
 	}
 
 	/**
@@ -104,11 +104,11 @@ public class UUIDGenerator {
 	 * @param instant
 	 * @return
 	 */
-	public static UUID getSequentialUUID() {
-		if (sequentialUUIDCreator == null) {
-			sequentialUUIDCreator = getSequentialUUIDCreator();
+	public static UUID getSequential() {
+		if (sequentialCreator == null) {
+			sequentialCreator = getSequentialCreator();
 		}
-		return sequentialUUIDCreator.create();
+		return sequentialCreator.create();
 	}
 
 	/**
@@ -124,12 +124,12 @@ public class UUIDGenerator {
 	 *
 	 * @return
 	 */
-	public static UUID getSequentialWithHardwareAddressUUID() {
-		if (sequentialWithHardwarAddressUUIDCreator == null) {
-			sequentialWithHardwarAddressUUIDCreator = getSequentialUUIDCreator();
-			sequentialWithHardwarAddressUUIDCreator.withHardwareAddressNodeIdentifier();
+	public static UUID getSequentialWithMAC() {
+		if (sequentialWithMACCreator == null) {
+			sequentialWithMACCreator = getSequentialCreator();
+			sequentialWithMACCreator.withHardwareAddress();
 		}
-		return sequentialWithHardwarAddressUUIDCreator.create();
+		return sequentialWithMACCreator.create();
 	}
 
 	/**
@@ -144,11 +144,11 @@ public class UUIDGenerator {
 	 *
 	 * @return
 	 */
-	public static UUID getTimeBasedUUID() {
-		if (timeBasedUUIDCreator == null) {
-			timeBasedUUIDCreator = getTimeBasedUUIDCreator();
+	public static UUID getTimeBased() {
+		if (timeBasedCreator == null) {
+			timeBasedCreator = getTimeBasedCreator();
 		}
-		return timeBasedUUIDCreator.create();
+		return timeBasedCreator.create();
 	}
 
 	/**
@@ -163,12 +163,12 @@ public class UUIDGenerator {
 	 *
 	 * @return
 	 */
-	public static UUID getTimeBasedWithHardwareAddressUUID() {
-		if (timeBasedWithHardwarAddressUUIDCreator == null) {
-			timeBasedWithHardwarAddressUUIDCreator = getTimeBasedUUIDCreator();
-			timeBasedWithHardwarAddressUUIDCreator.withHardwareAddressNodeIdentifier();
+	public static UUID getTimeBasedWithMAC() {
+		if (timeBasedWithMACCreator == null) {
+			timeBasedWithMACCreator = getTimeBasedCreator();
+			timeBasedWithMACCreator.withHardwareAddress();
 		}
-		return timeBasedWithHardwarAddressUUIDCreator.create();
+		return timeBasedWithMACCreator.create();
 	}
 
 	/**
@@ -185,11 +185,11 @@ public class UUIDGenerator {
 	 * @param localIdentification
 	 * @return
 	 */
-	public static UUID getDCESecurityUUID(int localIdentification) {
-		if (dceSecurityUUIDCreator == null) {
-			dceSecurityUUIDCreator = new DCESecurityUUIDCreator();
+	public static UUID getDCESecurity(int localIdentification) {
+		if (dceSecurityCreator == null) {
+			dceSecurityCreator = new DCESecurityUUIDCreator();
 		}
-		return dceSecurityUUIDCreator.create(localIdentification);
+		return dceSecurityCreator.create(localIdentification);
 	}
 
 	/**
@@ -209,14 +209,14 @@ public class UUIDGenerator {
 	 * - Timestamp bytes are in the RFC-4122 order?: YES <br/>
 	 *
 	 * @param localDomain
-	 * @param localIdentification
+	 * @param localIdentifier
 	 * @return
 	 */
-	public static UUID getDCESecurityUUID(byte localDomain, int localIdentification) {
-		if (dceSecurityUUIDCreator == null) {
-			dceSecurityUUIDCreator = new DCESecurityUUIDCreator();
+	public static UUID getDCESecurity(byte localDomain, int localIdentifier) {
+		if (dceSecurityCreator == null) {
+			dceSecurityCreator = new DCESecurityUUIDCreator();
 		}
-		return dceSecurityUUIDCreator.create(localDomain, localIdentification);
+		return dceSecurityCreator.create(localDomain, localIdentifier);
 	}
 	
 	/**
@@ -231,11 +231,11 @@ public class UUIDGenerator {
 	 * @param name
 	 * @return
 	 */
-	public static UUID getNameBasedMD5UUID(String name) {
-		if (md5NameBasedUUIDCreator == null) {
-			md5NameBasedUUIDCreator = getNameBasedMD5UUIDCreator();
+	public static UUID getNameBasedMD5(String name) {
+		if (nameBasedMD5Creator == null) {
+			nameBasedMD5Creator = getNameBasedMD5Creator();
 		}
-		return md5NameBasedUUIDCreator.create(name);
+		return nameBasedMD5Creator.create(name);
 	}
 	
 	/**
@@ -251,11 +251,11 @@ public class UUIDGenerator {
 	 * @param name
 	 * @return
 	 */
-	public static UUID getNameBasedMD5UUID(UUID namespace, String name) {
-		if (md5NameBasedUUIDCreator == null) {
-			md5NameBasedUUIDCreator = getNameBasedMD5UUIDCreator();
+	public static UUID getNameBasedMD5(UUID namespace, String name) {
+		if (nameBasedMD5Creator == null) {
+			nameBasedMD5Creator = getNameBasedMD5Creator();
 		}
-		return md5NameBasedUUIDCreator.create(namespace, name);
+		return nameBasedMD5Creator.create(namespace, name);
 	}
 
 	/**
@@ -270,11 +270,11 @@ public class UUIDGenerator {
 	 * @param name
 	 * @return
 	 */
-	public static UUID getNameBasedSHA1UUID(String name) {
-		if (sha1NameBasedUUIDCreator == null) {
-			sha1NameBasedUUIDCreator = getNameBasedSHA1UUIDCreator();
+	public static UUID getNameBasedSHA1(String name) {
+		if (nameBasedSHA1Creator == null) {
+			nameBasedSHA1Creator = getNameBasedSHA1Creator();
 		}
-		return sha1NameBasedUUIDCreator.create(name);
+		return nameBasedSHA1Creator.create(name);
 	}
 	
 	/**
@@ -290,11 +290,11 @@ public class UUIDGenerator {
 	 * @param name
 	 * @return
 	 */
-	public static UUID getNameBasedSHA1UUID(UUID namespace, String name) {
-		if (sha1NameBasedUUIDCreator == null) {
-			sha1NameBasedUUIDCreator = getNameBasedSHA1UUIDCreator();
+	public static UUID getNameBasedSHA1(UUID namespace, String name) {
+		if (nameBasedSHA1Creator == null) {
+			nameBasedSHA1Creator = getNameBasedSHA1Creator();
 		}
-		return sha1NameBasedUUIDCreator.create(namespace, name);
+		return nameBasedSHA1Creator.create(namespace, name);
 	}
 
 	/*
@@ -306,7 +306,7 @@ public class UUIDGenerator {
 	 * 
 	 * @return {@link SequentialUUIDCreator}
 	 */
-	public static SequentialUUIDCreator getSequentialUUIDCreator() {
+	public static SequentialUUIDCreator getSequentialCreator() {
 		return new SequentialUUIDCreator();
 	}
 
@@ -315,7 +315,7 @@ public class UUIDGenerator {
 	 * 
 	 * @return {@link TimeBasedUUIDCreator}
 	 */
-	public static TimeBasedUUIDCreator getTimeBasedUUIDCreator() {
+	public static TimeBasedUUIDCreator getTimeBasedCreator() {
 		return new TimeBasedUUIDCreator();
 	}
 
@@ -324,7 +324,7 @@ public class UUIDGenerator {
 	 * 
 	 * @return {@link DCESecurityUUIDCreator}
 	 */
-	public static DCESecurityUUIDCreator getDCESecurityUUIDCreator() {
+	public static DCESecurityUUIDCreator getDCESecurityCreator() {
 		return new DCESecurityUUIDCreator();
 	}
 
@@ -333,7 +333,7 @@ public class UUIDGenerator {
 	 * 
 	 * @return {@link NameBasedMD5UUIDCreator}
 	 */
-	public static NameBasedMD5UUIDCreator getNameBasedMD5UUIDCreator() {
+	public static NameBasedMD5UUIDCreator getNameBasedMD5Creator() {
 		return new NameBasedMD5UUIDCreator();
 	}
 
@@ -342,7 +342,7 @@ public class UUIDGenerator {
 	 * 
 	 * @return {@link RandomUUIDCreator}
 	 */
-	public static RandomUUIDCreator getRandomUUIDCreator() {
+	public static RandomUUIDCreator getRandomCreator() {
 		return new RandomUUIDCreator();
 	}
 
@@ -351,7 +351,7 @@ public class UUIDGenerator {
 	 * 
 	 * @return {@link RandomUUIDCreator}
 	 */
-	public static RandomUUIDCreator getFastRandomUUIDCreator() {
+	public static RandomUUIDCreator getFastRandomCreator() {
 		return new RandomUUIDCreator().withFastRandomGenerator();
 	}
 
@@ -360,7 +360,7 @@ public class UUIDGenerator {
 	 * 
 	 * @return {@link NameBasedSHA1UUIDCreator}
 	 */
-	public static NameBasedSHA1UUIDCreator getNameBasedSHA1UUIDCreator() {
+	public static NameBasedSHA1UUIDCreator getNameBasedSHA1Creator() {
 		return new NameBasedSHA1UUIDCreator();
 	}
 }

@@ -1,13 +1,37 @@
+/**
+ * Copyright 2018 Fabio Lima <br/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); <br/>
+ * you may not use this file except in compliance with the License. <br/>
+ * You may obtain a copy of the License at <br/>
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0 <br/>
+ *
+ * Unless required by applicable law or agreed to in writing, software <br/>
+ * distributed under the License is distributed on an "AS IS" BASIS, <br/>
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. <br/>
+ * See the License for the specific language governing permissions and <br/>
+ * limitations under the License. <br/>
+ *
+ */
+
 package com.github.f4b6a3.uuid.factory;
 
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.factory.abst.AbstractUUIDCreator;
 import com.github.f4b6a3.uuid.increment.AbstractIncrementable;
 
-public class DCESecurityUUIDCreator extends AbstractUUIDCreator {
-
-	private static final long serialVersionUID = -5263854356470674635L;
+/**
+ * 
+ * Factory that creates DCE Security UUIDs, version 2.
+ * 
+ * Standard local domains: <br/>
+ * - Local Domain Person (POSIX UserID domain): 0<br/>
+ * - Local Domain Group (POSIX GroupID domain): 1<br/>
+ * - Local Domain Org: 2<br/>
+ *
+ */
+public class DCESecurityUUIDCreator extends TimeBasedUUIDCreator {
 
 	public static final byte LOCAL_DOMAIN_PERSON = 0; // POSIX UID domain
 	public static final byte LOCAL_DOMAIN_GROUP = 1; // POSIX GID domain
@@ -23,7 +47,6 @@ public class DCESecurityUUIDCreator extends AbstractUUIDCreator {
 	 */
 	public DCESecurityUUIDCreator() {
 		super(VERSION_2);
-		timeBasedUUIDCreator = new TimeBasedUUIDCreator().withHardwareAddressNodeIdentifier();
 		timestampCounter = new DCESTimestampCounter();
 	}
 
@@ -110,7 +133,7 @@ public class DCESecurityUUIDCreator extends AbstractUUIDCreator {
 	public synchronized UUID create(byte localDomain, int localIdentifier) {
 
 		// (1a) Create a Time-based UUID (version 1)
-		UUID uuid = timeBasedUUIDCreator.create();
+		UUID uuid = super.create();
 
 		// (2a) Insert de local identifier bits
 		long msb = setLocalIdentifierBits(uuid.getMostSignificantBits(), localIdentifier);
@@ -118,7 +141,7 @@ public class DCESecurityUUIDCreator extends AbstractUUIDCreator {
 		// (3a) Insert the local domain bits
 		int counter = timestampCounter.getNext();
 		long lsb = setLocalDomainBits(uuid.getLeastSignificantBits(), localDomain, counter);
-
+		
 		// (1b) set version 2;
 		return new UUID(setVersionBits(msb), lsb);
 	}
@@ -154,7 +177,7 @@ public class DCESecurityUUIDCreator extends AbstractUUIDCreator {
 	 * @return
 	 */
 	protected static long setLocalIdentifierBits(long msb, int localIdentifier) {
-		return (msb & 0x00000000ffffffffL) | ((long) localIdentifier << 32);
+		return (msb & 0x00000000ffffffffL) | (((long) localIdentifier) << 32);
 	}
 
 	/**
@@ -203,7 +226,7 @@ public class DCESecurityUUIDCreator extends AbstractUUIDCreator {
 		private static final int COUNTER_MIN = 0;
 		private static final int COUNTER_MAX = 63;
 
-		public DCESTimestampCounter() {
+		protected DCESTimestampCounter() {
 			super(COUNTER_MIN, COUNTER_MAX);
 		}
 
@@ -213,7 +236,7 @@ public class DCESecurityUUIDCreator extends AbstractUUIDCreator {
 		 * @param timestamp
 		 * @return
 		 */
-		public int getNextFor(long timestamp) {
+		protected int getNextFor(long timestamp) {
 			if (timestamp <= this.timestamp) {
 				return this.getNext();
 			}
@@ -222,5 +245,4 @@ public class DCESecurityUUIDCreator extends AbstractUUIDCreator {
 			return this.getCurrent();
 		}
 	}
-
 }

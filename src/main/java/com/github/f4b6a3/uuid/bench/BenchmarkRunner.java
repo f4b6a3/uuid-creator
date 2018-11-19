@@ -1,3 +1,20 @@
+/**
+ * Copyright 2018 Fabio Lima <br/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); <br/>
+ * you may not use this file except in compliance with the License. <br/>
+ * You may obtain a copy of the License at <br/>
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0 <br/>
+ *
+ * Unless required by applicable law or agreed to in writing, software <br/>
+ * distributed under the License is distributed on an "AS IS" BASIS, <br/>
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. <br/>
+ * See the License for the specific language governing permissions and <br/>
+ * limitations under the License. <br/>
+ *
+ */
+
 package com.github.f4b6a3.uuid.bench;
 
 import java.util.UUID;
@@ -19,7 +36,8 @@ import com.fasterxml.uuid.impl.NameBasedGenerator;
 import com.fasterxml.uuid.impl.RandomBasedGenerator;
 import com.fasterxml.uuid.impl.TimeBasedGenerator;
 import com.github.f4b6a3.uuid.UUIDGenerator;
-import com.github.f4b6a3.uuid.factory.abst.AbstractNameBasedUUIDCreator;
+import com.github.f4b6a3.uuid.factory.SequentialUUIDCreator;
+import com.github.f4b6a3.uuid.factory.TimeBasedUUIDCreator;
 
 @State(Scope.Thread)
 @Warmup(iterations = 1, batchSize = 1000)
@@ -36,6 +54,11 @@ public class BenchmarkRunner {
 	private TimeBasedGenerator jugTimeBasedMACGenerator;
 	private RandomBasedGenerator jugRandomGenerator;
 	
+	private SequentialUUIDCreator sequentialUUIDCreator;
+	private TimeBasedUUIDCreator timeBasedUUIDCreator;
+	private SequentialUUIDCreator sequentialMACUUIDCreator;
+	private TimeBasedUUIDCreator timeBasedMACUUIDCreator;
+	
 	@Setup
 	public void setUp() {
 		
@@ -46,11 +69,14 @@ public class BenchmarkRunner {
 		jugTimeBasedGenerator = Generators.timeBasedGenerator();
 		jugTimeBasedMACGenerator = Generators.timeBasedGenerator(EthernetAddress.fromInterface());
 		jugRandomGenerator = Generators.randomBasedGenerator();
+		
+		sequentialUUIDCreator = UUIDGenerator.getSequentialCreator().withLogging(false);
+		timeBasedUUIDCreator = UUIDGenerator.getTimeBasedCreator().withLogging(false);
+		sequentialMACUUIDCreator = UUIDGenerator.getSequentialCreator().withHardwareAddress().withLogging(false);
+		timeBasedMACUUIDCreator = UUIDGenerator.getTimeBasedCreator().withHardwareAddress().withLogging(false);
 	}
-
-	/*
-	 * Java UUID
-	 */
+	
+	// Java UUID
 
 	@Benchmark
 	public UUID Java_Random() {
@@ -58,22 +84,18 @@ public class BenchmarkRunner {
 	}
 
 	@Benchmark
-	public UUID Java_nameBased() {
+	public UUID Java_NameBased() {
 		return UUID.nameUUIDFromBytes(bytes);
 	}
 
-	/*
-	 * EAIO
-	 */
-	
-    @Benchmark
-    public com.eaio.uuid.UUID EAIO_TimeAndEthernetBased() {
-        return new com.eaio.uuid.UUID();
-    }
-    
-	/*
-	 * JUG
-	 */
+	// EAIO
+
+	@Benchmark
+	public com.eaio.uuid.UUID EAIO_TimeBasedWithMAC() {
+		return new com.eaio.uuid.UUID();
+	}
+
+	// JUG
 
 	@Benchmark
 	public UUID JUG_NameBased() {
@@ -86,7 +108,7 @@ public class BenchmarkRunner {
 	}
 
 	@Benchmark
-	public UUID JUG_TimeAndEthernetBased() {
+	public UUID JUG_TimeBasedWithMAC() {
 		return jugTimeBasedMACGenerator.generate();
 	}
 
@@ -95,53 +117,51 @@ public class BenchmarkRunner {
 		return jugRandomGenerator.generate();
 	}
 
-	/*
-	 * UUID Generator
-	 */
+	// UUID Generator
 
 	@Benchmark
-	public UUID My_Random() {
-		return UUIDGenerator.getRandomUUID();
+	public UUID UUIDGenerator_Random() {
+		return UUIDGenerator.getRandom();
 	}
 
 	@Benchmark
-	public UUID My_FastRandom() {
-		return UUIDGenerator.getFastRandomUUID();
+	public UUID UUIDGenerator_FastRandom() {
+		return UUIDGenerator.getFastRandom();
 	}
 
 	@Benchmark
-	public UUID My_DCESecurity() {
-		return UUIDGenerator.getDCESecurityUUID(1701);
+	public UUID UUIDGenerator_DCESecurity() {
+		return UUIDGenerator.getDCESecurity(1701);
 	}
 
 	@Benchmark
-	public UUID My_NameBasedMD5() {
-		return UUIDGenerator.getNameBasedMD5UUID(name);
+	public UUID UUIDGenerator_NameBasedMD5() {
+		return UUIDGenerator.getNameBasedMD5(name);
 	}
 
 	@Benchmark
-	public UUID My_NameBasedSHA1() {
-		return UUIDGenerator.getNameBasedSHA1UUID(name);
+	public UUID UUIDGenerator_NameBasedSHA1() {
+		return UUIDGenerator.getNameBasedSHA1(name);
 	}
 
 	@Benchmark
-	public UUID My_Sequential() {
-		return UUIDGenerator.getSequentialUUID();
+	public UUID UUIDGenerator_Sequential() {
+		return sequentialUUIDCreator.create();
 	}
 
 	@Benchmark
-	public UUID My_SequentialMAC() {
-		return UUIDGenerator.getSequentialWithHardwareAddressUUID();
+	public UUID UUIDGenerator_SequentialWithMAC() {
+		return sequentialMACUUIDCreator.create();
 	}
 
 	@Benchmark
-	public UUID My_TimeBased() {
-		return UUIDGenerator.getTimeBasedUUID();
+	public UUID UUIDGenerator_TimeBased() {
+		return timeBasedUUIDCreator.create();
 	}
 
 	@Benchmark
-	public UUID My_TimeBasedMAC() {
-		return UUIDGenerator.getTimeBasedWithHardwareAddressUUID();
+	public UUID UUIDGenerator_TimeBasedWithMAC() {
+		return timeBasedMACUUIDCreator.create();
 	}
 
 	public static void main(String[] args) throws Exception {

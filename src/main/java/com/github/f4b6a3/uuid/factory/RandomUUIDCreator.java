@@ -40,8 +40,6 @@ import com.github.f4b6a3.uuid.random.XorshiftRandom;
  */
 public class RandomUUIDCreator extends AbstractUUIDCreator {
 
-	private static final long serialVersionUID = -5686288990673774098L;
-
 	private Random random;
 
 	public RandomUUIDCreator() {

@@ -1,10 +1,26 @@
+/**
+ * Copyright 2018 Fabio Lima <br/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); <br/>
+ * you may not use this file except in compliance with the License. <br/>
+ * You may obtain a copy of the License at <br/>
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0 <br/>
+ *
+ * Unless required by applicable law or agreed to in writing, software <br/>
+ * distributed under the License is distributed on an "AS IS" BASIS, <br/>
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. <br/>
+ * See the License for the specific language governing permissions and <br/>
+ * limitations under the License. <br/>
+ *
+ */
+
 package com.github.f4b6a3.uuid.increment;
 
 import java.util.Random;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.github.f4b6a3.uuid.random.Xoroshiro128PlusRandom;
+import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 
 public class ClockSequence extends AbstractIncrementable {
 
@@ -14,8 +30,10 @@ public class ClockSequence extends AbstractIncrementable {
 	protected static final int SEQUENCE_MIN = 0; // 0x0000;
 	protected static final int SEQUENCE_MAX = 16_383; // 0x3fff;
 
-	private static final Random random = new Xoroshiro128PlusRandom();
-	private static final Logger LOGGER = Logger.getAnonymousLogger();
+	protected static final Random random = new Xorshift128PlusRandom();
+	protected static final Logger LOGGER = Logger.getAnonymousLogger();
+
+	protected boolean logging = true;
 
 	public ClockSequence() {
 		super(SEQUENCE_MIN, SEQUENCE_MAX);
@@ -28,16 +46,37 @@ public class ClockSequence extends AbstractIncrementable {
 	}
 
 	/**
+	 * Disables the logging, if necessary.
+	 * 
+	 * By default the logging is enabled.
+	 * 
+	 * Messages are logged when the clock sequence is overrun.
+	 * 
+	 * @param enabled
+	 * @return
+	 */
+	public void setLogging(boolean enabled) {
+		this.logging = enabled;
+	}
+
+	/**
 	 * Get the next value for a timestamp and a node identifier.
 	 * 
 	 * ### RFC-4122 - 4.2.1. Basic Algorithm
 	 * 
-	 * (5) If the state was unavailable (e.g., non-existent or corrupted), or
+	 * (5a) If the state was unavailable (e.g., non-existent or corrupted), or
 	 * the saved node ID is different than the current node ID, generate a
 	 * random clock sequence value.
 	 * 
-	 * (6) If the state was available, but the saved timestamp is later than
+	 * (6a) If the state was available, but the saved timestamp is later than
 	 * the current timestamp, increment the clock sequence value.
+	 * 
+	 * 
+	 * ### RFC-4122 - 4.2.1.2. System Clock Resolution
+	 * 
+	 * (3b) If a system overruns the generator by requesting too many UUIDs
+	 * within a single system time interval, the UUID service MUST either return
+	 * an error, or stall the UUID generator until the system clock catches up.
 	 * 
 	 * @param timestamp
 	 * @param nodeIdentifier
@@ -55,9 +94,17 @@ public class ClockSequence extends AbstractIncrementable {
 
 		if (timestamp <= this.timestamp) {
 
-			// if (this.value >= this.MAX_VALUE) {
-			// throw new OverrunException("UUID clock sequence overrun.");
-			// }
+			// (3b) Log and wait 1 millisecond if the clock sequence overruns.
+			if (this.logging) {
+				if (this.value >= this.MAX_VALUE - 1) {
+					LOGGER.warning("UUID clock sequence overrun.");
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
 
 			return this.getNext();
 		}

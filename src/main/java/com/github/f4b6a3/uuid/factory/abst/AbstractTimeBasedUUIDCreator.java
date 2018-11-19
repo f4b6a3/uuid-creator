@@ -1,3 +1,20 @@
+/**
+ * Copyright 2018 Fabio Lima <br/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); <br/>
+ * you may not use this file except in compliance with the License. <br/>
+ * You may obtain a copy of the License at <br/>
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0 <br/>
+ *
+ * Unless required by applicable law or agreed to in writing, software <br/>
+ * distributed under the License is distributed on an "AS IS" BASIS, <br/>
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. <br/>
+ * See the License for the specific language governing permissions and <br/>
+ * limitations under the License. <br/>
+ *
+ */
+
 package com.github.f4b6a3.uuid.factory.abst;
 
 import java.net.NetworkInterface;
@@ -10,37 +27,97 @@ import com.github.f4b6a3.uuid.factory.TimeBasedUUIDCreator;
 import com.github.f4b6a3.uuid.increment.ClockSequence;
 import com.github.f4b6a3.uuid.increment.TimestampCounter;
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
-import com.github.f4b6a3.uuid.strategy.StandardTimeBasedUUIDStrategy;
-import com.github.f4b6a3.uuid.strategy.TimeBasedUUIDStrategy;
-import com.github.f4b6a3.uuid.util.ByteUtils;
+import com.github.f4b6a3.uuid.util.ByteUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 
 public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
-
-	private static final long serialVersionUID = -5359654877586361230L;
-
-	// Strategies for time based UUID
-	protected TimeBasedUUIDStrategy timeBasedUUIDStrategy;
-
-	// incrementable fields
-	protected TimestampCounter timestampCounter;
-	protected ClockSequence clockSequence;
 
 	// Fixed fields
 	protected long timestamp = 0;
 	protected long nodeIdentifier = 0;
 
 	// Random number generator
-	protected Random random;
+	protected Random random = new Xorshift128PlusRandom();
 
-	public AbstractTimeBasedUUIDCreator(int version, TimeBasedUUIDStrategy timeBasedUUIDStrategy) {
+	// incrementable fields
+	protected TimestampCounter timestampCounter = new TimestampCounter();
+	protected ClockSequence clockSequence = new ClockSequence();
+
+	/**
+	 * This constructor requires a version number.
+	 * 
+	 * @param version
+	 */
+	protected AbstractTimeBasedUUIDCreator(int version) {
 		super(version);
+	}
 
-		this.timeBasedUUIDStrategy = timeBasedUUIDStrategy;
-		this.random = new Xorshift128PlusRandom();
+	/**
+	 * Returns a new time-based UUID.
+	 * 
+	 * ### RFC-4122 - 4.2.1. Basic Algorithm
+	 * 
+	 * (1a) Obtain a system-wide global lock
+	 * 
+	 * (2a) From a system-wide shared stable store (e.g., a file), read the UUID
+	 * generator state: the values of the timestamp, clock sequence, and node ID
+	 * used to generate the last UUID.
+	 * 
+	 * (3a) Get the current time as a 60-bit count of 100-nanosecond intervals
+	 * since 00:00:00.00, 15 October 1582.
+	 * 
+	 * (4a) Get the current node ID.
+	 * 
+	 * (5a) If the state was unavailable (e.g., non-existent or corrupted), or
+	 * the saved node ID is different than the current node ID, generate a
+	 * random clock sequence value.
+	 * 
+	 * (6a) If the state was available, but the saved timestamp is later than
+	 * the current timestamp, increment the clock sequence value.
+	 * 
+	 * (7a) Save the state (current timestamp, clock sequence, and node ID) back
+	 * to the stable store.
+	 * 
+	 * (8a) Release the global lock.
+	 * 
+	 * (9a) Format a UUID from the current timestamp, clock sequence, and node
+	 * ID values according to the steps in Section 4.2.2.
+	 * 
+	 * ### RFC-4122 - 4.2.1.2. System Clock Resolution
+	 * 
+	 * (4b) A high resolution timestamp can be simulated by keeping a count of
+	 * the number of UUIDs that have been generated with the same value of the
+	 * system time, and using it to construct the low order bits of the
+	 * timestamp. The count will range between zero and the number of
+	 * 100-nanosecond intervals per system time interval.
+	 * 
+	 * @return {@link UUID}
+	 */
+	public synchronized UUID create() {
 
-		this.timestampCounter = new TimestampCounter();
-		this.clockSequence = new ClockSequence();
+		// (3a) get the timestamp
+		long timestamp = this.getTimestamp();
+
+		// (4b) get the node identifier
+		long nodeIdentifier = this.getNodeIdentifier();
+
+		// (4b) get the counter value
+		long counter = timestampCounter.getNextFor(timestamp);
+
+		// (4b) simulate a high resolution timestamp
+		timestamp = timestamp + counter;
+
+		// (5a)(6a) get the sequence value
+		long sequence = clockSequence.getNextFor(timestamp, nodeIdentifier);
+
+		// (9a) format the most significant bits
+		long msb = getMostSignificantBits(timestamp);
+
+		// (9a) format the least significant bits
+		long lsb = getLeastSignificantBits(nodeIdentifier, sequence);
+
+		// (9a) format a UUID from the MSB and LSB
+		return new UUID(msb, lsb);
 	}
 
 	/**
@@ -134,7 +211,7 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUUIDCreator> T withHardwareAddressNodeIdentifier() {
+	public <T extends AbstractTimeBasedUUIDCreator> T withHardwareAddress() {
 		this.nodeIdentifier = getHardwareAddress();
 		return (T) this;
 	}
@@ -160,84 +237,23 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	}
 
 	/**
-	 * Returns a new time-based UUID.
+	 * @see {@link ClockSequence#setLogging(boolean)}
 	 * 
-	 * ### RFC-4122 - 4.2.1. Basic Algorithm
-	 * 
-	 * (1a) Obtain a system-wide global lock
-	 * 
-	 * (2a) From a system-wide shared stable store (e.g., a file), read the UUID
-	 * generator state: the values of the timestamp, clock sequence, and node ID
-	 * used to generate the last UUID.
-	 * 
-	 * (3a) Get the current time as a 60-bit count of 100-nanosecond intervals
-	 * since 00:00:00.00, 15 October 1582.
-	 * 
-	 * (4a) Get the current node ID.
-	 * 
-	 * (5a) If the state was unavailable (e.g., non-existent or corrupted), or
-	 * the saved node ID is different than the current node ID, generate a
-	 * random clock sequence value.
-	 * 
-	 * (6a) If the state was available, but the saved timestamp is later than
-	 * the current timestamp, increment the clock sequence value.
-	 * 
-	 * (7a) Save the state (current timestamp, clock sequence, and node ID) back
-	 * to the stable store.
-	 * 
-	 * (8a) Release the global lock.
-	 * 
-	 * (9a) Format a UUID from the current timestamp, clock sequence, and node
-	 * ID values according to the steps in Section 4.2.2.
-	 * 
-	 * ### RFC-4122 - 4.2.1.2. System Clock Resolution
-	 * 
-	 * (4b) A high resolution timestamp can be simulated by keeping a count of
-	 * the number of UUIDs that have been generated with the same value of the
-	 * system time, and using it to construct the low order bits of the
-	 * timestamp. The count will range between zero and the number of
-	 * 100-nanosecond intervals per system time interval.
-	 * 
-	 * @return {@link UUID}
+	 * @param enabled
+	 * @return
 	 */
-	public synchronized UUID create() {
-
-		// (3a) get the timestamp
-		long timestamp = this.getTimestamp();
-
-		// (4b) get the node identifier
-		long nodeIdentifier = this.getNodeIdentifier();
-
-		// (4b) get the counter value
-		long counter = timestampCounter.getNextFor(timestamp);
-
-		// (4b) simulate a high resolution timestamp
-		timestamp = timestamp + counter;
-
-		// (5a)(6a) get the sequence value
-		long sequence = clockSequence.getNextFor(timestamp, nodeIdentifier);
-
-		// (9a) format the most significant bits
-		long msb = getMostSignificantBits(timestamp);
-
-		// (9a) format the least significant bits
-		long lsb = getLeastSignificantBits(nodeIdentifier, sequence);
-
-		// (9a) format a UUID from the MSB and LSB
-		return new UUID(msb, lsb);
+	@SuppressWarnings("unchecked")
+	public <T extends AbstractTimeBasedUUIDCreator> T withLogging(boolean enabled) {
+		this.clockSequence.setLogging(enabled);
+		return (T) this;
 	}
 
 	/**
 	 * Format the MSB UUID from the current timestamp.
 	 * 
-	 * @see {@link StandardTimeBasedUUIDStrategy#getMostSignificantBits(long)}
-	 * 
 	 * @param timestamp
 	 */
-	protected long getMostSignificantBits(final long timestamp) {
-		long msb = this.timeBasedUUIDStrategy.getMostSignificantBits(timestamp);
-		return setVersionBits(msb);
-	}
+	public abstract long getMostSignificantBits(long timestamp);
 
 	/**
 	 * Returns the least significant bits of the UUID.
@@ -258,15 +274,14 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	 * significance as the address.
 	 * 
 	 * @param nodeIdentifier
+	 * @param clockSequence
 	 */
-	public long getLeastSignificantBits(final long nodeIdentifier, final long sequence) {
+	public long getLeastSignificantBits(final long nodeIdentifier, final long clockSequence) {
 
-		long seq = sequence << 48;
-		seq = setVariantBits(seq);
-
+		long seq = clockSequence << 48;
 		long nod = nodeIdentifier & 0x0000ffffffffffffL;
 
-		return (seq | nod);
+		return setVariantBits(seq | nod);
 	}
 
 	/**
@@ -283,7 +298,7 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	protected long getNodeIdentifier() {
 
 		if (this.nodeIdentifier == 0) {
-			this.nodeIdentifier = setMulticastNodeIdentifier(random.nextLong());
+			this.nodeIdentifier = AbstractTimeBasedUUIDCreator.setMulticastNodeIdentifier(random.nextLong());
 		}
 
 		return this.nodeIdentifier;
@@ -318,7 +333,7 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 			NetworkInterface nic = NetworkInterface.getNetworkInterfaces().nextElement();
 			byte[] realHardwareAddress = nic.getHardwareAddress();
 			if (realHardwareAddress != null) {
-				return ByteUtils.toNumber(realHardwareAddress);
+				return ByteUtil.toNumber(realHardwareAddress);
 			}
 		} catch (SocketException | NullPointerException e) {
 			return 0;
@@ -333,7 +348,7 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	 * @param nodeIdentifier
 	 * @return
 	 */
-	protected long setMulticastNodeIdentifier(long nodeIdentifier) {
+	protected static long setMulticastNodeIdentifier(long nodeIdentifier) {
 		return nodeIdentifier | 0x0000010000000000L;
 	}
 
@@ -343,7 +358,7 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	 * @param nodeIdentifier
 	 * @return
 	 */
-	protected long setUnicastNodeIdentifier(long nodeIdentifier) {
+	protected static long setUnicastNodeIdentifier(long nodeIdentifier) {
 		return nodeIdentifier & 0xFFFFFEFFFFFFFFFFL;
 	}
 }

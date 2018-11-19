@@ -21,7 +21,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
-import static com.github.f4b6a3.uuid.util.ByteUtils.*;
+import static com.github.f4b6a3.uuid.util.ByteUtil.*;
 
 /**
  * Factory that creates name-based UUIDs versions 3 and 5.
@@ -31,14 +31,24 @@ import static com.github.f4b6a3.uuid.util.ByteUtils.*;
  */
 public abstract class AbstractNameBasedUUIDCreator extends AbstractUUIDCreator {
 
-	private static final long serialVersionUID = -1626930139360985025L;
-
-	private UUID fixedNamespace;
+	private UUID namespace;
 	private MessageDigest md = null;
 
 	protected static final String MESSAGE_DIGEST_MD5 = "MD5";
 	protected static final String MESSAGE_DIGEST_SHA1 = "SHA-1";
 
+	/**
+	 * This constructor receives the name of a message digest.
+	 * 
+	 * In this implementation it's possible to use ANY message digest that Java
+	 * supports, but only MD5 and SHA-1 are used by the the RFC-4122.
+	 * 
+	 * Someone can implement a non-standard name-based factory that uses a
+	 * better message digest, by extending this abstract class.
+	 * 
+	 * @param version
+	 * @param messageDigest
+	 */
 	public AbstractNameBasedUUIDCreator(int version, String messageDigest) {
 		super(version);
 
@@ -57,7 +67,7 @@ public abstract class AbstractNameBasedUUIDCreator extends AbstractUUIDCreator {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractNameBasedUUIDCreator> T withNamespace(UUID namespace) {
-		this.fixedNamespace = namespace;
+		this.namespace = namespace;
 		return (T) this;
 	}
 
@@ -72,7 +82,7 @@ public abstract class AbstractNameBasedUUIDCreator extends AbstractUUIDCreator {
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractNameBasedUUIDCreator> T withNamespace(String namespace) {
 		UUID namespaceUUID = create(namespace);
-		this.fixedNamespace = namespaceUUID;
+		this.namespace = namespaceUUID;
 		return (T) this;
 	}
 
@@ -85,7 +95,7 @@ public abstract class AbstractNameBasedUUIDCreator extends AbstractUUIDCreator {
 	 * @return
 	 */
 	public UUID create(String name) {
-		return create(this.fixedNamespace, name);
+		return create(this.namespace, name);
 	}
 
 	/**
@@ -166,9 +176,9 @@ public abstract class AbstractNameBasedUUIDCreator extends AbstractUUIDCreator {
 		if (namespace != null) {
 			namespaceBytes = toBytes(namespace.getMostSignificantBits());
 			namespaceBytes = concat(namespaceBytes, toBytes(namespace.getLeastSignificantBits()));
-		} else if (this.fixedNamespace != null) {
-			namespaceBytes = toBytes(this.fixedNamespace.getMostSignificantBits());
-			namespaceBytes = concat(namespaceBytes, toBytes(this.fixedNamespace.getLeastSignificantBits()));
+		} else if (this.namespace != null) {
+			namespaceBytes = toBytes(this.namespace.getMostSignificantBits());
+			namespaceBytes = concat(namespaceBytes, toBytes(this.namespace.getLeastSignificantBits()));
 		} else {
 			namespaceBytes = new byte[0];
 		}

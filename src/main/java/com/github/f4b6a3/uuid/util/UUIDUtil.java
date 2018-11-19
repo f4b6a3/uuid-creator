@@ -61,14 +61,25 @@ public class UUIDUtil {
 	}
 	
 	/**
-	 * Checks whether the UUID version 0 or 1.
+	 * Checks whether the UUID version 1.
 	 * 
 	 * @param uuid
 	 * @return boolean
 	 */
 	public static boolean isTimeBasedVersion(UUID uuid) {
 		int version = uuid.version();
-		return ((version == 0) || (version == 1));
+		return (version == 1);
+	}
+	
+	/**
+	 * Checks whether the UUID version 0.
+	 * 
+	 * @param uuid
+	 * @return boolean
+	 */
+	public static boolean isSequentialVersion(UUID uuid) {
+		int version = uuid.version();
+		return (version == 0);
 	}
 	
 	/**
@@ -94,8 +105,8 @@ public class UUIDUtil {
 	 */
 	public static long extractNodeIdentifier(UUID uuid) {
 		
-		if(!UUIDUtil.isTimeBasedVersion(uuid) && !UUIDUtil.isDCESecurityVersion(uuid)) {
-			throw new UnsupportedOperationException(String.format("Not a time-based or DCE Security UUID: ", uuid.toString()));
+		if(!(UUIDUtil.isTimeBasedVersion(uuid) || UUIDUtil.isSequentialVersion(uuid))) {
+			throw new UnsupportedOperationException(String.format("Not a time-based, sequential: " + uuid.version(), uuid.toString()));
 		}
 		
 		return uuid.getLeastSignificantBits() & 0x0000ffffffffffffL;
@@ -127,8 +138,8 @@ public class UUIDUtil {
 	 */
 	public static long extractTimestamp(UUID uuid) {
 
-		if(!isTimeBasedVersion(uuid)) {
-			throw new UnsupportedOperationException(String.format("Not a time-based UUID v%s: %s", uuid.version(), uuid.toString()));
+		if(!(UUIDUtil.isTimeBasedVersion(uuid) || UUIDUtil.isSequentialVersion(uuid))) {
+			throw new UnsupportedOperationException(String.format("Not a time-based, sequential: " + uuid.version(), uuid.toString()));
 		}
 
 		if (uuid.version() == 1) {
@@ -178,10 +189,10 @@ public class UUIDUtil {
 	public static byte extractDCESecurityLocalDomain(UUID uuid) {
 		
 		if(!UUIDUtil.isDCESecurityVersion(uuid)) {
-			throw new UnsupportedOperationException(String.format("Not a DCE Security UUID: ", uuid.toString()));
+			throw new UnsupportedOperationException(String.format("Not a DCE Security UUID: " + uuid.version(), uuid.toString()));
 		}
 		
-		return (byte) ((uuid.getLeastSignificantBits() & 0x00ff000000000000L) >>> 48);
+		return (byte) ((uuid.getLeastSignificantBits() & 0x00ff000000000000L) >> 48);
 	}
 	
 	/**
@@ -193,10 +204,10 @@ public class UUIDUtil {
 	public static int extractDCESecurityLocalIdentifier(UUID uuid) {
 		
 		if(!UUIDUtil.isDCESecurityVersion(uuid)) {
-			throw new UnsupportedOperationException(String.format("Not a DCE Security UUID: ", uuid.toString()));
+			throw new UnsupportedOperationException(String.format("Not a DCE Security UUID: " + uuid.version(), uuid.toString()));
 		}
 		
-		return (int) (uuid.getMostSignificantBits() >>> 32);
+		return (int) (uuid.getMostSignificantBits() >> 32);
 	}
 	
 	/**
@@ -206,12 +217,11 @@ public class UUIDUtil {
 	 * @return long
 	 */
 	public static long extractDCESecurityTimestamp(UUID uuid) {
-		
 		if(!UUIDUtil.isDCESecurityVersion(uuid)) {
-			throw new UnsupportedOperationException(String.format("Not a DCE Security UUID: ", uuid.toString()));
+			throw new UnsupportedOperationException(String.format("Not a DCE Security UUID: " + uuid.version(), uuid.toString()));
 		}
 		
-		return extractStandardTimestamp(uuid.getMostSignificantBits() & 0x00000000ffffffffL);
+		return extractStandardTimestamp((uuid.getMostSignificantBits() & 0x00000000ffffffffL));
 	}
 	
 	/**

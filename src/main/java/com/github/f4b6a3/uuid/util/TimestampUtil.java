@@ -17,7 +17,6 @@
 
 package com.github.f4b6a3.uuid.util;
 
-import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -28,9 +27,7 @@ import java.time.ZoneId;
  * All its public methods have milliseconds precision. 
  *
  */
-public class TimestampUtil implements Serializable {
-
-	private static final long serialVersionUID = -2664354707894888058L;
+public class TimestampUtil {
 
 	public static final long GREGORIAN_MILLISECONDS = getGregorianEpochMilliseconds();
 
