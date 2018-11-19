@@ -93,8 +93,8 @@ public class ClockSequence extends AbstractIncrementable {
 
 		if (timestamp <= this.timestamp) {
 
-			// (3b) Log and wait 1 millisecond if the clock sequence overruns.
 			if (this.overrunException) {
+				// (3b) return an error if the clock sequence overruns.
 				if (this.value >= this.MAX_VALUE) {
 					throw new OverrunException(String.format("UUID clock sequence overrun for timestamp '%s'.", timestamp));
 				}
