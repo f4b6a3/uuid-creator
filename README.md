@@ -1,5 +1,5 @@
 
-UUID Generator
+F4 UUID Generator
 ======================================================
 
 Summary
@@ -20,6 +20,8 @@ These types of UUIDs can be generated:
 * __DCE Security:__ a modified time-based version that uses local domains and identifiers;
 
 The sequential UUID is a different implementation of the standard time-based UUIDs.
+
+The name "F4" stands for nothing.
 
 How to Use
 ------------------------------------------------------
