@@ -28,23 +28,17 @@ How to Use
 
 The Sequential UUID is a modified time-based UUID. The bytes of timestamp part are arrenged in the 'natural' order. The version number 0 (zero) was chosen to identify Sequential UUIDs. It may be considered as an 'extension' of the RFC-4122.
 
-**Example 1:**
-
 ```java
 UUID uuid = UUIDGenerator.getSequential();
 System.out.println(uuid.toString());
 // Output: 1e879099-a413-0e81-9888-737f8d128eed
 ```
 
-**Example 2:**
-
 ```java
 UUID uuid = UUIDGenerator.getSequentialWithMAC();
 System.out.println(uuid.toString());
 // Output: 1e88c441-5711-0fa2-aaac-bf66xxxxxxxx
 ```
-
-**Example 3:**
 
 ```java
 // Using a fixed node identifier: 0x111111111111L
@@ -57,23 +51,17 @@ System.out.println(uuid.toString());
 
 The Time-based UUID embeds a timestamp and may embed a hardware address.
 
-**Example 1:**
-
 ```java
 UUID uuid = UUIDGenerator.getTimeBased();
 System.out.println(uuid.toString());
 // Output: 8caea7c7-7909-11e8-a919-4b43423cffc9
 ```
 
-**Example 2:**
-
 ```java
 UUID uuid = UUIDGenerator.getTimeBasedWithMAC();
 System.out.println(uuid.toString());
 // Output: 15670d26-8c44-11e8-bda5-47f8xxxxxxxx
 ```
-
-**Example 3:**
 
 ```java
 // Using a fixed node identifier: 0x111111111111L
@@ -86,8 +74,6 @@ System.out.println(uuid.toString());
 
 The DCE Security is a Time-based UUID that also embeds local domain and local identifier.
 
-**Example 1:**
-
 ```java
 UUID uuid = UUIDGenerator.getDCESecurity(1, 1701);
 System.out.println(uuid.toString());
@@ -98,8 +84,6 @@ System.out.println(uuid.toString());
 
 The Name-based UUID version 3 is a MD5 hash of a name space and a name.
 
-**Example 1:**
-
 ```java
 UUID namespace = UUIDCreator.NAMESPACE_URL;
 String name = "https://github.com/";
@@ -107,8 +91,6 @@ UUID uuid = UUIDGenerator.getNameBasedMD5(namespace, name);
 System.out.println(uuid.toString());
 // Output: 295df05a-2c43-337c-b6b8-4b84826e4a94
 ```
-
-**Example 2:**
 
 ```java
 // Without name space.
@@ -122,16 +104,12 @@ System.out.println(uuid.toString());
 
 The Random UUID is a simple random array of 16 bytes. The default random generator is SecureRandom, but any one can be used.
 
-**Example 1:**
-
 ```java
 // With the default SecureRandom generator
 UUID uuid = UUIDGenerator.getRandom();
 System.out.println(uuid.toString());
 // Output: 1133483a-df21-47a6-b667-7482d6ceae39
 ```
-
-**Example 2:**
 
 ```java
 // With the fast Xorshift128Plus generator
@@ -144,8 +122,6 @@ System.out.println(uuid.toString());
 
 The Name-based UUID version 5 is a SHA-1 hash of a name space and a name.
 
-**Example 1:**
-
 ```java
 UUID namespace = UUIDCreator.NAMESPACE_URL;
 String name = "https://github.com/";
@@ -153,8 +129,6 @@ UUID uuid = UUIDGenerator.getNameBasedSHA1(namespace, name);
 System.out.println(uuid.toString());
 // Output: 39983165-606c-5d83-abfa-b97af8b1ae8d
 ```
-
-**Example 2:**
 
 ```java
 // Without name space
