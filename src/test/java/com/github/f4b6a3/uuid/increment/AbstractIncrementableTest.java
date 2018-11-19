@@ -6,8 +6,6 @@ import org.junit.Test;
 
 public class AbstractIncrementableTest {
 	
-	
-	
 	private static class TestIncrementable extends AbstractIncrementable {
 
 		protected static int MIN_TEST = 1111;

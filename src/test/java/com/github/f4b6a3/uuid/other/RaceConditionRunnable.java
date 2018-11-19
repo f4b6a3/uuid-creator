@@ -1,6 +1,5 @@
 package com.github.f4b6a3.uuid.other;
 
-import java.time.Instant;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -11,21 +10,18 @@ import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUUIDCreator;
 /**
  * Runnable to test if a UUID is created more than once.
  */
-public class SimpleRunnable implements Runnable {
+public class RaceConditionRunnable implements Runnable {
 
 	private int id;
 	private UUID uuid;
 	
-	public static int threadCount = 10;
+	public static int threadCount = 100;
 	public static int threadLoopLimit = 10000;
 	
-	// This instant won't change during this test
-	private static Instant instant = Instant.now();
-	
 	private static UUID[][] cache = new UUID[threadCount][threadLoopLimit];
-	private static AbstractTimeBasedUUIDCreator creator = UUIDGenerator.getTimeBasedCreator().withInstant(instant);
+	private static AbstractTimeBasedUUIDCreator creator = UUIDGenerator.getTimeBasedCreator();
 	
-	public SimpleRunnable(int id) {
+	public RaceConditionRunnable(int id) {
 		this.id = id;
 	}
 
@@ -46,7 +42,6 @@ public class SimpleRunnable implements Runnable {
 		for (int i = 0; i < cache[0].length; i++) {
 
 			uuid = creator.create();
-			// System.out.println(uuid);
 			
 			if (!contains(uuid)) {
 				cache[id][i] = uuid;

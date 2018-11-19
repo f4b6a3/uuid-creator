@@ -15,7 +15,7 @@ import com.github.f4b6a3.uuid.factory.abst.AbstractUUIDCreator;
 import com.github.f4b6a3.uuid.other.RandomImage;
 import com.github.f4b6a3.uuid.other.RandomnesTest;
 import com.github.f4b6a3.uuid.other.SimpleBenchmark;
-import com.github.f4b6a3.uuid.other.SimpleRunnable;
+import com.github.f4b6a3.uuid.other.RaceConditionRunnable;
 import com.github.f4b6a3.uuid.random.Xoroshiro128PlusRandom;
 import com.github.f4b6a3.uuid.random.XorshiftRandom;
 import com.github.f4b6a3.uuid.random.XorshiftStarRandom;
@@ -184,21 +184,11 @@ public class UUIDGeneratorTest {
 	 * {@link RuntimeException} is thrown.
 	 * 
 	 * It's expected to see overrun warnings, since there's no exception thrown.
-	 * 
-	 * If there's more than one UUID request in the same timestamp, a counter is
-	 * incremented to avoid repetitions. When that counter overrun, a warning is
-	 * logged and a sequence (clock_seq) is incremented. The overrun warning
-	 * only indicates that the sequence had to be incremented.
-	 * 
 	 */
-	@Test
+	@Ignore
 	public void testRaceCondition() {
-
-		// Start many threads to generate a lot of UUIDs in the same instant
-		// (100-nanoseconds).
-
-		for (int i = 0; i < SimpleRunnable.threadCount; i++) {
-			Thread thread = new Thread(new SimpleRunnable(i));
+		for (int i = 0; i < RaceConditionRunnable.threadCount; i++) {
+			Thread thread = new Thread(new RaceConditionRunnable(i));
 			thread.start();
 		}
 	}

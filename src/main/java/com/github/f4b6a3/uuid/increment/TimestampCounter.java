@@ -49,7 +49,7 @@ public class TimestampCounter extends AbstractIncrementable {
 	 * @param timestamp
 	 * @return
 	 */
-	public int getNextFor(long timestamp) {
+	public int getNextForTimestamp(long timestamp) {
 		if (timestamp <= this.timestamp) {
 			return this.getNext();
 		}

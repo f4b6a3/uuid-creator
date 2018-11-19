@@ -21,6 +21,7 @@ import java.util.Random;
 import java.util.logging.Logger;
 
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
+import com.github.f4b6a3.uuid.util.OverrunException;
 
 public class ClockSequence extends AbstractIncrementable {
 
@@ -33,7 +34,7 @@ public class ClockSequence extends AbstractIncrementable {
 	protected static final Random random = new Xorshift128PlusRandom();
 	protected static final Logger LOGGER = Logger.getAnonymousLogger();
 
-	protected boolean logging = true;
+	protected boolean overrunException = true;
 
 	public ClockSequence() {
 		super(SEQUENCE_MIN, SEQUENCE_MAX);
@@ -46,17 +47,16 @@ public class ClockSequence extends AbstractIncrementable {
 	}
 
 	/**
-	 * Disables the logging, if necessary.
+	 * Disables the overrun exception throwing when necessary.
 	 * 
-	 * By default the logging is enabled.
-	 * 
-	 * Messages are logged when the clock sequence is overrun.
+	 * By default an {@link OverrunException} is thrown whenever the clock
+	 * sequence is overrun during runtime.
 	 * 
 	 * @param enabled
 	 * @return
 	 */
-	public void setLogging(boolean enabled) {
-		this.logging = enabled;
+	public void setOverrunException(boolean enabled) {
+		this.overrunException = enabled;
 	}
 
 	/**
@@ -82,8 +82,7 @@ public class ClockSequence extends AbstractIncrementable {
 	 * @param nodeIdentifier
 	 * @return
 	 */
-	public int getNextFor(long timestamp, long nodeIdentifier) {
-
+	public int getNextForTimestamp(long timestamp, long nodeIdentifier) {
 		if (nodeIdentifier != this.nodeIdentifier) {
 			if (this.nodeIdentifier == 0) {
 				this.nodeIdentifier = nodeIdentifier;
@@ -95,14 +94,9 @@ public class ClockSequence extends AbstractIncrementable {
 		if (timestamp <= this.timestamp) {
 
 			// (3b) Log and wait 1 millisecond if the clock sequence overruns.
-			if (this.logging) {
-				if (this.value >= this.MAX_VALUE - 1) {
-					LOGGER.warning("UUID clock sequence overrun.");
-					try {
-						Thread.sleep(1);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+			if (this.overrunException) {
+				if (this.value >= this.MAX_VALUE) {
+					throw new OverrunException(String.format("UUID clock sequence overrun for timestamp '%s'.", timestamp));
 				}
 			}
 

@@ -12,16 +12,16 @@ public class TimestampCounterTest {
 		long old_timestamp = 1000;
 		long new_timestamp = 999;
 		TimestampCounter timestampCounter = new TimestampCounter();
-		long old_counter = timestampCounter.getNextFor(old_timestamp);
-		long new_counter = timestampCounter.getNextFor(new_timestamp);
+		long old_counter = timestampCounter.getNextForTimestamp(old_timestamp);
+		long new_counter = timestampCounter.getNextForTimestamp(new_timestamp);
 		assertEquals(old_counter + 1, new_counter);
 		
 		// It should increment if the new timestamp is EQUAL TO the old timestamp
 		old_timestamp = 1000;
 		new_timestamp = 1000;
 		timestampCounter = new TimestampCounter();
-		old_counter = timestampCounter.getNextFor(old_timestamp);
-		new_counter = timestampCounter.getNextFor(new_timestamp);
+		old_counter = timestampCounter.getNextForTimestamp(old_timestamp);
+		new_counter = timestampCounter.getNextForTimestamp(new_timestamp);
 		assertEquals(old_counter + 1, new_counter);
 		
 	}
@@ -32,19 +32,19 @@ public class TimestampCounterTest {
 		// It should be ZERO if the new timestamp is GREATER THAN the old timestamp
 		long timestamp = 1000;
 		TimestampCounter timestampCounter = new TimestampCounter();
-		long counter = timestampCounter.getNextFor(timestamp);
-		counter = timestampCounter.getNextFor(timestamp + 1);
+		long counter = timestampCounter.getNextForTimestamp(timestamp);
+		counter = timestampCounter.getNextForTimestamp(timestamp + 1);
 		assertEquals(0, counter);
 		
 		// It should be RESET to ZERO if the new timestamp is GREATER THAN the old timestamp
 		timestamp = 1000;
 		timestampCounter = new TimestampCounter();
-		counter = timestampCounter.getNextFor(timestamp);
-		counter = timestampCounter.getNextFor(timestamp);
+		counter = timestampCounter.getNextForTimestamp(timestamp);
+		counter = timestampCounter.getNextForTimestamp(timestamp);
 		assertEquals(1, counter);
-		counter = timestampCounter.getNextFor(timestamp);
+		counter = timestampCounter.getNextForTimestamp(timestamp);
 		assertEquals(2, counter);
-		counter = timestampCounter.getNextFor(timestamp + 1);
+		counter = timestampCounter.getNextForTimestamp(timestamp + 1);
 		assertEquals(0, counter);
 		
 	}
@@ -55,12 +55,12 @@ public class TimestampCounterTest {
 		// It should be RESET to ZERO if the new timestamp is GREATER THAN the old timestamp
 		long timestamp = 1000;
 		TimestampCounter timestampCounter = new TimestampCounter();
-		long counter = timestampCounter.getNextFor(timestamp);
-		counter = timestampCounter.getNextFor(timestamp);
+		long counter = timestampCounter.getNextForTimestamp(timestamp);
+		counter = timestampCounter.getNextForTimestamp(timestamp);
 		assertEquals(1, counter);
-		counter = timestampCounter.getNextFor(timestamp);
+		counter = timestampCounter.getNextForTimestamp(timestamp);
 		assertEquals(2, counter);
-		counter = timestampCounter.getNextFor(timestamp + 1);
+		counter = timestampCounter.getNextForTimestamp(timestamp + 1);
 		assertEquals(0, counter);
 		
 	}

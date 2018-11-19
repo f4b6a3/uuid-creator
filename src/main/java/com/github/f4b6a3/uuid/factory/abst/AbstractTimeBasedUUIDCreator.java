@@ -102,13 +102,13 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 		long nodeIdentifier = this.getNodeIdentifier();
 
 		// (4b) get the counter value
-		long counter = timestampCounter.getNextFor(timestamp);
+		long counter = timestampCounter.getNextForTimestamp(timestamp);
 
 		// (4b) simulate a high resolution timestamp
 		timestamp = timestamp + counter;
 
 		// (5a)(6a) get the sequence value
-		long sequence = clockSequence.getNextFor(timestamp, nodeIdentifier);
+		long sequence = clockSequence.getNextForTimestamp(timestamp, nodeIdentifier);
 
 		// (9a) format the most significant bits
 		long msb = getMostSignificantBits(timestamp);
@@ -237,14 +237,14 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	}
 
 	/**
-	 * @see {@link ClockSequence#setLogging(boolean)}
+	 * @see {@link ClockSequence#setOverrunException(boolean)}
 	 * 
 	 * @param enabled
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUUIDCreator> T withLogging(boolean enabled) {
-		this.clockSequence.setLogging(enabled);
+	public <T extends AbstractTimeBasedUUIDCreator> T withOverrunException(boolean enabled) {
+		this.clockSequence.setOverrunException(enabled);
 		return (T) this;
 	}
 
