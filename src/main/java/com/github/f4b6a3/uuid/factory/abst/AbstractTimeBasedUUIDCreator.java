@@ -98,7 +98,7 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 		// (3a) get the timestamp
 		long timestamp = this.getTimestamp();
 
-		// (4b) get the node identifier
+		// (4a)(5a) get the node identifier
 		long nodeIdentifier = this.getNodeIdentifier();
 
 		// (4b) get the counter value
@@ -108,7 +108,7 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 		timestamp = timestamp + counter;
 
 		// (5a)(6a) get the sequence value
-		long sequence = clockSequence.getNextForTimestamp(timestamp, nodeIdentifier);
+		long sequence = clockSequence.getNextForTimestamp(timestamp);
 
 		// (9a) format the most significant bits
 		long msb = getMostSignificantBits(timestamp);
@@ -287,11 +287,12 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	/**
 	 * Get the node identifier.
 	 * 
-	 * ### RFC-4122 - 4.2.1. Basic Algorithm
+	 * ### RFC-4122 - 4.1.6. Node
 	 * 
-	 * (5) If the state was unavailable (e.g., non-existent or corrupted), or
-	 * the saved node ID is different than the current node ID, generate a
-	 * random clock sequence value.
+	 * (2) For systems with no IEEE address, a randomly or pseudo-randomly generated
+	 * value may be used; see Section 4.5. The multicast bit must be set in such
+	 * addresses, in order that they will never conflict with addresses obtained
+	 * from network cards.
 	 * 
 	 * @return
 	 */
@@ -305,10 +306,7 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	}
 
 	/**
-	 * Get the timestamp.
-	 * 
-	 * It returns the current timestamp. If there's a fixed timestamp, it
-	 * returns it instead.
+	 * Get the current timestamp.
 	 * 
 	 * @return
 	 */

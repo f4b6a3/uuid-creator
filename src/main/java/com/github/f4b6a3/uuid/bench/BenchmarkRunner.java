@@ -36,6 +36,7 @@ import com.fasterxml.uuid.impl.NameBasedGenerator;
 import com.fasterxml.uuid.impl.RandomBasedGenerator;
 import com.fasterxml.uuid.impl.TimeBasedGenerator;
 import com.github.f4b6a3.uuid.UUIDGenerator;
+import com.github.f4b6a3.uuid.factory.DCESecurityUUIDCreator;
 import com.github.f4b6a3.uuid.factory.SequentialUUIDCreator;
 import com.github.f4b6a3.uuid.factory.TimeBasedUUIDCreator;
 
@@ -58,6 +59,7 @@ public class BenchmarkRunner {
 	private TimeBasedUUIDCreator timeBasedUUIDCreator;
 	private SequentialUUIDCreator sequentialMACUUIDCreator;
 	private TimeBasedUUIDCreator timeBasedMACUUIDCreator;
+	private DCESecurityUUIDCreator dceSecurityUUIDCreator;
 	
 	@Setup
 	public void setUp() {
@@ -74,6 +76,7 @@ public class BenchmarkRunner {
 		timeBasedUUIDCreator = UUIDGenerator.getTimeBasedCreator().withOverrunException(false);
 		sequentialMACUUIDCreator = UUIDGenerator.getSequentialCreator().withHardwareAddress().withOverrunException(false);
 		timeBasedMACUUIDCreator = UUIDGenerator.getTimeBasedCreator().withHardwareAddress().withOverrunException(false);
+		dceSecurityUUIDCreator = UUIDGenerator.getDCESecurityCreator().withOverrunException(false);
 	}
 	
 	// Java UUID
@@ -131,7 +134,7 @@ public class BenchmarkRunner {
 
 	@Benchmark
 	public UUID UUIDGenerator_DCESecurity() {
-		return UUIDGenerator.getDCESecurity(1701);
+		return dceSecurityUUIDCreator.create((byte) 1, 1701);
 	}
 
 	@Benchmark

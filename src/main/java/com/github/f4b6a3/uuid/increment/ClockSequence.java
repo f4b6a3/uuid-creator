@@ -25,8 +25,8 @@ import com.github.f4b6a3.uuid.util.OverrunException;
 
 public class ClockSequence extends AbstractIncrementable {
 
+	// keeps the previous timestamp
 	private long timestamp = 0;
-	private long nodeIdentifier = 0;
 
 	protected static final int SEQUENCE_MIN = 0; // 0x0000;
 	protected static final int SEQUENCE_MAX = 16_383; // 0x3fff;
@@ -64,10 +64,6 @@ public class ClockSequence extends AbstractIncrementable {
 	 * 
 	 * ### RFC-4122 - 4.2.1. Basic Algorithm
 	 * 
-	 * (5a) If the state was unavailable (e.g., non-existent or corrupted), or
-	 * the saved node ID is different than the current node ID, generate a
-	 * random clock sequence value.
-	 * 
 	 * (6a) If the state was available, but the saved timestamp is later than
 	 * the current timestamp, increment the clock sequence value.
 	 * 
@@ -82,14 +78,7 @@ public class ClockSequence extends AbstractIncrementable {
 	 * @param nodeIdentifier
 	 * @return
 	 */
-	public int getNextForTimestamp(long timestamp, long nodeIdentifier) {
-		if (nodeIdentifier != this.nodeIdentifier) {
-			if (this.nodeIdentifier == 0) {
-				this.nodeIdentifier = nodeIdentifier;
-			} else {
-				this.reset();
-			}
-		}
+	public int getNextForTimestamp(long timestamp) {
 
 		if (timestamp <= this.timestamp) {
 
