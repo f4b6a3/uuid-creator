@@ -58,39 +58,39 @@ public class UUIDGeneratorTest {
 	}
 
 	@Test
-	public void testGetSequentialUUID_StringIsValid() {
+	public void testGetOrderedUUID_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUIDGenerator.getSequential();
+			UUID uuid = UUIDGenerator.getOrdered();
 			assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
 		}
 	}
 
 	@Test
-	public void testGetSequentialWithHardwareAddressUUID_StringIsValid() {
+	public void testGetOrderedWithHardwareAddressUUID_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUIDGenerator.getSequentialWithMAC();
+			UUID uuid = UUIDGenerator.getOrderedWithMAC();
 			assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
 		}
 	}
 
 	@Test
-	public void testGetSequentialUUID_TimestampBitsAreSequential() {
+	public void testGetOrderedUUID_TimestampBitsAreOrdered() {
 
 		long oldTimestemp = 0;
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUIDGenerator.getSequential();
+			UUID uuid = UUIDGenerator.getOrdered();
 			long newTimestamp = UUIDUtil.extractTimestamp(uuid);
 			assertTrue(newTimestamp > oldTimestemp);
 		}
 	}
 
 	@Test
-	public void testGetSequentialUUID_MostSignificantBitsAreSequential() {
+	public void testGetOrderedUUID_MostSignificantBitsAreOrdered() {
 
 		long oldMsb = 0;
 
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUIDGenerator.getSequential();
+			UUID uuid = UUIDGenerator.getOrdered();
 			long newMsb = uuid.getMostSignificantBits();
 			assertTrue(newMsb > oldMsb);
 		}
@@ -116,15 +116,15 @@ public class UUIDGeneratorTest {
 	}
 
 	/**
-	 * Test if a sequential UUID version 0 is has the correct timestamp.
+	 * Test if a ordered UUID version 0 is has the correct timestamp.
 	 */
 	@Test
-	public void testGetSequentialUUID_TimestampIsCorrect() {
+	public void testGetOrderedUUID_TimestampIsCorrect() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 
 			Instant instant1 = Instant.now();
 
-			UUID uuid = UUIDGenerator.getSequentialCreator().withInstant(instant1).create();
+			UUID uuid = UUIDGenerator.getOrderedCreator().withInstant(instant1).create();
 			Instant instant2 = UUIDUtil.extractInstant(uuid);
 
 			long timestamp1 = TimestampUtil.toTimestamp(instant1);
@@ -229,7 +229,7 @@ public class UUIDGeneratorTest {
 				/ nano;
 		long getTimeBasedUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getTimeBasedUUID", loopMax) * loopMax)
 				/ nano;
-		long getSequentialUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getSequentialUUID", loopMax)
+		long getOrderedUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getOrderedUUID", loopMax)
 				* loopMax) / nano;
 		long javaNextLong = (SimpleBenchmark.run(new Random(), null, "nextLong", loopMax) * loopMax) / nano;
 		long XorshiftNextLong = (SimpleBenchmark.run(new XorshiftRandom(), null, "nextLong", loopMax) * loopMax) / nano;
@@ -241,7 +241,7 @@ public class UUIDGeneratorTest {
 		System.out.println(String.format("* java.util.UUID.randomUUID():       %s ms", randomUUID));
 		System.out.println(String.format("* UUIDGenerator.getRandomUUID():     %s ms", getRandomUUID));
 		System.out.println(String.format("* UUIDGenerator.getTimeBasedUUID():  %s ms", getTimeBasedUUID));
-		System.out.println(String.format("* UUIDGenerator.getSequentialUUID(): %s ms", getSequentialUUID));
+		System.out.println(String.format("* UUIDGenerator.getOrderedUUID(): %s ms", getOrderedUUID));
 		System.out.println(String.format("* java.util.Random.nextLong(): %s ms", javaNextLong));
 		System.out.println(String.format("* XorshiftRandom.nextLong(): %s ms", XorshiftNextLong));
 		System.out.println("----------------------------------------");
@@ -251,21 +251,21 @@ public class UUIDGeneratorTest {
 	 * Just prints UUIDs generated to a specific instant.
 	 */
 	@Ignore
-	public void testDemoDifferenceBetweenTimeBasedAndSequentialUUID() {
+	public void testDemoDifferenceBetweenTimeBasedAndOrderedUUID() {
 
 		Instant instant = Instant.now();
 		String timeBasedUUID = UUIDGenerator.getTimeBasedCreator().withInstant(instant).create().toString();
-		String sequentialUUID = UUIDGenerator.getSequentialCreator().withInstant(instant).create().toString();
+		String orderedUUID = UUIDGenerator.getOrderedCreator().withInstant(instant).create().toString();
 
 		System.out.println();
 		System.out.println("----------------------------------------");
 		System.out.println("Demonstration of time-baed UUIDs");
 		System.out.println("----------------------------------------");
 		System.out.println("- TimeBased UUID:          " + timeBasedUUID.toString());
-		System.out.println("- Sequential UUID:         " + sequentialUUID.toString());
+		System.out.println("- Ordered UUID:         " + orderedUUID.toString());
 		System.out.println("- Original instant:        " + instant.toString());
 		System.out.println("- TimeBased UUID instant:  " + UUIDUtil.extractInstant(UUID.fromString(timeBasedUUID)));
-		System.out.println("- Sequential UUID instant: " + UUIDUtil.extractInstant(UUID.fromString(sequentialUUID)));
+		System.out.println("- Ordered UUID instant: " + UUIDUtil.extractInstant(UUID.fromString(orderedUUID)));
 		System.out.println("----------------------------------------");
 	}
 
@@ -293,10 +293,10 @@ public class UUIDGeneratorTest {
 		}
 
 		System.out.println();
-		System.out.println("### Sequential UUID");
+		System.out.println("### Ordered UUID");
 
 		for (int i = 0; i < max; i++) {
-			System.out.println(UUIDGenerator.getSequential());
+			System.out.println(UUIDGenerator.getOrdered());
 		}
 
 		System.out.println("----------------------------------------");

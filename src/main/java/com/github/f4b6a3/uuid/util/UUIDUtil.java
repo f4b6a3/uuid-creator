@@ -77,7 +77,7 @@ public class UUIDUtil {
 	 * @param uuid
 	 * @return boolean
 	 */
-	public static boolean isSequentialVersion(UUID uuid) {
+	public static boolean isOrderedVersion(UUID uuid) {
 		int version = uuid.version();
 		return (version == 0);
 	}
@@ -105,8 +105,8 @@ public class UUIDUtil {
 	 */
 	public static long extractNodeIdentifier(UUID uuid) {
 		
-		if(!(UUIDUtil.isTimeBasedVersion(uuid) || UUIDUtil.isSequentialVersion(uuid))) {
-			throw new UnsupportedOperationException(String.format("Not a time-based, sequential: " + uuid.version(), uuid.toString()));
+		if(!(UUIDUtil.isTimeBasedVersion(uuid) || UUIDUtil.isOrderedVersion(uuid))) {
+			throw new UnsupportedOperationException(String.format("Not a time-based or ordered UUID: " + uuid.version(), uuid.toString()));
 		}
 		
 		return uuid.getLeastSignificantBits() & 0x0000ffffffffffffL;
@@ -138,25 +138,25 @@ public class UUIDUtil {
 	 */
 	public static long extractTimestamp(UUID uuid) {
 
-		if(!(UUIDUtil.isTimeBasedVersion(uuid) || UUIDUtil.isSequentialVersion(uuid))) {
-			throw new UnsupportedOperationException(String.format("Not a time-based, sequential: " + uuid.version(), uuid.toString()));
+		if(!(UUIDUtil.isTimeBasedVersion(uuid) || UUIDUtil.isOrderedVersion(uuid))) {
+			throw new UnsupportedOperationException(String.format("Not a time-based or ordered UUID: " + uuid.version(), uuid.toString()));
 		}
 
 		if (uuid.version() == 1) {
-			return extractStandardTimestamp(uuid.getMostSignificantBits());
+			return extractTimeBasedTimestamp(uuid.getMostSignificantBits());
 		} else {
-			return extractSequentialTimestamp(uuid.getMostSignificantBits());
+			return extractOrderedTimestamp(uuid.getMostSignificantBits());
 		}
 	}
 	
 	/**
-	 * Get the timestamp that is embedded in the Sequential UUID.
+	 * Get the timestamp that is embedded in the Ordered UUID.
 	 *
 	 * @param msb
 	 *            a long value that has the "Most Significant Bits" of the UUID.
 	 * @return long
 	 */
-	private static long extractSequentialTimestamp(long msb) {
+	private static long extractOrderedTimestamp(long msb) {
 		
 		long himid = (msb & 0xffffffffffff0000L) >>> 4;
 		long low = (msb & 0x0000000000000fffL);
@@ -171,7 +171,7 @@ public class UUIDUtil {
 	 *            a long value that has the "Most Significant Bits" of the UUID.
 	 * @return long
 	 */
-	private static long extractStandardTimestamp(long msb) {
+	private static long extractTimeBasedTimestamp(long msb) {
 		
 		long hii = (msb & 0xffffffff00000000L) >>> 32;
 		long mid = (msb & 0x00000000ffff0000L) << 16;
@@ -221,7 +221,7 @@ public class UUIDUtil {
 			throw new UnsupportedOperationException(String.format("Not a DCE Security UUID: " + uuid.version(), uuid.toString()));
 		}
 		
-		return extractStandardTimestamp((uuid.getMostSignificantBits() & 0x00000000ffffffffL));
+		return extractTimeBasedTimestamp((uuid.getMostSignificantBits() & 0x00000000ffffffffL));
 	}
 	
 	/**

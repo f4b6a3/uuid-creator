@@ -37,7 +37,7 @@ import com.fasterxml.uuid.impl.RandomBasedGenerator;
 import com.fasterxml.uuid.impl.TimeBasedGenerator;
 import com.github.f4b6a3.uuid.UUIDGenerator;
 import com.github.f4b6a3.uuid.factory.DCESecurityUUIDCreator;
-import com.github.f4b6a3.uuid.factory.SequentialUUIDCreator;
+import com.github.f4b6a3.uuid.factory.OrderedUUIDCreator;
 import com.github.f4b6a3.uuid.factory.TimeBasedUUIDCreator;
 
 @State(Scope.Thread)
@@ -55,9 +55,9 @@ public class BenchmarkRunner {
 	private TimeBasedGenerator jugTimeBasedMACGenerator;
 	private RandomBasedGenerator jugRandomGenerator;
 	
-	private SequentialUUIDCreator sequentialUUIDCreator;
+	private OrderedUUIDCreator orderedUUIDCreator;
 	private TimeBasedUUIDCreator timeBasedUUIDCreator;
-	private SequentialUUIDCreator sequentialMACUUIDCreator;
+	private OrderedUUIDCreator orderedMACUUIDCreator;
 	private TimeBasedUUIDCreator timeBasedMACUUIDCreator;
 	private DCESecurityUUIDCreator dceSecurityUUIDCreator;
 	
@@ -72,9 +72,9 @@ public class BenchmarkRunner {
 		jugTimeBasedMACGenerator = Generators.timeBasedGenerator(EthernetAddress.fromInterface());
 		jugRandomGenerator = Generators.randomBasedGenerator();
 		
-		sequentialUUIDCreator = UUIDGenerator.getSequentialCreator().withOverrunException(false);
+		orderedUUIDCreator = UUIDGenerator.getOrderedCreator().withOverrunException(false);
 		timeBasedUUIDCreator = UUIDGenerator.getTimeBasedCreator().withOverrunException(false);
-		sequentialMACUUIDCreator = UUIDGenerator.getSequentialCreator().withHardwareAddress().withOverrunException(false);
+		orderedMACUUIDCreator = UUIDGenerator.getOrderedCreator().withHardwareAddress().withOverrunException(false);
 		timeBasedMACUUIDCreator = UUIDGenerator.getTimeBasedCreator().withHardwareAddress().withOverrunException(false);
 		dceSecurityUUIDCreator = UUIDGenerator.getDCESecurityCreator().withOverrunException(false);
 	}
@@ -148,13 +148,13 @@ public class BenchmarkRunner {
 	}
 
 	@Benchmark
-	public UUID UUIDGenerator_Sequential() {
-		return sequentialUUIDCreator.create();
+	public UUID UUIDGenerator_ordered() {
+		return orderedUUIDCreator.create();
 	}
 
 	@Benchmark
-	public UUID UUIDGenerator_SequentialWithMAC() {
-		return sequentialMACUUIDCreator.create();
+	public UUID UUIDGenerator_orderedWithMAC() {
+		return orderedMACUUIDCreator.create();
 	}
 
 	@Benchmark

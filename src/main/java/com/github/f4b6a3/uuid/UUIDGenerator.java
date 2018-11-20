@@ -24,7 +24,7 @@ import com.github.f4b6a3.uuid.factory.DCESecurityUUIDCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedMD5UUIDCreator;
 import com.github.f4b6a3.uuid.factory.RandomUUIDCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedSHA1UUIDCreator;
-import com.github.f4b6a3.uuid.factory.SequentialUUIDCreator;
+import com.github.f4b6a3.uuid.factory.OrderedUUIDCreator;
 import com.github.f4b6a3.uuid.factory.TimeBasedUUIDCreator;
 import com.github.f4b6a3.uuid.factory.abst.AbstractNameBasedUUIDCreator;
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
@@ -37,8 +37,8 @@ import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
  */
 public class UUIDGenerator {
 
-	private static SequentialUUIDCreator sequentialCreator;
-	private static SequentialUUIDCreator sequentialWithMACCreator;
+	private static OrderedUUIDCreator orderedCreator;
+	private static OrderedUUIDCreator orderedWithMACCreator;
 	private static TimeBasedUUIDCreator timeBasedCreator;
 	private static TimeBasedUUIDCreator timeBasedWithMACCreator;
 	private static AbstractNameBasedUUIDCreator nameBasedMD5Creator;
@@ -104,11 +104,11 @@ public class UUIDGenerator {
 	 * @param instant
 	 * @return
 	 */
-	public static UUID getSequential() {
-		if (sequentialCreator == null) {
-			sequentialCreator = getSequentialCreator();
+	public static UUID getOrdered() {
+		if (orderedCreator == null) {
+			orderedCreator = getOrderedCreator();
 		}
-		return sequentialCreator.create();
+		return orderedCreator.create();
 	}
 
 	/**
@@ -124,12 +124,12 @@ public class UUIDGenerator {
 	 *
 	 * @return
 	 */
-	public static UUID getSequentialWithMAC() {
-		if (sequentialWithMACCreator == null) {
-			sequentialWithMACCreator = getSequentialCreator();
-			sequentialWithMACCreator.withHardwareAddress();
+	public static UUID getOrderedWithMAC() {
+		if (orderedWithMACCreator == null) {
+			orderedWithMACCreator = getOrderedCreator();
+			orderedWithMACCreator.withHardwareAddress();
 		}
-		return sequentialWithMACCreator.create();
+		return orderedWithMACCreator.create();
 	}
 
 	/**
@@ -302,12 +302,12 @@ public class UUIDGenerator {
 	 */
 
 	/**
-	 * Returns a {@link SequentialUUIDCreator} that creates UUID version 0.
+	 * Returns a {@link OrderedUUIDCreator} that creates UUID version 0.
 	 * 
-	 * @return {@link SequentialUUIDCreator}
+	 * @return {@link OrderedUUIDCreator}
 	 */
-	public static SequentialUUIDCreator getSequentialCreator() {
-		return new SequentialUUIDCreator();
+	public static OrderedUUIDCreator getOrderedCreator() {
+		return new OrderedUUIDCreator();
 	}
 
 	/**

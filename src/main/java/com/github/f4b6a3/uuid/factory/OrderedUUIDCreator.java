@@ -26,13 +26,13 @@ import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUUIDCreator;
  * in the 'natural' order, instead of rearranging them as the version 1 does.
  *
  */
-public class SequentialUUIDCreator extends AbstractTimeBasedUUIDCreator {
+public class OrderedUUIDCreator extends AbstractTimeBasedUUIDCreator {
 
-	public SequentialUUIDCreator() {
+	public OrderedUUIDCreator() {
 		super(VERSION_0);
 	}
 
-	protected SequentialUUIDCreator(int version) {
+	protected OrderedUUIDCreator(int version) {
 		super(version);
 	}
 

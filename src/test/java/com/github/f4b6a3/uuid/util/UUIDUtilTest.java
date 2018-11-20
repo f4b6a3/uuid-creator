@@ -45,7 +45,7 @@ public class UUIDUtilTest {
 		long timestamp2 = extractTimestamp(uuid);
 		assertEquals(timestamp1, timestamp2);
 
-		uuid = UUIDGenerator.getSequentialCreator().withInstant(instant1).create();
+		uuid = UUIDGenerator.getOrderedCreator().withInstant(instant1).create();
 		timestamp2 = extractTimestamp(uuid);
 		assertEquals(timestamp1, timestamp2);
 	}
@@ -58,7 +58,7 @@ public class UUIDUtilTest {
 		Instant instant2 = extractInstant(uuid);
 		assertEquals(instant1, instant2);
 
-		uuid = UUIDGenerator.getSequentialCreator().withInstant(instant1).create();
+		uuid = UUIDGenerator.getOrderedCreator().withInstant(instant1).create();
 		instant2 = extractInstant(uuid);
 		assertEquals(instant1, instant2);
 	}

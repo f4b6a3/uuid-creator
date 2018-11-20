@@ -5,7 +5,7 @@ UUID Generator
 Summary
 ------------------------------------------------------
 
-UUID Generator can generate UUIDs (Universally Unique Identifiers), also known as GUIDs (Globally Unique Identifiers). It provides methods for RFC-4122 versions 1, 2, 3, 4, 5. It also provides methods for creating non-standard sequential UUIDs.
+UUID Generator can generate UUIDs (Universally Unique Identifiers), also known as GUIDs (Globally Unique Identifiers). It provides methods for RFC-4122 versions 1, 2, 3, 4, 5. It also provides methods for creating non-standard ordered UUIDs.
 
 These types of UUIDs can be generated:
 
@@ -13,36 +13,36 @@ These types of UUIDs can be generated:
 * __Fast Random__: the pseudo-randomly generated version, using a fast RNG;
 * __Time-based:__ the time-based version;
 * __Time-based with MAC:__ the time-based version with hardware address;
-* __Sequential:__ a modified time-based version;
-* __Sequential with MAC:__ a modified time-based version with hardware address;
+* __:__ a modified time-based version;
+* __ with MAC:__ a modified time-based version with hardware address;
 * __Name-based MD5:__ a base-named version that uses MD5;
 * __Name-based SHA1:__ a base-named version that uses SHA-1.
 * __DCE Security:__ a modified time-based version that uses local domains and identifiers;
 
-The sequential UUID is a different implementation of the standard time-based UUIDs.
+The ordered UUID is a different implementation of the standard time-based UUIDs.
 
 How to Use
 ------------------------------------------------------
 
-### Version 0: Sequential (extension)
+### Version 0:  (extension)
 
-The Sequential UUID is a modified time-based UUID. The bytes of timestamp part are arrenged in the 'natural' order. The version number 0 (zero) was chosen to identify Sequential UUIDs. It may be considered as an 'extension' of the RFC-4122.
+The  UUID is a modified time-based UUID. The bytes of timestamp part are arrenged in the 'natural' order. The version number 0 (zero) was chosen to identify  UUIDs. It may be considered as an 'extension' of the RFC-4122.
 
 ```java
-UUID uuid = UUIDGenerator.getSequential();
+UUID uuid = UUIDGenerator.get();
 System.out.println(uuid.toString());
 // Output: 1e879099-a413-0e81-9888-737f8d128eed
 ```
 
 ```java
-UUID uuid = UUIDGenerator.getSequentialWithMAC();
+UUID uuid = UUIDGenerator.getWithMAC();
 System.out.println(uuid.toString());
 // Output: 1e88c441-5711-0fa2-aaac-bf66xxxxxxxx
 ```
 
 ```java
 // Using a fixed node identifier: 0x111111111111L
-UUID uuid = UUIDGenerator.getSequentialUUIDCreator().withMulticastNodeIdentifier(0x111111111111L).create();
+UUID uuid = UUIDGenerator.getUUIDCreator().withMulticastNodeIdentifier(0x111111111111L).create();
 System.out.println(uuid.toString());
 // Output: 1e88c46f-e5df-0550-8e9d-111111111111
 ```
@@ -157,8 +157,8 @@ BenchmarkRunner.UUIDGenerator_FastRandom           ss  100   3,441 ± 0,587  ms/
 BenchmarkRunner.UUIDGenerator_NameBasedMD5         ss  100  41,536 ± 3,365  ms/op
 BenchmarkRunner.UUIDGenerator_NameBasedSHA1        ss  100  51,539 ± 5,157  ms/op
 BenchmarkRunner.UUIDGenerator_Random               ss  100  45,951 ± 2,979  ms/op
-BenchmarkRunner.UUIDGenerator_Sequential           ss  100   7,613 ± 1,026  ms/op
-BenchmarkRunner.UUIDGenerator_SequentialWithMAC    ss  100   7,480 ± 0,980  ms/op
+BenchmarkRunner.UUIDGenerator_                     ss  100   7,613 ± 1,026  ms/op
+BenchmarkRunner.UUIDGenerator_WithMAC              ss  100   7,480 ± 0,980  ms/op
 BenchmarkRunner.UUIDGenerator_TimeBased            ss  100   7,524 ± 0,982  ms/op
 BenchmarkRunner.UUIDGenerator_TimeBasedWithMAC     ss  100   7,705 ± 0,959  ms/op
 Total time: 00:01:32
