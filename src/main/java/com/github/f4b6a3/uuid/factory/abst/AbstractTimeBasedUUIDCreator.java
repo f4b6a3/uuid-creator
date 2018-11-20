@@ -25,8 +25,9 @@ import java.util.UUID;
 
 import com.github.f4b6a3.uuid.factory.TimeBasedUUIDCreator;
 import com.github.f4b6a3.uuid.increment.ClockSequence;
-import com.github.f4b6a3.uuid.increment.TimestampCounter;
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
+import com.github.f4b6a3.uuid.time.DefaultTimestampStrategy;
+import com.github.f4b6a3.uuid.time.TimestampStrategy;
 import com.github.f4b6a3.uuid.util.ByteUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 
@@ -36,12 +37,9 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	protected long timestamp = 0;
 	protected long nodeIdentifier = 0;
 
-	// Random number generator
 	protected Random random = new Xorshift128PlusRandom();
-
-	// incrementable fields
-	protected TimestampCounter timestampCounter = new TimestampCounter();
 	protected ClockSequence clockSequence = new ClockSequence();
+	protected TimestampStrategy timestampStrategy = new DefaultTimestampStrategy();
 
 	/**
 	 * This constructor requires a version number.
@@ -101,12 +99,6 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 		// (4a)(5a) get the node identifier
 		long nodeIdentifier = this.getNodeIdentifier();
 
-		// (4b) get the counter value
-		long counter = timestampCounter.getNextForTimestamp(timestamp);
-
-		// (4b) simulate a high resolution timestamp
-		timestamp = timestamp + counter;
-
 		// (5a)(6a) get the sequence value
 		long sequence = clockSequence.getNextForTimestamp(timestamp);
 
@@ -132,6 +124,21 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractTimeBasedUUIDCreator> T withRandomGenerator(Random random) {
 		this.random = random;
+		return (T) this;
+	}
+
+	/**
+	 * Set an alternative {@link TimestampStrategy} to generate timestamps. The
+	 * {@link DefaultTimestampStrategy} has accuracy of milliseconds. If someone
+	 * needs a real 100-nanosecond an implementation of
+	 * {@link TimestampStrategy} may be provided via this method.
+	 * 
+	 * @param timestampStrategy
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends AbstractTimeBasedUUIDCreator> T withTimestampStrategy(TimestampStrategy timestampStrategy) {
+		this.timestampStrategy = timestampStrategy;
 		return (T) this;
 	}
 
@@ -289,10 +296,10 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	 * 
 	 * ### RFC-4122 - 4.1.6. Node
 	 * 
-	 * (2) For systems with no IEEE address, a randomly or pseudo-randomly generated
-	 * value may be used; see Section 4.5. The multicast bit must be set in such
-	 * addresses, in order that they will never conflict with addresses obtained
-	 * from network cards.
+	 * (2) For systems with no IEEE address, a randomly or pseudo-randomly
+	 * generated value may be used; see Section 4.5. The multicast bit must be
+	 * set in such addresses, in order that they will never conflict with
+	 * addresses obtained from network cards.
 	 * 
 	 * @return
 	 */
@@ -316,7 +323,7 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 			return this.timestamp;
 		}
 
-		return TimestampUtil.getCurrentTimestamp();
+		return timestampStrategy.getCurrentTimestamp();
 	}
 
 	/**

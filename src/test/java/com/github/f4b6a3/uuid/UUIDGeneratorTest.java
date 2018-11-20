@@ -116,7 +116,7 @@ public class UUIDGeneratorTest {
 	}
 
 	/**
-	 * Test if a sequential UUID version 4 is has the correct timestamp.
+	 * Test if a sequential UUID version 0 is has the correct timestamp.
 	 */
 	@Test
 	public void testGetSequentialUUID_TimestampIsCorrect() {
