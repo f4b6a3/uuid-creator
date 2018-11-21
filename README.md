@@ -13,8 +13,8 @@ These types of UUIDs can be generated:
 * __Fast Random__: the pseudo-randomly generated version, using a fast RNG;
 * __Time-based:__ the time-based version;
 * __Time-based with MAC:__ the time-based version with hardware address;
-* __:__ a modified time-based version;
-* __ with MAC:__ a modified time-based version with hardware address;
+* __Ordered:__ a modified time-based version;
+* __Ordered with MAC:__ a modified time-based version with hardware address;
 * __Name-based MD5:__ a base-named version that uses MD5;
 * __Name-based SHA1:__ a base-named version that uses SHA-1.
 * __DCE Security:__ a modified time-based version that uses local domains and identifiers;
@@ -26,23 +26,24 @@ How to Use
 
 ### Version 0:  (extension)
 
-The  UUID is a modified time-based UUID. The bytes of timestamp part are arrenged in the 'natural' order. The version number 0 (zero) was chosen to identify  UUIDs. It may be considered as an 'extension' of the RFC-4122.
+The ordered UUID is a modified time-based UUID. The bytes of timestamp part are rearranged in the 'natural' order. The version number 0 (zero) was chosen to identify  UUIDs. It may be considered as an 'extension' of the RFC-4122. 
 
 ```java
-UUID uuid = UUIDGenerator.get();
+UUID uuid = UUIDGenerator.getOrdered();
 System.out.println(uuid.toString());
 // Output: 1e879099-a413-0e81-9888-737f8d128eed
 ```
 
 ```java
-UUID uuid = UUIDGenerator.getWithMAC();
+// With hardware address
+UUID uuid = UUIDGenerator.getOrderedWithMAC();
 System.out.println(uuid.toString());
 // Output: 1e88c441-5711-0fa2-aaac-bf66xxxxxxxx
 ```
 
 ```java
-// Using a fixed node identifier: 0x111111111111L
-UUID uuid = UUIDGenerator.getUUIDCreator().withMulticastNodeIdentifier(0x111111111111L).create();
+// Using a fixed node identifier instead of the hardware address
+UUID uuid = UUIDGenerator.getOrderedUUIDCreator().withMulticastNodeIdentifier(0x111111111111L).create();
 System.out.println(uuid.toString());
 // Output: 1e88c46f-e5df-0550-8e9d-111111111111
 ```
@@ -58,13 +59,14 @@ System.out.println(uuid.toString());
 ```
 
 ```java
+// With hardware address
 UUID uuid = UUIDGenerator.getTimeBasedWithMAC();
 System.out.println(uuid.toString());
 // Output: 15670d26-8c44-11e8-bda5-47f8xxxxxxxx
 ```
 
 ```java
-// Using a fixed node identifier: 0x111111111111L
+// Using a fixed node identifier instead of the hardware address
 uuid = UUIDGenerator.getTimeBasedUUIDCreator().withMulticastNodeIdentifier(0x111111111111L).create();
 System.out.println(uuid.toString());
 // Output: fe682e80-8c46-11e8-98d5-111111111111
@@ -157,8 +159,8 @@ BenchmarkRunner.UUIDGenerator_FastRandom           ss  100   3,441 ± 0,587  ms/
 BenchmarkRunner.UUIDGenerator_NameBasedMD5         ss  100  41,536 ± 3,365  ms/op
 BenchmarkRunner.UUIDGenerator_NameBasedSHA1        ss  100  51,539 ± 5,157  ms/op
 BenchmarkRunner.UUIDGenerator_Random               ss  100  45,951 ± 2,979  ms/op
-BenchmarkRunner.UUIDGenerator_                     ss  100   7,613 ± 1,026  ms/op
-BenchmarkRunner.UUIDGenerator_WithMAC              ss  100   7,480 ± 0,980  ms/op
+BenchmarkRunner.UUIDGenerator_Ordered              ss  100   7,613 ± 1,026  ms/op
+BenchmarkRunner.UUIDGenerator_OrderedWithMAC       ss  100   7,480 ± 0,980  ms/op
 BenchmarkRunner.UUIDGenerator_TimeBased            ss  100   7,524 ± 0,982  ms/op
 BenchmarkRunner.UUIDGenerator_TimeBasedWithMAC     ss  100   7,705 ± 0,959  ms/op
 Total time: 00:01:32
