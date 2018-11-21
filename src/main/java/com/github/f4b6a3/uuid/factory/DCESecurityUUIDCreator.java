@@ -19,7 +19,7 @@ package com.github.f4b6a3.uuid.factory;
 
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.increment.AbstractIncrementable;
+import com.github.f4b6a3.uuid.sequence.AbstractSequence;
 
 /**
  * 
@@ -218,7 +218,7 @@ public class DCESecurityUUIDCreator extends TimeBasedUUIDCreator {
 	/**
 	 * Class used to keep a counter to simulate minimize repetition.
 	 */
-	protected class DCESTimestampCounter extends AbstractIncrementable {
+	protected class DCESTimestampCounter extends AbstractSequence {
 
 		private long timestamp = 0;
 

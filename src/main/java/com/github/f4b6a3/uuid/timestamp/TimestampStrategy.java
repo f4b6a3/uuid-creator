@@ -1,4 +1,4 @@
-package com.github.f4b6a3.uuid.time;
+package com.github.f4b6a3.uuid.timestamp;
 
 /**
  * This interface exists to allow implementations other than the default, that

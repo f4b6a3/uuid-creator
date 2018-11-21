@@ -2,7 +2,7 @@ package com.github.f4b6a3.uuid.time;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.time.DefaultTimestampStrategy;
+import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
 
 import static org.junit.Assert.*;
 

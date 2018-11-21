@@ -1,4 +1,4 @@
-package com.github.f4b6a3.uuid.util;
+package com.github.f4b6a3.uuid.exception;
 
 public class OverrunException extends RuntimeException {
 

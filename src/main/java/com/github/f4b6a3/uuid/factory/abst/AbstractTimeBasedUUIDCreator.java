@@ -24,10 +24,10 @@ import java.util.Random;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.factory.TimeBasedUUIDCreator;
-import com.github.f4b6a3.uuid.increment.ClockSequence;
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
-import com.github.f4b6a3.uuid.time.DefaultTimestampStrategy;
-import com.github.f4b6a3.uuid.time.TimestampStrategy;
+import com.github.f4b6a3.uuid.sequence.ClockSequence;
+import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
+import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
 import com.github.f4b6a3.uuid.util.ByteUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 

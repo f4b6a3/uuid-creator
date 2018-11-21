@@ -1,9 +1,10 @@
-package com.github.f4b6a3.uuid.increment;
+package com.github.f4b6a3.uuid.sequence;
 
 import org.junit.Test;
 
+import com.github.f4b6a3.uuid.exception.OverrunException;
 import com.github.f4b6a3.uuid.factory.TimeBasedUUIDCreator;
-import com.github.f4b6a3.uuid.util.OverrunException;
+import com.github.f4b6a3.uuid.sequence.ClockSequence;
 
 import static org.junit.Assert.*;
 

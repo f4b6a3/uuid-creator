@@ -1,12 +1,14 @@
-package com.github.f4b6a3.uuid.increment;
+package com.github.f4b6a3.uuid.sequence;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import com.github.f4b6a3.uuid.sequence.AbstractSequence;
+
 public class AbstractIncrementableTest {
 	
-	private static class TestIncrementable extends AbstractIncrementable {
+	private static class TestIncrementable extends AbstractSequence {
 
 		protected static int MIN_TEST = 1111;
 		protected static int MAX_TEST = 2222;

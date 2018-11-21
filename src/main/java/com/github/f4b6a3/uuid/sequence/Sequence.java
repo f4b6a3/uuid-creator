@@ -15,9 +15,9 @@
  *
  */
 
-package com.github.f4b6a3.uuid.increment;
+package com.github.f4b6a3.uuid.sequence;
 
-public interface Incrementable {
+public interface Sequence {
 	int getCurrent();
 	int getNext();
 	int getMinValue();

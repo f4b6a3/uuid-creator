@@ -15,15 +15,19 @@
  *
  */
 
-package com.github.f4b6a3.uuid.increment;
+package com.github.f4b6a3.uuid.sequence;
 
 import java.util.Random;
 import java.util.logging.Logger;
 
+import com.github.f4b6a3.uuid.exception.OverrunException;
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
-import com.github.f4b6a3.uuid.util.OverrunException;
 
-public class ClockSequence extends AbstractIncrementable {
+/**
+ * This class is an implementation of the 'clock sequence' of the RFC-4122. The
+ * maximum value of this sequence is 16,383 or 0x3fff.
+ */
+public class ClockSequence extends AbstractSequence {
 
 	// keeps the previous timestamp
 	private long timestamp = 0;
@@ -37,7 +41,7 @@ public class ClockSequence extends AbstractIncrementable {
 	protected boolean overrunException = true;
 
 	public ClockSequence() {
-		super(SEQUENCE_MIN, SEQUENCE_MAX);
+		super(0, 16_383);
 		this.reset();
 	}
 
@@ -85,7 +89,8 @@ public class ClockSequence extends AbstractIncrementable {
 			if (this.overrunException) {
 				// (3b) return an error if the clock sequence overruns.
 				if (this.value >= this.MAX_VALUE) {
-					throw new OverrunException(String.format("UUID clock sequence overrun for timestamp '%s'.", timestamp));
+					throw new OverrunException(
+							String.format("UUID clock sequence overrun for timestamp '%s'.", timestamp));
 				}
 			}
 

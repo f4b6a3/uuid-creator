@@ -1,6 +1,6 @@
-package com.github.f4b6a3.uuid.time;
+package com.github.f4b6a3.uuid.timestamp;
 
-import com.github.f4b6a3.uuid.increment.AbstractIncrementable;
+import com.github.f4b6a3.uuid.sequence.AbstractSequence;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 
 /**
@@ -12,7 +12,7 @@ import com.github.f4b6a3.uuid.util.TimestampUtil;
  * This class counts how many times a timestamp was used. This value added to
  * the timestamp is used to simulate a high resolution clock.
  * 
- * The maximum value of this counter is 10,000 exclusive, 'the number of
+ * The maximum value of this counter is 10,000, 'the number of
  * 100-nanosecond intervals per' milliseconds.
  * 
  * ### RFC-4122 - 4.2.1.2. System Clock Resolution
@@ -24,12 +24,12 @@ import com.github.f4b6a3.uuid.util.TimestampUtil;
  * system time interval.
  *
  */
-public class DefaultTimestampStrategy extends AbstractIncrementable implements TimestampStrategy {
+public class DefaultTimestampStrategy extends AbstractSequence implements TimestampStrategy {
 
 	private long timestamp = 0;
 
 	private static final int COUNTER_MIN = 0;
-	private static final int COUNTER_MAX = 9999;
+	private static final int COUNTER_MAX = 10_000;
 
 	public DefaultTimestampStrategy() {
 		super(COUNTER_MIN, COUNTER_MAX);

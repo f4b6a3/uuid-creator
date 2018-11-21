@@ -15,7 +15,7 @@
  *
  */
 
-package com.github.f4b6a3.uuid.bench;
+package com.github.f4b6a3.uuid.benchmark;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
