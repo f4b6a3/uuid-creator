@@ -94,5 +94,4 @@ public class TimestampUtil {
 		return LocalDate.parse("1582-10-15").atStartOfDay(ZoneId.of("UTC")).toInstant().getEpochSecond()
 				* MILLISECONDS_PER_SECOND;
 	}
-
 }

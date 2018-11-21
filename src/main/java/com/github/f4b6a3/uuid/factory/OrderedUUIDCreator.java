@@ -18,6 +18,7 @@
 package com.github.f4b6a3.uuid.factory;
 
 import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUUIDCreator;
+import com.github.f4b6a3.uuid.util.UUIDUtil;
 
 /**
  * Factory that creates time-based UUIDs, version 0.
@@ -37,18 +38,13 @@ public class OrderedUUIDCreator extends AbstractTimeBasedUUIDCreator {
 	}
 
 	/**
-	 * Returns the timestamp bits of the UUID in the 'natural' order of bytes.
 	 * 
-	 * It's not necessary to set the version bits because they are already ZERO.
+	 * {@link UUIDUtil#formatOrderedMostSignificantBits(long)}
 	 * 
 	 * @param timestamp
 	 */
 	@Override
-	public long getMostSignificantBits(long timestamp) {
-
-		long himid = (timestamp & 0x0ffffffffffff000L) << 4;
-		long low = (timestamp & 0x0000000000000fffL);
-
-		return (himid | low);
+	public long formatMostSignificantBits(long timestamp) {
+		return UUIDUtil.formatOrderedMostSignificantBits(timestamp);
 	}
 }

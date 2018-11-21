@@ -30,6 +30,7 @@ import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
 import com.github.f4b6a3.uuid.util.ByteUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
+import com.github.f4b6a3.uuid.util.UUIDUtil;
 
 public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 
@@ -103,10 +104,10 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 		long sequence = clockSequence.getNextForTimestamp(timestamp);
 
 		// (9a) format the most significant bits
-		long msb = getMostSignificantBits(timestamp);
+		long msb = formatMostSignificantBits(timestamp);
 
 		// (9a) format the least significant bits
-		long lsb = getLeastSignificantBits(nodeIdentifier, sequence);
+		long lsb = formatLeastSignificantBits(nodeIdentifier, sequence);
 
 		// (9a) format a UUID from the MSB and LSB
 		return new UUID(msb, lsb);
@@ -260,7 +261,7 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	 * 
 	 * @param timestamp
 	 */
-	public abstract long getMostSignificantBits(long timestamp);
+	public abstract long formatMostSignificantBits(long timestamp);
 
 	/**
 	 * Returns the least significant bits of the UUID.
@@ -283,12 +284,8 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	 * @param nodeIdentifier
 	 * @param clockSequence
 	 */
-	public long getLeastSignificantBits(final long nodeIdentifier, final long clockSequence) {
-
-		long seq = clockSequence << 48;
-		long nod = nodeIdentifier & 0x0000ffffffffffffL;
-
-		return setVariantBits(seq | nod);
+	public long formatLeastSignificantBits(final long nodeIdentifier, final long clockSequence) {
+		return UUIDUtil.formatLeastSignificantBits(nodeIdentifier, clockSequence);
 	}
 
 	/**

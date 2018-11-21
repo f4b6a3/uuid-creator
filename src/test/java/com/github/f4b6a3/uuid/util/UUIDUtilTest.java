@@ -122,7 +122,23 @@ public class UUIDUtilTest {
 		assertEquals(expectedInstant, instant2);
 	}
 
-	@Test()
+	@Test
+	public void testFromTimeBasedToOrderedUUID(){
+		UUID uuid1 = UUIDGenerator.getTimeBased();
+		UUID uuid2 = fromTimeBasedToOrderedUUID(uuid1);
+		
+		assertTrue(isOrderedVersion(uuid2));
+	}
+	
+	@Test
+	public void testFromOrderedToTimeBasedUUID(){
+		UUID uuid1 = UUIDGenerator.getOrdered();
+		UUID uuid2 = fromOrderedToTimeBasedUUID(uuid1);
+		
+		assertTrue(isTimeBasedVersion(uuid2));
+	}
+	
+	@Test
 	public void testExtractAll_catchExceptions() {
 		UUID uuid = UUID.randomUUID();
 
