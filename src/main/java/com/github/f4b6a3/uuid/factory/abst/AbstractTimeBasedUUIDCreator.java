@@ -102,13 +102,13 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 		long nodeIdentifier = this.getNodeIdentifier();
 
 		// (5a)(6a) get the sequence value
-		long sequence = clockSequence.getNextForTimestamp(timestamp);
+		long sequence = this.clockSequence.getNextForTimestamp(timestamp);
 
 		// (9a) format the most significant bits
-		long msb = formatMostSignificantBits(timestamp);
+		long msb = this.formatMostSignificantBits(timestamp);
 
 		// (9a) format the least significant bits
-		long lsb = formatLeastSignificantBits(nodeIdentifier, sequence);
+		long lsb = this.formatLeastSignificantBits(nodeIdentifier, sequence);
 
 		// (9a) format a UUID from the MSB and LSB
 		return new UUID(msb, lsb);
@@ -307,7 +307,7 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	protected long getNodeIdentifier() {
 
 		if (this.nodeIdentifier == 0) {
-			this.nodeIdentifier = AbstractTimeBasedUUIDCreator.setMulticastNodeIdentifier(random.nextLong());
+			this.nodeIdentifier = getRandomMulticastNodeIdentifier();
 		}
 
 		return this.nodeIdentifier;
@@ -335,6 +335,19 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	 * 
 	 * It returns ZERO if none is found.
 	 * 
+	 * ### RFC-4122 - 4.1.6. Node
+	 * 
+	 * (1) For UUID version 1, the node field consists of an IEEE 802 MAC
+	 * address, usually the host address. For systems with multiple IEEE 802
+	 * addresses, any available one can be used. The lowest addressed octet
+	 * (octet number 10) contains the global/local bit and the unicast/multicast
+	 * bit, and is the first octet of the address transmitted on an 802.3 LAN.
+	 * 
+	 * (2) For systems with no IEEE address, a randomly or pseudo-randomly
+	 * generated value may be used; see Section 4.5. The multicast bit must be
+	 * set in such addresses, in order that they will never conflict with
+	 * addresses obtained from network cards.
+	 * 
 	 * @return
 	 */
 	protected long getHardwareAddress() {
@@ -344,7 +357,7 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 			NetworkInterface nic;
 			byte[] mac;
 
-			// Return the first real MAC that is up and running.
+			// (1) Return the first real MAC that is up and running.
 			list = NetworkInterface.getNetworkInterfaces();
 			while (list.hasMoreElements()) {
 				nic = list.nextElement();
@@ -354,7 +367,7 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 				}
 			}
 
-			// Return the first MAC found.
+			// (1) Or return the first MAC found.
 			list = NetworkInterface.getNetworkInterfaces();
 			while (list.hasMoreElements()) {
 				nic = list.nextElement();
@@ -365,10 +378,21 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 			}
 
 		} catch (SocketException | NullPointerException e) {
-			return 0;
+			// (2) return random number
+			return getRandomMulticastNodeIdentifier();
 		}
 
-		return 0;
+		// (2) return random number
+		return getRandomMulticastNodeIdentifier();
+	}
+
+	/**
+	 * Return a random generated node identifier.
+	 * 
+	 * @return
+	 */
+	protected long getRandomMulticastNodeIdentifier() {
+		return AbstractTimeBasedUUIDCreator.setMulticastNodeIdentifier(random.nextLong());
 	}
 
 	/**

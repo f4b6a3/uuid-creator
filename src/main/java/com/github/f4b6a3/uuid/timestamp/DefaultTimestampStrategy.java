@@ -26,10 +26,10 @@ import com.github.f4b6a3.uuid.util.TimestampUtil;
  */
 public class DefaultTimestampStrategy extends AbstractSequence implements TimestampStrategy {
 
-	private long timestamp = 0;
+	protected long timestamp = 0;
 
-	private static final int COUNTER_MIN = 0;
-	private static final int COUNTER_MAX = 10_000;
+	protected static final int COUNTER_MIN = 0;
+	protected static final int COUNTER_MAX = 10_000;
 
 	public DefaultTimestampStrategy() {
 		super(COUNTER_MIN, COUNTER_MAX);

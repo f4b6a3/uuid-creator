@@ -7,6 +7,5 @@ package com.github.f4b6a3.uuid.timestamp;
  * interface and pass it to the corresponding time-based factory.
  */
 public interface TimestampStrategy {
-
 	long getCurrentTimestamp();
 }

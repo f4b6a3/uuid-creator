@@ -20,13 +20,13 @@ import java.time.ZoneId;
  */
 public class DeltaTimestampStrategy implements TimestampStrategy {
 
-	public static final long NANOSECONDS_PER_SECOND = 1_000_000_000L;
-	public static final long TIMESTAMP_RESOLUTION = 100L;
+	protected static final long NANOSECONDS_PER_SECOND = 1_000_000_000L;
+	protected static final long TIMESTAMP_RESOLUTION = 100L;
 
-	public static final long GREGORIAN_SECONDS = LocalDate.parse("1582-10-15").atStartOfDay(ZoneId.of("UTC"))
+	protected static final long GREGORIAN_SECONDS = LocalDate.parse("1582-10-15").atStartOfDay(ZoneId.of("UTC"))
 			.toInstant().getEpochSecond();
 
-	public static final NanosClock clock = new NanosClock();
+	protected static final NanosClock clock = new NanosClock();
 
 	@Override
 	public long getCurrentTimestamp() {
