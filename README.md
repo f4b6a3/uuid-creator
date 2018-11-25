@@ -24,7 +24,7 @@ The ordered UUID is a different implementation of the standard time-based UUIDs.
 How to Use
 ------------------------------------------------------
 
-### Version 0:  (extension)
+### Version 0: Ordered (extension)
 
 The ordered UUID is a modified time-based UUID. The bytes of timestamp part are rearranged in the 'natural' order. The version number 0 (zero) was chosen to identify  UUIDs. It may be considered as an 'extension' of the RFC-4122. 
 
