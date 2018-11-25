@@ -148,12 +148,12 @@ public class BenchmarkRunner {
 	}
 
 	@Benchmark
-	public UUID UUIDGenerator_ordered() {
+	public UUID UUIDGenerator_Ordered() {
 		return orderedUUIDCreator.create();
 	}
 
 	@Benchmark
-	public UUID UUIDGenerator_orderedWithMAC() {
+	public UUID UUIDGenerator_OrderedWithMAC() {
 		return orderedMACUUIDCreator.create();
 	}
 	
