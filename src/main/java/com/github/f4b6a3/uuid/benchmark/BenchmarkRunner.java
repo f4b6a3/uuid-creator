@@ -60,6 +60,7 @@ public class BenchmarkRunner {
 	private OrderedUUIDCreator orderedMACUUIDCreator;
 	private TimeBasedUUIDCreator timeBasedMACUUIDCreator;
 	private DCESecurityUUIDCreator dceSecurityUUIDCreator;
+	private DCESecurityUUIDCreator dceSecurityWithMACUUIDCreator;
 	
 	@Setup
 	public void setUp() {
@@ -77,6 +78,7 @@ public class BenchmarkRunner {
 		orderedMACUUIDCreator = UUIDGenerator.getOrderedCreator().withHardwareAddress().withOverrunChecking(false);
 		timeBasedMACUUIDCreator = UUIDGenerator.getTimeBasedCreator().withHardwareAddress().withOverrunChecking(false);
 		dceSecurityUUIDCreator = UUIDGenerator.getDCESecurityCreator().withOverrunChecking(false);
+		dceSecurityWithMACUUIDCreator = UUIDGenerator.getDCESecurityCreator().withHardwareAddress().withOverrunChecking(false);
 	}
 	
 	// Java UUID
@@ -135,6 +137,11 @@ public class BenchmarkRunner {
 	@Benchmark
 	public UUID UUIDGenerator_DCESecurity() {
 		return dceSecurityUUIDCreator.create((byte) 1, 1701);
+	}
+	
+	@Benchmark
+	public UUID UUIDGenerator_DCESecurityWithMAC() {
+		return dceSecurityWithMACUUIDCreator.create((byte) 1, 1701);
 	}
 
 	@Benchmark
