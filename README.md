@@ -157,24 +157,24 @@ Benchmark using JMH
 Here is a table showing the results of a simple benchmark using JMH. This implementation is compared to other implementations.
 
 ```text
-Benchmark                                        Mode  Cnt   Score   Error  Units
-BenchmarkRunner.EAIO_TimeBasedWithMAC              ss  100   7,331 ± 0,551  ms/op
-BenchmarkRunner.JUG_NameBased                      ss  100  40,412 ± 4,297  ms/op
-BenchmarkRunner.JUG_Random                         ss  100  54,952 ± 4,435  ms/op
-BenchmarkRunner.JUG_TimeBasedWithMAC               ss  100   7,994 ± 1,030  ms/op
-BenchmarkRunner.JUG_TimeBased                      ss  100   7,950 ± 0,975  ms/op
-BenchmarkRunner.Java_Random                        ss  100  55,014 ± 4,848  ms/op
-BenchmarkRunner.Java_NameBased                     ss  100  51,648 ± 9,532  ms/op
-BenchmarkRunner.UUIDGenerator_DCESecurity          ss  100  14,947 ± 2,875  ms/op
-BenchmarkRunner.UUIDGenerator_FastRandom           ss  100   3,441 ± 0,587  ms/op
-BenchmarkRunner.UUIDGenerator_NameBasedMD5         ss  100  41,536 ± 3,365  ms/op
-BenchmarkRunner.UUIDGenerator_NameBasedSHA1        ss  100  51,539 ± 5,157  ms/op
-BenchmarkRunner.UUIDGenerator_Random               ss  100  45,951 ± 2,979  ms/op
-BenchmarkRunner.UUIDGenerator_Ordered              ss  100   7,613 ± 1,026  ms/op
-BenchmarkRunner.UUIDGenerator_OrderedWithMAC       ss  100   7,480 ± 0,980  ms/op
-BenchmarkRunner.UUIDGenerator_TimeBased            ss  100   7,524 ± 0,982  ms/op
-BenchmarkRunner.UUIDGenerator_TimeBasedWithMAC     ss  100   7,705 ± 0,959  ms/op
-Total time: 00:01:32
+Benchmark                                       Mode  Cnt   Score   Error  Units
+BenchmarkRunner.EAIO_TimeBasedWithMAC             ss  100   7,415 ± 0,650  ms/op
+BenchmarkRunner.JUG_NameBased                     ss  100  39,546 ± 3,049  ms/op
+BenchmarkRunner.JUG_Random                        ss  100  55,136 ± 4,637  ms/op
+BenchmarkRunner.JUG_TimeBased                     ss  100   7,915 ± 1,007  ms/op
+BenchmarkRunner.JUG_TimeBasedWithMAC              ss  100   7,938 ± 0,923  ms/op
+BenchmarkRunner.Java_NameBased                    ss  100  51,912 ± 9,722  ms/op
+BenchmarkRunner.Java_Random                       ss  100  55,957 ± 5,730  ms/op
+BenchmarkRunner.UUIDGenerator_DCESecurity         ss  100   8,023 ± 1,257  ms/op
+BenchmarkRunner.UUIDGenerator_FastRandom          ss  100   3,494 ± 0,581  ms/op
+BenchmarkRunner.UUIDGenerator_NameBasedMD5        ss  100  42,049 ± 4,140  ms/op
+BenchmarkRunner.UUIDGenerator_NameBasedSHA1       ss  100  52,029 ± 4,962  ms/op
+BenchmarkRunner.UUIDGenerator_Random              ss  100  45,712 ± 2,716  ms/op
+BenchmarkRunner.UUIDGenerator_TimeBased           ss  100   7,361 ± 1,027  ms/op
+BenchmarkRunner.UUIDGenerator_TimeBasedWithMAC    ss  100   7,423 ± 0,964  ms/op
+BenchmarkRunner.UUIDGenerator_ordered             ss  100   7,507 ± 0,925  ms/op
+BenchmarkRunner.UUIDGenerator_orderedWithMAC      ss  100   7,301 ± 1,012  ms/op
+Total time: 00:01:31
 ```
 
 These are the configurations used to run this benchmark:
