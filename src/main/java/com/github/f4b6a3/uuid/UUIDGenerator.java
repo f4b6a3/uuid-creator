@@ -205,7 +205,7 @@ public class UUIDGenerator {
 	 * - Version number: 2 <br/>
 	 * - Variant number: 1 <br/>
 	 * - Local domain: informed by user <br/>
-	 * - Has hardware address (MAC)?: YES <br/>
+	 * - Has hardware address (MAC)?: NO <br/>
 	 * - Timestamp bytes are in the RFC-4122 order?: YES <br/>
 	 *
 	 * @param localDomain
@@ -217,6 +217,32 @@ public class UUIDGenerator {
 			dceSecurityCreator = new DCESecurityUUIDCreator();
 		}
 		return dceSecurityCreator.create(localDomain, localIdentifier);
+	}
+	
+	/**
+	 * Returns a DCE Security UUID with machine address based on a local domain
+	 * and a local identifier.
+	 *
+	 * Domain identifiers listed in the RFC-4122: <br/>
+	 * - Local Domain Person (POSIX UserID) = 0;<br/>
+	 * - Local Domain Group (POSIX GroupID) = 1;<br/>
+	 * - Local Domain Org = 2.<br/>
+	 *
+	 * Details: <br/>
+	 * - Version number: 2 <br/>
+	 * - Variant number: 1 <br/>
+	 * - Local domain: informed by user <br/>
+	 * - Has hardware address (MAC)?: YES <br/>
+	 * - Timestamp bytes are in the RFC-4122 order?: YES <br/>
+	 *
+	 * @return
+	 */
+	public static UUID getDCESecurityWithMAC() {
+		if (timeBasedWithMACCreator == null) {
+			dceSecurityCreator = new DCESecurityUUIDCreator();
+			dceSecurityCreator.withHardwareAddress();
+		}
+		return dceSecurityCreator.create();
 	}
 	
 	/**

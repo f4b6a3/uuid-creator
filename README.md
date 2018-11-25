@@ -77,9 +77,20 @@ System.out.println(uuid.toString());
 The DCE Security is a Time-based UUID that also embeds local domain and local identifier.
 
 ```java
-UUID uuid = UUIDGenerator.getDCESecurity(1, 1701);
+byte localDomain = DCESecurityCreator.LOCAL_DOMAIN_GROUP; // POSIX Group ID domain (1)
+int localIdentifier = 1701; // Group ID
+UUID uuid = UUIDGenerator.getDCESecurity(localDomain, localIdentifier);
 System.out.println(uuid.toString());
-// Output: 1e88c441-5711-0fa2-aaac-bf66xxxxxxxx
+// Output: 000006a5-f043-21e8-a900-a99b08980e52
+```
+
+```java
+// With hardware address
+byte localDomain = DCESecurityCreator.LOCAL_DOMAIN_GROUP; // POSIX Group ID domain (1)
+int localIdentifier = 1701; // Group ID
+UUID uuid = UUIDGenerator.getDCESecurityWithMAC(localDomain, localIdentifier);
+System.out.println(uuid.toString());
+// Output: 000006a5-f043-21e8-a900-47f8xxxxxxxx
 ```
 
 ### Version 3: Name-based using MD5
