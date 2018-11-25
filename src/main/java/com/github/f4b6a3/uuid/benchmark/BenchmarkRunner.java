@@ -72,11 +72,11 @@ public class BenchmarkRunner {
 		jugTimeBasedMACGenerator = Generators.timeBasedGenerator(EthernetAddress.fromInterface());
 		jugRandomGenerator = Generators.randomBasedGenerator();
 		
-		orderedUUIDCreator = UUIDGenerator.getOrderedCreator().withOverrunException(false);
-		timeBasedUUIDCreator = UUIDGenerator.getTimeBasedCreator().withOverrunException(false);
-		orderedMACUUIDCreator = UUIDGenerator.getOrderedCreator().withHardwareAddress().withOverrunException(false);
-		timeBasedMACUUIDCreator = UUIDGenerator.getTimeBasedCreator().withHardwareAddress().withOverrunException(false);
-		dceSecurityUUIDCreator = UUIDGenerator.getDCESecurityCreator().withOverrunException(false);
+		orderedUUIDCreator = UUIDGenerator.getOrderedCreator().withOverrunChecking(false);
+		timeBasedUUIDCreator = UUIDGenerator.getTimeBasedCreator().withOverrunChecking(false);
+		orderedMACUUIDCreator = UUIDGenerator.getOrderedCreator().withHardwareAddress().withOverrunChecking(false);
+		timeBasedMACUUIDCreator = UUIDGenerator.getTimeBasedCreator().withHardwareAddress().withOverrunChecking(false);
+		dceSecurityUUIDCreator = UUIDGenerator.getDCESecurityCreator().withOverrunChecking(false);
 	}
 	
 	// Java UUID
@@ -156,7 +156,7 @@ public class BenchmarkRunner {
 	public UUID UUIDGenerator_orderedWithMAC() {
 		return orderedMACUUIDCreator.create();
 	}
-
+	
 	@Benchmark
 	public UUID UUIDGenerator_TimeBased() {
 		return timeBasedUUIDCreator.create();

@@ -80,7 +80,11 @@ public class UUIDGeneratorTest {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUIDGenerator.getOrdered();
 			long newTimestamp = UUIDUtil.extractTimestamp(uuid);
-			assertTrue(newTimestamp > oldTimestemp);
+			
+			if(i > 0) {
+				assertTrue(newTimestamp >= oldTimestemp);
+			}
+			oldTimestemp = newTimestamp;
 		}
 	}
 
@@ -92,7 +96,11 @@ public class UUIDGeneratorTest {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUIDGenerator.getOrdered();
 			long newMsb = uuid.getMostSignificantBits();
-			assertTrue(newMsb > oldMsb);
+
+			if(i > 0) {
+				assertTrue(newMsb >= oldMsb);
+			}
+			oldMsb = newMsb;
 		}
 	}
 

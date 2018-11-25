@@ -38,7 +38,7 @@ public class ClockSequence extends AbstractSequence {
 	protected static final Random random = new Xorshift128PlusRandom();
 	protected static final Logger LOGGER = Logger.getAnonymousLogger();
 
-	protected boolean overrunException = true;
+	protected boolean overrunChecking = true;
 
 	public ClockSequence() {
 		super(0, 16_383);
@@ -59,8 +59,8 @@ public class ClockSequence extends AbstractSequence {
 	 * @param enabled
 	 * @return
 	 */
-	public void setOverrunException(boolean enabled) {
-		this.overrunException = enabled;
+	public void setOverrunChecking(boolean enabled) {
+		this.overrunChecking = enabled;
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class ClockSequence extends AbstractSequence {
 
 		if (timestamp <= this.timestamp) {
 
-			if (this.overrunException) {
+			if (this.overrunChecking) {
 				// (3b) return an error if the clock sequence overruns.
 				if (this.value >= this.MAX_VALUE) {
 					throw new OverrunException(

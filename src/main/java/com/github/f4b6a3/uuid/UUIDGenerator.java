@@ -46,6 +46,7 @@ public class UUIDGenerator {
 	private static RandomUUIDCreator randomCreator;
 	private static RandomUUIDCreator fastRandomCreator;
 	private static DCESecurityUUIDCreator dceSecurityCreator;
+	private static DCESecurityUUIDCreator dceSecurityWithMACCreator;
 
 	/*
 	 * Public static methods for creating UUIDs
@@ -193,6 +194,32 @@ public class UUIDGenerator {
 	}
 
 	/**
+	 * Returns a DCE Security UUID with machine address based on a local
+	 * identifier.
+	 *
+	 * Domain identifiers listed in the RFC-4122: <br/>
+	 * - Local Domain Person (POSIX UserID) = 0;<br/>
+	 * - Local Domain Group (POSIX GroupID) = 1;<br/>
+	 * - Local Domain Org = 2.<br/>
+	 *
+	 * Details: <br/>
+	 * - Version number: 2 <br/>
+	 * - Variant number: 1 <br/>
+	 * - Local domain: informed by user <br/>
+	 * - Has hardware address (MAC)?: YES <br/>
+	 * - Timestamp bytes are in the RFC-4122 order?: YES <br/>
+	 *
+	 * @return
+	 */
+	public static UUID getDCESecurityWithMAC(int localIdentifier) {
+		if (dceSecurityWithMACCreator == null) {
+			dceSecurityWithMACCreator = new DCESecurityUUIDCreator();
+			dceSecurityWithMACCreator.withHardwareAddress();
+		}
+		return dceSecurityCreator.create(localIdentifier);
+	}
+
+	/**
 	 * Returns a DCE Security UUID based on a local domain and a local
 	 * identifier.
 	 *
@@ -218,7 +245,7 @@ public class UUIDGenerator {
 		}
 		return dceSecurityCreator.create(localDomain, localIdentifier);
 	}
-	
+
 	/**
 	 * Returns a DCE Security UUID with machine address based on a local domain
 	 * and a local identifier.
@@ -237,14 +264,14 @@ public class UUIDGenerator {
 	 *
 	 * @return
 	 */
-	public static UUID getDCESecurityWithMAC() {
-		if (timeBasedWithMACCreator == null) {
-			dceSecurityCreator = new DCESecurityUUIDCreator();
-			dceSecurityCreator.withHardwareAddress();
+	public static UUID getDCESecurityWithMAC(byte localDomain, int localIdentifier) {
+		if (dceSecurityWithMACCreator == null) {
+			dceSecurityWithMACCreator = new DCESecurityUUIDCreator();
+			dceSecurityWithMACCreator.withHardwareAddress();
 		}
-		return dceSecurityCreator.create();
+		return dceSecurityCreator.create(localDomain, localIdentifier);
 	}
-	
+
 	/**
 	 * Returns a UUID based on a name, using MD5.
 	 * 
@@ -263,7 +290,7 @@ public class UUIDGenerator {
 		}
 		return nameBasedMD5Creator.create(name);
 	}
-	
+
 	/**
 	 * Returns a UUID based on a name space and a name, using MD5.
 	 *
@@ -302,7 +329,7 @@ public class UUIDGenerator {
 		}
 		return nameBasedSHA1Creator.create(name);
 	}
-	
+
 	/**
 	 * Returns a UUID based on a name space and a name, using SHA1.
 	 *

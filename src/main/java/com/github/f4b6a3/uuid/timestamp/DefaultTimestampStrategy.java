@@ -4,16 +4,16 @@ import com.github.f4b6a3.uuid.sequence.AbstractSequence;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 
 /**
- * This is implementation of {@link TimestampStrategy} has resolution of
- * milliseconds. The timestamp resolution is simulated by adding the value of a
- * counter that is incremented at every call to the method
- * {@link TimestampStrategy#getCurrentTimestamp()}l.
+ * This is an implementation of {@link TimestampStrategy} that provides
+ * millisecond resolution. The timestamp resolution is simulated by adding the
+ * value of a counter that is incremented at every call to the method
+ * {@link TimestampStrategy#getCurrentTimestamp()}.
  * 
  * This class counts how many times a timestamp was used. This value added to
  * the timestamp is used to simulate a high resolution clock.
  * 
- * The maximum value of this counter is 10,000, 'the number of
- * 100-nanosecond intervals per' milliseconds.
+ * The maximum value of this counter is 10,000, 'the number of 100-nanosecond
+ * intervals per' milliseconds.
  * 
  * ### RFC-4122 - 4.2.1.2. System Clock Resolution
  * 

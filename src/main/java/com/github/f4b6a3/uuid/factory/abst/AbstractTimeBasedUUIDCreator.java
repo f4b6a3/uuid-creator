@@ -21,7 +21,6 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.time.Instant;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.UUID;
 
@@ -247,14 +246,17 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	}
 
 	/**
-	 * @see {@link ClockSequence#setOverrunException(boolean)}
+	 * This method enables/disables exceptions if a clock sequence overrun
+	 * occurs. It may be used for benchmarking.
+	 * 
+	 * @see {@link ClockSequence#setOverrunChecking(boolean)}
 	 * 
 	 * @param enabled
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUUIDCreator> T withOverrunException(boolean enabled) {
-		this.clockSequence.setOverrunException(enabled);
+	public <T extends AbstractTimeBasedUUIDCreator> T withOverrunChecking(boolean enabled) {
+		this.clockSequence.setOverrunChecking(enabled);
 		return (T) this;
 	}
 
@@ -341,7 +343,7 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 			Enumeration<NetworkInterface> list;
 			NetworkInterface nic;
 			byte[] mac;
-			
+
 			// Return the first real MAC that is up and running.
 			list = NetworkInterface.getNetworkInterfaces();
 			while (list.hasMoreElements()) {
