@@ -20,6 +20,8 @@ package com.github.f4b6a3.uuid.factory.abst;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.time.Instant;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.UUID;
 
@@ -326,20 +328,44 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	/**
 	 * Get the machine address.
 	 * 
-	 * It returns ZERO if no address is found.
+	 * It looks for the first MAC that is up and running. If none is up, it
+	 * looks for the first MAC.
+	 * 
+	 * It returns ZERO if none is found.
 	 * 
 	 * @return
 	 */
 	protected long getHardwareAddress() {
 		try {
-			NetworkInterface nic = NetworkInterface.getNetworkInterfaces().nextElement();
-			byte[] realHardwareAddress = nic.getHardwareAddress();
-			if (realHardwareAddress != null) {
-				return ByteUtil.toNumber(realHardwareAddress);
+
+			Enumeration<NetworkInterface> list;
+			NetworkInterface nic;
+			byte[] mac;
+			
+			// Return the first real MAC that is up and running.
+			list = NetworkInterface.getNetworkInterfaces();
+			while (list.hasMoreElements()) {
+				nic = list.nextElement();
+				mac = nic.getHardwareAddress();
+				if ((mac != null) && nic.isUp() && !(nic.isLoopback() || nic.isVirtual())) {
+					return ByteUtil.toNumber(mac);
+				}
 			}
+
+			// Return the first MAC found.
+			list = NetworkInterface.getNetworkInterfaces();
+			while (list.hasMoreElements()) {
+				nic = list.nextElement();
+				mac = nic.getHardwareAddress();
+				if (mac != null) {
+					return ByteUtil.toNumber(mac);
+				}
+			}
+
 		} catch (SocketException | NullPointerException e) {
 			return 0;
 		}
+
 		return 0;
 	}
 
