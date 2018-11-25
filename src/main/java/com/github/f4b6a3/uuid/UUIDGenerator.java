@@ -175,6 +175,8 @@ public class UUIDGenerator {
 	/**
 	 * Returns a DCE Security UUID based on a local identifier.
 	 *
+	 * The local domain is 'Local Domain Person' (ZERO).
+	 *
 	 * Details: <br/>
 	 * - Version number: 2 <br/>
 	 * - Variant number: 1 <br/>
@@ -197,10 +199,7 @@ public class UUIDGenerator {
 	 * Returns a DCE Security UUID with machine address based on a local
 	 * identifier.
 	 *
-	 * Domain identifiers listed in the RFC-4122: <br/>
-	 * - Local Domain Person (POSIX UserID) = 0;<br/>
-	 * - Local Domain Group (POSIX GroupID) = 1;<br/>
-	 * - Local Domain Org = 2.<br/>
+	 * The local domain is 'Local Domain Person' (ZERO).
 	 *
 	 * Details: <br/>
 	 * - Version number: 2 <br/>
