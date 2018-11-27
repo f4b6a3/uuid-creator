@@ -41,13 +41,8 @@ public class ClockSequence extends AbstractSequence {
 	protected boolean overrunChecking = true;
 
 	public ClockSequence() {
-		super(0, 16_383);
-		this.reset();
-	}
-
-	public ClockSequence(int value) {
 		super(SEQUENCE_MIN, SEQUENCE_MAX);
-		this.value = value;
+		this.reset();
 	}
 
 	/**
@@ -83,9 +78,7 @@ public class ClockSequence extends AbstractSequence {
 	 * @return
 	 */
 	public int getNextForTimestamp(long timestamp) {
-
 		if (timestamp <= this.timestamp) {
-
 			if (this.overrunChecking) {
 				// (3b) return an error if the clock sequence overruns.
 				if (this.value >= this.MAX_VALUE) {
@@ -93,16 +86,15 @@ public class ClockSequence extends AbstractSequence {
 							String.format("UUID clock sequence overrun for timestamp '%s'.", timestamp));
 				}
 			}
-
-			return this.getNext();
+			return this.next();
 		}
-
 		this.timestamp = timestamp;
-		return this.getCurrent();
+		return this.current();
 	}
 
 	@Override
 	public void reset() {
 		this.value = random.nextInt(SEQUENCE_MAX);
 	}
+
 }

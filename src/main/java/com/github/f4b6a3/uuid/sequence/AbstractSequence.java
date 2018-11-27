@@ -31,37 +31,39 @@ public abstract class AbstractSequence implements Sequence {
 	protected AbstractSequence(int min, int max) {
 		this.MIN_VALUE = min;
 		this.MAX_VALUE = max;
+		this.value = MIN_VALUE;
 	}
 
 	@Override
-	public int getCurrent() {
+	public int current() {
 		return this.value;
 	}
 
 	@Override
-	public int getNext() {
-
+	public int next() {
 		if (this.value >= MAX_VALUE) {
-			this.value = MIN_VALUE;
-		} else {
-			this.value++;
+			this.value = MIN_VALUE - 1;
 		}
-
-		return this.value;
+		return ++this.value;
 	}
 
 	@Override
-	public int getMinValue() {
+	public int min() {
 		return MIN_VALUE;
 	}
 
 	@Override
-	public int getMaxValue() {
+	public int max() {
 		return MAX_VALUE;
 	}
 
 	@Override
 	public void reset() {
 		this.value = MIN_VALUE;
+	}
+	
+	@Override
+	public void set(int value) {
+		this.value = value;
 	}
 }

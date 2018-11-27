@@ -240,8 +240,8 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUUIDCreator> T withInitialClockSequence(int sequence) {
-		this.clockSequence = new ClockSequence(sequence);
+	public <T extends AbstractTimeBasedUUIDCreator> T withClockSequence(int sequence) {
+		this.clockSequence.set(sequence);
 		return (T) this;
 	}
 

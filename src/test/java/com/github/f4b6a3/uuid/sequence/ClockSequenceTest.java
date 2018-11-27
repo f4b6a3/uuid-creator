@@ -48,7 +48,7 @@ public class ClockSequenceTest {
 	public void testNextForTimestamp_should_throw_overrun_exception() {
 
 		TimeBasedUUIDCreator creator = new TimeBasedUUIDCreator().withInstant(Instant.now())
-				.withInitialClockSequence(0x3fff);
+				.withClockSequence(0x3fff);
 
 		for (int i = 0; i < ClockSequence.SEQUENCE_MAX; i++) {
 			creator.create();

@@ -18,9 +18,10 @@
 package com.github.f4b6a3.uuid.sequence;
 
 public interface Sequence {
-	int getCurrent();
-	int getNext();
-	int getMinValue();
-	int getMaxValue();
+	int current();
+	int next();
+	int min();
+	int max();
 	void reset();
+	void set(int value);
 }

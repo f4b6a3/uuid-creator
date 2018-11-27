@@ -53,11 +53,11 @@ public class DefaultTimestampStrategy extends AbstractSequence implements Timest
 	 */
 	public int getNextForTimestamp(long timestamp) {
 		if (timestamp <= this.timestamp) {
-			return this.getNext();
+			return this.next();
 		}
 
 		this.timestamp = timestamp;
 		this.reset();
-		return this.getCurrent();
+		return this.current();
 	}
 }

@@ -139,7 +139,7 @@ public class DCESecurityUUIDCreator extends TimeBasedUUIDCreator {
 		long msb = setLocalIdentifierBits(uuid.getMostSignificantBits(), localIdentifier);
 
 		// (3a) Insert the local domain bits
-		int counter = timestampCounter.getNext();
+		int counter = timestampCounter.next();
 		long lsb = setLocalDomainBits(uuid.getLeastSignificantBits(), localDomain, counter);
 		
 		// (1b) set version 2;
@@ -236,13 +236,14 @@ public class DCESecurityUUIDCreator extends TimeBasedUUIDCreator {
 		 * @param timestamp
 		 * @return
 		 */
-		protected int getNextFor(long timestamp) {
+		protected int getNextForTimestamp(long timestamp) {
 			if (timestamp <= this.timestamp) {
-				return this.getNext();
+				return this.next();
 			}
 			this.timestamp = timestamp;
 			this.reset();
-			return this.getCurrent();
+			return this.current();
 		}
+		
 	}
 }
