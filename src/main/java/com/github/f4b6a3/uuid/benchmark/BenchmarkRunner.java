@@ -36,10 +36,18 @@ import com.fasterxml.uuid.impl.NameBasedGenerator;
 import com.fasterxml.uuid.impl.RandomBasedGenerator;
 import com.fasterxml.uuid.impl.TimeBasedGenerator;
 import com.github.f4b6a3.uuid.UUIDGenerator;
+import com.github.f4b6a3.uuid.exception.OverrunException;
 import com.github.f4b6a3.uuid.factory.DCESecurityUUIDCreator;
 import com.github.f4b6a3.uuid.factory.OrderedUUIDCreator;
 import com.github.f4b6a3.uuid.factory.TimeBasedUUIDCreator;
 
+/**
+ * A simple benchmark that compares this implementation to others.
+ * 
+ * If the computer is too fast, {@link OverrunException} may be thrown,
+ * increasing some scores.
+ *
+ */
 @State(Scope.Thread)
 @Warmup(iterations = 1, batchSize = 1000)
 @Measurement(iterations = 10, batchSize = 100000)
@@ -54,17 +62,17 @@ public class BenchmarkRunner {
 	private TimeBasedGenerator jugTimeBasedGenerator;
 	private TimeBasedGenerator jugTimeBasedMACGenerator;
 	private RandomBasedGenerator jugRandomGenerator;
-	
+
 	private OrderedUUIDCreator orderedUUIDCreator;
 	private TimeBasedUUIDCreator timeBasedUUIDCreator;
 	private OrderedUUIDCreator orderedMACUUIDCreator;
 	private TimeBasedUUIDCreator timeBasedMACUUIDCreator;
 	private DCESecurityUUIDCreator dceSecurityUUIDCreator;
 	private DCESecurityUUIDCreator dceSecurityWithMACUUIDCreator;
-	
+
 	@Setup
 	public void setUp() {
-		
+
 		name = "https://github.com/";
 		bytes = name.getBytes();
 
@@ -72,15 +80,15 @@ public class BenchmarkRunner {
 		jugTimeBasedGenerator = Generators.timeBasedGenerator();
 		jugTimeBasedMACGenerator = Generators.timeBasedGenerator(EthernetAddress.fromInterface());
 		jugRandomGenerator = Generators.randomBasedGenerator();
-		
-		orderedUUIDCreator = UUIDGenerator.getOrderedCreator().withOverrunChecking(false);
-		timeBasedUUIDCreator = UUIDGenerator.getTimeBasedCreator().withOverrunChecking(false);
-		orderedMACUUIDCreator = UUIDGenerator.getOrderedCreator().withHardwareAddress().withOverrunChecking(false);
-		timeBasedMACUUIDCreator = UUIDGenerator.getTimeBasedCreator().withHardwareAddress().withOverrunChecking(false);
-		dceSecurityUUIDCreator = UUIDGenerator.getDCESecurityCreator().withOverrunChecking(false);
-		dceSecurityWithMACUUIDCreator = UUIDGenerator.getDCESecurityCreator().withHardwareAddress().withOverrunChecking(false);
+
+		orderedUUIDCreator = UUIDGenerator.getOrderedCreator();
+		timeBasedUUIDCreator = UUIDGenerator.getTimeBasedCreator();
+		orderedMACUUIDCreator = UUIDGenerator.getOrderedCreator().withHardwareAddress();
+		timeBasedMACUUIDCreator = UUIDGenerator.getTimeBasedCreator().withHardwareAddress();
+		dceSecurityUUIDCreator = UUIDGenerator.getDCESecurityCreator();
+		dceSecurityWithMACUUIDCreator = UUIDGenerator.getDCESecurityCreator().withHardwareAddress();
 	}
-	
+
 	// Java UUID
 
 	@Benchmark
@@ -138,7 +146,7 @@ public class BenchmarkRunner {
 	public UUID UUIDGenerator_DCESecurity() {
 		return dceSecurityUUIDCreator.create((byte) 1, 1701);
 	}
-	
+
 	@Benchmark
 	public UUID UUIDGenerator_DCESecurityWithMAC() {
 		return dceSecurityWithMACUUIDCreator.create((byte) 1, 1701);
@@ -163,7 +171,7 @@ public class BenchmarkRunner {
 	public UUID UUIDGenerator_OrderedWithMAC() {
 		return orderedMACUUIDCreator.create();
 	}
-	
+
 	@Benchmark
 	public UUID UUIDGenerator_TimeBased() {
 		return timeBasedUUIDCreator.create();

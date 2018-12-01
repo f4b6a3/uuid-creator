@@ -246,21 +246,6 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	}
 
 	/**
-	 * This method enables/disables exceptions if a clock sequence overrun
-	 * occurs. It may be used for benchmarking.
-	 * 
-	 * @see {@link ClockSequence#setOverrunChecking(boolean)}
-	 * 
-	 * @param enabled
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUUIDCreator> T withOverrunChecking(boolean enabled) {
-		this.clockSequence.setOverrunChecking(enabled);
-		return (T) this;
-	}
-
-	/**
 	 * Format the MSB UUID from the current timestamp.
 	 * 
 	 * @param timestamp

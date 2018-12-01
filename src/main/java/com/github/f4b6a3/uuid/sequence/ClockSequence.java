@@ -32,30 +32,18 @@ public class ClockSequence extends AbstractSequence {
 	// keeps the previous timestamp
 	private long timestamp = 0;
 
+	// keeps count of values returned
+	private int counter = 0;
+
 	protected static final int SEQUENCE_MIN = 0; // 0x0000;
 	protected static final int SEQUENCE_MAX = 16_383; // 0x3fff;
 
 	protected static final Random random = new Xorshift128PlusRandom();
 	protected static final Logger LOGGER = Logger.getAnonymousLogger();
 
-	protected boolean overrunChecking = true;
-
 	public ClockSequence() {
 		super(SEQUENCE_MIN, SEQUENCE_MAX);
 		this.reset();
-	}
-
-	/**
-	 * Disables the overrun exception throwing when necessary.
-	 * 
-	 * By default an {@link OverrunException} is thrown whenever the clock
-	 * sequence is overrun during runtime.
-	 * 
-	 * @param enabled
-	 * @return
-	 */
-	public void setOverrunChecking(boolean enabled) {
-		this.overrunChecking = enabled;
 	}
 
 	/**
@@ -76,18 +64,18 @@ public class ClockSequence extends AbstractSequence {
 	 * @param timestamp
 	 * @param nodeIdentifier
 	 * @return
+	 * @throws OverrunException
 	 */
-	public int getNextForTimestamp(long timestamp) {
+	public int getNextForTimestamp(long timestamp) throws OverrunException {
 		if (timestamp <= this.timestamp) {
-			if (this.overrunChecking) {
-				// (3b) return an error if the clock sequence overruns.
-				if (this.value >= this.MAX_VALUE) {
-					throw new OverrunException(
-							String.format("UUID clock sequence overrun for timestamp '%s'.", timestamp));
-				}
+			// (3b) return an error if the clock sequence overruns.
+			if (++this.counter > SEQUENCE_MAX) {
+				counter = 0;
+				throw new OverrunException("Too many requests.");
 			}
 			return this.next();
 		}
+		this.counter = 0;
 		this.timestamp = timestamp;
 		return this.current();
 	}
@@ -96,5 +84,4 @@ public class ClockSequence extends AbstractSequence {
 	public void reset() {
 		this.value = random.nextInt(SEQUENCE_MAX);
 	}
-
 }
