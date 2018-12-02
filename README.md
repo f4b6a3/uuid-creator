@@ -151,7 +151,86 @@ System.out.println(uuid.toString());
 // Output: d7b3438d-97f3-55e6-92a5-66a731eea5ac
 ```
 
-Benchmark using JMH
+Implementation
+------------------------------------------------------
+
+###  Time-based
+
+The Time-based UUID has three main parts: timestamp, clock-sequence and node identifier.
+
+```
+ 00000000-0000-0000-0000-000000000000
+|1-----------------|2---|3-----------|
+
+1: timestamp
+2: clock-sequence
+3: node identifier
+```
+The timestamp part has 4 subparts: timestamp low, timestamp mid, timestamp high and version number.
+
+```
+ 00000000-0000-v000
+|1-------|2---||3--|
+
+1: timestamp low
+2: timestamp mid
+3: timestamp high
+v: version number
+```
+
+In the standard the bytes of the timestamp are rearranged so that the highest bits are put in the end of the array of bits and the lowest in the beginning of the resulting array of bits.
+
+The standard resolution of timestamps is a second divided by 10,000,000. The timestamp is the count of 100-nanos since 1582-10-15.
+
+In this implementation, the timestamp has milliseconds accuracy. It uses `System.currentTimeMillis()` to get the current milliseconds. An internal counter is used to simulate the standard resolution. The counter range is from 0 to 10,000. Every time a request is made at the same timestamp, the counter is increased by 1. Each incremented of the counter corresponds to a 100-nanosecond. Before returning, the counter value is added to the timestamp value. The reason why this strategy is used is that the JVM may not guarantee a resolution higher than milliseconds.
+
+If the default timestamp strategy is not desired, other two strategies are provided: nanoseconds strategy and delta strategy. The nanoseconds strategy uses `Instant.getNano()`, that as said before may not have nanoseconds precision guarantee by the JVM. The delta strategy uses `System.nanoTime()`. Any strategy that implements `TimestampStrategy` interface may be used, if none of the strategies provided suffices.
+
+The clock sequence exists to avoid UUID duplication by generating more than one UUID in the same timestamp. The first bits of the clock sequence part are multiplexed with the variant number of the RFC-4122. Because of that, the clock sequence aways starts with one of this hexadecimal chars: `8`, `9`, `a` or `b`. In this implementation, every instance of a time-based factory has it's own clock sequence started with a random value from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards. If the the system requests more than 16383 UUIDs at the same timestamp, an exception is thrown to conform the standard.
+
+There's no 'non-volatile storage' in this implementation. That's why the clock sequence is always started with a random number, as recommended by the standard.
+
+The node identifier part consists of an IEEE 802 MAC address, usually the host address. But the standard allows the usage of random generated number if no address is available, or if its use is not desired. In this implementation, the default behavior is to use a random node identifier for each instance of a time-based factory. 
+
+###  Ordered
+
+The ordered UUID inherits the same characteristics of the time-based UUID. The only difference is that the timestamp bits are not rearranged as the standard requires.
+
+```
+ 00000000-0000-v000
+|1-------|2---||3--|
+
+1: timestamp high
+2: timestamp mid
+3: timestamp low
+v: version number
+```
+
+###  DCE Security
+
+The DCE Security UUID inherits the same characteristics of the time-based UUID. The standard doesn't describe the algorithm for generating this kind of UUID. These instructions are in the document "DCE 1.1: Authentication and Security Services", available in the internet.
+
+The difference is that it also contains information of local domain and local identifier. A half of the timestamp is replaced by a local identifier number. And half of the clock sequence is replaced by a local domain number.
+
+### Name-based
+
+There are two tipes of name-based UUIDs: MD5 and SHA-1. The MD5 is registred as version 3. And the SHA-1 is version 5.
+
+Two parameters are needed to generate a name-based UUID: a namespace and a name. 
+
+The namespace is a UUID object. But in this implementation, a string may be passed as argument. The factory internally converts it to a UUID. The namespace is optional.
+
+The name in the standard is an array of bytes. But a string may also be passed as argument.
+
+### Random
+
+The random-based factory uses `java.security.SecureRandom` to get 'cryptographic quality random' numbers as the standard requires.
+
+This implementation also provides a factory that uses a fast random number generator. The default fast RNG used is `Xorshift128Plus`, that is used by the main web browsers. Other generators of the `Xorshift` family are also provided.
+
+If the `SecureRandom` and the `Xorshift128Plus` are not desired, any other RNG can be passed as parameter to the factory, since it extends the class `java.util.Random`.
+
+Benchmark
 ------------------------------------------------------
 
 Here is a table showing the results of a simple benchmark using JMH. This implementation is compared to other implementations.
@@ -197,4 +276,3 @@ The method `getRandom()` uses the SecureRandom (java.security.SecureRandom) rand
 The method `getFastRandom()` uses the [Xorshift128Plus](https://en.wikipedia.org/wiki/Xorshift) random generator, which is also used by many web browsers.
 
 This benchmark was executed in a machine Intel i5-3330 with 8GB RAM.
-

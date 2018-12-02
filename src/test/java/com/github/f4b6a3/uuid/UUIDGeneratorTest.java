@@ -233,11 +233,11 @@ public class UUIDGeneratorTest {
 		long loopMax = 100_000;
 		long nano = 1_000_000;
 		long randomUUID = (SimpleBenchmark.run(null, UUID.class, "randomUUID", loopMax) * loopMax) / nano;
-		long getRandomUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getRandomUUID", loopMax) * loopMax)
+		long getRandomUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getRandom", loopMax) * loopMax)
 				/ nano;
-		long getTimeBasedUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getTimeBasedUUID", loopMax) * loopMax)
+		long getTimeBasedUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getTimeBased", loopMax) * loopMax)
 				/ nano;
-		long getOrderedUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getOrderedUUID", loopMax)
+		long getOrderedUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getOrdered", loopMax)
 				* loopMax) / nano;
 		long javaNextLong = (SimpleBenchmark.run(new Random(), null, "nextLong", loopMax) * loopMax) / nano;
 		long XorshiftNextLong = (SimpleBenchmark.run(new XorshiftRandom(), null, "nextLong", loopMax) * loopMax) / nano;
@@ -258,7 +258,7 @@ public class UUIDGeneratorTest {
 	/**
 	 * Just prints UUIDs generated to a specific instant.
 	 */
-	@Ignore
+	@Test
 	public void testDemoDifferenceBetweenTimeBasedAndOrderedUUID() {
 
 		Instant instant = Instant.now();
