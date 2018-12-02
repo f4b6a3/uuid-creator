@@ -180,13 +180,11 @@ v: version number
 
 In the standard the bytes of the timestamp are rearranged so that the highest bits are put in the end of the array of bits and the lowest in the beginning of the resulting array of bits.
 
-The standard resolution of timestamps is a second divided by 10,000,000. The timestamp is the count of 100-nanos since 1582-10-15.
-
-In this implementation, the timestamp has milliseconds accuracy. It uses `System.currentTimeMillis()` to get the current milliseconds. An internal counter is used to simulate the standard resolution. The counter range is from 0 to 10,000. Every time a request is made at the same timestamp, the counter is increased by 1. Each incremented of the counter corresponds to a 100-nanosecond. Before returning, the counter value is added to the timestamp value. The reason why this strategy is used is that the JVM may not guarantee a resolution higher than milliseconds.
+The standard resolution of timestamps is a second divided by 10,000,000. The timestamp is the count of 100-nanos since 1582-10-15. In this implementation, the timestamp has milliseconds accuracy. It uses `System.currentTimeMillis()` to get the current milliseconds. An internal counter is used to simulate the standard resolution. The counter range is from 0 to 10,000. Every time a request is made at the same timestamp, the counter is increased by 1. Each incremented of the counter corresponds to a 100-nanosecond. Before returning, the counter value is added to the timestamp value. The reason why this strategy is used is that the JVM may not guarantee a resolution higher than milliseconds.
 
 If the default timestamp strategy is not desired, other two strategies are provided: nanoseconds strategy and delta strategy. The nanoseconds strategy uses `Instant.getNano()`, that as said before may not have nanoseconds precision guarantee by the JVM. The delta strategy uses `System.nanoTime()`. Any strategy that implements `TimestampStrategy` interface may be used, if none of the strategies provided suffices.
 
-The clock sequence exists to avoid UUID duplication by generating more than one UUID in the same timestamp. The first bits of the clock sequence part are multiplexed with the variant number of the RFC-4122. Because of that, the clock sequence aways starts with one of this hexadecimal chars: `8`, `9`, `a` or `b`. In this implementation, every instance of a time-based factory has it's own clock sequence started with a random value from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards. If the the system requests more than 16383 UUIDs at the same timestamp, an exception is thrown to conform the standard.
+The clock sequence exists to avoid UUID duplication by generating more than one UUID in the same timestamp. The first bits of the clock sequence part are multiplexed with the variant number of the RFC-4122. Because of that, the clock sequence always starts with one of this hexadecimal chars: `8`, `9`, `a` or `b`. In this implementation, every instance of a time-based factory has it's own clock sequence started with a random value from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards. If the the system requests more than 16383 UUIDs at the same timestamp, an exception is thrown to conform the standard.
 
 There's no 'non-volatile storage' in this implementation. That's why the clock sequence is always started with a random number, as recommended by the standard.
 
@@ -214,7 +212,7 @@ The difference is that it also contains information of local domain and local id
 
 ### Name-based
 
-There are two tipes of name-based UUIDs: MD5 and SHA-1. The MD5 is registred as version 3. And the SHA-1 is version 5.
+There are two types of name-based UUIDs: MD5 and SHA-1. The MD5 is registered as version 3. And the SHA-1 is version 5.
 
 Two parameters are needed to generate a name-based UUID: a namespace and a name. 
 
