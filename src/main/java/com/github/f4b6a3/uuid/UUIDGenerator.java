@@ -38,17 +38,14 @@ import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 public class UUIDGenerator {
 
 	private static OrderedUUIDCreator orderedCreator;
-	private static OrderedUUIDCreator orderedWithNodeIdCreator;
 	private static OrderedUUIDCreator orderedWithMACCreator;
 	private static TimeBasedUUIDCreator timeBasedCreator;
-	private static TimeBasedUUIDCreator timeBasedWithNodeIdCreator;
 	private static TimeBasedUUIDCreator timeBasedWithMACCreator;
 	private static AbstractNameBasedUUIDCreator nameBasedMD5Creator;
 	private static AbstractNameBasedUUIDCreator nameBasedSHA1Creator;
 	private static RandomUUIDCreator randomCreator;
 	private static RandomUUIDCreator fastRandomCreator;
 	private static DCESecurityUUIDCreator dceSecurityCreator;
-	private static DCESecurityUUIDCreator dceSecurityWithNodeIdCreator;
 	private static DCESecurityUUIDCreator dceSecurityWithMACCreator;
 
 	/*
@@ -135,27 +132,6 @@ public class UUIDGenerator {
 	}
 
 	/**
-	 * Returns a UUID with timestamp and without machine address, but the bytes
-	 * corresponding to timestamp are arranged in the "natural" order.
-	 *
-	 * Details: <br/>
-	 * - Version number: 0 (zero) <br/>
-	 * - Variant number: 1 <br/>
-	 * - Has timestamp?: YES <br/>
-	 * - Has hardware address (MAC)?: informed by user <br/>
-	 * - Timestamp bytes are in the RFC-4122 order?: NO <br/>
-	 *
-	 * @param nodeIdentifier
-	 * @return
-	 */
-	public static UUID getOrdered(long nodeIdentifier) {
-		if (orderedWithNodeIdCreator == null) {
-			orderedWithNodeIdCreator = getOrderedCreator().withNodeIdentifier(nodeIdentifier);
-		}
-		return orderedWithNodeIdCreator.create();
-	}
-
-	/**
 	 * Returns a UUID with timestamp and without machine address.
 	 *
 	 * Details: <br/>
@@ -192,27 +168,7 @@ public class UUIDGenerator {
 		}
 		return timeBasedWithMACCreator.create();
 	}
-
-	/**
-	 * Returns a UUID with timestamp and without machine address.
-	 *
-	 * Details: <br/>
-	 * - Version number: 1 <br/>
-	 * - Variant number: 1 <br/>
-	 * - Has timestamp?: YES <br/>
-	 * - Has hardware address (MAC)?: informed by user <br/>
-	 * - Timestamp bytes are in the RFC-4122 order?: YES <br/>
-	 *
-	 * @param nodeIdentifier
-	 * @return
-	 */
-	public static UUID getTimeBased(long nodeIdentifier) {
-		if (timeBasedWithNodeIdCreator == null) {
-			timeBasedWithNodeIdCreator = getTimeBasedCreator().withNodeIdentifier(nodeIdentifier);
-		}
-		return timeBasedWithNodeIdCreator.create();
-	}
-
+	
 	/**
 	 * Returns a DCE Security UUID based on a local domain and a local
 	 * identifier.
@@ -264,35 +220,7 @@ public class UUIDGenerator {
 		}
 		return dceSecurityCreator.create(localDomain, localIdentifier);
 	}
-
-	/**
-	 * Returns a DCE Security UUID based on a local domain and a local
-	 * identifier.
-	 *
-	 * Domain identifiers listed in the RFC-4122: <br/>
-	 * - Local Domain Person (POSIX UserID) = 0;<br/>
-	 * - Local Domain Group (POSIX GroupID) = 1;<br/>
-	 * - Local Domain Org = 2.<br/>
-	 *
-	 * Details: <br/>
-	 * - Version number: 2 <br/>
-	 * - Variant number: 1 <br/>
-	 * - Local domain: informed by user <br/>
-	 * - Has hardware address (MAC)?: informed by user <br/>
-	 * - Timestamp bytes are in the RFC-4122 order?: YES <br/>
-	 *
-	 * @param localDomain
-	 * @param localIdentifier
-	 * @param nodeIdentifier
-	 * @return
-	 */
-	public static UUID getDCESecurity(byte localDomain, int localIdentifier, long nodeIdentifier) {
-		if (dceSecurityWithNodeIdCreator == null) {
-			dceSecurityWithNodeIdCreator = getDCESecurityCreator().withNodeIdentifier(nodeIdentifier);
-		}
-		return dceSecurityWithNodeIdCreator.create(localDomain, localIdentifier);
-	}
-
+	
 	/**
 	 * Returns a UUID based on a name, using MD5.
 	 * 

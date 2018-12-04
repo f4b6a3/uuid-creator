@@ -42,9 +42,9 @@ System.out.println(uuid.toString());
 ```
 
 ```java
-// Using a fixed node identifier instead of the hardware address
+// Using a fixed node identifier instead of MAC address, for example, a device identifier
 long nodeIdentifier = 0x111111111111L;
-UUID uuid = UUIDGenerator.getOrdered(nodeIdentifier);
+UUID uuid = UUIDGenerator.getOrderedCreator().withNodeIdentifier(nodeIdentifier).create();
 System.out.println(uuid.toString());
 // Output: 1e88c46f-e5df-0550-8e9d-111111111111
 ```
@@ -67,9 +67,9 @@ System.out.println(uuid.toString());
 ```
 
 ```java
-// Using a fixed node identifier instead of the hardware address
+// Using a fixed node identifier instead of MAC address, for example, a device identifier
 long nodeIdentifier = 0x111111111111L;
-UUID uuid = UUIDGenerator.getTimeBased(nodeIdentifier);
+UUID uuid = UUIDGenerator.getTimeBasedCreator().withNodeIdentifier(nodeIdentifier).create();
 System.out.println(uuid.toString());
 // Output: fe682e80-8c46-11e8-98d5-111111111111
 ```
@@ -96,11 +96,11 @@ System.out.println(uuid.toString());
 ```
 
 ```java
-// Using a fixed node identifier instead of the hardware address
+// Using a fixed node identifier instead of MAC address, for example, a device identifier
 byte localDomain = DCESecurityCreator.LOCAL_DOMAIN_GROUP; // POSIX Group ID domain (1)
 int localIdentifier = 1701; // Group ID
 long nodeIdentifier = 0x111111111111L;
-UUID uuid = UUIDGenerator.getDCESecurity(localDomain, localIdentifier, nodeIdentifier);
+UUID uuid = UUIDGenerator.getDCESecurityCreator().withNodeIdentifier(nodeIdentifier).create();
 System.out.println(uuid.toString());
 // Output: 000006a5-f043-21e8-a900-111111111111
 ```
