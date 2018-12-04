@@ -216,9 +216,9 @@ Standard timestamp arrangement
  00000000-0000-v000-m000-000000000000
 |1-------|2---||3--|
 
-1: timestamp low
-2: timestamp mid
-3: timestamp high *
+1: timestamp low      *
+2: timestamp mid     ***
+3: timestamp high   *****
 ```
 
 In the standard the bytes of the timestamp are rearranged so that the highest bits are put in the end of the array of bits and the lowest in the beginning of the resulting array of bits.
@@ -243,9 +243,9 @@ Timestamp arrangement for ordered time-based UUID
  00000000-0000-v000-m000-000000000000
 |1-------|2---||3--|
 
-1: timestamp high *
-2: timestamp mid
-3: timestamp low
+1: timestamp high   *****
+2: timestamp mid     ***
+3: timestamp low      *
 ```
 
 ###  DCE Security
