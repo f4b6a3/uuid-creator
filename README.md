@@ -154,28 +154,71 @@ System.out.println(uuid.toString());
 Implementation
 ------------------------------------------------------
 
+### Format and representation
+
+A UUID is simply a 128-bit value that may be represented as:
+* An array of 2 longs; or
+* An array of 16 bytes; or
+* An array of 32 chars (without dashes).
+
+The canonical format has 5 groups separated by dashes.
+
+```
+Canonical format
+
+ 00000000-0000-v000-m000-000000000000
+|1-------|2---|3---|4---|5-----------|
+
+1: 8 chars
+2: 4 chars
+3: 4 chars
+4: 4 chars
+5: 12 chars
+
+v: version number
+m: variant number (multiplexed)
+```
+
+The `java.util.UUID` represents a UUID with two `long` fields, called Most Significant Bits (MSB) and Least Significant Bits (LSB). The MSB contains the version number. The LSB contains the variant number.
+
+```
+Representation in java.util.UUID
+
+ 00000000-0000-v000-m000-000000000000
+|msb---------------|lsb--------------|
+
+msb: Most Significant Bits
+lsb: Least Significant Bits
+```
+
 ###  Time-based
 
 The Time-based UUID has three main parts: timestamp, clock-sequence and node identifier.
 
 ```
- 00000000-0000-0000-0000-000000000000
+Time-based UUID structure
+
+ 00000000-0000-v000-m000-000000000000
 |1-----------------|2---|3-----------|
 
 1: timestamp
 2: clock-sequence
 3: node identifier
+
+v: version number
+m: variant number (multiplexed with clock-sequence)
 ```
 The timestamp part has 4 subparts: timestamp low, timestamp mid, timestamp high and version number.
 
 ```
- 00000000-0000-v000
+Standard timestamp arrangement
+
+ 00000000-0000-v000-m000-000000000000
 |1-------|2---||3--|
 
 1: timestamp low
 2: timestamp mid
-3: timestamp high
-v: version number
+3: timestamp high *
 ```
 
 In the standard the bytes of the timestamp are rearranged so that the highest bits are put in the end of the array of bits and the lowest in the beginning of the resulting array of bits.
@@ -195,13 +238,14 @@ The node identifier part consists of an IEEE 802 MAC address, usually the host a
 The ordered UUID inherits the same characteristics of the time-based UUID. The only difference is that the timestamp bits are not rearranged as the standard requires.
 
 ```
- 00000000-0000-v000
+Timestamp arrangement for ordered time-based UUID
+
+ 00000000-0000-v000-m000-000000000000
 |1-------|2---||3--|
 
-1: timestamp high
+1: timestamp high *
 2: timestamp mid
 3: timestamp low
-v: version number
 ```
 
 ###  DCE Security
@@ -274,3 +318,4 @@ The method `getRandom()` uses the SecureRandom (java.security.SecureRandom) rand
 The method `getFastRandom()` uses the [Xorshift128Plus](https://en.wikipedia.org/wiki/Xorshift) random generator, which is also used by many web browsers.
 
 This benchmark was executed in a machine Intel i5-3330 with 8GB RAM.
+
