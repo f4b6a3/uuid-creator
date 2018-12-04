@@ -1,4 +1,5 @@
 
+
 UUID Generator
 ======================================================
 
@@ -159,6 +160,8 @@ A UUID is simply a 128-bit value that may be represented as:
 * An array of 16 bytes; or
 * An array of 32 chars (without dashes).
 
+#### Format
+
 The canonical format has 5 groups separated by dashes.
 
 ```
@@ -176,6 +179,8 @@ Canonical format
 v: version number
 m: variant number (multiplexed)
 ```
+
+#### Representation
 
 The `java.util.UUID`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/util/UUID.html) class represents a UUID with two `long` fields, called Most Significant Bits (MSB) and Least Significant Bits (LSB). The MSB contains the version number. The LSB contains the variant number.
 
@@ -206,6 +211,8 @@ Time-based UUID structure
 v: version number
 m: variant number (multiplexed with clock-sequence)
 ```
+#### Timestamp
+
 The timestamp part has 4 subparts: timestamp low, timestamp mid, timestamp high and version number.
 
 ```
@@ -225,9 +232,13 @@ The standard resolution of timestamps is a second divided by 10,000,000. The tim
 
 If the default timestamp strategy is not desired, other two strategies are provided: nanoseconds strategy and delta strategy. The nanoseconds strategy uses `Instant.getNano()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html#getNano--). The delta strategy uses `System.nanoTime()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#nanoTime()). Any strategy that implements `TimestampStrategy` interface may be used, if none of the strategies provided suffices.
 
+#### Clock sequence
+
 The clock sequence exists to avoid UUID duplication by generating more than one UUID in the same timestamp. The first bits of the clock sequence part are multiplexed with the variant number of the RFC-4122. Because of that, the clock sequence always starts with one of this hexadecimal chars: `8`, `9`, `a` or `b`. In this implementation, every instance of a time-based factory has it's own clock sequence started with a random value from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards. If the the system requests more than 16383 UUIDs at the same timestamp, an exception is thrown to conform the standard.
 
 There's no 'non-volatile storage' in this implementation. That's why the clock sequence is always started with a random number, as recommended by the standard.
+
+#### Node identifier
 
 The node identifier part consists of an IEEE 802 MAC address, usually the host address. But the standard allows the usage of random generated number if no address is available, or if its use is not desired. In this implementation, the default behavior is to use a random node identifier for each instance of a time-based factory. 
 
@@ -338,9 +349,4 @@ References
 [5]: https://bradleypeabody.github.io/uuidv6
 [6]: http://pubs.opengroup.org/onlinepubs/9696989899/chap5.htm#tagcjh_08_02_01_01
 [7]: https://segment.com/blog/a-brief-history-of-the-uuid
-
-
-
-
-
 
