@@ -5,7 +5,7 @@ UUID Generator
 Summary
 ------------------------------------------------------
 
-UUID Generator can generate UUIDs (Universally Unique Identifiers), also known as GUIDs (Globally Unique Identifiers). It provides methods for RFC-4122 versions 1, 2, 3, 4, 5. It also provides methods for creating non-standard ordered UUIDs.
+UUID Generator can generate UUIDs (Universally Unique Identifiers) <sup>[1]</sup>, also known as GUIDs (Globally Unique Identifiers). It provides methods for RFC-4122 <sup>[2]</sup> versions 1, 2, 3, 4, 5. It also provides methods for creating non-standard ordered UUIDs. <sup>[4]</sup> <sup>[5]</sup>
 
 These types of UUIDs can be generated:
 
@@ -19,14 +19,12 @@ These types of UUIDs can be generated:
 * __Name-based SHA1:__ a base-named version that uses SHA-1.
 * __DCE Security:__ a modified time-based version that uses local domains and identifiers;
 
-The ordered UUID is a different implementation of the standard time-based UUIDs.
-
 How to Use
 ------------------------------------------------------
 
 ### Version 0: Ordered (extension)
 
-The ordered UUID is a modified time-based UUID. The bytes of timestamp part are rearranged in the 'natural' order. The version number 0 (zero) was chosen to identify  UUIDs. It may be considered as an 'extension' of the RFC-4122. 
+The ordered UUID is a modified time-based UUID. The bytes of timestamp part are rearranged in the 'natural' order. The version number 0 (zero) was chosen to identify  UUIDs. It may be considered as an 'extension' of the RFC-4122.
 
 ```java
 UUID uuid = UUIDGenerator.getOrdered();
@@ -179,7 +177,7 @@ v: version number
 m: variant number (multiplexed)
 ```
 
-The `java.util.UUID` represents a UUID with two `long` fields, called Most Significant Bits (MSB) and Least Significant Bits (LSB). The MSB contains the version number. The LSB contains the variant number.
+The `java.util.UUID`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/util/UUID.html) class represents a UUID with two `long` fields, called Most Significant Bits (MSB) and Least Significant Bits (LSB). The MSB contains the version number. The LSB contains the variant number.
 
 ```
 Representation in java.util.UUID
@@ -223,9 +221,9 @@ Standard timestamp arrangement
 
 In the standard the bytes of the timestamp are rearranged so that the highest bits are put in the end of the array of bits and the lowest in the beginning of the resulting array of bits.
 
-The standard resolution of timestamps is a second divided by 10,000,000. The timestamp is the count of 100-nanos since 1582-10-15. In this implementation, the timestamp has milliseconds accuracy. It uses `System.currentTimeMillis()` to get the current milliseconds. An internal counter is used to simulate the standard resolution. The counter range is from 0 to 10,000. Every time a request is made at the same timestamp, the counter is increased by 1. Each incremented of the counter corresponds to a 100-nanosecond. Before returning, the counter value is added to the timestamp value. The reason why this strategy is used is that the JVM may not guarantee a resolution higher than milliseconds.
+The standard resolution of timestamps is a second divided by 10,000,000. The timestamp is the count of 100-nanos since 1582-10-15. In this implementation, the timestamp has milliseconds accuracy. It uses `System.currentTimeMillis()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis()) to get the current milliseconds. An internal counter is used to simulate the standard resolution. The counter range is from 0 to 10,000. Every time a request is made at the same timestamp, the counter is increased by 1. Each incremented of the counter corresponds to a 100-nanosecond. Before returning, the counter value is added to the timestamp value. The reason why this strategy is used is that the JVM may not guarantee[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#nanoTime()) a resolution higher than milliseconds.
 
-If the default timestamp strategy is not desired, other two strategies are provided: nanoseconds strategy and delta strategy. The nanoseconds strategy uses `Instant.getNano()`, that as said before may not have nanoseconds precision guarantee by the JVM. The delta strategy uses `System.nanoTime()`. Any strategy that implements `TimestampStrategy` interface may be used, if none of the strategies provided suffices.
+If the default timestamp strategy is not desired, other two strategies are provided: nanoseconds strategy and delta strategy. The nanoseconds strategy uses `Instant.getNano()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html#getNano--). The delta strategy uses `System.nanoTime()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#nanoTime()). Any strategy that implements `TimestampStrategy` interface may be used, if none of the strategies provided suffices.
 
 The clock sequence exists to avoid UUID duplication by generating more than one UUID in the same timestamp. The first bits of the clock sequence part are multiplexed with the variant number of the RFC-4122. Because of that, the clock sequence always starts with one of this hexadecimal chars: `8`, `9`, `a` or `b`. In this implementation, every instance of a time-based factory has it's own clock sequence started with a random value from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards. If the the system requests more than 16383 UUIDs at the same timestamp, an exception is thrown to conform the standard.
 
@@ -235,7 +233,7 @@ The node identifier part consists of an IEEE 802 MAC address, usually the host a
 
 ###  Ordered
 
-The ordered UUID inherits the same characteristics of the time-based UUID. The only difference is that the timestamp bits are not rearranged as the standard requires.
+The ordered UUID inherits the same characteristics of the time-based UUID. The only difference is that the timestamp bits are not rearranged as the standard requires. <sup>[4]</sup> <sup>[5]</sup>
 
 ```
 Timestamp arrangement for ordered time-based UUID
@@ -250,7 +248,7 @@ Timestamp arrangement for ordered time-based UUID
 
 ###  DCE Security
 
-The DCE Security UUID inherits the same characteristics of the time-based UUID. The standard doesn't describe the algorithm for generating this kind of UUID. These instructions are in the document "DCE 1.1: Authentication and Security Services", available in the internet.
+The DCE Security UUID inherits the same characteristics of the time-based UUID. The standard doesn't describe the algorithm for generating this kind of UUID. These instructions are in the document "DCE 1.1: Authentication and Security Services", available in the internet. <sup>[6]</sup>
 
 The difference is that it also contains information of local domain and local identifier. A half of the timestamp is replaced by a local identifier number. And half of the clock sequence is replaced by a local domain number.
 
@@ -260,15 +258,15 @@ There are two types of name-based UUIDs: MD5 and SHA-1. The MD5 is registered as
 
 Two parameters are needed to generate a name-based UUID: a namespace and a name. 
 
-The namespace is a UUID object. But in this implementation, a string may be passed as argument. The factory internally converts it to a UUID. The namespace is optional.
+The namespace is a UUID object. But a string may be passed as argument. The factory converts it to UUID. The namespace is optional.
 
 The name in the standard is an array of bytes. But a string may also be passed as argument.
 
 ### Random
 
-The random-based factory uses `java.security.SecureRandom` to get 'cryptographic quality random' numbers as the standard requires.
+The random-based factory uses `java.security.SecureRandom`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/security/SecureRandom.html) to get 'cryptographic quality random' numbers as the standard requires.
 
-This implementation also provides a factory that uses a fast random number generator. The default fast RNG used is `Xorshift128Plus`, that is used by the main web browsers. Other generators of the `Xorshift` family are also provided.
+This implementation also provides a factory that uses a fast random number generator. The default fast RNG used is  `Xorshift128Plus`[<sup>&#x2197;</sup>](https://en.wikipedia.org/wiki/Xorshift), that is used by the main web browsers. Other generators of the `Xorshift` family are also provided.
 
 If the `SecureRandom` and the `Xorshift128Plus` are not desired, any other RNG can be passed as parameter to the factory, since it extends the class `java.util.Random`.
 
@@ -313,9 +311,29 @@ These are the configurations used to run this benchmark:
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 ```
 
-The method `getRandom()` uses the SecureRandom (java.security.SecureRandom) random generator.
-
-The method `getFastRandom()` uses the [Xorshift128Plus](https://en.wikipedia.org/wiki/Xorshift) random generator, which is also used by many web browsers.
-
 This benchmark was executed in a machine Intel i5-3330 with 8GB RAM.
+
+References
+------------------------------------------------------
+
+[1]. Universally unique identifier. Wikipedia.
+[2]. A Universally Unique IDentifier (UUID). RFC-4122.
+[3]. To UUID or not to UUID?
+[4]. Store UUID in an optimized way.
+[5]. UUID "Version 6": the version RFC 4122 forgot.
+[6]. DCE 1.1: Security-Version (Version 2) UUIDs. The Open Group.
+[7]. A brief history of the UUID.
+
+[1]: https://en.wikipedia.org/wiki/Universally_unique_identifier
+[2]: https://tools.ietf.org/html/rfc4122
+[3]: https://www.percona.com/blog/2007/03/13/to-uuid-or-not-to-uuid
+[4]: https://www.percona.com/blog/2014/12/19/store-uuid-optimized-way
+[5]: https://bradleypeabody.github.io/uuidv6
+[6]: http://pubs.opengroup.org/onlinepubs/9696989899/chap5.htm#tagcjh_08_02_01_01
+[7]: https://segment.com/blog/a-brief-history-of-the-uuid
+
+
+
+
+
 
