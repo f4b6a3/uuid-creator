@@ -179,33 +179,12 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	 * identifier by default. Someone may think it's useful in some special case
 	 * to use a fixed node identifier other than random value.
 	 * 
-	 * This method will always set the multicast bit ON to indicate that the
-	 * value is NOT a real MAC address.
-	 * 
-	 * If you want to inform a fixed value that is real MAC address, use the
-	 * method {@link TimeBasedUUIDCreator#withUnicastNodeIdentifier(long)}.
-	 * 
 	 * @param nodeIdentifier
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUUIDCreator> T withMulticastNodeIdentifier(long nodeIdentifier) {
-		this.nodeIdentifier = setMulticastNodeIdentifier(nodeIdentifier);
-		return (T) this;
-	}
-
-	/**
-	 * Set a fixed node identifier to generate UUIDs.
-	 * 
-	 * This method will always set the multicast bit OFF to indicate that the
-	 * value is a real MAC address.
-	 * 
-	 * @param nodeIdentifier
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUUIDCreator> T withUnicastNodeIdentifier(long nodeIdentifier) {
-		this.nodeIdentifier = setUnicastNodeIdentifier(nodeIdentifier);
+	public <T extends AbstractTimeBasedUUIDCreator> T withNodeIdentifier(long nodeIdentifier) {
+		this.nodeIdentifier = nodeIdentifier;
 		return (T) this;
 	}
 
@@ -377,27 +356,8 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	 * @return
 	 */
 	protected long getRandomMulticastNodeIdentifier() {
-		return AbstractTimeBasedUUIDCreator.setMulticastNodeIdentifier(random.nextLong());
+		return UUIDUtil.setMulticastNodeIdentifier(random.nextLong());
 	}
 
-	/**
-	 * Sets the the multicast bit ON to indicate that it's NOT a real MAC
-	 * address.
-	 * 
-	 * @param nodeIdentifier
-	 * @return
-	 */
-	protected static long setMulticastNodeIdentifier(long nodeIdentifier) {
-		return nodeIdentifier | 0x0000010000000000L;
-	}
 
-	/**
-	 * Sets the the multicast bit OFF to indicat that it's a MAC address.
-	 * 
-	 * @param nodeIdentifier
-	 * @return
-	 */
-	protected static long setUnicastNodeIdentifier(long nodeIdentifier) {
-		return nodeIdentifier & 0xFFFFFEFFFFFFFFFFL;
-	}
 }

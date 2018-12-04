@@ -30,7 +30,7 @@ public class UUIDUtilTest {
 	@Test
 	public void testExtractNodeIdentifier() {
 		long nodeIdentifier1 = 0x111111111111L;
-		UUID uuid = UUIDGenerator.getTimeBasedCreator().withMulticastNodeIdentifier(nodeIdentifier1).create();
+		UUID uuid = UUIDGenerator.getTimeBasedCreator().withNodeIdentifier(nodeIdentifier1).create();
 		long nodeIdentifier2 = extractNodeIdentifier(uuid);
 		assertEquals(nodeIdentifier1, nodeIdentifier2);
 	}

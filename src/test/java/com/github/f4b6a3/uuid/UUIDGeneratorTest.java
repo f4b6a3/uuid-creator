@@ -11,11 +11,12 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
+import com.github.f4b6a3.test.other.RaceConditionRunnable;
+import com.github.f4b6a3.test.other.RandomImage;
+import com.github.f4b6a3.test.other.RandomnesTest;
+import com.github.f4b6a3.test.other.SimpleBenchmark;
+import com.github.f4b6a3.uuid.UUIDGenerator;
 import com.github.f4b6a3.uuid.factory.abst.AbstractUUIDCreator;
-import com.github.f4b6a3.uuid.other.RandomImage;
-import com.github.f4b6a3.uuid.other.RandomnesTest;
-import com.github.f4b6a3.uuid.other.SimpleBenchmark;
-import com.github.f4b6a3.uuid.other.RaceConditionRunnable;
 import com.github.f4b6a3.uuid.random.Xoroshiro128PlusRandom;
 import com.github.f4b6a3.uuid.random.XorshiftRandom;
 import com.github.f4b6a3.uuid.random.XorshiftStarRandom;
@@ -258,7 +259,7 @@ public class UUIDGeneratorTest {
 	/**
 	 * Just prints UUIDs generated to a specific instant.
 	 */
-	@Test
+	@Ignore
 	public void testDemoDifferenceBetweenTimeBasedAndOrderedUUID() {
 
 		Instant instant = Instant.now();

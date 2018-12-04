@@ -43,7 +43,8 @@ System.out.println(uuid.toString());
 
 ```java
 // Using a fixed node identifier instead of the hardware address
-UUID uuid = UUIDGenerator.getOrderedUUIDCreator().withMulticastNodeIdentifier(0x111111111111L).create();
+long nodeIdentifier = 0x111111111111L;
+UUID uuid = UUIDGenerator.getOrdered(nodeIdentifier);
 System.out.println(uuid.toString());
 // Output: 1e88c46f-e5df-0550-8e9d-111111111111
 ```
@@ -67,7 +68,8 @@ System.out.println(uuid.toString());
 
 ```java
 // Using a fixed node identifier instead of the hardware address
-uuid = UUIDGenerator.getTimeBasedUUIDCreator().withMulticastNodeIdentifier(0x111111111111L).create();
+long nodeIdentifier = 0x111111111111L;
+UUID uuid = UUIDGenerator.getTimeBased(nodeIdentifier);
 System.out.println(uuid.toString());
 // Output: fe682e80-8c46-11e8-98d5-111111111111
 ```
@@ -91,6 +93,16 @@ int localIdentifier = 1701; // Group ID
 UUID uuid = UUIDGenerator.getDCESecurityWithMAC(localDomain, localIdentifier);
 System.out.println(uuid.toString());
 // Output: 000006a5-f043-21e8-a900-47f8xxxxxxxx
+```
+
+```java
+// Using a fixed node identifier instead of the hardware address
+byte localDomain = DCESecurityCreator.LOCAL_DOMAIN_GROUP; // POSIX Group ID domain (1)
+int localIdentifier = 1701; // Group ID
+long nodeIdentifier = 0x111111111111L;
+UUID uuid = UUIDGenerator.getDCESecurity(localDomain, localIdentifier, nodeIdentifier);
+System.out.println(uuid.toString());
+// Output: 000006a5-f043-21e8-a900-111111111111
 ```
 
 ### Version 3: Name-based using MD5
@@ -291,23 +303,23 @@ Here is a table showing the results of a simple benchmark using JMH. This implem
 -----------------------------------------------------------------------------------
 Benchmark                                         Mode  Cnt   Score    Error  Units
 -----------------------------------------------------------------------------------
-BenchmarkRunner.EAIO_TimeBasedWithMAC               ss  100   7,260 ± 0,571  ms/op
-BenchmarkRunner.JUG_NameBased                       ss  100  39,894 ± 3,442  ms/op
-BenchmarkRunner.JUG_Random                          ss  100  54,840 ± 4,728  ms/op
-BenchmarkRunner.JUG_TimeBased                       ss  100   8,235 ± 0,996  ms/op
-BenchmarkRunner.JUG_TimeBasedWithMAC                ss  100   7,875 ± 0,904  ms/op
-BenchmarkRunner.Java_NameBased                      ss  100  51,574 ± 9,393  ms/op
-BenchmarkRunner.Java_Random                         ss  100  54,762 ± 4,922  ms/op
-BenchmarkRunner.UUIDGenerator_DCESecurity           ss  100   7,919 ± 1,326  ms/op
-BenchmarkRunner.UUIDGenerator_DCESecurityWithMAC    ss  100   7,963 ± 1,305  ms/op
-BenchmarkRunner.UUIDGenerator_FastRandom            ss  100   3,576 ± 0,704  ms/op
-BenchmarkRunner.UUIDGenerator_NameBasedMD5          ss  100  41,836 ± 3,830  ms/op
-BenchmarkRunner.UUIDGenerator_NameBasedSHA1         ss  100  52,006 ± 4,921  ms/op
-BenchmarkRunner.UUIDGenerator_Ordered               ss  100   7,130 ± 0,968  ms/op
-BenchmarkRunner.UUIDGenerator_OrderedWithMAC        ss  100   7,363 ± 0,958  ms/op
-BenchmarkRunner.UUIDGenerator_Random                ss  100  46,433 ± 2,535  ms/op
-BenchmarkRunner.UUIDGenerator_TimeBased             ss  100   7,391 ± 0,980  ms/op
-BenchmarkRunner.UUIDGenerator_TimeBasedWithMAC      ss  100   7,494 ± 1,107  ms/op
+BenchmarkRunner.EAIO_TimeBasedWithMAC               ss  100   7,258 ± 0,553  ms/op
+BenchmarkRunner.JUG_NameBased                       ss  100  38,748 ± 2,810  ms/op
+BenchmarkRunner.JUG_Random                          ss  100  55,319 ± 5,027  ms/op
+BenchmarkRunner.JUG_TimeBased                       ss  100   7,963 ± 0,961  ms/op
+BenchmarkRunner.JUG_TimeBasedWithMAC                ss  100   7,993 ± 0,948  ms/op
+BenchmarkRunner.Java_NameBased                      ss  100  50,846 ± 9,036  ms/op
+BenchmarkRunner.Java_Random                         ss  100  54,915 ± 4,755  ms/op
+BenchmarkRunner.UUIDGenerator_DCESecurity           ss  100   7,933 ± 1,266  ms/op
+BenchmarkRunner.UUIDGenerator_DCESecurityWithMAC    ss  100   7,905 ± 1,326  ms/op
+BenchmarkRunner.UUIDGenerator_FastRandom            ss  100   3,386 ± 0,591  ms/op
+BenchmarkRunner.UUIDGenerator_NameBasedMD5          ss  100  42,240 ± 4,160  ms/op
+BenchmarkRunner.UUIDGenerator_NameBasedSHA1         ss  100  50,978 ± 4,545  ms/op
+BenchmarkRunner.UUIDGenerator_Ordered               ss  100   7,217 ± 0,917  ms/op
+BenchmarkRunner.UUIDGenerator_OrderedWithMAC        ss  100   7,438 ± 0,976  ms/op
+BenchmarkRunner.UUIDGenerator_Random                ss  100  47,003 ± 2,982  ms/op
+BenchmarkRunner.UUIDGenerator_TimeBased             ss  100   7,348 ± 0,965  ms/op
+BenchmarkRunner.UUIDGenerator_TimeBasedWithMAC      ss  100   7,488 ± 0,998  ms/op
 -----------------------------------------------------------------------------------
 Total time: 00:01:36
 -----------------------------------------------------------------------------------

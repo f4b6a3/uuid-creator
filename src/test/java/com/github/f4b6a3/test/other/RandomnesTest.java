@@ -1,4 +1,4 @@
-package com.github.f4b6a3.uuid.other;
+package com.github.f4b6a3.test.other;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
