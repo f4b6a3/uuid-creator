@@ -236,12 +236,12 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	 * factory instance, this value may be incremented or even replaced by
 	 * another random value to avoid repetition of UUIDs.
 	 * 
-	 * @param sequence
+	 * @param clockSequence
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUUIDCreator> T withClockSequence(int sequence) {
-		this.clockSequence.set(sequence);
+	public <T extends AbstractTimeBasedUUIDCreator> T withClockSequence(int clockSequence) {
+		this.clockSequence.set(clockSequence);
 		return (T) this;
 	}
 

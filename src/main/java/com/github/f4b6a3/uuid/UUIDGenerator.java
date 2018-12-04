@@ -102,7 +102,6 @@ public class UUIDGenerator {
 	 * - Has hardware address (MAC)?: NO <br/>
 	 * - Timestamp bytes are in the RFC-4122 order?: NO <br/>
 	 *
-	 * @param instant
 	 * @return
 	 */
 	public static UUID getOrdered() {

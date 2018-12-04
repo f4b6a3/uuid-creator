@@ -236,7 +236,7 @@ The node identifier part consists of an IEEE 802 MAC address, usually the host a
 The ordered UUID inherits the same characteristics of the time-based UUID. The only difference is that the timestamp bits are not rearranged as the standard requires. <sup>[4]</sup> <sup>[5]</sup>
 
 ```
-Timestamp arrangement for ordered time-based UUID
+Ordered timestamp arrangement
 
  00000000-0000-v000-m000-000000000000
 |1-------|2---||3--|
@@ -306,7 +306,7 @@ These are the configurations used to run this benchmark:
 ```java
 @State(Scope.Thread)
 @Warmup(iterations = 1, batchSize = 1000)
-@Measurement(iterations = 10, batchSize = 100000 )
+@Measurement(iterations = 10, batchSize = 100000)
 @BenchmarkMode(Mode.SingleShotTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 ```
@@ -317,12 +317,19 @@ References
 ------------------------------------------------------
 
 [1]. Universally unique identifier. Wikipedia.
+
 [2]. A Universally Unique IDentifier (UUID). RFC-4122.
+
 [3]. To UUID or not to UUID?
+
 [4]. Store UUID in an optimized way.
+
 [5]. UUID "Version 6": the version RFC 4122 forgot.
+
 [6]. DCE 1.1: Security-Version (Version 2) UUIDs. The Open Group.
+
 [7]. A brief history of the UUID.
+
 
 [1]: https://en.wikipedia.org/wiki/Universally_unique_identifier
 [2]: https://tools.ietf.org/html/rfc4122
