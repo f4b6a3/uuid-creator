@@ -26,7 +26,7 @@ How to Use
 
 ### Version 0: Ordered (extension)
 
-The ordered UUID is a modified time-based UUID. The bytes of timestamp part are rearranged in the 'natural' order. The version number 0 (zero) was chosen to identify  UUIDs. It may be considered as an 'extension' of the RFC-4122.
+The ordered UUID is a modified time-based UUID. The timestamp bits in this version are not rearranged as in the time-based version 1. The version number 0 (zero) was chosen to identify  UUIDs. It may be considered as an 'extension' of the RFC-4122.
 
 ```java
 UUID uuid = UUIDGenerator.getOrdered();
