@@ -1,9 +1,12 @@
 package com.github.f4b6a3.uuid.nodeid;
 
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Enumeration;
 import java.util.Random;
 
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
@@ -59,9 +62,10 @@ public class SystemNodeIdentifierStrategy implements NodeIdentifierStrategy {
 		byte[] hash = null;
 
 		String lh = getLocalHost();
+		String ha = getHardwareAddress();
 		String os = getOperatingSystem();
 		String vm = getJavaVirtualMachine();
-		String string = String.format("%s %s %s", lh, os, vm);
+		String string = String.format("%s %s %s %s", lh, ha, os, vm);
 
 		bytes = string.getBytes();
 		hash = md.digest(bytes);
@@ -77,6 +81,9 @@ public class SystemNodeIdentifierStrategy implements NodeIdentifierStrategy {
 		try {
 			hostname = InetAddress.getLocalHost().getHostName();
 			hostip = InetAddress.getLocalHost().getHostAddress();
+			if ((hostname == null || hostip == null) || (hostname.isEmpty() || hostip.isEmpty())) {
+				return ByteUtil.toHexadecimal(ByteUtil.toBytes(random.nextLong()));
+			}
 			return String.format("%s %s", hostname, hostip);
 		} catch (UnknownHostException e) {
 			return ByteUtil.toHexadecimal(ByteUtil.toBytes(random.nextLong()));
@@ -96,5 +103,44 @@ public class SystemNodeIdentifierStrategy implements NodeIdentifierStrategy {
 		String rtName = System.getProperty("java.runtime.name");
 		String rtVersion = System.getProperty("java.runtime.version");
 		return String.format("%s %s %s %s", vmName, vmVersion, rtName, rtVersion);
+	}
+
+	protected static String getHardwareAddress() {
+
+		try {
+
+			Enumeration<NetworkInterface> list;
+			NetworkInterface nic;
+			byte[] mac;
+
+			// Return the first real MAC that is up and running.
+			list = NetworkInterface.getNetworkInterfaces();
+			while (list.hasMoreElements()) {
+				nic = list.nextElement();
+				mac = nic.getHardwareAddress();
+				if ((mac != null) && nic.isUp() && !(nic.isLoopback() || nic.isVirtual())) {
+					return ByteUtil.toHexadecimal(mac);
+				}
+			}
+
+			// Or return the first MAC found.
+			list = NetworkInterface.getNetworkInterfaces();
+			while (list.hasMoreElements()) {
+				nic = list.nextElement();
+				mac = nic.getHardwareAddress();
+				if (mac != null) {
+					return ByteUtil.toHexadecimal(mac);
+				}
+			}
+
+		} catch (SocketException | NullPointerException e) {
+			return ByteUtil.toHexadecimal(ByteUtil.toBytes(random.nextLong()));
+		}
+
+		return getRandomHexadecimal();
+	}
+
+	protected static String getRandomHexadecimal() {
+		return ByteUtil.toHexadecimal(ByteUtil.toBytes(random.nextLong()));
 	}
 }
