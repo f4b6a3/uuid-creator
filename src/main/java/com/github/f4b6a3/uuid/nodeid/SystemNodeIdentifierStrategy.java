@@ -82,11 +82,11 @@ public class SystemNodeIdentifierStrategy implements NodeIdentifierStrategy {
 			hostname = InetAddress.getLocalHost().getHostName();
 			hostip = InetAddress.getLocalHost().getHostAddress();
 			if ((hostname == null || hostip == null) || (hostname.isEmpty() || hostip.isEmpty())) {
-				return ByteUtil.toHexadecimal(ByteUtil.toBytes(random.nextLong()));
+				return getRandomHexadecimal();
 			}
 			return String.format("%s %s", hostname, hostip);
 		} catch (UnknownHostException e) {
-			return ByteUtil.toHexadecimal(ByteUtil.toBytes(random.nextLong()));
+			return getRandomHexadecimal();
 		}
 	}
 
@@ -134,7 +134,7 @@ public class SystemNodeIdentifierStrategy implements NodeIdentifierStrategy {
 			}
 
 		} catch (SocketException | NullPointerException e) {
-			return ByteUtil.toHexadecimal(ByteUtil.toBytes(random.nextLong()));
+			return getRandomHexadecimal();
 		}
 
 		return getRandomHexadecimal();
