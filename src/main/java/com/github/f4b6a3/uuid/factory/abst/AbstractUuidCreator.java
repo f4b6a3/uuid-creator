@@ -26,7 +26,7 @@ import java.util.UUID;
  * @author fabiolimace
  *
  */
-public abstract class AbstractUUIDCreator {
+public abstract class AbstractUuidCreator {
 	
 	protected final int version;
 	
@@ -58,7 +58,7 @@ public abstract class AbstractUUIDCreator {
 			0x0000000000002000L, 0x0000000000003000L, 
 			0x0000000000004000L, 0x0000000000005000L };
 	
-	public AbstractUUIDCreator(int version) {
+	public AbstractUuidCreator(int version) {
 		this.version = version;
 	}
 

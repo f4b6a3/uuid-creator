@@ -15,16 +15,8 @@
  *
  */
 
-package com.github.f4b6a3.uuid.factory;
+package com.github.f4b6a3.uuid.factory.abst;
 
-import com.github.f4b6a3.uuid.factory.abst.AbstractNameBasedUUIDCreator;
-
-public class NameBasedSHA1UUIDCreator extends AbstractNameBasedUUIDCreator {
-
-	/**
-	 * Factory that creates name based UUIDs, version 5.
-	 */
-	public NameBasedSHA1UUIDCreator() {
-		super(VERSION_5, MESSAGE_DIGEST_SHA1);
-	}	
+public interface UuidCreator {
+	
 }

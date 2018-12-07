@@ -4,8 +4,8 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.UUIDGenerator;
-import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUUIDCreator;
+import com.github.f4b6a3.uuid.UuidGenerator;
+import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
 
 /**
  * Runnable to test if a UUID is created more than once.
@@ -19,7 +19,7 @@ public class RaceConditionRunnable implements Runnable {
 	public static int threadLoopLimit = 10000;
 	
 	private static UUID[][] cache = new UUID[threadCount][threadLoopLimit];
-	private static AbstractTimeBasedUUIDCreator creator = UUIDGenerator.getTimeBasedCreator();
+	private static AbstractTimeBasedUuidCreator creator = UuidGenerator.getTimeBasedCreator();
 	
 	public RaceConditionRunnable(int id) {
 		this.id = id;

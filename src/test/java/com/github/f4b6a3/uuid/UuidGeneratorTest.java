@@ -15,72 +15,74 @@ import com.github.f4b6a3.test.other.RaceConditionRunnable;
 import com.github.f4b6a3.test.other.RandomImage;
 import com.github.f4b6a3.test.other.RandomnesTest;
 import com.github.f4b6a3.test.other.SimpleBenchmark;
-import com.github.f4b6a3.uuid.UUIDGenerator;
-import com.github.f4b6a3.uuid.factory.abst.AbstractUUIDCreator;
+import com.github.f4b6a3.uuid.UuidGenerator;
+import com.github.f4b6a3.uuid.factory.MssqlUuidCreator;
+import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
 import com.github.f4b6a3.uuid.random.Xoroshiro128PlusRandom;
 import com.github.f4b6a3.uuid.random.XorshiftRandom;
 import com.github.f4b6a3.uuid.random.XorshiftStarRandom;
+import com.github.f4b6a3.uuid.util.ByteUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
-import com.github.f4b6a3.uuid.util.UUIDUtil;
+import com.github.f4b6a3.uuid.util.UuidUtil;
 
 import static com.github.f4b6a3.uuid.util.ByteUtil.*;
 
 /**
  * Unit test for uuid-generator.
  */
-public class UUIDGeneratorTest {
+public class UuidGeneratorTest {
 
 	private static final long DEFAULT_LOOP_LIMIT = 100;
 
 	private static final String UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
 
 	@Test
-	public void testGetRandomUUID_StringIsValid() {
+	public void testGetRandomUuid_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUIDGenerator.getRandom();
-			assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
+			UUID uuid = UuidGenerator.getRandom();
+			assertTrue(uuid.toString().matches(UuidGeneratorTest.UUID_PATTERN));
 		}
 	}
 
 	@Test
-	public void testGetTimeBasedUUID_StringIsValid() {
+	public void testGetTimeBasedUuid_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUIDGenerator.getTimeBased();
-			assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
+			UUID uuid = UuidGenerator.getTimeBased();
+			assertTrue(uuid.toString().matches(UuidGeneratorTest.UUID_PATTERN));
 		}
 	}
 
 	@Test
-	public void testGetTimeBasedWithHardwareAddress_StringIsValid() {
+	public void testGetTimeBasedWithMac_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUIDGenerator.getTimeBasedWithMAC();
-			assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
+			UUID uuid = UuidGenerator.getTimeBasedWithMac();
+			assertTrue(uuid.toString().matches(UuidGeneratorTest.UUID_PATTERN));
 		}
 	}
 
 	@Test
-	public void testGetOrderedUUID_StringIsValid() {
+	public void testGetOrderedUuid_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUIDGenerator.getOrdered();
-			assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
+			UUID uuid = UuidGenerator.getOrdered();
+			assertTrue(uuid.toString().matches(UuidGeneratorTest.UUID_PATTERN));
 		}
 	}
 
 	@Test
-	public void testGetOrderedWithHardwareAddressUUID_StringIsValid() {
+	public void testGetOrderedWithMac_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUIDGenerator.getOrderedWithMAC();
-			assertTrue(uuid.toString().matches(UUIDGeneratorTest.UUID_PATTERN));
+			UUID uuid = UuidGenerator.getOrderedWithMac();
+			assertTrue(uuid.toString().matches(UuidGeneratorTest.UUID_PATTERN));
 		}
 	}
 
 	@Test
-	public void testGetOrderedUUID_TimestampBitsAreOrdered() {
+	public void testGetOrdered_TimestampBitsAreOrdered() {
 
 		long oldTimestemp = 0;
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUIDGenerator.getOrdered();
-			long newTimestamp = UUIDUtil.extractTimestamp(uuid);
+			UUID uuid = UuidGenerator.getOrdered();
+			long newTimestamp = UuidUtil.extractTimestamp(uuid);
 			
 			if(i > 0) {
 				assertTrue(newTimestamp >= oldTimestemp);
@@ -90,12 +92,12 @@ public class UUIDGeneratorTest {
 	}
 
 	@Test
-	public void testGetOrderedUUID_MostSignificantBitsAreOrdered() {
+	public void testGetOrdered_MostSignificantBitsAreOrdered() {
 
 		long oldMsb = 0;
 
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUIDGenerator.getOrdered();
+			UUID uuid = UuidGenerator.getOrdered();
 			long newMsb = uuid.getMostSignificantBits();
 
 			if(i > 0) {
@@ -109,13 +111,13 @@ public class UUIDGeneratorTest {
 	 * Test if a time based UUID version 1 is has the correct timestamp.
 	 */
 	@Test
-	public void testGetTimeBasedUUID_TimestampIsCorrect() {
+	public void testGetTimeBased_TimestampIsCorrect() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 
 			Instant instant1 = Instant.now();
 
-			UUID uuid = UUIDGenerator.getTimeBasedCreator().withInstant(instant1).create();
-			Instant instant2 = UUIDUtil.extractInstant(uuid);
+			UUID uuid = UuidGenerator.getTimeBasedCreator().withInstant(instant1).create();
+			Instant instant2 = UuidUtil.extractInstant(uuid);
 
 			long timestamp1 = TimestampUtil.toTimestamp(instant1);
 			long timestamp2 = TimestampUtil.toTimestamp(instant2);
@@ -128,13 +130,13 @@ public class UUIDGeneratorTest {
 	 * Test if a ordered UUID version 0 is has the correct timestamp.
 	 */
 	@Test
-	public void testGetOrderedUUID_TimestampIsCorrect() {
+	public void testGetOrdered_TimestampIsCorrect() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 
 			Instant instant1 = Instant.now();
 
-			UUID uuid = UUIDGenerator.getOrderedCreator().withInstant(instant1).create();
-			Instant instant2 = UUIDUtil.extractInstant(uuid);
+			UUID uuid = UuidGenerator.getOrderedCreator().withInstant(instant1).create();
+			Instant instant2 = UuidUtil.extractInstant(uuid);
 
 			long timestamp1 = TimestampUtil.toTimestamp(instant1);
 			long timestamp2 = TimestampUtil.toTimestamp(instant2);
@@ -147,16 +149,16 @@ public class UUIDGeneratorTest {
 	 * Test if a DCE Security version 2 has correct local domain and identifier.
 	 */
 	@Test
-	public void testGetDCESecuritylUUID_DomainAndIdentifierAreCorrect() {
+	public void testGetDCESecurityl_DomainAndIdentifierAreCorrect() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 
 			byte localDomain = (byte) i;
 			int localIdentifier = 1701;
 
-			UUID uuid = UUIDGenerator.getDCESecurity(localDomain, localIdentifier);
+			UUID uuid = UuidGenerator.getDceSecurity(localDomain, localIdentifier);
 
-			byte localDomain2 = UUIDUtil.extractDCESecurityLocalDomain(uuid);
-			int localIdentifier2 = UUIDUtil.extractDCESecurityLocalIdentifier(uuid);
+			byte localDomain2 = UuidUtil.extractDceSecurityLocalDomain(uuid);
+			int localIdentifier2 = UuidUtil.extractDceSecurityLocalIdentifier(uuid);
 
 			assertEquals(localDomain, localDomain2);
 			assertEquals(localIdentifier, localIdentifier2);
@@ -167,16 +169,16 @@ public class UUIDGeneratorTest {
 	 * Test if a name-based UUID version 3 with name space is correct.
 	 */
 	@Test
-	public void testGetNameBasedMD5UUID() {
+	public void testGetNameBasedMd5() {
 
-		UUID namespace = AbstractUUIDCreator.NAMESPACE_DNS;
+		UUID namespace = AbstractUuidCreator.NAMESPACE_DNS;
 		String name = null;
 		UUID uuid = null;
 
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 
-			name = UUIDGenerator.getRandom().toString();
-			uuid = UUIDGenerator.getNameBasedMD5(namespace, name);
+			name = UuidGenerator.getRandom().toString();
+			uuid = UuidGenerator.getNameBasedMd5(namespace, name);
 
 			byte[] namespaceBytes = toBytes(namespace.toString().replaceAll("-", ""));
 			byte[] nameBytes = name.getBytes();
@@ -187,25 +189,25 @@ public class UUIDGeneratorTest {
 	}
 
 	@Test
-	public void testGetNameBasedMD5UUID_test_dns_www_github_com() {
-		UUID namespace = AbstractUUIDCreator.NAMESPACE_DNS;
+	public void testGetNameBasedMd5_test_dns_www_github_com() {
+		UUID namespace = AbstractUuidCreator.NAMESPACE_DNS;
 		String name = "www.github.com";
 		
 		// Value generated by UUIDGEN (util-linux packege)
 		UUID uuid1 = UUID.fromString("2c02fba1-0794-3c12-b62b-578ec5f03908");
-		UUID uuid2 = UUIDGenerator.getNameBasedMD5(namespace, name);
+		UUID uuid2 = UuidGenerator.getNameBasedMd5(namespace, name);
 		assertEquals(uuid1, uuid2);
 	}
 	
 	@Test
-	public void testGetNameBasedSHA1UID_test_dns_www_github_com() {
+	public void testGetNameBasedSha1_test_dns_www_github_com() {
 
-		UUID namespace = AbstractUUIDCreator.NAMESPACE_DNS;
+		UUID namespace = AbstractUuidCreator.NAMESPACE_DNS;
 		String name = "www.github.com";
 		
 		// Value generated by UUIDGEN (util-linux packege)
 		UUID uuid1 = UUID.fromString("04e16ed4-cd93-55f3-b2e3-1a097fc19832");
-		UUID uuid2 = UUIDGenerator.getNameBasedSHA1(namespace, name);
+		UUID uuid2 = UuidGenerator.getNameBasedSha1(namespace, name);
 		assertEquals(uuid1, uuid2);
 
 	}
@@ -234,11 +236,11 @@ public class UUIDGeneratorTest {
 		long loopMax = 100_000;
 		long nano = 1_000_000;
 		long randomUUID = (SimpleBenchmark.run(null, UUID.class, "randomUUID", loopMax) * loopMax) / nano;
-		long getRandomUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getRandom", loopMax) * loopMax)
+		long getRandomUUID = (SimpleBenchmark.run(null, UuidGenerator.class, "getRandom", loopMax) * loopMax)
 				/ nano;
-		long getTimeBasedUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getTimeBased", loopMax) * loopMax)
+		long getTimeBasedUUID = (SimpleBenchmark.run(null, UuidGenerator.class, "getTimeBased", loopMax) * loopMax)
 				/ nano;
-		long getOrderedUUID = (SimpleBenchmark.run(null, UUIDGenerator.class, "getOrdered", loopMax)
+		long getOrderedUUID = (SimpleBenchmark.run(null, UuidGenerator.class, "getOrdered", loopMax)
 				* loopMax) / nano;
 		long javaNextLong = (SimpleBenchmark.run(new Random(), null, "nextLong", loopMax) * loopMax) / nano;
 		long XorshiftNextLong = (SimpleBenchmark.run(new XorshiftRandom(), null, "nextLong", loopMax) * loopMax) / nano;
@@ -263,8 +265,8 @@ public class UUIDGeneratorTest {
 	public void testDemoDifferenceBetweenTimeBasedAndOrderedUUID() {
 
 		Instant instant = Instant.now();
-		String timeBasedUUID = UUIDGenerator.getTimeBasedCreator().withInstant(instant).create().toString();
-		String orderedUUID = UUIDGenerator.getOrderedCreator().withInstant(instant).create().toString();
+		String timeBasedUUID = UuidGenerator.getTimeBasedCreator().withInstant(instant).create().toString();
+		String orderedUUID = UuidGenerator.getOrderedCreator().withInstant(instant).create().toString();
 
 		System.out.println();
 		System.out.println("----------------------------------------");
@@ -273,8 +275,8 @@ public class UUIDGeneratorTest {
 		System.out.println("- TimeBased UUID:          " + timeBasedUUID.toString());
 		System.out.println("- Ordered UUID:         " + orderedUUID.toString());
 		System.out.println("- Original instant:        " + instant.toString());
-		System.out.println("- TimeBased UUID instant:  " + UUIDUtil.extractInstant(UUID.fromString(timeBasedUUID)));
-		System.out.println("- Ordered UUID instant: " + UUIDUtil.extractInstant(UUID.fromString(orderedUUID)));
+		System.out.println("- TimeBased UUID instant:  " + UuidUtil.extractInstant(UUID.fromString(timeBasedUUID)));
+		System.out.println("- Ordered UUID instant: " + UuidUtil.extractInstant(UUID.fromString(orderedUUID)));
 		System.out.println("----------------------------------------");
 	}
 
@@ -291,21 +293,21 @@ public class UUIDGeneratorTest {
 		System.out.println("### Random UUID");
 
 		for (int i = 0; i < max; i++) {
-			System.out.println(UUIDGenerator.getFastRandom());
+			System.out.println(UuidGenerator.getFastRandom());
 		}
 
 		System.out.println();
 		System.out.println("### Time-based UUID");
 
 		for (int i = 0; i < max; i++) {
-			System.out.println(UUIDGenerator.getTimeBased());
+			System.out.println(UuidGenerator.getTimeBased());
 		}
 
 		System.out.println();
 		System.out.println("### Ordered UUID");
 
 		for (int i = 0; i < max; i++) {
-			System.out.println(UUIDGenerator.getOrdered());
+			System.out.println(UuidGenerator.getOrdered());
 		}
 
 		System.out.println("----------------------------------------");

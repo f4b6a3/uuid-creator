@@ -17,30 +17,14 @@
 
 package com.github.f4b6a3.uuid.factory;
 
-import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUUIDCreator;
-import com.github.f4b6a3.uuid.util.UUIDUtil;
+import com.github.f4b6a3.uuid.factory.abst.AbstractNameBasedUuidCreator;
 
-/**
- * Factory that creates time-based UUIDs 1 of the RFC-4122.
- */
-public class TimeBasedUUIDCreator extends AbstractTimeBasedUUIDCreator {
-
-	public TimeBasedUUIDCreator() {
-		super(VERSION_1);
-	}
-	
-	protected TimeBasedUUIDCreator(int version) {
-		super(version);
-	}
+public class NameBasedMd5UuidCreator extends AbstractNameBasedUuidCreator {
 	
 	/**
-	 * 
-	 * {@link UUIDUtil#formatTimebasedMostSignificantBits(long)}
-	 * 
-	 * @param timestamp
+	 * Factory that creates name based UUIDs, version 3.
 	 */
-	@Override
-	public long formatMostSignificantBits(long timestamp) {
-		return UUIDUtil.formatTimeBasedMostSignificantBits(timestamp);
+	public NameBasedMd5UuidCreator() {
+		super(VERSION_3, MESSAGE_DIGEST_MD5);
 	}
 }

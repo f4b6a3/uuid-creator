@@ -22,7 +22,7 @@ import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.factory.abst.AbstractUUIDCreator;
+import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.uuid.random.XorshiftRandom;
 
@@ -38,11 +38,11 @@ import com.github.f4b6a3.uuid.random.XorshiftRandom;
  * browsers.
  * 
  */
-public class RandomUUIDCreator extends AbstractUUIDCreator {
+public class RandomUuidCreator extends AbstractUuidCreator {
 
 	private Random random;
 
-	public RandomUUIDCreator() {
+	public RandomUuidCreator() {
 		super(VERSION_4);
 		random = getSecureRandom();
 	}
@@ -91,7 +91,7 @@ public class RandomUUIDCreator extends AbstractUUIDCreator {
 	 * 
 	 * @param random
 	 */
-	public RandomUUIDCreator withRandomGenerator(Random random) {
+	public RandomUuidCreator withRandomGenerator(Random random) {
 		this.random = random;
 		return this;
 	}
@@ -103,7 +103,7 @@ public class RandomUUIDCreator extends AbstractUUIDCreator {
 	 * 
 	 * @return
 	 */
-	public RandomUUIDCreator withFastRandomGenerator() {
+	public RandomUuidCreator withFastRandomGenerator() {
 		this.random = new Xorshift128PlusRandom();
 		return this;
 	}

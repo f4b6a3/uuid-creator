@@ -8,12 +8,12 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.UUIDGenerator;
-import com.github.f4b6a3.uuid.factory.abst.AbstractUUIDCreator;
+import com.github.f4b6a3.uuid.UuidGenerator;
+import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
 
-import static com.github.f4b6a3.uuid.util.UUIDUtil.*;
+import static com.github.f4b6a3.uuid.util.UuidUtil.*;
 
-public class UUIDUtilTest {
+public class UuidUtilTest {
 
 	@Test
 	public void testIsNameBasedVersion() {
@@ -30,7 +30,7 @@ public class UUIDUtilTest {
 	@Test
 	public void testExtractNodeIdentifier() {
 		long nodeIdentifier1 = 0x111111111111L;
-		UUID uuid = UUIDGenerator.getTimeBasedCreator().withNodeIdentifier(nodeIdentifier1).create();
+		UUID uuid = UuidGenerator.getTimeBasedCreator().withNodeIdentifier(nodeIdentifier1).create();
 		long nodeIdentifier2 = extractNodeIdentifier(uuid);
 		assertEquals(nodeIdentifier1, nodeIdentifier2);
 	}
@@ -41,11 +41,11 @@ public class UUIDUtilTest {
 		Instant instant1 = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 		long timestamp1 = TimestampUtil.toTimestamp(instant1);
 
-		UUID uuid = UUIDGenerator.getTimeBasedCreator().withInstant(instant1).create();
+		UUID uuid = UuidGenerator.getTimeBasedCreator().withInstant(instant1).create();
 		long timestamp2 = extractTimestamp(uuid);
 		assertEquals(timestamp1, timestamp2);
 
-		uuid = UUIDGenerator.getOrderedCreator().withInstant(instant1).create();
+		uuid = UuidGenerator.getOrderedCreator().withInstant(instant1).create();
 		timestamp2 = extractTimestamp(uuid);
 		assertEquals(timestamp1, timestamp2);
 	}
@@ -54,66 +54,66 @@ public class UUIDUtilTest {
 	public void testExtractInstant() {
 		Instant instant1 = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
-		UUID uuid = UUIDGenerator.getTimeBasedCreator().withInstant(instant1).create();
+		UUID uuid = UuidGenerator.getTimeBasedCreator().withInstant(instant1).create();
 		Instant instant2 = extractInstant(uuid);
 		assertEquals(instant1, instant2);
 
-		uuid = UUIDGenerator.getOrderedCreator().withInstant(instant1).create();
+		uuid = UuidGenerator.getOrderedCreator().withInstant(instant1).create();
 		instant2 = extractInstant(uuid);
 		assertEquals(instant1, instant2);
 	}
 
 	@Test
-	public void testDCESecurityLocalDomain() {
+	public void testDceSecurityLocalDomain() {
 		byte localDomain1 = 42;
 		int localIdentifier1 = 1701;
-		UUID uuid = UUIDGenerator.getDCESecurity(localDomain1, localIdentifier1);
-		byte localDomain2 = extractDCESecurityLocalDomain(uuid);
+		UUID uuid = UuidGenerator.getDceSecurity(localDomain1, localIdentifier1);
+		byte localDomain2 = extractDceSecurityLocalDomain(uuid);
 		assertEquals(localDomain1, localDomain2);
 	}
 
 	@Test
-	public void testDCESecurityLocalIdentifier() {
+	public void testDceSecurityLocalIdentifier() {
 		byte localDomain1 = 42;
 		int localIdentifier1 = 1701;
-		UUID uuid = UUIDGenerator.getDCESecurity(localDomain1, localIdentifier1);
-		int localIdentifier2 = extractDCESecurityLocalIdentifier(uuid);
+		UUID uuid = UuidGenerator.getDceSecurity(localDomain1, localIdentifier1);
+		int localIdentifier2 = extractDceSecurityLocalIdentifier(uuid);
 		assertEquals(localIdentifier1, localIdentifier2);
 	}
 
 	@Test
-	public void testIsRFC4122Variant() {
-		UUID uuid1 = AbstractUUIDCreator.NAMESPACE_DNS;
-		UUID uuid2 = AbstractUUIDCreator.NIL_UUID;
+	public void testIsRfc4122Variant() {
+		UUID uuid1 = AbstractUuidCreator.NAMESPACE_DNS;
+		UUID uuid2 = AbstractUuidCreator.NIL_UUID;
 
-		assertTrue(isRFC4122Variant(uuid1));
-		assertFalse(isRFC4122Variant(uuid2));
+		assertTrue(isRfc4122Variant(uuid1));
+		assertFalse(isRfc4122Variant(uuid2));
 	}
 
 	@Test
-	public void testExtractDCESecurityTimestamp() {
+	public void testExtractDceSecurityTimestamp() {
 
 		byte localDomain = (byte) 42;
 		int localIdentifier = 1701;
 		
 		Instant instant1 = Instant.now();
 		long timestamp1 = TimestampUtil.toTimestamp(instant1);
-		UUID uuid = UUIDGenerator.getDCESecurity(localDomain, localIdentifier);
-		long timestamp2 = extractDCESecurityTimestamp(uuid);
+		UUID uuid = UuidGenerator.getDceSecurity(localDomain, localIdentifier);
+		long timestamp2 = extractDceSecurityTimestamp(uuid);
 
 		assertEquals(timestamp1 & 0xffffffff00000000L, timestamp2);
 	}
 
 	@Test
-	public void testExtractDCESecurityInstant() {
+	public void testExtractDceSecurityInstant() {
 
 		byte localDomain = (byte) 42;
 		int localIdentifier = 1701;
 		
 		Instant instant1 = Instant.now();
-		UUID uuid = UUIDGenerator.getDCESecurity(localDomain, localIdentifier);
+		UUID uuid = UuidGenerator.getDceSecurity(localDomain, localIdentifier);
 
-		Instant instant2 = extractDCESecurityInstant(uuid);
+		Instant instant2 = extractDceSecurityInstant(uuid);
 
 		// The expected Instant is trunked like the DCE Security does internally
 		long expectedTimestamp = TimestampUtil.toTimestamp(instant1) & 0xffffffff00000000L;
@@ -123,17 +123,17 @@ public class UUIDUtilTest {
 	}
 
 	@Test
-	public void testFromTimeBasedToOrderedUUID(){
-		UUID uuid1 = UUIDGenerator.getTimeBased();
-		UUID uuid2 = fromTimeBasedToOrderedUUID(uuid1);
+	public void testFromTimeBasedToOrderedUuid(){
+		UUID uuid1 = UuidGenerator.getTimeBased();
+		UUID uuid2 = fromTimeBasedToOrderedUuid(uuid1);
 		
 		assertTrue(isOrderedVersion(uuid2));
 	}
 	
 	@Test
-	public void testFromOrderedToTimeBasedUUID(){
-		UUID uuid1 = UUIDGenerator.getOrdered();
-		UUID uuid2 = fromOrderedToTimeBasedUUID(uuid1);
+	public void testFromOrderedToTimeBasedUuid(){
+		UUID uuid1 = UuidGenerator.getOrdered();
+		UUID uuid2 = fromOrderedToTimeBasedUuid(uuid1);
 		
 		assertTrue(isTimeBasedVersion(uuid2));
 	}
@@ -161,28 +161,36 @@ public class UUIDUtilTest {
 		}
 
 		try {
-			extractDCESecurityInstant(uuid);
+			extractDceSecurityInstant(uuid);
 			fail();
 		} catch (UnsupportedOperationException e) {
 		}
 
 		try {
-			extractDCESecurityTimestamp(uuid);
+			extractDceSecurityTimestamp(uuid);
 			fail();
 		} catch (UnsupportedOperationException e) {
 		}
 
 		try {
-			extractDCESecurityLocalDomain(uuid);
+			extractDceSecurityLocalDomain(uuid);
 			fail();
 		} catch (UnsupportedOperationException e) {
 		}
 
 		try {
-			extractDCESecurityLocalIdentifier(uuid);
+			extractDceSecurityLocalIdentifier(uuid);
 			fail();
 		} catch (UnsupportedOperationException e) {
 		}
+	}
+	
+	@Test
+	public void testFromTimeBasedToMssqlUuid_IsCorrect() {
+		UUID uuid1 = new UUID(0x0011223344551677L,0x8888888888888888L);
+		UUID uuid2 = UuidUtil.fromTimeBasedToMssqlUuid(uuid1);
+		long timestamp = uuid2.getMostSignificantBits();
+		assertEquals(0x3322110055447716L, timestamp);
 	}
 
 }

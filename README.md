@@ -36,7 +36,7 @@ System.out.println(uuid.toString());
 
 ```java
 // With hardware address
-UUID uuid = UUIDGenerator.getOrderedWithMAC();
+UUID uuid = UUIDGenerator.getOrderedWithMac();
 System.out.println(uuid.toString());
 // Output: 1e88c441-5711-0fa2-aaac-bf66xxxxxxxx
 ```
@@ -61,7 +61,7 @@ System.out.println(uuid.toString());
 
 ```java
 // With hardware address
-UUID uuid = UUIDGenerator.getTimeBasedWithMAC();
+UUID uuid = UUIDGenerator.getTimeBasedWithMac();
 System.out.println(uuid.toString());
 // Output: 15670d26-8c44-11e8-bda5-47f8xxxxxxxx
 ```
@@ -79,28 +79,28 @@ System.out.println(uuid.toString());
 The DCE Security is a Time-based UUID that also embeds local domain and local identifier.
 
 ```java
-byte localDomain = DCESecurityCreator.LOCAL_DOMAIN_GROUP; // POSIX Group ID domain (1)
+byte localDomain = DceSecurityCreator.LOCAL_DOMAIN_GROUP; // POSIX Group ID domain (1)
 int localIdentifier = 1701; // Group ID
-UUID uuid = UUIDGenerator.getDCESecurity(localDomain, localIdentifier);
+UUID uuid = UUIDGenerator.getDceSecurity(localDomain, localIdentifier);
 System.out.println(uuid.toString());
 // Output: 000006a5-f043-21e8-a900-a99b08980e52
 ```
 
 ```java
 // With hardware address
-byte localDomain = DCESecurityCreator.LOCAL_DOMAIN_GROUP; // POSIX Group ID domain (1)
+byte localDomain = DceSecurityCreator.LOCAL_DOMAIN_GROUP; // POSIX Group ID domain (1)
 int localIdentifier = 1701; // Group ID
-UUID uuid = UUIDGenerator.getDCESecurityWithMAC(localDomain, localIdentifier);
+UUID uuid = UUIDGenerator.getDceSecurityWithMac(localDomain, localIdentifier);
 System.out.println(uuid.toString());
 // Output: 000006a5-f043-21e8-a900-47f8xxxxxxxx
 ```
 
 ```java
 // Using a fixed node identifier instead of MAC address, for example, a device identifier
-byte localDomain = DCESecurityCreator.LOCAL_DOMAIN_GROUP; // POSIX Group ID domain (1)
+byte localDomain = DceSecurityCreator.LOCAL_DOMAIN_GROUP; // POSIX Group ID domain (1)
 int localIdentifier = 1701; // Group ID
 long nodeIdentifier = 0x111111111111L;
-UUID uuid = UUIDGenerator.getDCESecurityCreator().withNodeIdentifier(nodeIdentifier).create();
+UUID uuid = UUIDGenerator.getDceSecurityCreator().withNodeIdentifier(nodeIdentifier).create();
 System.out.println(uuid.toString());
 // Output: 000006a5-f043-21e8-a900-111111111111
 ```
@@ -110,9 +110,9 @@ System.out.println(uuid.toString());
 The Name-based UUID version 3 is a MD5 hash of a name space and a name.
 
 ```java
-UUID namespace = UUIDCreator.NAMESPACE_URL;
+UUID namespace = UuidCreator.NAMESPACE_URL;
 String name = "https://github.com/";
-UUID uuid = UUIDGenerator.getNameBasedMD5(namespace, name);
+UUID uuid = UUIDGenerator.getNameBasedMd5(namespace, name);
 System.out.println(uuid.toString());
 // Output: 295df05a-2c43-337c-b6b8-4b84826e4a94
 ```
@@ -120,7 +120,7 @@ System.out.println(uuid.toString());
 ```java
 // Without name space.
 String name = "https://github.com/";
-UUID uuid = UUIDGenerator.getNameBasedMD5(name);
+UUID uuid = UUIDGenerator.getNameBasedMd5(name);
 System.out.println(uuid.toString());
 // Output: 008ec445-3ff3-3513-b438-93cba7aa31c8
 ```
@@ -148,9 +148,9 @@ System.out.println(uuid.toString());
 The Name-based UUID version 5 is a SHA-1 hash of a name space and a name.
 
 ```java
-UUID namespace = UUIDCreator.NAMESPACE_URL;
+UUID namespace = UuidCreator.NAMESPACE_URL;
 String name = "https://github.com/";
-UUID uuid = UUIDGenerator.getNameBasedSHA1(namespace, name);
+UUID uuid = UUIDGenerator.getNameBasedSha1(namespace, name);
 System.out.println(uuid.toString());
 // Output: 39983165-606c-5d83-abfa-b97af8b1ae8d
 ```
@@ -158,7 +158,7 @@ System.out.println(uuid.toString());
 ```java
 // Without name space
 String name = "https://github.com/";
-UUID uuid = UUIDGenerator.getNameBasedSHA1(name);
+UUID uuid = UUIDGenerator.getNameBasedSha1(name);
 System.out.println(uuid.toString());
 // Output: d7b3438d-97f3-55e6-92a5-66a731eea5ac
 ```
@@ -303,25 +303,25 @@ Here is a table showing the results of a simple benchmark using JMH. This implem
 -----------------------------------------------------------------------------------
 Benchmark                                         Mode  Cnt   Score    Error  Units
 -----------------------------------------------------------------------------------
-BenchmarkRunner.EAIO_TimeBasedWithMAC               ss  100   7,258 ± 0,553  ms/op
-BenchmarkRunner.JUG_NameBased                       ss  100  38,748 ± 2,810  ms/op
-BenchmarkRunner.JUG_Random                          ss  100  55,319 ± 5,027  ms/op
-BenchmarkRunner.JUG_TimeBased                       ss  100   7,963 ± 0,961  ms/op
-BenchmarkRunner.JUG_TimeBasedWithMAC                ss  100   7,993 ± 0,948  ms/op
-BenchmarkRunner.Java_NameBased                      ss  100  50,846 ± 9,036  ms/op
-BenchmarkRunner.Java_Random                         ss  100  54,915 ± 4,755  ms/op
-BenchmarkRunner.UUIDGenerator_DCESecurity           ss  100   7,933 ± 1,266  ms/op
-BenchmarkRunner.UUIDGenerator_DCESecurityWithMAC    ss  100   7,905 ± 1,326  ms/op
-BenchmarkRunner.UUIDGenerator_FastRandom            ss  100   3,386 ± 0,591  ms/op
-BenchmarkRunner.UUIDGenerator_NameBasedMD5          ss  100  42,240 ± 4,160  ms/op
-BenchmarkRunner.UUIDGenerator_NameBasedSHA1         ss  100  50,978 ± 4,545  ms/op
-BenchmarkRunner.UUIDGenerator_Ordered               ss  100   7,217 ± 0,917  ms/op
-BenchmarkRunner.UUIDGenerator_OrderedWithMAC        ss  100   7,438 ± 0,976  ms/op
-BenchmarkRunner.UUIDGenerator_Random                ss  100  47,003 ± 2,982  ms/op
-BenchmarkRunner.UUIDGenerator_TimeBased             ss  100   7,348 ± 0,965  ms/op
-BenchmarkRunner.UUIDGenerator_TimeBasedWithMAC      ss  100   7,488 ± 0,998  ms/op
+BenchmarkRunner.EAIO_TimeBasedWithMac               ss  100   7,410 ± 0,619  ms/op
+BenchmarkRunner.JUG_NameBased                       ss  100  39,787 ± 2,959  ms/op
+BenchmarkRunner.JUG_Random                          ss  100  55,029 ± 4,540  ms/op
+BenchmarkRunner.JUG_TimeBased                       ss  100   7,889 ± 1,010  ms/op
+BenchmarkRunner.JUG_TimeBasedWithMAC                ss  100   7,789 ± 0,972  ms/op
+BenchmarkRunner.Java_NameBased                      ss  100  51,255 ± 8,995  ms/op
+BenchmarkRunner.Java_Random                         ss  100  54,613 ± 4,852  ms/op
+BenchmarkRunner.UUIDGenerator_DceSecurity           ss  100   8,124 ± 1,254  ms/op
+BenchmarkRunner.UUIDGenerator_DceSecurityWithMac    ss  100   8,358 ± 1,248  ms/op
+BenchmarkRunner.UUIDGenerator_FastRandom            ss  100   3,410 ± 0,560  ms/op
+BenchmarkRunner.UUIDGenerator_NameBasedMd5          ss  100  41,841 ± 4,234  ms/op
+BenchmarkRunner.UUIDGenerator_NameBasedSha1         ss  100  50,936 ± 4,486  ms/op
+BenchmarkRunner.UUIDGenerator_Ordered               ss  100   7,559 ± 1,008  ms/op
+BenchmarkRunner.UUIDGenerator_OrderedWithMac        ss  100   7,539 ± 0,988  ms/op
+BenchmarkRunner.UUIDGenerator_Random                ss  100  46,713 ± 2,853  ms/op
+BenchmarkRunner.UUIDGenerator_TimeBased             ss  100   7,471 ± 1,007  ms/op
+BenchmarkRunner.UUIDGenerator_TimeBasedWithMac      ss  100   7,730 ± 1,008  ms/op
 -----------------------------------------------------------------------------------
-Total time: 00:01:36
+Total time: 00:01:38
 -----------------------------------------------------------------------------------
 ```
 
@@ -352,14 +352,23 @@ References
 
 [6]. DCE 1.1: Security-Version (Version 2) UUIDs. The Open Group.
 
-[7]. A brief history of the UUID.
-
-
 [1]: https://en.wikipedia.org/wiki/Universally_unique_identifier
 [2]: https://tools.ietf.org/html/rfc4122
 [3]: https://www.percona.com/blog/2007/03/13/to-uuid-or-not-to-uuid
 [4]: https://www.percona.com/blog/2014/12/19/store-uuid-optimized-way
 [5]: https://bradleypeabody.github.io/uuidv6
 [6]: http://pubs.opengroup.org/onlinepubs/9696989899/chap5.htm#tagcjh_08_02_01_01
-[7]: https://segment.com/blog/a-brief-history-of-the-uuid
 
+
+External links
+------------------------------------------------------
+
+* [A brief history of the UUID](https://segment.com/blog/a-brief-history-of-the-uuid)
+
+* [The Cost of GUIDs as Primary Keys](ttp://www.informit.com/articles/printerfriendly/25862)
+
+* [Sequential UUID Generators](https://blog.2ndquadrant.com/sequential-uuid-generators/)
+
+* [Be Careful with UUID or GUID as Primary Keys](https://news.ycombinator.com/item?id=14523523)
+
+* [How to Generate Sequential GUIDs for SQL Server in .NET](https://blogs.msdn.microsoft.com/dbrowne/2012/07/03/how-to-generate-sequential-guids-for-sql-server-in-net/)

@@ -17,8 +17,8 @@
 
 package com.github.f4b6a3.uuid.factory;
 
-import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUUIDCreator;
-import com.github.f4b6a3.uuid.util.UUIDUtil;
+import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
+import com.github.f4b6a3.uuid.util.UuidUtil;
 
 /**
  * Factory that creates time-based UUIDs, version 0.
@@ -27,24 +27,25 @@ import com.github.f4b6a3.uuid.util.UUIDUtil;
  * in the 'natural' order, instead of rearranging them as the version 1 does.
  *
  */
-public class OrderedUUIDCreator extends AbstractTimeBasedUUIDCreator {
+public class MssqlUuidCreator extends AbstractTimeBasedUuidCreator {
 
-	public OrderedUUIDCreator() {
+	public MssqlUuidCreator() {
 		super(VERSION_0);
 	}
 
-	protected OrderedUUIDCreator(int version) {
+	protected MssqlUuidCreator(int version) {
 		super(version);
 	}
 
 	/**
+	 * Generate a MS SQL Server 'friendly' UUID.
 	 * 
-	 * {@link UUIDUtil#formatOrderedMostSignificantBits(long)}
+	 * {@link UuidUtil#formatMssqlMostSignificantBits(long)}
 	 * 
 	 * @param timestamp
 	 */
 	@Override
 	public long formatMostSignificantBits(long timestamp) {
-		return UUIDUtil.formatOrderedMostSignificantBits(timestamp);
+		return UuidUtil.formatMssqlMostSignificantBits(timestamp);
 	}
 }

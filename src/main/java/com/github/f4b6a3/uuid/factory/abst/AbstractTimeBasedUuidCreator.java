@@ -17,38 +17,34 @@
 
 package com.github.f4b6a3.uuid.factory.abst;
 
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.time.Instant;
-import java.util.Enumeration;
-import java.util.Random;
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.factory.TimeBasedUUIDCreator;
-import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
+import com.github.f4b6a3.uuid.nodeid.DefaultNodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.nodeid.MacNodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.nodeid.NodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.sequence.ClockSequence;
 import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
-import com.github.f4b6a3.uuid.util.ByteUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
-import com.github.f4b6a3.uuid.util.UUIDUtil;
+import com.github.f4b6a3.uuid.util.UuidUtil;
 
-public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
+public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 
 	// Fixed fields
 	protected long timestamp = 0;
 	protected long nodeIdentifier = 0;
 
-	protected Random random = new Xorshift128PlusRandom();
 	protected ClockSequence clockSequence = new ClockSequence();
 	protected TimestampStrategy timestampStrategy = new DefaultTimestampStrategy();
+	protected NodeIdentifierStrategy nodeIdentifierStrategy = new DefaultNodeIdentifierStrategy();
 
 	/**
 	 * This constructor requires a version number.
 	 * 
 	 * @param version
 	 */
-	protected AbstractTimeBasedUUIDCreator(int version) {
+	protected AbstractTimeBasedUuidCreator(int version) {
 		super(version);
 	}
 
@@ -115,21 +111,6 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	}
 
 	/**
-	 * Set an alternative random generator to generate UUIDs.
-	 * 
-	 * By default it uses {@link Xorshift128PlusRandom}, but it can be changed
-	 * to any subclass of {@link Random}.
-	 * 
-	 * @param random
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUUIDCreator> T withRandomGenerator(Random random) {
-		this.random = random;
-		return (T) this;
-	}
-
-	/**
 	 * Set an alternative {@link TimestampStrategy} to generate timestamps. The
 	 * {@link DefaultTimestampStrategy} has accuracy of milliseconds. If someone
 	 * needs a real 100-nanosecond an implementation of
@@ -139,8 +120,24 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUUIDCreator> T withTimestampStrategy(TimestampStrategy timestampStrategy) {
+	public <T extends AbstractTimeBasedUuidCreator> T withTimestampStrategy(TimestampStrategy timestampStrategy) {
 		this.timestampStrategy = timestampStrategy;
+		return (T) this;
+	}
+
+	/**
+	 * Set an alternative {@link NodeIdentifierStrategy} to generate node
+	 * identifiers. The {@link DefaultNodeIdentifierStrategy} generates a random
+	 * multicast node identifier and returns it for every call to
+	 * {@link DefaultNodeIdentifierStrategy#getNodeIdentifier()}.
+	 * 
+	 * @param nodeIdentifierStrategy
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends AbstractTimeBasedUuidCreator> T withNodeIdentifierStrategy(
+			NodeIdentifierStrategy nodeIdentifierStrategy) {
+		this.nodeIdentifierStrategy = nodeIdentifierStrategy;
 		return (T) this;
 	}
 
@@ -153,7 +150,7 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUUIDCreator> T withInstant(Instant instant) {
+	public <T extends AbstractTimeBasedUuidCreator> T withInstant(Instant instant) {
 		this.timestamp = TimestampUtil.toTimestamp(instant);
 		return (T) this;
 	}
@@ -167,7 +164,7 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUUIDCreator> T withTimestamp(long timestamp) {
+	public <T extends AbstractTimeBasedUuidCreator> T withTimestamp(long timestamp) {
 		this.timestamp = timestamp;
 		return (T) this;
 	}
@@ -183,7 +180,7 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUUIDCreator> T withNodeIdentifier(long nodeIdentifier) {
+	public <T extends AbstractTimeBasedUuidCreator> T withNodeIdentifier(long nodeIdentifier) {
 		this.nodeIdentifier = nodeIdentifier;
 		return (T) this;
 	}
@@ -199,8 +196,8 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUUIDCreator> T withHardwareAddress() {
-		this.nodeIdentifier = getHardwareAddress();
+	public <T extends AbstractTimeBasedUuidCreator> T withHardwareAddress() {
+		this.nodeIdentifierStrategy = new MacNodeIdentifierStrategy();
 		return (T) this;
 	}
 
@@ -219,7 +216,7 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUUIDCreator> T withClockSequence(int clockSequence) {
+	public <T extends AbstractTimeBasedUuidCreator> T withClockSequence(int clockSequence) {
 		this.clockSequence.set(clockSequence);
 		return (T) this;
 	}
@@ -253,7 +250,7 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	 * @param clockSequence
 	 */
 	public long formatLeastSignificantBits(final long nodeIdentifier, final long clockSequence) {
-		return UUIDUtil.formatLeastSignificantBits(nodeIdentifier, clockSequence);
+		return UuidUtil.formatRfc4122LeastSignificantBits(nodeIdentifier, clockSequence);
 	}
 
 	/**
@@ -270,11 +267,11 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 	 */
 	protected long getNodeIdentifier() {
 
-		if (this.nodeIdentifier == 0) {
-			this.nodeIdentifier = getRandomMulticastNodeIdentifier();
+		if (this.nodeIdentifier != 0) {
+			return this.nodeIdentifier;
 		}
 
-		return this.nodeIdentifier;
+		return this.nodeIdentifierStrategy.getNodeIdentifier();
 	}
 
 	/**
@@ -290,74 +287,4 @@ public abstract class AbstractTimeBasedUUIDCreator extends AbstractUUIDCreator {
 
 		return timestampStrategy.getCurrentTimestamp();
 	}
-
-	/**
-	 * Get the machine address.
-	 * 
-	 * It looks for the first MAC that is up and running. If none is up, it
-	 * looks for the first MAC.
-	 * 
-	 * It returns ZERO if none is found.
-	 * 
-	 * ### RFC-4122 - 4.1.6. Node
-	 * 
-	 * (1) For UUID version 1, the node field consists of an IEEE 802 MAC
-	 * address, usually the host address. For systems with multiple IEEE 802
-	 * addresses, any available one can be used. The lowest addressed octet
-	 * (octet number 10) contains the global/local bit and the unicast/multicast
-	 * bit, and is the first octet of the address transmitted on an 802.3 LAN.
-	 * 
-	 * (2) For systems with no IEEE address, a randomly or pseudo-randomly
-	 * generated value may be used; see Section 4.5. The multicast bit must be
-	 * set in such addresses, in order that they will never conflict with
-	 * addresses obtained from network cards.
-	 * 
-	 * @return
-	 */
-	protected long getHardwareAddress() {
-		try {
-
-			Enumeration<NetworkInterface> list;
-			NetworkInterface nic;
-			byte[] mac;
-
-			// (1) Return the first real MAC that is up and running.
-			list = NetworkInterface.getNetworkInterfaces();
-			while (list.hasMoreElements()) {
-				nic = list.nextElement();
-				mac = nic.getHardwareAddress();
-				if ((mac != null) && nic.isUp() && !(nic.isLoopback() || nic.isVirtual())) {
-					return ByteUtil.toNumber(mac);
-				}
-			}
-
-			// (1) Or return the first MAC found.
-			list = NetworkInterface.getNetworkInterfaces();
-			while (list.hasMoreElements()) {
-				nic = list.nextElement();
-				mac = nic.getHardwareAddress();
-				if (mac != null) {
-					return ByteUtil.toNumber(mac);
-				}
-			}
-
-		} catch (SocketException | NullPointerException e) {
-			// (2) return random number
-			return getRandomMulticastNodeIdentifier();
-		}
-
-		// (2) return random number
-		return getRandomMulticastNodeIdentifier();
-	}
-
-	/**
-	 * Return a random generated node identifier.
-	 * 
-	 * @return
-	 */
-	protected long getRandomMulticastNodeIdentifier() {
-		return UUIDUtil.setMulticastNodeIdentifier(random.nextLong());
-	}
-
-
 }

@@ -31,13 +31,13 @@ import com.github.f4b6a3.uuid.sequence.AbstractSequence;
  * - Local Domain Org: 2<br/>
  *
  */
-public class DCESecurityUUIDCreator extends TimeBasedUUIDCreator {
+public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 
 	public static final byte LOCAL_DOMAIN_PERSON = 0; // POSIX UID domain
 	public static final byte LOCAL_DOMAIN_GROUP = 1; // POSIX GID domain
 	public static final byte LOCAL_DOMAIN_ORG = 2;
 
-	protected TimeBasedUUIDCreator timeBasedUUIDCreator;
+	protected TimeBasedUuidCreator timeBasedUUIDCreator;
 	protected DCESTimestampCounter timestampCounter;
 
 	protected byte localDomain;
@@ -45,7 +45,7 @@ public class DCESecurityUUIDCreator extends TimeBasedUUIDCreator {
 	/**
 	 * Facoty that creates DCE Security UUIDs, version 2.
 	 */
-	public DCESecurityUUIDCreator() {
+	public DceSecurityUuidCreator() {
 		super(VERSION_2);
 		timestampCounter = new DCESTimestampCounter();
 	}
@@ -151,7 +151,7 @@ public class DCESecurityUUIDCreator extends TimeBasedUUIDCreator {
 	 * 
 	 * The default local domain is POSIX User ID.
 	 * 
-	 * @see {@link DCESecurityUUIDCreator#create(byte, int)}
+	 * @see {@link DceSecurityUuidCreator#create(byte, int)}
 	 * 
 	 * @param localIdentifier
 	 * @return
@@ -210,7 +210,7 @@ public class DCESecurityUUIDCreator extends TimeBasedUUIDCreator {
 	 * @param localDomain
 	 * @return
 	 */
-	public DCESecurityUUIDCreator withLocalDomain(byte localDomain) {
+	public DceSecurityUuidCreator withLocalDomain(byte localDomain) {
 		this.localDomain = localDomain;
 		return this;
 	}

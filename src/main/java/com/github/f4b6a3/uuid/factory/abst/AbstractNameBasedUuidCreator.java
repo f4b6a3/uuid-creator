@@ -29,7 +29,7 @@ import static com.github.f4b6a3.uuid.util.ByteUtil.*;
  * @author fabiolimace
  *
  */
-public abstract class AbstractNameBasedUUIDCreator extends AbstractUUIDCreator {
+public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 
 	private UUID namespace;
 	private MessageDigest md = null;
@@ -49,7 +49,7 @@ public abstract class AbstractNameBasedUUIDCreator extends AbstractUUIDCreator {
 	 * @param version
 	 * @param messageDigest
 	 */
-	public AbstractNameBasedUUIDCreator(int version, String messageDigest) {
+	public AbstractNameBasedUuidCreator(int version, String messageDigest) {
 		super(version);
 
 		try {
@@ -66,7 +66,7 @@ public abstract class AbstractNameBasedUUIDCreator extends AbstractUUIDCreator {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractNameBasedUUIDCreator> T withNamespace(UUID namespace) {
+	public <T extends AbstractNameBasedUuidCreator> T withNamespace(UUID namespace) {
 		this.namespace = namespace;
 		return (T) this;
 	}
@@ -80,7 +80,7 @@ public abstract class AbstractNameBasedUUIDCreator extends AbstractUUIDCreator {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractNameBasedUUIDCreator> T withNamespace(String namespace) {
+	public <T extends AbstractNameBasedUuidCreator> T withNamespace(String namespace) {
 		UUID namespaceUUID = create(namespace);
 		this.namespace = namespaceUUID;
 		return (T) this;
@@ -89,7 +89,7 @@ public abstract class AbstractNameBasedUUIDCreator extends AbstractUUIDCreator {
 	/**
 	 * Returns a name-based UUID without namespace.
 	 * 
-	 * @see {@link AbstractNameBasedUUIDCreator#create(UUID, String)}
+	 * @see {@link AbstractNameBasedUuidCreator#create(UUID, String)}
 	 * 
 	 * @param name
 	 * @return
@@ -103,7 +103,7 @@ public abstract class AbstractNameBasedUUIDCreator extends AbstractUUIDCreator {
 	 * 
 	 * The namespace string is converted to namespace UUID.
 	 * 
-	 * @see {@link AbstractNameBasedUUIDCreator#create(UUID, String)}
+	 * @see {@link AbstractNameBasedUuidCreator#create(UUID, String)}
 	 * 
 	 * @param namespace
 	 * @param name
