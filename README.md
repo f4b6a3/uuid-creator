@@ -365,7 +365,7 @@ External links
 
 * [A brief history of the UUID](https://segment.com/blog/a-brief-history-of-the-uuid)
 
-* [The Cost of GUIDs as Primary Keys](ttp://www.informit.com/articles/printerfriendly/25862)
+* [The Cost of GUIDs as Primary Keys](http://www.informit.com/articles/printerfriendly/25862)
 
 * [Sequential UUID Generators](https://blog.2ndquadrant.com/sequential-uuid-generators/)
 
