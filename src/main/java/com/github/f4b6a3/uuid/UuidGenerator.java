@@ -48,8 +48,6 @@ public class UuidGenerator {
 	private static RandomUuidCreator fastRandomCreator;
 	private static DceSecurityUuidCreator dceSecurityCreator;
 	private static DceSecurityUuidCreator dceSecurityWithMacCreator;
-	
-	private static MssqlUuidCreator mssqlUuidCreator;
 
 	/*
 	 * Public static methods for creating UUIDs
