@@ -255,6 +255,8 @@ There's no 'non-volatile storage' in this implementation. That's why the clock s
 
 The node identifier part consists of an IEEE 802 MAC address, usually the host address. But the standard allows the usage of random generated number if no address is available, or if its use is not desired. In this implementation, the default behavior is to use a random node identifier for each instance of a time-based factory. 
 
+But this implementation provides other strategies: alternative random strategy, machine address strategy and system information strategy.
+
 ###  Ordered
 
 The ordered UUID inherits the same characteristics of the time-based UUID. The only difference is that the timestamp bits are not rearranged as the standard requires. <sup>[4]</sup> <sup>[5]</sup>
