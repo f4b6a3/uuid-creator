@@ -190,7 +190,7 @@ Canonical format
 5: 12 chars
 
 v: version number
-m: variant number (multiplexed)
+m: variant number (sharing bits with clock-sequence)
 ```
 
 #### Representation
@@ -222,7 +222,7 @@ Time-based UUID structure
 3: node identifier
 
 v: version number
-m: variant number (multiplexed with clock-sequence)
+m: variant number (sharing bits with clock-sequence)
 ```
 #### Timestamp
 
