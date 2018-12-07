@@ -21,11 +21,7 @@ import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 /**
- * Factory that creates time-based UUIDs, version 0.
- * 
- * This version is a 'extension' of the RFC-4122. It leaves the timestamp bits
- * in the 'natural' order, instead of rearranging them as the version 1 does.
- *
+ * Factory that creates MS SQL Server 'friendly' UUIDs.
  */
 public class MssqlUuidCreator extends AbstractTimeBasedUuidCreator {
 

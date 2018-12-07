@@ -3,7 +3,7 @@ package com.github.f4b6a3.uuid.nodeid;
 import java.security.SecureRandom;
 import java.util.Random;
 
-import com.github.f4b6a3.uuid.util.UuidUtil;
+import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 
 public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
@@ -15,7 +15,7 @@ public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * Return a random node identifier.
 	 * 
 	 * It uses {@link SecureRandom} to generate 'cryptographic quality random
-	 * number'. The first random number generated is returned for all calls.
+	 * number'. The first generated number is returned for all calls.
 	 * 
 	 * ### RFC-4122 - 4.5. Node IDs that Do Not Identify the Host
 	 * 
@@ -45,7 +45,7 @@ public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 			return this.nodeIdentifier;
 		}
 
-		this.nodeIdentifier = UuidUtil.setMulticastNodeIdentifier(random.nextLong());
+		this.nodeIdentifier = NodeIdentifierUtil.setMulticastNodeIdentifier(random.nextLong());
 		return this.nodeIdentifier;
 	}
 }

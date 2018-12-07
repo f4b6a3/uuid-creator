@@ -365,6 +365,8 @@ External links
 
 * [A brief history of the UUID](https://segment.com/blog/a-brief-history-of-the-uuid)
 
+* [How is a Time-based UUID / GUID made](https://www.famkruithof.net/guid-uuid-timebased.html)
+
 * [The Cost of GUIDs as Primary Keys](http://www.informit.com/articles/printerfriendly/25862)
 
 * [Sequential UUID Generators](https://blog.2ndquadrant.com/sequential-uuid-generators/)
@@ -372,3 +374,13 @@ External links
 * [Be Careful with UUID or GUID as Primary Keys](https://news.ycombinator.com/item?id=14523523)
 
 * [How to Generate Sequential GUIDs for SQL Server in .NET](https://blogs.msdn.microsoft.com/dbrowne/2012/07/03/how-to-generate-sequential-guids-for-sql-server-in-net/)
+
+* [Ordered-uuid - npmjs package](https://www.npmjs.com/package/ordered-uuid)
+
+* [To UUID or not to UUID](http://stereobooster.github.io/to-uuid-or-not-to-uuid)
+
+* [Primary Keys: IDs versus GUIDs] (https://blog.codinghorror.com/primary-keys-ids-versus-guids/)
+
+* [GUIDs are globally unique, but substrings of GUIDs aren’t](https://blogs.msdn.microsoft.com/oldnewthing/20080627-00/?p=21823)
+
+* [MySQL Performance When Using UUID For Primary Key](https://blog.programster.org/mysql-performance-when-using-uuid-for-primary-key)

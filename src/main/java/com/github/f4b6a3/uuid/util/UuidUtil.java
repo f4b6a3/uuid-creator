@@ -368,39 +368,33 @@ public class UuidUtil {
 	/**
 	 * Format most significant bits for MS SQL Server.
 	 * 
-	 * ### How to Generate Sequential GUIDs for SQL Server in .NET
+	 * ### References
+	 * 
+	 * * How to Generate Sequential GUIDs for SQL Server in .NET
 	 * 
 	 * https://blogs.msdn.microsoft.com/dbrowne/2012/07/03/how-to-generate-sequential-guids-for-sql-server-in-net/
 	 * 
-	 * ### UUID Binary encoding
+	 * * UUID Binary encoding
 	 * 
 	 * https://en.wikipedia.org/wiki/Universally_unique_identifier#Encoding
 	 * 
-	 * ### UUID structure
-	 * 
-	 * https://msdn.microsoft.com/pt-br/14288352-43c3-4e4d-a3f1-e924a8261d2b
-	 * 
-	 * ### Newsequentialid (Histrory/Benefits and Implementation)
+	 * * Newsequentialid (Histrory/Benefits and Implementation)
 	 * 
 	 * https://blogs.msdn.microsoft.com/sqlprogrammability/2006/03/23/newsequentialid-histrorybenefits-and-implementation/
 	 * 
-	 * ### NEWSEQUENTIALID (Transact-SQL)
+	 * * NEWSEQUENTIALID (Transact-SQL)
 	 * 
 	 * https://docs.microsoft.com/en-us/sql/t-sql/functions/newsequentialid-transact-sql?view=sql-server-2017
 	 * 
-	 * ### How are GUIDs sorted by SQL Server?
+	 * * How are GUIDs sorted by SQL Server?
 	 * 
 	 * http://sqlblog.com/blogs/alberto_ferrari/archive/2007/08/31/how-are-guids-sorted-by-sql-server.aspx
 	 * 
-	 * ### UuidCreateSequential function
-	 * 
-	 * https://docs.microsoft.com/pt-br/windows/desktop/api/rpcdce/nf-rpcdce-uuidcreatesequential
-	 * 
-	 * ### SqlGuid.CompareTo Method
+	 * * SqlGuid.CompareTo Method
 	 * 
 	 * https://docs.microsoft.com/en-us/dotnet/api/system.data.sqltypes.sqlguid.compareto?view=netframework-4.7.2#System_Data_SqlTypes_SqlGuid_CompareTo_System_Data_SqlTypes_SqlGuid_
 	 * 
-	 * ### Comparing GUID and uniqueidentifier Values
+	 * * Comparing GUID and uniqueidentifier Values
 	 * 
 	 * https://docs.microsoft.com/pt-br/dotnet/framework/data/adonet/sql/comparing-guid-and-uniqueidentifier-values
 	 * 
@@ -459,26 +453,5 @@ public class UuidUtil {
 		long nod = nodeIdentifier & 0x0000ffffffffffffL;
 
 		return (seq | nod | 0x8000000000000000L);
-	}
-
-	/**
-	 * Sets the the multicast bit ON to indicate that it's NOT a real MAC
-	 * address.
-	 * 
-	 * @param nodeIdentifier
-	 * @return
-	 */
-	public static long setMulticastNodeIdentifier(long nodeIdentifier) {
-		return nodeIdentifier | 0x0000010000000000L;
-	}
-
-	/**
-	 * Sets the the multicast bit OFF to indicat that it's a MAC address.
-	 * 
-	 * @param nodeIdentifier
-	 * @return
-	 */
-	public static long setUnicastNodeIdentifier(long nodeIdentifier) {
-		return nodeIdentifier & 0xFFFFFEFFFFFFFFFFL;
 	}
 }

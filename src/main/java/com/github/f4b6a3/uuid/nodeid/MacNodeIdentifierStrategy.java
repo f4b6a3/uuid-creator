@@ -1,18 +1,20 @@
 package com.github.f4b6a3.uuid.nodeid;
 
+import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Random;
 
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.uuid.util.ByteUtil;
-import com.github.f4b6a3.uuid.util.UuidUtil;
+import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 
 public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 	protected long nodeIdentifier = 0;
-	
+
 	protected Random random = new Xorshift128PlusRandom();
 
 	/**
@@ -40,34 +42,23 @@ public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 */
 	@Override
 	public long getNodeIdentifier() {
-		
-		if(this.nodeIdentifier != 0) {
+
+		if (this.nodeIdentifier != 0) {
 			return this.nodeIdentifier;
 		}
-		
+
 		try {
-
-			Enumeration<NetworkInterface> list;
-			NetworkInterface nic;
 			byte[] mac;
+			NetworkInterface nic;
+			List<InterfaceAddress> list;
+			Enumeration<NetworkInterface> enm;
 
-			// (1) Return the first real MAC that is up and running.
-			list = NetworkInterface.getNetworkInterfaces();
-			while (list.hasMoreElements()) {
-				nic = list.nextElement();
+			enm = NetworkInterface.getNetworkInterfaces();
+			while (enm.hasMoreElements()) {
+				nic = enm.nextElement();
+				list = nic.getInterfaceAddresses();
 				mac = nic.getHardwareAddress();
-				if ((mac != null) && nic.isUp() && !(nic.isLoopback() || nic.isVirtual())) {
-					this.nodeIdentifier = ByteUtil.toNumber(mac);
-					return this.nodeIdentifier;
-				}
-			}
-
-			// (1) Or return the first MAC found.
-			list = NetworkInterface.getNetworkInterfaces();
-			while (list.hasMoreElements()) {
-				nic = list.nextElement();
-				mac = nic.getHardwareAddress();
-				if (mac != null) {
+				if ((mac != null) && (!list.isEmpty()) && !(nic.isLoopback() || nic.isVirtual())) {
 					this.nodeIdentifier = ByteUtil.toNumber(mac);
 					return this.nodeIdentifier;
 				}
@@ -75,12 +66,12 @@ public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 		} catch (SocketException | NullPointerException e) {
 			// (2) return random number
-			this.nodeIdentifier =  getRandomMulticastNodeIdentifier();
+			this.nodeIdentifier = getRandomMulticastNodeIdentifier();
 			return this.nodeIdentifier;
 		}
 
 		// (2) return random number
-		this.nodeIdentifier =  getRandomMulticastNodeIdentifier();
+		this.nodeIdentifier = getRandomMulticastNodeIdentifier();
 		return this.nodeIdentifier;
 	}
 
@@ -90,6 +81,6 @@ public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * @return
 	 */
 	protected long getRandomMulticastNodeIdentifier() {
-		return UuidUtil.setMulticastNodeIdentifier(random.nextLong());
+		return NodeIdentifierUtil.setMulticastNodeIdentifier(random.nextLong());
 	}
 }

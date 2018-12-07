@@ -1,17 +1,19 @@
 package com.github.f4b6a3.uuid.nodeid;
 
 import java.net.InetAddress;
+import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Random;
 
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.uuid.util.ByteUtil;
-import com.github.f4b6a3.uuid.util.UuidUtil;
+import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 
 public class SystemNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
@@ -33,8 +35,9 @@ public class SystemNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * Get a node identifier generated from system information.
 	 * 
 	 * It uses these information to generate the node identifier: hostname, IP,
-	 * operating system and JVM. These information are concatenated and passed
-	 * to a message digest. It returns the last six bytes of the resulting hash.
+	 * MAC, operating system and JVM. These information are concatenated and
+	 * passed to a message digest. It returns the last six bytes of the
+	 * resulting hash.
 	 * 
 	 * ### RFC-4122 - 4.5. Node IDs that Do Not Identify the Host
 	 * 
@@ -61,30 +64,28 @@ public class SystemNodeIdentifierStrategy implements NodeIdentifierStrategy {
 		byte[] bytes = null;
 		byte[] hash = null;
 
-		String lh = getLocalHost();
-		String ha = getHardwareAddress();
+		String hn = getHostName();
+		String ha = getNetworkInterface();
 		String os = getOperatingSystem();
 		String vm = getJavaVirtualMachine();
-		String string = String.format("%s %s %s %s", lh, ha, os, vm);
+		String string = String.format("%s %s %s %s", hn, ha, os, vm);
 
 		bytes = string.getBytes();
 		hash = md.digest(bytes);
 
 		this.nodeIdentifier = ByteUtil.toNumber(hash);
-		this.nodeIdentifier = UuidUtil.setMulticastNodeIdentifier(this.nodeIdentifier);
+		this.nodeIdentifier = NodeIdentifierUtil.setMulticastNodeIdentifier(this.nodeIdentifier);
 		return this.nodeIdentifier;
 	}
 
-	protected static String getLocalHost() {
+	protected static String getHostName() {
 		String hostname = "";
-		String hostip = "";
 		try {
 			hostname = InetAddress.getLocalHost().getHostName();
-			hostip = InetAddress.getLocalHost().getHostAddress();
-			if ((hostname == null || hostip == null) || (hostname.isEmpty() || hostip.isEmpty())) {
+			if ((hostname == null) || (hostname.isEmpty())) {
 				return getRandomHexadecimal();
 			}
-			return String.format("%s %s", hostname, hostip);
+			return hostname;
 		} catch (UnknownHostException e) {
 			return getRandomHexadecimal();
 		}
@@ -105,31 +106,26 @@ public class SystemNodeIdentifierStrategy implements NodeIdentifierStrategy {
 		return String.format("%s %s %s %s", vmName, vmVersion, rtName, rtVersion);
 	}
 
-	protected static String getHardwareAddress() {
+	protected static String getNetworkInterface() {
 
 		try {
-
-			Enumeration<NetworkInterface> list;
-			NetworkInterface nic;
 			byte[] mac;
+			NetworkInterface nic;
+			List<InterfaceAddress> list;
+			Enumeration<NetworkInterface> enm;
 
-			// Return the first real MAC that is up and running.
-			list = NetworkInterface.getNetworkInterfaces();
-			while (list.hasMoreElements()) {
-				nic = list.nextElement();
-				mac = nic.getHardwareAddress();
-				if ((mac != null) && nic.isUp() && !(nic.isLoopback() || nic.isVirtual())) {
-					return ByteUtil.toHexadecimal(mac);
-				}
-			}
+			String hw;
+			String ip;
 
-			// Or return the first MAC found.
-			list = NetworkInterface.getNetworkInterfaces();
-			while (list.hasMoreElements()) {
-				nic = list.nextElement();
+			enm = NetworkInterface.getNetworkInterfaces();
+			while (enm.hasMoreElements()) {
+				nic = enm.nextElement();
+				list = nic.getInterfaceAddresses();
 				mac = nic.getHardwareAddress();
-				if (mac != null) {
-					return ByteUtil.toHexadecimal(mac);
+				if ((mac != null) && (!list.isEmpty()) && !(nic.isLoopback() || nic.isVirtual())) {
+					hw = ByteUtil.toHexadecimal(mac);
+					ip = list.get(0).getAddress().getHostAddress();
+					return String.format("%s %s", hw, ip);
 				}
 			}
 
@@ -141,6 +137,6 @@ public class SystemNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	}
 
 	protected static String getRandomHexadecimal() {
-		return ByteUtil.toHexadecimal(ByteUtil.toBytes(random.nextLong()));
+		return ByteUtil.toHexadecimal(random.nextLong());
 	}
 }

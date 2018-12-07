@@ -24,7 +24,7 @@ package com.github.f4b6a3.uuid.util;
  *
  */
 public class ByteUtil {
-	
+
 	/**
 	 * Get a number from a given hexadecimal string.
 	 *
@@ -34,7 +34,7 @@ public class ByteUtil {
 	public static long toNumber(String hexadecimal) {
 		return toNumber(toBytes(hexadecimal));
 	}
-	
+
 	/**
 	 * Get a number from a given array of bytes.
 	 * 
@@ -58,7 +58,7 @@ public class ByteUtil {
 	public static byte[] toBytes(long number) {
 		return toBytes(number, 8);
 	}
-	
+
 	/**
 	 * Get an array of bytes from a given number.
 	 *
@@ -72,7 +72,7 @@ public class ByteUtil {
 		}
 		return bytes;
 	}
-	
+
 	/**
 	 * Get an array of bytes from a given hexadecimal string.
 	 *
@@ -87,7 +87,7 @@ public class ByteUtil {
 		}
 		return bytes;
 	}
-	
+
 	/**
 	 * Get a hexadecimal string from given array of bytes.
 	 *
@@ -103,7 +103,17 @@ public class ByteUtil {
 		}
 		return new String(hexadecimal);
 	}
-	
+
+	/**
+	 * Get a hexadecimal string from given number.
+	 * 
+	 * @param number
+	 * @return
+	 */
+	public static String toHexadecimal(long number) {
+		return toHexadecimal(toBytes(number));
+	}
+
 	/**
 	 * Get a number value from a hexadecimal char.
 	 * 
@@ -111,21 +121,21 @@ public class ByteUtil {
 	 * @return
 	 */
 	public static int fromHexChar(char chr) {
-		
+
 		if (chr >= 0x61 && chr <= 0x66) {
 			// ASCII codes from 'a' to 'f'
 			return (int) chr - 0x57;
 		} else if (chr >= 0x41 && chr <= 0x46) {
 			// ASCII codes from 'A' to 'F'
 			return (int) chr - 0x37;
-		} else if(chr >= 0x30 && chr <= 0x39) {
+		} else if (chr >= 0x30 && chr <= 0x39) {
 			// ASCII codes from 0 to 9
 			return (int) chr - 0x30;
 		}
 
 		return 0;
 	}
-	
+
 	/**
 	 * Get a hexadecimal from a number value.
 	 * 
@@ -144,7 +154,7 @@ public class ByteUtil {
 
 		return 0;
 	}
-	
+
 	/**
 	 * Get a new array with a specific length and filled with a byte value.
 	 *
@@ -187,7 +197,7 @@ public class ByteUtil {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Concatenates two byte arrays.
 	 * 
@@ -196,7 +206,7 @@ public class ByteUtil {
 	 * @return
 	 */
 	public static byte[] concat(byte[] bytes1, byte[] bytes2) {
-		
+
 		int length = bytes1.length + bytes2.length;
 		byte[] result = new byte[length];
 
@@ -208,7 +218,7 @@ public class ByteUtil {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Replace part of an array of bytes with another subarray of bytes and
 	 * starting from a given index.
@@ -221,11 +231,11 @@ public class ByteUtil {
 	public static byte[] replace(final byte[] bytes, final byte[] replacement, int index) {
 
 		byte[] result = new byte[bytes.length];
-		
-		for(int i = 0; i < index; i++) {
+
+		for (int i = 0; i < index; i++) {
 			result[i] = bytes[i];
 		}
-		
+
 		for (int i = 0; i < replacement.length; i++) {
 			result[index + i] = replacement[i];
 		}
