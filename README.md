@@ -379,7 +379,7 @@ External links
 
 * [To UUID or not to UUID](http://stereobooster.github.io/to-uuid-or-not-to-uuid)
 
-* [Primary Keys: IDs versus GUIDs] (https://blog.codinghorror.com/primary-keys-ids-versus-guids/)
+* [Primary Keys: IDs versus GUIDs](https://blog.codinghorror.com/primary-keys-ids-versus-guids/)
 
 * [GUIDs are globally unique, but substrings of GUIDs aren’t](https://blogs.msdn.microsoft.com/oldnewthing/20080627-00/?p=21823)
 
