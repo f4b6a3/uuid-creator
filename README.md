@@ -198,7 +198,6 @@ UUID uuid = UuidGenerator.getTimeBasedCreator().withNodeIdentifier(0x11111111111
 UUID uuid = UuidGenerator.getTimeBasedCreator().withHardwareAddress().create();
 // Result: b9c81bd0-fa7f-11e8-ba0b-5254xxxxxxxx
 
-
 ```
 
 ##### Timestamp strategy
