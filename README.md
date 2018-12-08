@@ -423,25 +423,25 @@ Here is a table showing the results of a simple benchmark using JMH. This implem
 -----------------------------------------------------------------------------------
 Benchmark                                         Mode  Cnt   Score    Error  Units
 -----------------------------------------------------------------------------------
-BenchmarkRunner.EAIO_TimeBasedWithMac               ss  100   7,410 ± 0,619  ms/op
-BenchmarkRunner.JUG_NameBased                       ss  100  39,787 ± 2,959  ms/op
-BenchmarkRunner.JUG_Random                          ss  100  55,029 ± 4,540  ms/op
-BenchmarkRunner.JUG_TimeBased                       ss  100   7,889 ± 1,010  ms/op
-BenchmarkRunner.JUG_TimeBasedWithMAC                ss  100   7,789 ± 0,972  ms/op
-BenchmarkRunner.Java_NameBased                      ss  100  51,255 ± 8,995  ms/op
-BenchmarkRunner.Java_Random                         ss  100  54,613 ± 4,852  ms/op
-BenchmarkRunner.UUIDGenerator_DceSecurity           ss  100   8,124 ± 1,254  ms/op
-BenchmarkRunner.UUIDGenerator_DceSecurityWithMac    ss  100   8,358 ± 1,248  ms/op
-BenchmarkRunner.UUIDGenerator_FastRandom            ss  100   3,410 ± 0,560  ms/op
-BenchmarkRunner.UUIDGenerator_NameBasedMd5          ss  100  41,841 ± 4,234  ms/op
-BenchmarkRunner.UUIDGenerator_NameBasedSha1         ss  100  50,936 ± 4,486  ms/op
-BenchmarkRunner.UUIDGenerator_Ordered               ss  100   7,559 ± 1,008  ms/op
-BenchmarkRunner.UUIDGenerator_OrderedWithMac        ss  100   7,539 ± 0,988  ms/op
-BenchmarkRunner.UUIDGenerator_Random                ss  100  46,713 ± 2,853  ms/op
-BenchmarkRunner.UUIDGenerator_TimeBased             ss  100   7,471 ± 1,007  ms/op
-BenchmarkRunner.UUIDGenerator_TimeBasedWithMac      ss  100   7,730 ± 1,008  ms/op
+BenchmarkRunner.EAIO_TimeBasedWithMac               ss  100   7,112 ± 0,609  ms/op
+BenchmarkRunner.JUG_NameBased                       ss  100  39,240 ± 3,018  ms/op
+BenchmarkRunner.JUG_Random                          ss  100  55,066 ± 4,804  ms/op
+BenchmarkRunner.JUG_TimeBased                       ss  100   7,827 ± 0,994  ms/op
+BenchmarkRunner.JUG_TimeBasedWithMAC                ss  100   7,802 ± 0,944  ms/op
+BenchmarkRunner.Java_NameBased                      ss  100  50,164 ± 8,646  ms/op
+BenchmarkRunner.Java_Random                         ss  100  54,934 ± 4,527  ms/op
+BenchmarkRunner.UUIDGenerator_DceSecurity           ss  100   8,150 ± 1,233  ms/op
+BenchmarkRunner.UUIDGenerator_DceSecurityWithMac    ss  100   8,108 ± 1,329  ms/op
+BenchmarkRunner.UUIDGenerator_FastRandom            ss  100   3,369 ± 0,534  ms/op
+BenchmarkRunner.UUIDGenerator_NameBasedMd5          ss  100  43,118 ± 4,418  ms/op
+BenchmarkRunner.UUIDGenerator_NameBasedSha1         ss  100  52,785 ± 5,034  ms/op
+BenchmarkRunner.UUIDGenerator_Ordered               ss  100   7,429 ± 1,055  ms/op
+BenchmarkRunner.UUIDGenerator_OrderedWithMac        ss  100   7,486 ± 1,066  ms/op
+BenchmarkRunner.UUIDGenerator_Random                ss  100  46,683 ± 2,952  ms/op
+BenchmarkRunner.UUIDGenerator_TimeBased             ss  100   7,574 ± 0,995  ms/op
+BenchmarkRunner.UUIDGenerator_TimeBasedWithMac      ss  100   7,522 ± 0,994  ms/op
 -----------------------------------------------------------------------------------
-Total time: 00:01:38
+Total time: 00:01:35
 -----------------------------------------------------------------------------------
 ```
 
