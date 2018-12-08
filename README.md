@@ -196,7 +196,8 @@ UUID uuid = UuidGenerator.getTimeBasedCreator().withNodeIdentifier(0x11111111111
 
 // with hardware address (first MAC found)
 UUID uuid = UuidGenerator.getTimeBasedCreator().withHardwareAddress().create();
-// Result: b9c81bd0-fa7f-11e8-ba0b-52540090d565
+// Result: b9c81bd0-fa7f-11e8-ba0b-5254xxxxxxxx
+
 
 ```
 
@@ -232,7 +233,7 @@ UUID uuid = UuidGenerator.getTimeBasedCreator().withNodeIdentifierStrategy(new R
 
 // with hardware address node identifier strategy (first MAC found)
 UUID uuid = UuidGenerator.getTimeBasedCreator().withNodeIdentifierStrategy(new MacNodeIdentifierStrategy()).create();
-// Result: b9c89100-fa7f-11e8-bf97-52540090d565
+// Result: b9c89100-fa7f-11e8-bf97-5254xxxxxxxx
 
 // with system node identifier strategy (hash of hostname + MAC + IP + OS + JVM)
 UUID uuid = UuidGenerator.getTimeBasedCreator().withNodeIdentifierStrategy(new SystemNodeIdentifierStrategy()).create();
