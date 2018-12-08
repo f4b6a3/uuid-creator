@@ -279,7 +279,6 @@ UUID uuid = UuidGenerator.getRandomCreator().withFastRandomGenerator().create();
 UUID uuid = UuidGenerator.getDceSecurityCreator().withLocalDomain(DceSecurityUuidCreator.LOCAL_DOMAIN_PERSON).create(1701);
 // Result: 000006a5-fa7f-21e8-8d00-5ba01f846124
 
-
 ```
 
 
