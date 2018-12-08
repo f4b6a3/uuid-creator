@@ -163,6 +163,125 @@ System.out.println(uuid.toString());
 // Output: d7b3438d-97f3-55e6-92a5-66a731eea5ac
 ```
 
+Fluent interface
+------------------------------------------------------
+
+The UUID factories are configurable via fluent interface methods. This section lists a series of examples for each version of UUID.
+
+
+#### Time-based
+
+All the examples in this subsection are also valid for Ordered and DCE Security UUIDs.
+
+##### Fixed values
+
+
+```java
+
+// with fixed instant (now)
+UUID uuid = UuidGenerator.getTimeBasedCreator().withInstant(Instant.now()).create();
+// Result: b9c7f4c0-fa7f-11e8-8cb2-af51de005196
+
+// with fixed timestamp (now as timestamp)
+UUID uuid = UuidGenerator.getTimeBasedCreator().withTimestamp(TimestampUtil.toTimestamp(Instant.now())).create();
+// Result: b9c7f4c0-fa7f-11e8-898a-65c735295f15
+
+// with fixed clock sequence (0x8888)
+UUID uuid = UuidGenerator.getTimeBasedCreator().withClockSequence(0x8888).create();
+// Result: b9c81bd0-fa7f-11e8-8888-c3393cfe8550
+
+// with fixed node identifier (0x111111111111L)
+UUID uuid = UuidGenerator.getTimeBasedCreator().withNodeIdentifier(0x111111111111L).create();
+// Result: b9c81bd0-fa7f-11e8-b717-111111111111
+
+// with hardware address (first MAC found)
+UUID uuid = UuidGenerator.getTimeBasedCreator().withHardwareAddress().create();
+// Result: b9c81bd0-fa7f-11e8-ba0b-52540090d565
+
+```
+
+##### Timestamp strategy
+
+```java
+
+// with default timestamp strategy (System.currentTimeMillis() + counter)
+UUID uuid = UuidGenerator.getTimeBasedCreator().withTimestampStrategy(new DefaultTimestampStrategy()).create();
+// Result: b9c81bd0-fa7f-11e8-93c4-1f0d5328f95f
+
+// with nanoseconds timestamp strategy (Instant.getNano())
+UUID uuid = UuidGenerator.getTimeBasedCreator().withTimestampStrategy(new NanosecondTimestampStrategy()).create();
+// Result: b9c842e0-fa7f-11e8-9168-0b57beda5626
+
+// with delta timestamp strategy (diff of subsequent System.nanoTime())
+UUID uuid = UuidGenerator.getTimeBasedCreator().withTimestampStrategy(new DeltaTimestampStrategy()).create();
+// Result: b9c86aa6-fa7f-11e8-a299-27ce0b9c1a91
+
+```
+
+##### Node identifier strategy
+
+```java
+
+// with default node identifier strategy (random number generated once)
+UUID uuid = UuidGenerator.getTimeBasedCreator().withNodeIdentifierStrategy(new DefaultNodeIdentifierStrategy()).create();
+// Result: b9c869f0-fa7f-11e8-a04e-cbb1015db3ad
+
+// with random node identifier strategy (random number generated every time)
+UUID uuid = UuidGenerator.getTimeBasedCreator().withNodeIdentifierStrategy(new RandomNodeIdentifierStrategy()).create();
+// Result: b9c869f0-fa7f-11e8-8dba-0b2212ac1723
+
+// with hardware address node identifier strategy (first MAC found)
+UUID uuid = UuidGenerator.getTimeBasedCreator().withNodeIdentifierStrategy(new MacNodeIdentifierStrategy()).create();
+// Result: b9c89100-fa7f-11e8-bf97-52540090d565
+
+// with system node identifier strategy (hash of hostname + MAC + IP + OS + JVM)
+UUID uuid = UuidGenerator.getTimeBasedCreator().withNodeIdentifierStrategy(new SystemNodeIdentifierStrategy()).create();
+// Result: b9c89100-fa7f-11e8-9573-678d16c4a97a
+
+```
+
+#### Name-based
+
+All the examples in this subsection are also valid for SHA1 UUIDs.
+
+```java
+
+// with fixed namespace as string (USERS)
+UUID uuid = UuidGenerator.getNameBasedMd5Creator().withNamespace("USERS").create("Paul");
+// Result: a69660c2-481e-3114-b91b-7f0c7727cc72
+
+// with fixed namespace as UUID (standard DNS namespace)
+UUID uuid = UuidGenerator.getNameBasedMd5Creator().withNamespace(NameBasedMd5UuidCreator.NAMESPACE_DNS).create("www.github.com");
+// Result: 2c02fba1-0794-3c12-b62b-578ec5f03908
+
+```
+
+#### Random
+
+```java
+
+// with java random generator (java.util.Random)
+UUID uuid = UuidGenerator.getRandomCreator().withRandomGenerator(new Random()).create();
+// Result: 8586fdd9-f654-4d28-a1a4-0d76c29d1455
+
+// with fast random generator (Xorshift128Plus)
+UUID uuid = UuidGenerator.getRandomCreator().withFastRandomGenerator().create();
+// Result: 2cc034e7-d51e-4eca-adb2-c0da06157723
+
+```
+
+#### DCE Security
+
+```java
+
+// with fixed local domain (standard POSIX User ID)
+UUID uuid = UuidGenerator.getDceSecurityCreator().withLocalDomain(DceSecurityUuidCreator.LOCAL_DOMAIN_PERSON).create(1701);
+// Result: 000006a5-fa7f-21e8-8d00-5ba01f846124
+
+
+```
+
+
 Implementation
 ------------------------------------------------------
 

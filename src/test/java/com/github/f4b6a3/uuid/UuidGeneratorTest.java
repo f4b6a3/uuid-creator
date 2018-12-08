@@ -5,22 +5,35 @@ import java.time.Instant;
 import java.util.Random;
 import java.util.UUID;
 
+import javax.swing.table.DefaultTableCellRenderer;
+
 import static org.junit.Assert.*;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
+import com.fasterxml.uuid.impl.TimeBasedGenerator;
 import com.github.f4b6a3.test.other.RaceConditionRunnable;
 import com.github.f4b6a3.test.other.RandomImage;
 import com.github.f4b6a3.test.other.RandomnesTest;
 import com.github.f4b6a3.test.other.SimpleBenchmark;
 import com.github.f4b6a3.uuid.UuidGenerator;
+import com.github.f4b6a3.uuid.factory.DceSecurityUuidCreator;
 import com.github.f4b6a3.uuid.factory.MssqlUuidCreator;
+import com.github.f4b6a3.uuid.factory.NameBasedMd5UuidCreator;
+import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
+import com.github.f4b6a3.uuid.nodeid.DefaultNodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.nodeid.MacNodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.nodeid.RandomNodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.nodeid.SystemNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.random.Xoroshiro128PlusRandom;
 import com.github.f4b6a3.uuid.random.XorshiftRandom;
 import com.github.f4b6a3.uuid.random.XorshiftStarRandom;
+import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
+import com.github.f4b6a3.uuid.timestamp.DeltaTimestampStrategy;
+import com.github.f4b6a3.uuid.timestamp.NanosecondTimestampStrategy;
 import com.github.f4b6a3.uuid.util.ByteUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
@@ -210,6 +223,81 @@ public class UuidGeneratorTest {
 		UUID uuid2 = UuidGenerator.getNameBasedSha1(namespace, name);
 		assertEquals(uuid1, uuid2);
 
+	}
+	
+	@Test
+	public void testStrategiesUsingFlowInterface() {
+		
+		
+		UUID uuid = null;
+		
+		System.out.println("#### Time-based");
+		
+		System.out.println("##### Fixed values");
+		
+		uuid = UuidGenerator.getTimeBasedCreator().withInstant(Instant.now()).create();
+		System.out.println(String.format("%s // with fixed instant (now)", uuid));
+
+		uuid = UuidGenerator.getTimeBasedCreator().withTimestamp(TimestampUtil.toTimestamp(Instant.now())).create();
+		System.out.println(String.format("%s // with fixed timestamp (now as timestamp)", uuid));
+		
+		uuid = UuidGenerator.getTimeBasedCreator().withClockSequence(0x8888).create();
+		System.out.println(String.format("%s // with fixed clock sequence (0x8888)", uuid));
+		
+		uuid = UuidGenerator.getTimeBasedCreator().withNodeIdentifier(0x111111111111L).create();
+		System.out.println(String.format("%s // with fixed node identifier (0x111111111111L)", uuid));
+
+		uuid = UuidGenerator.getTimeBasedCreator().withHardwareAddress().create();
+		System.out.println(String.format("%s // with hardware address (first MAC found)", uuid));
+		
+		System.out.println("##### Timestamp strategy");
+		
+		uuid = UuidGenerator.getTimeBasedCreator().withTimestampStrategy(new DefaultTimestampStrategy()).create();
+		System.out.println(String.format("%s // with default timestamp strategy (System.currentTimeMillis() + counter)", uuid));
+		
+		uuid = UuidGenerator.getTimeBasedCreator().withTimestampStrategy(new NanosecondTimestampStrategy()).create();
+		System.out.println(String.format("%s // with nanoseconds timestamp strategy (Instant.getNano())", uuid));
+		
+		uuid = UuidGenerator.getTimeBasedCreator().withTimestampStrategy(new DeltaTimestampStrategy()).create();
+		System.out.println(String.format("%s // with delta timestamp strategy (diff of subsequent System.nanoTime())", uuid));
+		
+		System.out.println("##### Node identifier strategy");
+		
+		uuid = UuidGenerator.getTimeBasedCreator().withNodeIdentifierStrategy(new DefaultNodeIdentifierStrategy()).create();
+		System.out.println(String.format("%s // with default node identifier strategy (random number generated once)", uuid));
+		
+		uuid = UuidGenerator.getTimeBasedCreator().withNodeIdentifierStrategy(new RandomNodeIdentifierStrategy()).create();
+		System.out.println(String.format("%s // with random node identifier strategy (random number generated every time)", uuid));
+
+		uuid = UuidGenerator.getTimeBasedCreator().withNodeIdentifierStrategy(new MacNodeIdentifierStrategy()).create();
+		System.out.println(String.format("%s // with hardware address node identifier strategy (first MAC found)", uuid));
+		
+		uuid = UuidGenerator.getTimeBasedCreator().withNodeIdentifierStrategy(new SystemNodeIdentifierStrategy()).create();
+		System.out.println(String.format("%s // with system node identifier strategy (hash of hostname + MAC + IP + OS + JVM)", uuid));
+		
+		System.out.println("#### Name-based");
+		
+		uuid = UuidGenerator.getNameBasedMd5Creator().withNamespace("USERS").create("Paul");
+		System.out.println(String.format("%s // with fixed namespace as string (USERS)", uuid));
+		
+		uuid = UuidGenerator.getNameBasedMd5Creator().withNamespace(NameBasedMd5UuidCreator.NAMESPACE_DNS).create("www.github.com");
+		System.out.println(String.format("%s // with fixed namespace as UUID (standard DNS namespace)", uuid));
+		
+		System.out.println("#### Random");
+		
+		uuid = UuidGenerator.getRandomCreator().withRandomGenerator(new Random()).create();
+		System.out.println(String.format("%s // with java random generator (java.util.Random)", uuid));
+
+		uuid = UuidGenerator.getRandomCreator().withFastRandomGenerator().create();
+		System.out.println(String.format("%s // with fast random generator (Xorshift128Plus)", uuid));
+		
+		System.out.println("#### DCE Security");
+		
+		uuid = UuidGenerator.getDceSecurityCreator().withLocalDomain(DceSecurityUuidCreator.LOCAL_DOMAIN_PERSON).create(1701);
+		System.out.println(String.format("%s // with fixed local domain (standard POSIX User ID)", uuid));
+		
+		System.out.println(UuidUtil.extractDceSecurityLocalIdentifier(uuid));
+		
 	}
 	
 	/**

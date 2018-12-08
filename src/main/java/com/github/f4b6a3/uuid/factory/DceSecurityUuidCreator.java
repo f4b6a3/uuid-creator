@@ -49,6 +49,11 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 		super(VERSION_2);
 		timestampCounter = new DCESTimestampCounter();
 	}
+	
+	@Override
+	public UUID create() {
+		throw new RuntimeException("Not implemented.");
+	}
 
 	/**
 	 * 
