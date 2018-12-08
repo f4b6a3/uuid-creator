@@ -54,7 +54,6 @@ public class ClockSequence extends AbstractSequence {
 	 * (6a) If the state was available, but the saved timestamp is later than
 	 * the current timestamp, increment the clock sequence value.
 	 * 
-	 * 
 	 * ### RFC-4122 - 4.2.1.2. System Clock Resolution
 	 * 
 	 * (3b) If a system overruns the generator by requesting too many UUIDs

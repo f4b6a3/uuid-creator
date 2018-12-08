@@ -24,10 +24,6 @@ import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
 
 public class UuidUtil {
 
-	/*
-	 * Public static methods for version check
-	 */
-
 	/**
 	 * Checks whether the UUID variant is the one defined by the RFC-4122.
 	 * 
@@ -93,10 +89,6 @@ public class UuidUtil {
 		return (version == 2);
 	}
 
-	/*
-	 * Public static methods for node identifiers
-	 */
-
 	/**
 	 * Get the node identifier that is embedded in the UUID.
 	 *
@@ -105,17 +97,14 @@ public class UuidUtil {
 	 */
 	public static long extractNodeIdentifier(UUID uuid) {
 
-		if (!(UuidUtil.isTimeBasedVersion(uuid) || UuidUtil.isOrderedVersion(uuid))) {
+		if (!(UuidUtil.isTimeBasedVersion(uuid) || UuidUtil.isOrderedVersion(uuid)
+				|| UuidUtil.isDceSecurityVersion(uuid))) {
 			throw new UnsupportedOperationException(
-					String.format("Not a time-based or ordered UUID: " + uuid.version(), uuid.toString()));
+					String.format("Not a time-based, ordered DCE Security UUID: %s.", uuid.toString()));
 		}
 
 		return uuid.getLeastSignificantBits() & 0x0000ffffffffffffL;
 	}
-
-	/*
-	 * Protected static methods for timestamps
-	 */
 
 	/**
 	 * Get the instant that is embedded in the UUID.
@@ -141,7 +130,7 @@ public class UuidUtil {
 
 		if (!(UuidUtil.isTimeBasedVersion(uuid) || UuidUtil.isOrderedVersion(uuid))) {
 			throw new UnsupportedOperationException(
-					String.format("Not a time-based or ordered UUID: " + uuid.version(), uuid.toString()));
+					String.format("Not a time-based or ordered UUID: %s.", uuid.toString()));
 		}
 
 		if (uuid.version() == 1) {
@@ -191,8 +180,7 @@ public class UuidUtil {
 	public static byte extractDceSecurityLocalDomain(UUID uuid) {
 
 		if (!UuidUtil.isDceSecurityVersion(uuid)) {
-			throw new UnsupportedOperationException(
-					String.format("Not a DCE Security UUID: " + uuid.version(), uuid.toString()));
+			throw new UnsupportedOperationException(String.format("Not a DCE Security UUID: %s.", uuid.toString()));
 		}
 
 		return (byte) ((uuid.getLeastSignificantBits() & 0x00ff000000000000L) >> 48);
@@ -208,8 +196,7 @@ public class UuidUtil {
 	public static int extractDceSecurityLocalIdentifier(UUID uuid) {
 
 		if (!UuidUtil.isDceSecurityVersion(uuid)) {
-			throw new UnsupportedOperationException(
-					String.format("Not a DCE Security UUID: " + uuid.version(), uuid.toString()));
+			throw new UnsupportedOperationException(String.format("Not a DCE Security UUID: %s.", uuid.toString()));
 		}
 
 		return (int) (uuid.getMostSignificantBits() >> 32);
@@ -223,8 +210,7 @@ public class UuidUtil {
 	 */
 	public static long extractDceSecurityTimestamp(UUID uuid) {
 		if (!UuidUtil.isDceSecurityVersion(uuid)) {
-			throw new UnsupportedOperationException(
-					String.format("Not a DCE Security UUID: " + uuid.version(), uuid.toString()));
+			throw new UnsupportedOperationException(String.format("Not a DCE Security UUID: %s.", uuid.toString()));
 		}
 
 		return extractTimeBasedTimestamp((uuid.getMostSignificantBits() & 0x00000000ffffffffL));
@@ -250,8 +236,7 @@ public class UuidUtil {
 	public static UUID fromOrderedToTimeBasedUuid(UUID uuid) {
 
 		if (!(UuidUtil.isOrderedVersion(uuid))) {
-			throw new UnsupportedOperationException(
-					String.format("Not a ordered UUID: " + uuid.version(), uuid.toString()));
+			throw new UnsupportedOperationException(String.format("Not a ordered UUID: %s.", uuid.toString()));
 		}
 
 		long timestamp = extractTimestamp(uuid);
@@ -271,8 +256,7 @@ public class UuidUtil {
 	public static UUID fromTimeBasedToOrderedUuid(UUID uuid) {
 
 		if (!(UuidUtil.isTimeBasedVersion(uuid))) {
-			throw new UnsupportedOperationException(
-					String.format("Not a time-based UUID: " + uuid.version(), uuid.toString()));
+			throw new UnsupportedOperationException(String.format("Not a time-based UUID: %s.", uuid.toString()));
 		}
 
 		long timestamp = extractTimestamp(uuid);
@@ -282,7 +266,7 @@ public class UuidUtil {
 
 		return new UUID(msb, lsb);
 	}
-	
+
 	/**
 	 * Convert a time-based to a MS SQL Server 'friendly' UUID.
 	 * 
@@ -294,8 +278,7 @@ public class UuidUtil {
 	public static UUID fromTimeBasedToMssqlUuid(UUID uuid) {
 
 		if (!(UuidUtil.isTimeBasedVersion(uuid))) {
-			throw new UnsupportedOperationException(
-					String.format("Not a time-based UUID: " + uuid.version(), uuid.toString()));
+			throw new UnsupportedOperationException(String.format("Not a time-based UUID: %s.", uuid.toString()));
 		}
 
 		long timestamp = extractTimestamp(uuid);
@@ -322,7 +305,7 @@ public class UuidUtil {
 
 		return ts;
 	}
-	
+
 	/**
 	 * Returns the timestamp bits of the UUID in the order defined in the
 	 * RFC-4122.
@@ -364,7 +347,7 @@ public class UuidUtil {
 
 		return ts;
 	}
-	
+
 	/**
 	 * Format most significant bits for MS SQL Server.
 	 * 
@@ -410,19 +393,18 @@ public class UuidUtil {
 		ts1 |= (timestamp & 0x0000_ffff_00000000L) >>> 16;
 		ts1 |= (timestamp & 0x0000_0000_ffffffffL) << 32;
 		ts1 |= 0x00000000_0000_1000L;
-		
+
 		ts2 |= (ts1 & 0xff000000_0000_0000L) >>> 24;
 		ts2 |= (ts1 & 0x00ff0000_0000_0000L) >>> 8;
 		ts2 |= (ts1 & 0x0000ff00_0000_0000L) << 8;
 		ts2 |= (ts1 & 0x000000ff_0000_0000L) << 24;
-		
 
 		ts2 |= (ts1 & 0x00000000_ff00_0000L) >>> 8;
 		ts2 |= (ts1 & 0x00000000_00ff_0000L) << 8;
 
 		ts2 |= (ts1 & 0x00000000_0000_ff00L) >>> 8;
 		ts2 |= (ts1 & 0x00000000_0000_00ffL) << 8;
-		
+
 		return ts2;
 	}
 

@@ -7,9 +7,13 @@ import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 
 public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
-	protected long nodeIdentifier = 0;
-
-	protected Random random = new SecureRandom();
+	protected long nodeIdentifier;
+	protected Random random;
+	
+	public DefaultNodeIdentifierStrategy() {
+		this.random = new SecureRandom();
+		this.nodeIdentifier = getRandomMulticastNodeIdentifier();
+	}
 
 	/**
 	 * Return a random node identifier.
@@ -17,17 +21,24 @@ public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * It uses {@link SecureRandom} to generate 'cryptographic quality random
 	 * number'. The first generated number is returned for all calls.
 	 * 
+	 * ### RFC-4122 - 4.1.6. Node
+	 * 
+	 * (2a) For systems with no IEEE address, a randomly or pseudo-randomly
+	 * generated value may be used; see Section 4.5. The multicast bit must be
+	 * set in such addresses, in order that they will never conflict with
+	 * addresses obtained from network cards.
+	 * 
 	 * ### RFC-4122 - 4.5. Node IDs that Do Not Identify the Host
 	 * 
-	 * (1) This section describes how to generate a version 1 UUID if an IEEE
+	 * (1b) This section describes how to generate a version 1 UUID if an IEEE
 	 * 802 address is not available, or its use is not desired.
 	 * 
-	 * (2) One approach is to contact the IEEE and get a separate block of
+	 * (2b) One approach is to contact the IEEE and get a separate block of
 	 * addresses. At the time of writing, the application could be found at
 	 * <http://standards.ieee.org/regauth/oui/pilot-ind.html>, and the cost was
 	 * US$550.
 	 * 
-	 * (3) A better solution is to obtain a 47-bit cryptographic quality random
+	 * (3b) A better solution is to obtain a 47-bit cryptographic quality random
 	 * number and use it as the low 47 bits of the node ID, with the least
 	 * significant bit of the first octet of the node ID set to one. This bit is
 	 * the unicast/multicast bit, which will never be set in IEEE 802 addresses
@@ -40,12 +51,17 @@ public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 */
 	@Override
 	public long getNodeIdentifier() {
-
-		if (this.nodeIdentifier != 0) {
-			return this.nodeIdentifier;
-		}
-
-		this.nodeIdentifier = NodeIdentifierUtil.setMulticastNodeIdentifier(random.nextLong());
 		return this.nodeIdentifier;
+	}
+	
+	/**
+	 * Return a random generated node identifier.
+	 * 
+	 * @see {@link DefaultNodeIdentifierStrategy#getNodeIdentifier()}
+	 * 
+	 * @return
+	 */
+	protected long getRandomMulticastNodeIdentifier() {
+		return NodeIdentifierUtil.setMulticastNodeIdentifier(random.nextLong());
 	}
 }

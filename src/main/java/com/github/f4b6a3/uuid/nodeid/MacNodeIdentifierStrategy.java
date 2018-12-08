@@ -3,19 +3,24 @@ package com.github.f4b6a3.uuid.nodeid;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.security.SecureRandom;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
 
-import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.uuid.util.ByteUtil;
 import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 
 public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
-	protected long nodeIdentifier = 0;
+	protected long nodeIdentifier;
+	protected Random random;
 
-	protected Random random = new Xorshift128PlusRandom();
+	public MacNodeIdentifierStrategy() {
+		this.random = new SecureRandom();
+		this.nodeIdentifier = getHardwareAddress();
+
+	}
 
 	/**
 	 * Get the machine address.
@@ -42,11 +47,16 @@ public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 */
 	@Override
 	public long getNodeIdentifier() {
+		return this.nodeIdentifier;
+	}
 
-		if (this.nodeIdentifier != 0) {
-			return this.nodeIdentifier;
-		}
-
+	/**
+	 * 
+	 * @see {@link MacNodeIdentifierStrategy#getNodeIdentifier()}
+	 * 
+	 * @return
+	 */
+	protected long getHardwareAddress() {
 		try {
 			byte[] mac;
 			NetworkInterface nic;
@@ -59,24 +69,21 @@ public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 				list = nic.getInterfaceAddresses();
 				mac = nic.getHardwareAddress();
 				if ((mac != null) && (!list.isEmpty()) && !(nic.isLoopback() || nic.isVirtual())) {
-					this.nodeIdentifier = ByteUtil.toNumber(mac);
-					return this.nodeIdentifier;
+					return ByteUtil.toNumber(mac);
 				}
 			}
-
 		} catch (SocketException | NullPointerException e) {
 			// (2) return random number
-			this.nodeIdentifier = getRandomMulticastNodeIdentifier();
-			return this.nodeIdentifier;
+			return getRandomMulticastNodeIdentifier();
 		}
-
 		// (2) return random number
-		this.nodeIdentifier = getRandomMulticastNodeIdentifier();
-		return this.nodeIdentifier;
+		return getRandomMulticastNodeIdentifier();
 	}
 
 	/**
 	 * Return a random generated node identifier.
+	 * 
+	 * @see {@link MacNodeIdentifierStrategy#getNodeIdentifier()}
 	 * 
 	 * @return
 	 */

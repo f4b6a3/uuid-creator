@@ -256,13 +256,6 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	/**
 	 * Get the node identifier.
 	 * 
-	 * ### RFC-4122 - 4.1.6. Node
-	 * 
-	 * (2) For systems with no IEEE address, a randomly or pseudo-randomly
-	 * generated value may be used; see Section 4.5. The multicast bit must be
-	 * set in such addresses, in order that they will never conflict with
-	 * addresses obtained from network cards.
-	 * 
 	 * @return
 	 */
 	protected long getNodeIdentifier() {

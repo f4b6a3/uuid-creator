@@ -161,7 +161,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * @param name
 	 * @return
 	 */
-	public UUID create(UUID namespace, String name) {
+	public synchronized UUID create(UUID namespace, String name) {
 
 		long msb = 0x0000000000000000L;
 		long lsb = 0x0000000000000000L;

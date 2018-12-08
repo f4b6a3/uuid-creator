@@ -17,11 +17,9 @@ import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 
 public class SystemNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
-	protected long nodeIdentifier = 0;
-
-	protected static Random random = new Xorshift128PlusRandom();
-
-	protected static MessageDigest md = null;
+	protected long nodeIdentifier;
+	protected Random random;
+	protected static MessageDigest md;
 
 	public SystemNodeIdentifierStrategy() {
 		try {
@@ -29,6 +27,8 @@ public class SystemNodeIdentifierStrategy implements NodeIdentifierStrategy {
 		} catch (NoSuchAlgorithmException e) {
 			throw new InternalError("Message digest algorithm not supported.", e);
 		}
+		this.random = new Xorshift128PlusRandom();
+		this.nodeIdentifier = getSystemNodeIdentifier();
 	}
 
 	/**
@@ -56,10 +56,16 @@ public class SystemNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 */
 	@Override
 	public long getNodeIdentifier() {
+		return this.nodeIdentifier;
+	}
 
-		if (this.nodeIdentifier != 0) {
-			return this.nodeIdentifier;
-		}
+	/**
+	 * 
+	 * @see {@link SystemNodeIdentifierStrategy#getNodeIdentifier()}
+	 * 
+	 * @return
+	 */
+	protected long getSystemNodeIdentifier() {
 
 		byte[] bytes = null;
 		byte[] hash = null;
@@ -73,12 +79,10 @@ public class SystemNodeIdentifierStrategy implements NodeIdentifierStrategy {
 		bytes = string.getBytes();
 		hash = md.digest(bytes);
 
-		this.nodeIdentifier = ByteUtil.toNumber(hash);
-		this.nodeIdentifier = NodeIdentifierUtil.setMulticastNodeIdentifier(this.nodeIdentifier);
-		return this.nodeIdentifier;
+		return NodeIdentifierUtil.setMulticastNodeIdentifier(ByteUtil.toNumber(hash));
 	}
 
-	protected static String getHostName() {
+	protected String getHostName() {
 		String hostname = "";
 		try {
 			hostname = InetAddress.getLocalHost().getHostName();
@@ -91,14 +95,14 @@ public class SystemNodeIdentifierStrategy implements NodeIdentifierStrategy {
 		}
 	}
 
-	protected static String getOperatingSystem() {
+	protected String getOperatingSystem() {
 		String name = System.getProperty("os.name");
 		String version = System.getProperty("os.version");
 		String arch = System.getProperty("os.arch");
 		return String.format("%s %s %s", name, version, arch);
 	}
 
-	protected static String getJavaVirtualMachine() {
+	protected String getJavaVirtualMachine() {
 		String vmName = System.getProperty("java.vm.name");
 		String vmVersion = System.getProperty("java.vm.version");
 		String rtName = System.getProperty("java.runtime.name");
@@ -106,7 +110,7 @@ public class SystemNodeIdentifierStrategy implements NodeIdentifierStrategy {
 		return String.format("%s %s %s %s", vmName, vmVersion, rtName, rtVersion);
 	}
 
-	protected static String getNetworkInterface() {
+	protected String getNetworkInterface() {
 
 		try {
 			byte[] mac;
@@ -136,7 +140,7 @@ public class SystemNodeIdentifierStrategy implements NodeIdentifierStrategy {
 		return getRandomHexadecimal();
 	}
 
-	protected static String getRandomHexadecimal() {
+	protected String getRandomHexadecimal() {
 		return ByteUtil.toHexadecimal(random.nextLong());
 	}
 }

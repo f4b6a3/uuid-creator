@@ -7,7 +7,11 @@ import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 
 public class RandomNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
-	protected Random random = new Xorshift128PlusRandom();
+	protected Random random;
+
+	public RandomNodeIdentifierStrategy() {
+		this.random = new Xorshift128PlusRandom();
+	}
 
 	/**
 	 * Return a random node identifier.
@@ -16,6 +20,8 @@ public class RandomNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * 
 	 * The only difference to the {@link DefaultNodeIdentifierStrategy} is that
 	 * the random value always changes for each call.
+	 * 
+	 * @see {@link DefaultNodeIdentifierStrategy}
 	 * 
 	 * @return
 	 */
