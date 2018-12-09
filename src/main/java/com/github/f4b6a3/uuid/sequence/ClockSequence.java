@@ -33,7 +33,7 @@ public class ClockSequence extends AbstractSequence {
 	private long timestamp = 0;
 
 	// keeps count of values returned
-	private int counter = 0;
+	private int offset = 0;
 
 	protected static final int SEQUENCE_MIN = 0; // 0x0000;
 	protected static final int SEQUENCE_MAX = 16_383; // 0x3fff;
@@ -68,19 +68,30 @@ public class ClockSequence extends AbstractSequence {
 	public int getNextForTimestamp(long timestamp) throws OverrunException {
 		if (timestamp <= this.timestamp) {
 			// (3b) return an error if the clock sequence overruns.
-			if (++this.counter > SEQUENCE_MAX) {
-				counter = 0;
+			if (this.value >= SEQUENCE_MAX) {
 				throw new OverrunException("Too many requests.");
 			}
-			return this.next();
+			this.timestamp = timestamp;
+			return applyOffset(this.next());
 		}
-		this.counter = 0;
+		
 		this.timestamp = timestamp;
-		return this.current();
+		return applyOffset(this.current());
 	}
 
+	/**
+	 * Apply the offset.
+	 * 
+	 * @param value
+	 * @return
+	 */
+	private int applyOffset(int value) {
+		return (value + this.offset) % SEQUENCE_MAX;
+	}
+	
 	@Override
 	public void reset() {
-		this.value = random.nextInt(SEQUENCE_MAX);
+		this.value = this.MIN_VALUE;
+		this.offset = random.nextInt(SEQUENCE_MAX);
 	}
 }

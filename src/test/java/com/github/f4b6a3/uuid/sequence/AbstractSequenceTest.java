@@ -10,8 +10,8 @@ public class AbstractSequenceTest {
 	
 	private static class TestSequence extends AbstractSequence {
 
-		protected static int MIN_TEST = 1111;
-		protected static int MAX_TEST = 2222;
+		protected static int MIN_TEST = 0;
+		protected static int MAX_TEST = 1000;
 		
 		protected TestSequence() {
 			super(TestSequence.MIN_TEST, TestSequence.MAX_TEST);
@@ -92,9 +92,7 @@ public class AbstractSequenceTest {
 		for (int i = 0; i < TestSequence.MAX_TEST; i++) {
 			value = testSequence.next();
 		}
-		assertEquals(TestSequence.MAX_TEST - 1, value); // Should be MAX_VALUE - 1
 		
-		value = testSequence.next();
 		assertEquals(TestSequence.MAX_TEST, value); // Should be MAX_VALUE
 		
 		value = testSequence.next();

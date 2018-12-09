@@ -367,6 +367,8 @@ If the default timestamp strategy is not desired, other two strategies are provi
 
 The clock sequence is used to help avoid duplicates. The first bits of the clock sequence part are multiplexed with the variant number of the RFC-4122. Because of that, the clock sequence always starts with one of this hexadecimal chars: `8`, `9`, `a` or `b`. In this implementation, every instance of a time-based factory has it's own clock sequence started with a random value from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards.
 
+If the the system requests more than 16,384 UUIDs at the same 100-nanosecond interval, an exception is should be thrown to conform the standard. In this implementation, the default strategy adds a counter value to a timestamp value with millisecond accuracy. The clock sequence is forced to increment when the counter wraps around, after been incremented 10,000 times. When the clock sequence is incremented 16,384 times the overrun exception is thrown. So it's necessary to generate 163,840,000 UUIDs in the same millisecond to throw an overrun exception, that is the maximum timestamp counter (10,000) multiplied by the maximum clock sequence (16,384).
+
 There's no 'non-volatile storage' in this implementation. That's why the clock sequence is always initialized to a random number, although it is the 'least desirable implementation'.
 
 #### Node identifier

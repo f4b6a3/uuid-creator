@@ -42,7 +42,8 @@ public abstract class AbstractSequence implements Sequence {
 	@Override
 	public int next() {
 		if (this.value >= MAX_VALUE) {
-			this.value = MIN_VALUE - 1;
+			this.value = MIN_VALUE;
+			return this.value;
 		}
 		return ++this.value;
 	}

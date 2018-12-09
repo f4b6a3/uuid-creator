@@ -29,7 +29,7 @@ public class DefaultTimestampStrategy extends AbstractSequence implements Timest
 	protected long timestamp = 0;
 
 	protected static final int COUNTER_MIN = 0;
-	protected static final int COUNTER_MAX = 10_000;
+	protected static final int COUNTER_MAX = 9_999;
 
 	public DefaultTimestampStrategy() {
 		super(COUNTER_MIN, COUNTER_MAX);

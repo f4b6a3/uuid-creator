@@ -15,8 +15,8 @@ public class RaceConditionRunnable implements Runnable {
 	private int id;
 	private UUID uuid;
 	
-	public static int threadCount = 100;
-	public static int threadLoopLimit = 10000;
+	public static int threadCount = 1;
+	public static int threadLoopLimit = 100_000;
 	
 	private static UUID[][] cache = new UUID[threadCount][threadLoopLimit];
 	private static AbstractTimeBasedUuidCreator creator = UuidGenerator.getTimeBasedCreator();
