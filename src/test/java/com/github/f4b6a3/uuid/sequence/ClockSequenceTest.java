@@ -2,18 +2,11 @@ package com.github.f4b6a3.uuid.sequence;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.UuidGenerator;
 import com.github.f4b6a3.uuid.exception.OverrunException;
-import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
-import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.sequence.ClockSequence;
-import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
-import com.github.f4b6a3.uuid.timestamp.StoppedDefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 
 import static org.junit.Assert.*;
-
-import java.util.UUID;
 
 public class ClockSequenceTest {
 
@@ -61,7 +54,7 @@ public class ClockSequenceTest {
 		ClockSequence clockSequence = new ClockSequence();
 
 		first = clockSequence.getNextForTimestamp(timestamp);
-		for (int i = 0; i < ClockSequence.SEQUENCE_MAX - 1; i++) {
+		for (int i = 0; i < ClockSequence.SEQUENCE_MAX; i++) {
 			last = clockSequence.getNextForTimestamp(timestamp);
 		}
 
@@ -87,42 +80,6 @@ public class ClockSequenceTest {
 
 		// It should throw an exception now
 		clockSequence.getNextForTimestamp(timestamp);
-
-	}
-
-	/**
-	 * This test may take too long.
-	 * 
-	 * In maximum number of UUIDs that can be generated in the same millisecond
-	 * by the {@link DefaultTimestampStrategy} is 10,000 (millisecond
-	 * resolution) multiplied by 16384 (clock sequence range) that is
-	 * 163,840,000. When this limit is reached, an overrun exception must be
-	 * thrown.
-	 * 
-	 * In this test, the {@link DefaultTimestampStrategy} is replaced by
-	 * {@link StoppedDefaultTimestampStrategy}, which has the same logic, except
-	 * that its clock is stopped in the same millisecond.
-	 * 
-	 */
-	@Test(expected = OverrunException.class)
-	public void testDefaultStrategy_should_throw_overrun_exception() {
-
-		int max = (int) TimestampUtil.TIMESTAMP_RESOLUTION * (ClockSequence.SEQUENCE_MAX + 1);
-
-		TimeBasedUuidCreator creator = UuidGenerator.getTimeBasedCreator()
-				.withTimestampStrategy(new StoppedDefaultTimestampStrategy());
-
-		try {
-			for (int i = 0; i < max; i++) {
-				creator.create();
-			}
-		} catch (OverrunException e) {
-			// fail if the exception is thrown before the maximum value
-			fail(String.format("Overrun exception thrown before the maximum value is reached."));
-		}
-
-		// It should throw an exception now
-		creator.create();
 
 	}
 }
