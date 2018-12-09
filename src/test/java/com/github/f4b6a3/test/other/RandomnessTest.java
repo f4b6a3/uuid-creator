@@ -8,7 +8,7 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.Random;
 
-public class RandomnesTest {
+public class RandomnessTest {
 
 	/**
 	 * Execute ENT for simple randomness test.

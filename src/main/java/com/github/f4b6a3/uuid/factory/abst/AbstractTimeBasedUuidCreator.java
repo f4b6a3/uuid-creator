@@ -21,19 +21,17 @@ import java.time.Instant;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.nodeid.DefaultNodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.nodeid.FixedNodeIdentifier;
 import com.github.f4b6a3.uuid.nodeid.MacNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.NodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.sequence.ClockSequence;
 import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
+import com.github.f4b6a3.uuid.timestamp.FixedTimestampStretegy;
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
-
-	// Fixed fields
-	protected long timestamp = 0;
-	protected long nodeIdentifier = 0;
 
 	protected ClockSequence clockSequence = new ClockSequence();
 	protected TimestampStrategy timestampStrategy = new DefaultTimestampStrategy();
@@ -92,10 +90,10 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	public synchronized UUID create() {
 
 		// (3a) get the timestamp
-		long timestamp = this.getTimestamp();
+		long timestamp = this.timestampStrategy.getCurrentTimestamp();
 
 		// (4a)(5a) get the node identifier
-		long nodeIdentifier = this.getNodeIdentifier();
+		long nodeIdentifier = this.nodeIdentifierStrategy.getNodeIdentifier();
 
 		// (5a)(6a) get the sequence value
 		long sequence = this.clockSequence.getNextForTimestamp(timestamp);
@@ -151,7 +149,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractTimeBasedUuidCreator> T withInstant(Instant instant) {
-		this.timestamp = TimestampUtil.toTimestamp(instant);
+		this.timestampStrategy = new FixedTimestampStretegy(TimestampUtil.toTimestamp(instant));
 		return (T) this;
 	}
 
@@ -165,7 +163,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractTimeBasedUuidCreator> T withTimestamp(long timestamp) {
-		this.timestamp = timestamp;
+		this.timestampStrategy = new FixedTimestampStretegy(timestamp);
 		return (T) this;
 	}
 
@@ -181,7 +179,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractTimeBasedUuidCreator> T withNodeIdentifier(long nodeIdentifier) {
-		this.nodeIdentifier = nodeIdentifier;
+		this.nodeIdentifierStrategy = new FixedNodeIdentifier(nodeIdentifier);
 		return (T) this;
 	}
 
@@ -251,33 +249,5 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	public long formatLeastSignificantBits(final long nodeIdentifier, final long clockSequence) {
 		return UuidUtil.formatRfc4122LeastSignificantBits(nodeIdentifier, clockSequence);
-	}
-
-	/**
-	 * Get the node identifier.
-	 * 
-	 * @return
-	 */
-	protected long getNodeIdentifier() {
-
-		if (this.nodeIdentifier != 0) {
-			return this.nodeIdentifier;
-		}
-
-		return this.nodeIdentifierStrategy.getNodeIdentifier();
-	}
-
-	/**
-	 * Get the current timestamp.
-	 * 
-	 * @return
-	 */
-	protected long getTimestamp() {
-
-		if (this.timestamp != 0) {
-			return this.timestamp;
-		}
-
-		return timestampStrategy.getCurrentTimestamp();
 	}
 }
