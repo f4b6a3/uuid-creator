@@ -133,52 +133,52 @@ public class BenchmarkRunner {
 	// UUID Generator
 
 	@Benchmark
-	public UUID UUIDGenerator_Random() {
+	public UUID UuidCreator_Random() {
 		return UuidCreator.getRandom();
 	}
 
 	@Benchmark
-	public UUID UUIDGenerator_FastRandom() {
+	public UUID UuidCreator_FastRandom() {
 		return UuidCreator.getFastRandom();
 	}
 
 	@Benchmark
-	public UUID UUIDGenerator_DceSecurity() {
+	public UUID UuidCreator_DceSecurity() {
 		return dceSecurityCreator.create((byte) 1, 1701);
 	}
 
 	@Benchmark
-	public UUID UUIDGenerator_DceSecurityWithMac() {
+	public UUID UuidCreator_DceSecurityWithMac() {
 		return dceSecurityWithMacCreator.create((byte) 1, 1701);
 	}
 
 	@Benchmark
-	public UUID UUIDGenerator_NameBasedMd5() {
+	public UUID UuidCreator_NameBasedMd5() {
 		return UuidCreator.getNameBasedMd5(name);
 	}
 
 	@Benchmark
-	public UUID UUIDGenerator_NameBasedSha1() {
+	public UUID UuidCreator_NameBasedSha1() {
 		return UuidCreator.getNameBasedSha1(name);
 	}
 
 	@Benchmark
-	public UUID UUIDGenerator_Sequential() {
+	public UUID UuidCreator_Sequential() {
 		return sequentialCreator.create();
 	}
 
 	@Benchmark
-	public UUID UUIDGenerator_SequentialWithMac() {
+	public UUID UuidCreator_SequentialWithMac() {
 		return sequentialMacCreator.create();
 	}
 
 	@Benchmark
-	public UUID UUIDGenerator_TimeBased() {
+	public UUID UuidCreator_TimeBased() {
 		return timeBasedCreator.create();
 	}
 
 	@Benchmark
-	public UUID UUIDGenerator_TimeBasedWithMac() {
+	public UUID UuidCreator_TimeBasedWithMac() {
 		return timeBasedMacCreator.create();
 	}
 

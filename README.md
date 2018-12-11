@@ -1,13 +1,13 @@
 
 
 
-UUID Generator
+UUID Creator
 ======================================================
 
 Summary
 ------------------------------------------------------
 
-UUID Generator can generate UUIDs (Universally Unique Identifiers) <sup>[1]</sup>, also known as GUIDs (Globally Unique Identifiers). It provides methods for RFC-4122 <sup>[2]</sup> versions 1, 2, 3, 4, 5. It also provides methods for creating non-standard sequential UUIDs. <sup>[4]</sup> <sup>[5]</sup>
+UUID Creator can generate UUIDs (Universally Unique Identifiers) <sup>[1]</sup>, also known as GUIDs (Globally Unique Identifiers). It provides methods for RFC-4122 <sup>[2]</sup> versions 1, 2, 3, 4, 5. It also provides methods for creating non-standard sequential UUIDs. <sup>[4]</sup> <sup>[5]</sup>
 
 These types of UUIDs can be generated:
 
@@ -29,14 +29,14 @@ How to Use
 The sequential UUID is a modified time-based UUID. The timestamp bits in this version are not rearranged as in the time-based version 1. The version number 0 (zero) was chosen to identify  UUIDs. It may be considered as an 'extension' of the RFC-4122.
 
 ```java
-UUID uuid = UUIDGenerator.getSequential();
+UUID uuid = UuidCreator.getSequential();
 System.out.println(uuid.toString());
 // Output: 1e879099-a413-0e81-9888-737f8d128eed
 ```
 
 ```java
 // With hardware address
-UUID uuid = UUIDGenerator.getSequentialWithMac();
+UUID uuid = UuidCreator.getSequentialWithMac();
 System.out.println(uuid.toString());
 // Output: 1e88c441-5711-0fa2-aaac-bf66xxxxxxxx
 ```
@@ -44,7 +44,7 @@ System.out.println(uuid.toString());
 ```java
 // Using a fixed node identifier instead of MAC address, for example, a device identifier
 long nodeIdentifier = 0x111111111111L;
-UUID uuid = UUIDGenerator.getSequentialCreator().withNodeIdentifier(nodeIdentifier).create();
+UUID uuid = UuidCreator.getSequentialCreator().withNodeIdentifier(nodeIdentifier).create();
 System.out.println(uuid.toString());
 // Output: 1e88c46f-e5df-0550-8e9d-111111111111
 ```
@@ -54,14 +54,14 @@ System.out.println(uuid.toString());
 The Time-based UUID embeds a timestamp and may embed a hardware address.
 
 ```java
-UUID uuid = UUIDGenerator.getTimeBased();
+UUID uuid = UuidCreator.getTimeBased();
 System.out.println(uuid.toString());
 // Output: 8caea7c7-7909-11e8-a919-4b43423cffc9
 ```
 
 ```java
 // With hardware address
-UUID uuid = UUIDGenerator.getTimeBasedWithMac();
+UUID uuid = UuidCreator.getTimeBasedWithMac();
 System.out.println(uuid.toString());
 // Output: 15670d26-8c44-11e8-bda5-47f8xxxxxxxx
 ```
@@ -69,7 +69,7 @@ System.out.println(uuid.toString());
 ```java
 // Using a fixed node identifier instead of MAC address, for example, a device identifier
 long nodeIdentifier = 0x111111111111L;
-UUID uuid = UUIDGenerator.getTimeBasedCreator().withNodeIdentifier(nodeIdentifier).create();
+UUID uuid = UuidCreator.getTimeBasedCreator().withNodeIdentifier(nodeIdentifier).create();
 System.out.println(uuid.toString());
 // Output: fe682e80-8c46-11e8-98d5-111111111111
 ```
@@ -81,7 +81,7 @@ The DCE Security is a Time-based UUID that also embeds local domain and local id
 ```java
 byte localDomain = DceSecurityCreator.LOCAL_DOMAIN_GROUP; // POSIX Group ID domain (1)
 int localIdentifier = 1701; // Group ID
-UUID uuid = UUIDGenerator.getDceSecurity(localDomain, localIdentifier);
+UUID uuid = UuidCreator.getDceSecurity(localDomain, localIdentifier);
 System.out.println(uuid.toString());
 // Output: 000006a5-f043-21e8-a900-a99b08980e52
 ```
@@ -90,7 +90,7 @@ System.out.println(uuid.toString());
 // With hardware address
 byte localDomain = DceSecurityCreator.LOCAL_DOMAIN_GROUP; // POSIX Group ID domain (1)
 int localIdentifier = 1701; // Group ID
-UUID uuid = UUIDGenerator.getDceSecurityWithMac(localDomain, localIdentifier);
+UUID uuid = UuidCreator.getDceSecurityWithMac(localDomain, localIdentifier);
 System.out.println(uuid.toString());
 // Output: 000006a5-f043-21e8-a900-47f8xxxxxxxx
 ```
@@ -100,7 +100,7 @@ System.out.println(uuid.toString());
 byte localDomain = DceSecurityCreator.LOCAL_DOMAIN_GROUP; // POSIX Group ID domain (1)
 int localIdentifier = 1701; // Group ID
 long nodeIdentifier = 0x111111111111L;
-UUID uuid = UUIDGenerator.getDceSecurityCreator().withNodeIdentifier(nodeIdentifier).create();
+UUID uuid = UuidCreator.getDceSecurityCreator().withNodeIdentifier(nodeIdentifier).create();
 System.out.println(uuid.toString());
 // Output: 000006a5-f043-21e8-a900-111111111111
 ```
@@ -112,7 +112,7 @@ The Name-based UUID version 3 is a MD5 hash of a name space and a name.
 ```java
 UUID namespace = UuidCreator.NAMESPACE_URL;
 String name = "https://github.com/";
-UUID uuid = UUIDGenerator.getNameBasedMd5(namespace, name);
+UUID uuid = UuidCreator.getNameBasedMd5(namespace, name);
 System.out.println(uuid.toString());
 // Output: 295df05a-2c43-337c-b6b8-4b84826e4a94
 ```
@@ -120,7 +120,7 @@ System.out.println(uuid.toString());
 ```java
 // Without name space.
 String name = "https://github.com/";
-UUID uuid = UUIDGenerator.getNameBasedMd5(name);
+UUID uuid = UuidCreator.getNameBasedMd5(name);
 System.out.println(uuid.toString());
 // Output: 008ec445-3ff3-3513-b438-93cba7aa31c8
 ```
@@ -131,14 +131,14 @@ The Random UUID is a simple random array of 16 bytes. The default random generat
 
 ```java
 // With the default SecureRandom generator
-UUID uuid = UUIDGenerator.getRandom();
+UUID uuid = UuidCreator.getRandom();
 System.out.println(uuid.toString());
 // Output: 1133483a-df21-47a6-b667-7482d6ceae39
 ```
 
 ```java
 // With the fast Xorshift128Plus generator
-UUID uuid = UUIDGenerator.getFastRandom();
+UUID uuid = UuidCreator.getFastRandom();
 System.out.println(uuid.toString());
 // Output: d08b9aca-41c9-4e72-bc9d-95bda46c9730
 ```
@@ -150,7 +150,7 @@ The Name-based UUID version 5 is a SHA-1 hash of a name space and a name.
 ```java
 UUID namespace = UuidCreator.NAMESPACE_URL;
 String name = "https://github.com/";
-UUID uuid = UUIDGenerator.getNameBasedSha1(namespace, name);
+UUID uuid = UuidCreator.getNameBasedSha1(namespace, name);
 System.out.println(uuid.toString());
 // Output: 39983165-606c-5d83-abfa-b97af8b1ae8d
 ```
@@ -158,7 +158,7 @@ System.out.println(uuid.toString());
 ```java
 // Without name space
 String name = "https://github.com/";
-UUID uuid = UUIDGenerator.getNameBasedSha1(name);
+UUID uuid = UuidCreator.getNameBasedSha1(name);
 System.out.println(uuid.toString());
 // Output: d7b3438d-97f3-55e6-92a5-66a731eea5ac
 ```
@@ -430,16 +430,16 @@ BenchmarkRunner.JUG_TimeBased                       ss  100   7,944 ± 0,930  ms
 BenchmarkRunner.JUG_TimeBasedWithMAC                ss  100   7,707 ± 0,917  ms/op
 BenchmarkRunner.Java_NameBased                      ss  100  51,577 ± 8,973  ms/op
 BenchmarkRunner.Java_Random                         ss  100  54,430 ± 4,296  ms/op
-BenchmarkRunner.UUIDGenerator_DceSecurity           ss  100   8,179 ± 1,177  ms/op
-BenchmarkRunner.UUIDGenerator_DceSecurityWithMac    ss  100   7,878 ± 1,142  ms/op
-BenchmarkRunner.UUIDGenerator_FastRandom            ss  100   3,483 ± 0,572  ms/op
-BenchmarkRunner.UUIDGenerator_NameBasedMd5          ss  100  43,509 ± 5,424  ms/op
-BenchmarkRunner.UUIDGenerator_NameBasedSha1         ss  100  52,393 ± 5,230  ms/op
-BenchmarkRunner.UUIDGenerator_Random                ss  100  46,429 ± 2,472  ms/op
-BenchmarkRunner.UUIDGenerator_Sequential            ss  100   7,463 ± 1,066  ms/op
-BenchmarkRunner.UUIDGenerator_SequentialWithMac     ss  100   7,542 ± 0,945  ms/op
-BenchmarkRunner.UUIDGenerator_TimeBased             ss  100   7,516 ± 0,972  ms/op
-BenchmarkRunner.UUIDGenerator_TimeBasedWithMac      ss  100   7,443 ± 0,971  ms/op
+BenchmarkRunner.UuidCreator_DceSecurity             ss  100   8,179 ± 1,177  ms/op
+BenchmarkRunner.UuidCreator_DceSecurityWithMac      ss  100   7,878 ± 1,142  ms/op
+BenchmarkRunner.UuidCreator_FastRandom              ss  100   3,483 ± 0,572  ms/op
+BenchmarkRunner.UuidCreator_NameBasedMd5            ss  100  43,509 ± 5,424  ms/op
+BenchmarkRunner.UuidCreator_NameBasedSha1           ss  100  52,393 ± 5,230  ms/op
+BenchmarkRunner.UuidCreator_Random                  ss  100  46,429 ± 2,472  ms/op
+BenchmarkRunner.UuidCreator_Sequential              ss  100   7,463 ± 1,066  ms/op
+BenchmarkRunner.UuidCreator_SequentialWithMac       ss  100   7,542 ± 0,945  ms/op
+BenchmarkRunner.UuidCreator_TimeBased               ss  100   7,516 ± 0,972  ms/op
+BenchmarkRunner.UuidCreator_TimeBasedWithMac        ss  100   7,443 ± 0,971  ms/op
 -----------------------------------------------------------------------------------
 Total time: 00:01:35
 -----------------------------------------------------------------------------------
