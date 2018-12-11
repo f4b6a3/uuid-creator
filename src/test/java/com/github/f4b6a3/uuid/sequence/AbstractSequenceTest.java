@@ -16,7 +16,6 @@ public class AbstractSequenceTest {
 		protected TestSequence() {
 			super(TestSequence.MIN_TEST, TestSequence.MAX_TEST);
 		}
-		
 	}
 	
 	@Test

@@ -35,10 +35,10 @@ import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.NameBasedGenerator;
 import com.fasterxml.uuid.impl.RandomBasedGenerator;
 import com.fasterxml.uuid.impl.TimeBasedGenerator;
-import com.github.f4b6a3.uuid.UuidGenerator;
+import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.exception.OverrunException;
 import com.github.f4b6a3.uuid.factory.DceSecurityUuidCreator;
-import com.github.f4b6a3.uuid.factory.OrderedUuidCreator;
+import com.github.f4b6a3.uuid.factory.SequentialUuidCreator;
 import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
 
 /**
@@ -63,9 +63,9 @@ public class BenchmarkRunner {
 	private TimeBasedGenerator jugTimeBasedMACGenerator;
 	private RandomBasedGenerator jugRandomGenerator;
 
-	private OrderedUuidCreator orderedCreator;
+	private SequentialUuidCreator sequentialCreator;
 	private TimeBasedUuidCreator timeBasedCreator;
-	private OrderedUuidCreator orderedMacCreator;
+	private SequentialUuidCreator sequentialMacCreator;
 	private TimeBasedUuidCreator timeBasedMacCreator;
 	private DceSecurityUuidCreator dceSecurityCreator;
 	private DceSecurityUuidCreator dceSecurityWithMacCreator;
@@ -81,12 +81,12 @@ public class BenchmarkRunner {
 		jugTimeBasedMACGenerator = Generators.timeBasedGenerator(EthernetAddress.fromInterface());
 		jugRandomGenerator = Generators.randomBasedGenerator();
 
-		orderedCreator = UuidGenerator.getOrderedCreator();
-		timeBasedCreator = UuidGenerator.getTimeBasedCreator();
-		orderedMacCreator = UuidGenerator.getOrderedCreator().withHardwareAddress();
-		timeBasedMacCreator = UuidGenerator.getTimeBasedCreator().withHardwareAddress();
-		dceSecurityCreator = UuidGenerator.getDceSecurityCreator();
-		dceSecurityWithMacCreator = UuidGenerator.getDceSecurityCreator().withHardwareAddress();
+		sequentialCreator = UuidCreator.getSequentialCreator();
+		timeBasedCreator = UuidCreator.getTimeBasedCreator();
+		sequentialMacCreator = UuidCreator.getSequentialCreator().withHardwareAddress();
+		timeBasedMacCreator = UuidCreator.getTimeBasedCreator().withHardwareAddress();
+		dceSecurityCreator = UuidCreator.getDceSecurityCreator();
+		dceSecurityWithMacCreator = UuidCreator.getDceSecurityCreator().withHardwareAddress();
 	}
 
 	// Java UUID
@@ -134,12 +134,12 @@ public class BenchmarkRunner {
 
 	@Benchmark
 	public UUID UUIDGenerator_Random() {
-		return UuidGenerator.getRandom();
+		return UuidCreator.getRandom();
 	}
 
 	@Benchmark
 	public UUID UUIDGenerator_FastRandom() {
-		return UuidGenerator.getFastRandom();
+		return UuidCreator.getFastRandom();
 	}
 
 	@Benchmark
@@ -154,22 +154,22 @@ public class BenchmarkRunner {
 
 	@Benchmark
 	public UUID UUIDGenerator_NameBasedMd5() {
-		return UuidGenerator.getNameBasedMd5(name);
+		return UuidCreator.getNameBasedMd5(name);
 	}
 
 	@Benchmark
 	public UUID UUIDGenerator_NameBasedSha1() {
-		return UuidGenerator.getNameBasedSha1(name);
+		return UuidCreator.getNameBasedSha1(name);
 	}
 
 	@Benchmark
-	public UUID UUIDGenerator_Ordered() {
-		return orderedCreator.create();
+	public UUID UUIDGenerator_Sequential() {
+		return sequentialCreator.create();
 	}
 
 	@Benchmark
-	public UUID UUIDGenerator_OrderedWithMac() {
-		return orderedMacCreator.create();
+	public UUID UUIDGenerator_SequentialWithMac() {
+		return sequentialMacCreator.create();
 	}
 
 	@Benchmark

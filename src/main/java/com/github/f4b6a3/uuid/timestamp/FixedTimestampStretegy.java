@@ -9,7 +9,7 @@ public class FixedTimestampStretegy implements TimestampStrategy {
 	}
 
 	@Override
-	public long getCurrentTimestamp() {
+	public long getTimestamp() {
 		return this.timestamp;
 	}
 }

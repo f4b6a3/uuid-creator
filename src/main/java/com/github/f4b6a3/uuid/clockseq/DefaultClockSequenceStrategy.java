@@ -15,13 +15,14 @@
  *
  */
 
-package com.github.f4b6a3.uuid.sequence;
+package com.github.f4b6a3.uuid.clockseq;
 
 import java.util.Random;
 import java.util.logging.Logger;
 
 import com.github.f4b6a3.uuid.exception.OverrunException;
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
+import com.github.f4b6a3.uuid.sequence.AbstractSequence;
 
 /**
  * This class is an implementation of the 'clock sequence' of the RFC-4122. The
@@ -54,7 +55,7 @@ import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
  * correlated to the node identifier.
  * 
  */
-public class ClockSequence extends AbstractSequence {
+public class DefaultClockSequenceStrategy extends AbstractSequence implements ClockSequenceStrategy {
 
 	// keeps the previous timestamp
 	private long timestamp = 0;
@@ -68,7 +69,7 @@ public class ClockSequence extends AbstractSequence {
 	protected static final Random random = new Xorshift128PlusRandom();
 	protected static final Logger LOGGER = Logger.getAnonymousLogger();
 
-	public ClockSequence() {
+	public DefaultClockSequenceStrategy() {
 		super(SEQUENCE_MIN, SEQUENCE_MAX);
 		this.reset();
 	}
@@ -103,7 +104,8 @@ public class ClockSequence extends AbstractSequence {
 	 * @return
 	 * @throws OverrunException
 	 */
-	public int getNextForTimestamp(long timestamp) throws OverrunException {
+	@Override
+	public int getClockSequence(long timestamp, long nodeIdentifier) {
 		if (timestamp <= this.timestamp) {
 			// (3c) return an error if the clock sequence overruns.
 			if (this.counter >= SEQUENCE_MAX) {

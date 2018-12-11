@@ -1,14 +1,14 @@
-package com.github.f4b6a3.uuid.sequence;
+package com.github.f4b6a3.uuid.clockseq;
 
 import org.junit.Test;
 
+import com.github.f4b6a3.uuid.clockseq.DefaultClockSequenceStrategy;
 import com.github.f4b6a3.uuid.exception.OverrunException;
-import com.github.f4b6a3.uuid.sequence.ClockSequence;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 
 import static org.junit.Assert.*;
 
-public class ClockSequenceTest {
+public class DefaultClockSequenceStrategyTest {
 
 	@Test
 	public void testNextFor_should_increment_if_the_new_timestamp_is_lower_or_equal_to_the_old_timestamp() {
@@ -17,18 +17,18 @@ public class ClockSequenceTest {
 		// timestamp
 		long old_timestamp = 1000;
 		long new_timestamp = 999;
-		ClockSequence clockSequence = new ClockSequence();
-		long old_sequence = clockSequence.getNextForTimestamp(old_timestamp);
-		long new_sequence = clockSequence.getNextForTimestamp(new_timestamp);
+		DefaultClockSequenceStrategy clockSequence = new DefaultClockSequenceStrategy();
+		long old_sequence = clockSequence.getClockSequence(old_timestamp, 0);
+		long new_sequence = clockSequence.getClockSequence(new_timestamp, 0);
 		assertEquals(old_sequence + 1, new_sequence);
 
 		// It should increment if the new timestamp is EQUAL TO the old
 		// timestamp
 		old_timestamp = 1000;
 		new_timestamp = 1000;
-		clockSequence = new ClockSequence();
-		old_sequence = clockSequence.getNextForTimestamp(old_timestamp);
-		new_sequence = clockSequence.getNextForTimestamp(new_timestamp);
+		clockSequence = new DefaultClockSequenceStrategy();
+		old_sequence = clockSequence.getClockSequence(old_timestamp, 0);
+		new_sequence = clockSequence.getClockSequence(new_timestamp, 0);
 		assertEquals(old_sequence + 1, new_sequence);
 	}
 
@@ -39,9 +39,9 @@ public class ClockSequenceTest {
 		// timestamp
 		long old_timestamp = 1000;
 		long new_timestamp = 1001;
-		ClockSequence clockSequence = new ClockSequence();
-		long old_sequence = clockSequence.getNextForTimestamp(old_timestamp);
-		long new_sequence = clockSequence.getNextForTimestamp(new_timestamp);
+		DefaultClockSequenceStrategy clockSequence = new DefaultClockSequenceStrategy();
+		long old_sequence = clockSequence.getClockSequence(old_timestamp, 0);
+		long new_sequence = clockSequence.getClockSequence(new_timestamp, 0);
 		assertEquals(old_sequence, new_sequence);
 	}
 
@@ -51,11 +51,11 @@ public class ClockSequenceTest {
 		int first = 0;
 		int last = 0;
 		long timestamp = TimestampUtil.getCurrentTimestamp();
-		ClockSequence clockSequence = new ClockSequence();
+		DefaultClockSequenceStrategy clockSequence = new DefaultClockSequenceStrategy();
 
-		first = clockSequence.getNextForTimestamp(timestamp);
-		for (int i = 0; i < ClockSequence.SEQUENCE_MAX; i++) {
-			last = clockSequence.getNextForTimestamp(timestamp);
+		first = clockSequence.getClockSequence(timestamp, 0);
+		for (int i = 0; i < DefaultClockSequenceStrategy.SEQUENCE_MAX; i++) {
+			last = clockSequence.getClockSequence(timestamp, 0);
 		}
 
 		assertEquals(first - 1, last);
@@ -65,13 +65,13 @@ public class ClockSequenceTest {
 	public void testNextForTimestamp_should_throw_overrun_exception() {
 
 		long timestamp = TimestampUtil.getCurrentTimestamp();
-		ClockSequence clockSequence = new ClockSequence();
+		DefaultClockSequenceStrategy clockSequence = new DefaultClockSequenceStrategy();
 
 		int i = 0;
 		try {
 			// Generate MAX values
-			for (i = 0; i <= ClockSequence.SEQUENCE_MAX; i++) {
-				clockSequence.getNextForTimestamp(timestamp);
+			for (i = 0; i <= DefaultClockSequenceStrategy.SEQUENCE_MAX; i++) {
+				clockSequence.getClockSequence(timestamp, 0);
 			}
 		} catch (OverrunException e) {
 			// fail if the exception is thrown before the maximum value
@@ -79,7 +79,7 @@ public class ClockSequenceTest {
 		}
 
 		// It should throw an exception now
-		clockSequence.getNextForTimestamp(timestamp);
+		clockSequence.getClockSequence(timestamp, 0);
 
 	}
 }

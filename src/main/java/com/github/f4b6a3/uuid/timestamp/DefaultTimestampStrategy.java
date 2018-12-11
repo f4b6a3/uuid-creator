@@ -7,7 +7,7 @@ import com.github.f4b6a3.uuid.util.TimestampUtil;
  * This is an implementation of {@link TimestampStrategy} that provides
  * millisecond resolution. The timestamp resolution is simulated by adding the
  * value of a counter that is incremented at every call to the method
- * {@link TimestampStrategy#getCurrentTimestamp()}.
+ * {@link TimestampStrategy#getTimestamp()}.
  * 
  * This class counts how many times a timestamp was used. This value added to
  * the timestamp is used to simulate a high resolution clock.
@@ -36,7 +36,7 @@ public class DefaultTimestampStrategy extends AbstractSequence implements Timest
 	}
 
 	@Override
-	public long getCurrentTimestamp() {
+	public long getTimestamp() {
 
 		long timestamp = TimestampUtil.getCurrentTimestamp();
 		long counter = getNextForTimestamp(timestamp);

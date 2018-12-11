@@ -7,7 +7,7 @@ UUID Generator
 Summary
 ------------------------------------------------------
 
-UUID Generator can generate UUIDs (Universally Unique Identifiers) <sup>[1]</sup>, also known as GUIDs (Globally Unique Identifiers). It provides methods for RFC-4122 <sup>[2]</sup> versions 1, 2, 3, 4, 5. It also provides methods for creating non-standard ordered UUIDs. <sup>[4]</sup> <sup>[5]</sup>
+UUID Generator can generate UUIDs (Universally Unique Identifiers) <sup>[1]</sup>, also known as GUIDs (Globally Unique Identifiers). It provides methods for RFC-4122 <sup>[2]</sup> versions 1, 2, 3, 4, 5. It also provides methods for creating non-standard sequential UUIDs. <sup>[4]</sup> <sup>[5]</sup>
 
 These types of UUIDs can be generated:
 
@@ -15,8 +15,8 @@ These types of UUIDs can be generated:
 * __Fast Random__: the pseudo-randomly generated version, using a fast RNG;
 * __Time-based:__ the time-based version;
 * __Time-based with MAC:__ the time-based version with hardware address;
-* __Ordered:__ a modified time-based version;
-* __Ordered with MAC:__ a modified time-based version with hardware address;
+* __Sequential:__ a modified time-based version;
+* __Sequential with MAC:__ a modified time-based version with hardware address;
 * __Name-based MD5:__ a base-named version that uses MD5;
 * __Name-based SHA1:__ a base-named version that uses SHA-1.
 * __DCE Security:__ a modified time-based version that uses local domains and identifiers;
@@ -24,19 +24,19 @@ These types of UUIDs can be generated:
 How to Use
 ------------------------------------------------------
 
-### Version 0: Ordered (extension)
+### Version 0: Sequential (extension)
 
-The ordered UUID is a modified time-based UUID. The timestamp bits in this version are not rearranged as in the time-based version 1. The version number 0 (zero) was chosen to identify  UUIDs. It may be considered as an 'extension' of the RFC-4122.
+The sequential UUID is a modified time-based UUID. The timestamp bits in this version are not rearranged as in the time-based version 1. The version number 0 (zero) was chosen to identify  UUIDs. It may be considered as an 'extension' of the RFC-4122.
 
 ```java
-UUID uuid = UUIDGenerator.getOrdered();
+UUID uuid = UUIDGenerator.getSequential();
 System.out.println(uuid.toString());
 // Output: 1e879099-a413-0e81-9888-737f8d128eed
 ```
 
 ```java
 // With hardware address
-UUID uuid = UUIDGenerator.getOrderedWithMac();
+UUID uuid = UUIDGenerator.getSequentialWithMac();
 System.out.println(uuid.toString());
 // Output: 1e88c441-5711-0fa2-aaac-bf66xxxxxxxx
 ```
@@ -44,7 +44,7 @@ System.out.println(uuid.toString());
 ```java
 // Using a fixed node identifier instead of MAC address, for example, a device identifier
 long nodeIdentifier = 0x111111111111L;
-UUID uuid = UUIDGenerator.getOrderedCreator().withNodeIdentifier(nodeIdentifier).create();
+UUID uuid = UUIDGenerator.getSequentialCreator().withNodeIdentifier(nodeIdentifier).create();
 System.out.println(uuid.toString());
 // Output: 1e88c46f-e5df-0550-8e9d-111111111111
 ```
@@ -171,7 +171,7 @@ The UUID factories are configurable via fluent interface methods. This section l
 
 #### Time-based
 
-All the examples in this subsection are also valid for Ordered and DCE Security UUIDs.
+All the examples in this subsection are also valid for Sequential and DCE Security UUIDs.
 
 ##### Fixed values
 
@@ -375,12 +375,12 @@ The node identifier part consists of an IEEE 802 MAC address, usually the host a
 
 But this implementation provides other strategies: alternative random strategy, machine address strategy and system information strategy.
 
-###  Ordered
+###  Sequential
 
-The ordered UUID inherits the same characteristics of the time-based UUID. The only difference is that the timestamp bits are not rearranged as the standard requires. <sup>[4]</sup> <sup>[5]</sup>
+The sequential UUID inherits the same characteristics of the time-based UUID. The only difference is that the timestamp bits are not rearranged as the standard requires. <sup>[4]</sup> <sup>[5]</sup>
 
 ```
-Ordered timestamp arrangement
+Sequential timestamp arrangement
 
  00000000-0000-v000-m000-000000000000
 |1-------|2---||3--|
@@ -423,23 +423,23 @@ Here is a table showing the results of a simple benchmark using JMH. This implem
 -----------------------------------------------------------------------------------
 Benchmark                                         Mode  Cnt   Score    Error  Units
 -----------------------------------------------------------------------------------
-BenchmarkRunner.EAIO_TimeBasedWithMac               ss  100   7,112 ± 0,609  ms/op
-BenchmarkRunner.JUG_NameBased                       ss  100  39,240 ± 3,018  ms/op
-BenchmarkRunner.JUG_Random                          ss  100  55,066 ± 4,804  ms/op
-BenchmarkRunner.JUG_TimeBased                       ss  100   7,827 ± 0,994  ms/op
-BenchmarkRunner.JUG_TimeBasedWithMAC                ss  100   7,802 ± 0,944  ms/op
-BenchmarkRunner.Java_NameBased                      ss  100  50,164 ± 8,646  ms/op
-BenchmarkRunner.Java_Random                         ss  100  54,934 ± 4,527  ms/op
-BenchmarkRunner.UUIDGenerator_DceSecurity           ss  100   8,150 ± 1,233  ms/op
-BenchmarkRunner.UUIDGenerator_DceSecurityWithMac    ss  100   8,108 ± 1,329  ms/op
-BenchmarkRunner.UUIDGenerator_FastRandom            ss  100   3,369 ± 0,534  ms/op
-BenchmarkRunner.UUIDGenerator_NameBasedMd5          ss  100  43,118 ± 4,418  ms/op
-BenchmarkRunner.UUIDGenerator_NameBasedSha1         ss  100  52,785 ± 5,034  ms/op
-BenchmarkRunner.UUIDGenerator_Ordered               ss  100   7,429 ± 1,055  ms/op
-BenchmarkRunner.UUIDGenerator_OrderedWithMac        ss  100   7,486 ± 1,066  ms/op
-BenchmarkRunner.UUIDGenerator_Random                ss  100  46,683 ± 2,952  ms/op
-BenchmarkRunner.UUIDGenerator_TimeBased             ss  100   7,574 ± 0,995  ms/op
-BenchmarkRunner.UUIDGenerator_TimeBasedWithMac      ss  100   7,522 ± 0,994  ms/op
+BenchmarkRunner.EAIO_TimeBasedWithMac               ss  100   7,339 ± 0,607  ms/op
+BenchmarkRunner.JUG_NameBased                       ss  100  39,777 ± 3,650  ms/op
+BenchmarkRunner.JUG_Random                          ss  100  54,057 ± 4,707  ms/op
+BenchmarkRunner.JUG_TimeBased                       ss  100   7,944 ± 0,930  ms/op
+BenchmarkRunner.JUG_TimeBasedWithMAC                ss  100   7,707 ± 0,917  ms/op
+BenchmarkRunner.Java_NameBased                      ss  100  51,577 ± 8,973  ms/op
+BenchmarkRunner.Java_Random                         ss  100  54,430 ± 4,296  ms/op
+BenchmarkRunner.UUIDGenerator_DceSecurity           ss  100   8,179 ± 1,177  ms/op
+BenchmarkRunner.UUIDGenerator_DceSecurityWithMac    ss  100   7,878 ± 1,142  ms/op
+BenchmarkRunner.UUIDGenerator_FastRandom            ss  100   3,483 ± 0,572  ms/op
+BenchmarkRunner.UUIDGenerator_NameBasedMd5          ss  100  43,509 ± 5,424  ms/op
+BenchmarkRunner.UUIDGenerator_NameBasedSha1         ss  100  52,393 ± 5,230  ms/op
+BenchmarkRunner.UUIDGenerator_Random                ss  100  46,429 ± 2,472  ms/op
+BenchmarkRunner.UUIDGenerator_Sequential            ss  100   7,463 ± 1,066  ms/op
+BenchmarkRunner.UUIDGenerator_SequentialWithMac     ss  100   7,542 ± 0,945  ms/op
+BenchmarkRunner.UUIDGenerator_TimeBased             ss  100   7,516 ± 0,972  ms/op
+BenchmarkRunner.UUIDGenerator_TimeBasedWithMac      ss  100   7,443 ± 0,971  ms/op
 -----------------------------------------------------------------------------------
 Total time: 00:01:35
 -----------------------------------------------------------------------------------
@@ -504,3 +504,17 @@ External links
 * [GUIDs are globally unique, but substrings of GUIDs aren’t](https://blogs.msdn.microsoft.com/oldnewthing/20080627-00/?p=21823)
 
 * [MySQL Performance When Using UUID For Primary Key](https://blog.programster.org/mysql-performance-when-using-uuid-for-primary-key)
+
+* [Auto increment keys vs. UUID](https://medium.com/@Mareks_082/auto-increment-keys-vs-uuid-a74d81f7476a)
+
+* [GUIDs as fast primary keys under multiple databases](https://www.codeproject.com/Articles/388157/GUIDs-as-fast-primary-keys-under-multiple-database)
+
+* [Do you really need a UUID/GUID?](https://rclayton.silvrback.com/do-you-really-need-a-uuid-guid)
+
+* [Oracle Universal Unique Identifier](https://oracle-base.com/articles/9i/uuid-9i)
+
+* [Oracle Reference 12c - SYS_GUID](https://docs.oracle.com/database/121/SQLRF/functions202.htm#SQLRF06120)
+
+* [Why Auto Increment Is A Terrible Idea](https://www.clever-cloud.com/blog/engineering/2015/05/20/why-auto-increment-is-a-terrible-idea/)
+
+

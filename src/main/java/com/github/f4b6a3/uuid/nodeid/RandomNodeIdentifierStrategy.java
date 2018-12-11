@@ -12,6 +12,10 @@ public class RandomNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	public RandomNodeIdentifierStrategy() {
 		this.random = new Xorshift128PlusRandom();
 	}
+	
+	public RandomNodeIdentifierStrategy(Random random) {
+		this.random = random;
+	}
 
 	/**
 	 * Return a random node identifier.

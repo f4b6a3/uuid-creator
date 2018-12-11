@@ -29,7 +29,7 @@ public class DeltaTimestampStrategy implements TimestampStrategy {
 	protected static final NanosClock clock = new NanosClock();
 
 	@Override
-	public long getCurrentTimestamp() {
+	public long getTimestamp() {
 
 		Instant instant = Instant.now(clock);
 

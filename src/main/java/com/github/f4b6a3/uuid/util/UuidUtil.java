@@ -73,7 +73,7 @@ public class UuidUtil {
 	 * @param uuid
 	 * @return boolean
 	 */
-	public static boolean isOrderedVersion(UUID uuid) {
+	public static boolean isSequentialVersion(UUID uuid) {
 		int version = uuid.version();
 		return (version == 0);
 	}
@@ -97,10 +97,10 @@ public class UuidUtil {
 	 */
 	public static long extractNodeIdentifier(UUID uuid) {
 
-		if (!(UuidUtil.isTimeBasedVersion(uuid) || UuidUtil.isOrderedVersion(uuid)
+		if (!(UuidUtil.isTimeBasedVersion(uuid) || UuidUtil.isSequentialVersion(uuid)
 				|| UuidUtil.isDceSecurityVersion(uuid))) {
 			throw new UnsupportedOperationException(
-					String.format("Not a time-based, ordered DCE Security UUID: %s.", uuid.toString()));
+					String.format("Not a time-based, sequential DCE Security UUID: %s.", uuid.toString()));
 		}
 
 		return uuid.getLeastSignificantBits() & 0x0000ffffffffffffL;
@@ -128,26 +128,26 @@ public class UuidUtil {
 	 */
 	public static long extractTimestamp(UUID uuid) {
 
-		if (!(UuidUtil.isTimeBasedVersion(uuid) || UuidUtil.isOrderedVersion(uuid))) {
+		if (!(UuidUtil.isTimeBasedVersion(uuid) || UuidUtil.isSequentialVersion(uuid))) {
 			throw new UnsupportedOperationException(
-					String.format("Not a time-based or ordered UUID: %s.", uuid.toString()));
+					String.format("Not a time-based or sequential UUID: %s.", uuid.toString()));
 		}
 
 		if (uuid.version() == 1) {
 			return extractTimeBasedTimestamp(uuid.getMostSignificantBits());
 		} else {
-			return extractOrderedTimestamp(uuid.getMostSignificantBits());
+			return extractSequentialTimestamp(uuid.getMostSignificantBits());
 		}
 	}
 
 	/**
-	 * Get the timestamp that is embedded in the Ordered UUID.
+	 * Get the timestamp that is embedded in the Sequential UUID.
 	 *
 	 * @param msb
 	 *            a long value that has the "Most Significant Bits" of the UUID.
 	 * @return long
 	 */
-	private static long extractOrderedTimestamp(long msb) {
+	private static long extractSequentialTimestamp(long msb) {
 
 		long himid = (msb & 0xffffffffffff0000L) >>> 4;
 		long low = (msb & 0x0000000000000fffL);
@@ -228,15 +228,15 @@ public class UuidUtil {
 	}
 
 	/**
-	 * Convert a ordered to a time-based UUID.
+	 * Convert a sequential to a time-based UUID.
 	 * 
 	 * @param uuid
 	 * @return
 	 */
-	public static UUID fromOrderedToTimeBasedUuid(UUID uuid) {
+	public static UUID fromSequentialToTimeBasedUuid(UUID uuid) {
 
-		if (!(UuidUtil.isOrderedVersion(uuid))) {
-			throw new UnsupportedOperationException(String.format("Not a ordered UUID: %s.", uuid.toString()));
+		if (!(UuidUtil.isSequentialVersion(uuid))) {
+			throw new UnsupportedOperationException(String.format("Not a sequential UUID: %s.", uuid.toString()));
 		}
 
 		long timestamp = extractTimestamp(uuid);
@@ -248,12 +248,12 @@ public class UuidUtil {
 	}
 
 	/**
-	 * Convert a time-based to a ordered UUID.
+	 * Convert a time-based to a sequential UUID.
 	 * 
 	 * @param uuid
 	 * @return
 	 */
-	public static UUID fromTimeBasedToOrderedUuid(UUID uuid) {
+	public static UUID fromTimeBasedToSequentialUuid(UUID uuid) {
 
 		if (!(UuidUtil.isTimeBasedVersion(uuid))) {
 			throw new UnsupportedOperationException(String.format("Not a time-based UUID: %s.", uuid.toString()));
@@ -261,7 +261,7 @@ public class UuidUtil {
 
 		long timestamp = extractTimestamp(uuid);
 
-		long msb = formatOrderedMostSignificantBits(timestamp);
+		long msb = formatSequentialMostSignificantBits(timestamp);
 		long lsb = uuid.getLeastSignificantBits();
 
 		return new UUID(msb, lsb);
@@ -296,7 +296,7 @@ public class UuidUtil {
 	 * 
 	 * @param timestamp
 	 */
-	public static long formatOrderedMostSignificantBits(long timestamp) {
+	public static long formatSequentialMostSignificantBits(long timestamp) {
 
 		long ts = 0x0000000000000000L;
 

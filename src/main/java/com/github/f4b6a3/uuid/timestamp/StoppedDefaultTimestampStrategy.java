@@ -21,7 +21,7 @@ public class StoppedDefaultTimestampStrategy extends DefaultTimestampStrategy {
 	protected static final Clock stoppedClock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
 
 	@Override
-	public long getCurrentTimestamp() {
+	public long getTimestamp() {
 
 		long timestamp = TimestampUtil.toTimestamp(Instant.now(stoppedClock));
 		long counter = getNextForTimestamp(timestamp);

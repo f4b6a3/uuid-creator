@@ -20,11 +20,13 @@ package com.github.f4b6a3.uuid.factory.abst;
 import java.time.Instant;
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.clockseq.ClockSequenceStrategy;
+import com.github.f4b6a3.uuid.clockseq.DefaultClockSequenceStrategy;
+import com.github.f4b6a3.uuid.clockseq.FixedClockSequenceStrategy;
 import com.github.f4b6a3.uuid.nodeid.DefaultNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.FixedNodeIdentifier;
 import com.github.f4b6a3.uuid.nodeid.MacNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.NodeIdentifierStrategy;
-import com.github.f4b6a3.uuid.sequence.ClockSequence;
 import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.FixedTimestampStretegy;
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
@@ -33,8 +35,8 @@ import com.github.f4b6a3.uuid.util.UuidUtil;
 
 public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 
-	protected ClockSequence clockSequence = new ClockSequence();
 	protected TimestampStrategy timestampStrategy = new DefaultTimestampStrategy();
+	protected ClockSequenceStrategy clockSequenceStrategy = new DefaultClockSequenceStrategy();
 	protected NodeIdentifierStrategy nodeIdentifierStrategy = new DefaultNodeIdentifierStrategy();
 
 	/**
@@ -90,13 +92,13 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	public synchronized UUID create() {
 
 		// (3a) get the timestamp
-		long timestamp = this.timestampStrategy.getCurrentTimestamp();
+		long timestamp = this.timestampStrategy.getTimestamp();
 
 		// (4a)(5a) get the node identifier
 		long nodeIdentifier = this.nodeIdentifierStrategy.getNodeIdentifier();
 
 		// (5a)(6a) get the sequence value
-		long sequence = this.clockSequence.getNextForTimestamp(timestamp);
+		long sequence = this.clockSequenceStrategy.getClockSequence(timestamp, nodeIdentifier);
 
 		// (9a) format the most significant bits
 		long msb = this.formatMostSignificantBits(timestamp);
@@ -109,7 +111,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	}
 
 	/**
-	 * Set an alternative {@link TimestampStrategy} to generate timestamps. The
+	 * Use an alternative {@link TimestampStrategy} to generate timestamps. The
 	 * {@link DefaultTimestampStrategy} has accuracy of milliseconds. If someone
 	 * needs a real 100-nanosecond an implementation of
 	 * {@link TimestampStrategy} may be provided via this method.
@@ -124,7 +126,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	}
 
 	/**
-	 * Set an alternative {@link NodeIdentifierStrategy} to generate node
+	 * Use an alternative {@link NodeIdentifierStrategy} to generate node
 	 * identifiers. The {@link DefaultNodeIdentifierStrategy} generates a random
 	 * multicast node identifier and returns it for every call to
 	 * {@link DefaultNodeIdentifierStrategy#getNodeIdentifier()}.
@@ -139,6 +141,23 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 		return (T) this;
 	}
 
+	/**
+	 * Use an alternative {@link ClockSequenceStrategy} to generate clock
+	 * sequences. By default the strategy {@link DefaultClockSequenceStrategy}
+	 * is used.
+	 * 
+	 * @see {@link DefaultClockSequenceStrategy}
+	 * 
+	 * @param clockSequenceStrategy
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends AbstractTimeBasedUuidCreator> T withClockSequenceStrategy(
+			ClockSequenceStrategy clockSequenceStrategy) {
+		this.clockSequenceStrategy = clockSequenceStrategy;
+		return (T) this;
+	}
+	
 	/**
 	 * Set a fixed Instant to generate UUIDs.
 	 * 
@@ -215,7 +234,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractTimeBasedUuidCreator> T withClockSequence(int clockSequence) {
-		this.clockSequence.set(clockSequence);
+		this.clockSequenceStrategy = new FixedClockSequenceStrategy(clockSequence);
 		return (T) this;
 	}
 

@@ -2,7 +2,7 @@ package com.github.f4b6a3.test.collision;
 
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.UuidGenerator;
+import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.timestamp.StoppedDefaultTimestampStrategy;
 
@@ -85,7 +85,7 @@ public class CollisionTest {
 		int threadCount = 10; // Number of threads to run
 		int requestCount = 100_000; // Number of requests for thread
 
-		AbstractTimeBasedUuidCreator creator = UuidGenerator.getTimeBasedCreator()
+		AbstractTimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator()
 				.withTimestampStrategy(new StoppedDefaultTimestampStrategy()).withNodeIdentifier(0x111111111111L);
 
 		CollisionTest test = new CollisionTest(threadCount, requestCount, creator, verbose);

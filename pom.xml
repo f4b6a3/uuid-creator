@@ -4,7 +4,7 @@
 
 	<groupId>com.github.f4b6a3</groupId>
 	<artifactId>uuid-generator</artifactId>
-	<version>0.8.0</version>
+	<version>0.8.7</version>
 	<packaging>jar</packaging>
 
 	<name>uuid-generator</name>

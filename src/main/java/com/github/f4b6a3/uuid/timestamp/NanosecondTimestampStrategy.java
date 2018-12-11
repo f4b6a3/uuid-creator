@@ -29,7 +29,7 @@ public class NanosecondTimestampStrategy implements TimestampStrategy {
 			.toInstant().getEpochSecond();
 
 	@Override
-	public long getCurrentTimestamp() {
+	public long getTimestamp() {
 
 		Instant instant = Instant.now();
 

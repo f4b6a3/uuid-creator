@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.UuidGenerator;
+import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
 
 import static com.github.f4b6a3.uuid.util.UuidUtil.*;
@@ -30,7 +30,7 @@ public class UuidUtilTest {
 	@Test
 	public void testExtractNodeIdentifier() {
 		long nodeIdentifier1 = 0x111111111111L;
-		UUID uuid = UuidGenerator.getTimeBasedCreator().withNodeIdentifier(nodeIdentifier1).create();
+		UUID uuid = UuidCreator.getTimeBasedCreator().withNodeIdentifier(nodeIdentifier1).create();
 		long nodeIdentifier2 = extractNodeIdentifier(uuid);
 		assertEquals(nodeIdentifier1, nodeIdentifier2);
 	}
@@ -41,11 +41,11 @@ public class UuidUtilTest {
 		Instant instant1 = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 		long timestamp1 = TimestampUtil.toTimestamp(instant1);
 
-		UUID uuid = UuidGenerator.getTimeBasedCreator().withInstant(instant1).create();
+		UUID uuid = UuidCreator.getTimeBasedCreator().withInstant(instant1).create();
 		long timestamp2 = extractTimestamp(uuid);
 		assertEquals(timestamp1, timestamp2);
 
-		uuid = UuidGenerator.getOrderedCreator().withInstant(instant1).create();
+		uuid = UuidCreator.getSequentialCreator().withInstant(instant1).create();
 		timestamp2 = extractTimestamp(uuid);
 		assertEquals(timestamp1, timestamp2);
 	}
@@ -54,11 +54,11 @@ public class UuidUtilTest {
 	public void testExtractInstant() {
 		Instant instant1 = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
-		UUID uuid = UuidGenerator.getTimeBasedCreator().withInstant(instant1).create();
+		UUID uuid = UuidCreator.getTimeBasedCreator().withInstant(instant1).create();
 		Instant instant2 = extractInstant(uuid);
 		assertEquals(instant1, instant2);
 
-		uuid = UuidGenerator.getOrderedCreator().withInstant(instant1).create();
+		uuid = UuidCreator.getSequentialCreator().withInstant(instant1).create();
 		instant2 = extractInstant(uuid);
 		assertEquals(instant1, instant2);
 	}
@@ -67,7 +67,7 @@ public class UuidUtilTest {
 	public void testDceSecurityLocalDomain() {
 		byte localDomain1 = 42;
 		int localIdentifier1 = 1701;
-		UUID uuid = UuidGenerator.getDceSecurity(localDomain1, localIdentifier1);
+		UUID uuid = UuidCreator.getDceSecurity(localDomain1, localIdentifier1);
 		byte localDomain2 = extractDceSecurityLocalDomain(uuid);
 		assertEquals(localDomain1, localDomain2);
 	}
@@ -76,7 +76,7 @@ public class UuidUtilTest {
 	public void testDceSecurityLocalIdentifier() {
 		byte localDomain1 = 42;
 		int localIdentifier1 = 1701;
-		UUID uuid = UuidGenerator.getDceSecurity(localDomain1, localIdentifier1);
+		UUID uuid = UuidCreator.getDceSecurity(localDomain1, localIdentifier1);
 		int localIdentifier2 = extractDceSecurityLocalIdentifier(uuid);
 		assertEquals(localIdentifier1, localIdentifier2);
 	}
@@ -98,7 +98,7 @@ public class UuidUtilTest {
 		
 		Instant instant1 = Instant.now();
 		long timestamp1 = TimestampUtil.toTimestamp(instant1);
-		UUID uuid = UuidGenerator.getDceSecurity(localDomain, localIdentifier);
+		UUID uuid = UuidCreator.getDceSecurity(localDomain, localIdentifier);
 		long timestamp2 = extractDceSecurityTimestamp(uuid);
 
 		assertEquals(timestamp1 & 0xffffffff00000000L, timestamp2);
@@ -111,7 +111,7 @@ public class UuidUtilTest {
 		int localIdentifier = 1701;
 		
 		Instant instant1 = Instant.now();
-		UUID uuid = UuidGenerator.getDceSecurity(localDomain, localIdentifier);
+		UUID uuid = UuidCreator.getDceSecurity(localDomain, localIdentifier);
 
 		Instant instant2 = extractDceSecurityInstant(uuid);
 
@@ -123,17 +123,17 @@ public class UuidUtilTest {
 	}
 
 	@Test
-	public void testFromTimeBasedToOrderedUuid(){
-		UUID uuid1 = UuidGenerator.getTimeBased();
-		UUID uuid2 = fromTimeBasedToOrderedUuid(uuid1);
+	public void testFromTimeBasedToSequentialUuid(){
+		UUID uuid1 = UuidCreator.getTimeBased();
+		UUID uuid2 = fromTimeBasedToSequentialUuid(uuid1);
 		
-		assertTrue(isOrderedVersion(uuid2));
+		assertTrue(isSequentialVersion(uuid2));
 	}
 	
 	@Test
-	public void testFromOrderedToTimeBasedUuid(){
-		UUID uuid1 = UuidGenerator.getOrdered();
-		UUID uuid2 = fromOrderedToTimeBasedUuid(uuid1);
+	public void testFromSequentialToTimeBasedUuid(){
+		UUID uuid1 = UuidCreator.getSequential();
+		UUID uuid2 = fromSequentialToTimeBasedUuid(uuid1);
 		
 		assertTrue(isTimeBasedVersion(uuid2));
 	}
