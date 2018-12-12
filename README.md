@@ -148,7 +148,7 @@ UUID uuid = UuidCreator.getNameBasedSha1(name);
 
 ### MSSQL GUID (non-standard)
 
-The MSSQL GUID a modified time-based UUID that changes the timestamp byte order for MSSQL Server database.
+The MSSQL GUID is a modified time-based UUID that changes the timestamp byte order for MSSQL Server database.
 
 ```java
 // MSSQL GUID
