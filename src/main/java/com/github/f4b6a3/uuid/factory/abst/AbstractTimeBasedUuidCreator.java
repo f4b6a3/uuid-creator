@@ -24,7 +24,7 @@ import com.github.f4b6a3.uuid.clockseq.ClockSequenceStrategy;
 import com.github.f4b6a3.uuid.clockseq.DefaultClockSequenceStrategy;
 import com.github.f4b6a3.uuid.clockseq.FixedClockSequenceStrategy;
 import com.github.f4b6a3.uuid.nodeid.DefaultNodeIdentifierStrategy;
-import com.github.f4b6a3.uuid.nodeid.FixedNodeIdentifier;
+import com.github.f4b6a3.uuid.nodeid.FixedNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.MacNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.NodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
@@ -35,9 +35,9 @@ import com.github.f4b6a3.uuid.util.UuidUtil;
 
 public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 
-	protected TimestampStrategy timestampStrategy = new DefaultTimestampStrategy();
-	protected ClockSequenceStrategy clockSequenceStrategy = new DefaultClockSequenceStrategy();
-	protected NodeIdentifierStrategy nodeIdentifierStrategy = new DefaultNodeIdentifierStrategy();
+	protected TimestampStrategy timestampStrategy;
+	protected ClockSequenceStrategy clockSequenceStrategy;
+	protected NodeIdentifierStrategy nodeIdentifierStrategy;
 
 	/**
 	 * This constructor requires a version number.
@@ -46,10 +46,56 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	protected AbstractTimeBasedUuidCreator(int version) {
 		super(version);
+		this.timestampStrategy = new DefaultTimestampStrategy();
+		this.clockSequenceStrategy = new DefaultClockSequenceStrategy();
+		this.nodeIdentifierStrategy = new DefaultNodeIdentifierStrategy();
 	}
 
 	/**
 	 * Returns a new time-based UUID.
+	 * 
+	 * ### Timestamp
+	 * 
+	 * The timestamp has 100-nanoseconds resolution, starting from 1582-10-15.
+	 * It uses 60 bits from the most significant bits. The the time value rolls
+	 * over around AD 5235.
+	 * 
+	 * <pre>
+	 *   s = 10_000_000
+	 *   m = 60 * s
+	 *   h = 60 * m
+	 *   d = 24 * h
+	 *   y = 365.25 * d
+	 *   2^60 / y = ~3653
+	 *   3653 + 1582 = 5235
+	 * </pre>
+	 * 
+	 * 
+	 * ### RFC-4122 - 4.1.4. Timestamp
+	 * 
+	 * The timestamp is a 60-bit value. For UUID version 1, this is represented
+	 * by Coordinated Universal Time (UTC) as a count of 100- nanosecond
+	 * intervals since 00:00:00.00, 15 October 1582 (the date of Gregorian
+	 * reform to the Christian calendar).
+	 * 
+	 * ### RFC-4122 - 4.1.5. Clock Sequence
+	 * 
+	 * For UUID version 1, the clock sequence is used to help avoid duplicates
+	 * that could arise when the clock is set backwards in time or if the node
+	 * ID changes.
+	 * 
+	 * ### RFC-4122 - 4.1.6. Node
+	 * 
+	 * For UUID version 1, the node field consists of an IEEE 802 MAC address,
+	 * usually the host address. For systems with multiple IEEE 802 addresses,
+	 * any available one can be used. The lowest addressed octet (octet number
+	 * 10) contains the global/local bit and the unicast/multicast bit, and is
+	 * the first octet of the address transmitted on an 802.3 LAN.
+	 * 
+	 * For systems with no IEEE address, a randomly or pseudo-randomly generated
+	 * value may be used; see Section 4.5. The multicast bit must be set in such
+	 * addresses, in order that they will never conflict with addresses obtained
+	 * from network cards.
 	 * 
 	 * ### RFC-4122 - 4.2.1. Basic Algorithm
 	 * 
@@ -78,14 +124,6 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * 
 	 * (9a) Format a UUID from the current timestamp, clock sequence, and node
 	 * ID values according to the steps in Section 4.2.2.
-	 * 
-	 * ### RFC-4122 - 4.2.1.2. System Clock Resolution
-	 * 
-	 * (4b) A high resolution timestamp can be simulated by keeping a count of
-	 * the number of UUIDs that have been generated with the same value of the
-	 * system time, and using it to construct the low order bits of the
-	 * timestamp. The count will range between zero and the number of
-	 * 100-nanosecond intervals per system time interval.
 	 * 
 	 * @return {@link UUID}
 	 */
@@ -157,7 +195,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 		this.clockSequenceStrategy = clockSequenceStrategy;
 		return (T) this;
 	}
-	
+
 	/**
 	 * Set a fixed Instant to generate UUIDs.
 	 * 
@@ -198,7 +236,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractTimeBasedUuidCreator> T withNodeIdentifier(long nodeIdentifier) {
-		this.nodeIdentifierStrategy = new FixedNodeIdentifier(nodeIdentifier);
+		this.nodeIdentifierStrategy = new FixedNodeIdentifierStrategy(nodeIdentifier);
 		return (T) this;
 	}
 

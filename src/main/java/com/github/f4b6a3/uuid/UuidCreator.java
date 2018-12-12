@@ -20,8 +20,9 @@ package com.github.f4b6a3.uuid;
 import java.security.SecureRandom;
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.factory.CombGuidCreator;
 import com.github.f4b6a3.uuid.factory.DceSecurityUuidCreator;
-import com.github.f4b6a3.uuid.factory.MssqlUuidCreator;
+import com.github.f4b6a3.uuid.factory.MssqlGuidCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedMd5UuidCreator;
 import com.github.f4b6a3.uuid.factory.RandomUuidCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedSha1UuidCreator;
@@ -48,6 +49,8 @@ public class UuidCreator {
 	private static RandomUuidCreator fastRandomCreator;
 	private static DceSecurityUuidCreator dceSecurityCreator;
 	private static DceSecurityUuidCreator dceSecurityWithMacCreator;
+	private static MssqlGuidCreator mssqlGuidCreator;
+	private static CombGuidCreator combGuidCreator;
 
 	/*
 	 * Public static methods for creating UUIDs
@@ -299,6 +302,30 @@ public class UuidCreator {
 		}
 		return nameBasedSha1Creator.create(namespace, name);
 	}
+	
+	/**
+	 * Returns a time-based GUID for MS SQL Server.
+	 * 
+	 * @return
+	 */
+	public static UUID getMssqlGuid() {
+		if (mssqlGuidCreator == null) {
+			mssqlGuidCreator = getMssqlCreator();
+		}
+		return mssqlGuidCreator.create();
+	}
+	
+	/**
+	 * Returns a COMB GUID for MS SQL Server.
+	 * 
+	 * @return
+	 */
+	public static UUID getCombGuid() {
+		if (combGuidCreator == null) {
+			combGuidCreator = getCombCreator();
+		}
+		return combGuidCreator.create();
+	}
 
 	/*
 	 * Public static methods for creating FACTORIES of UUIDs
@@ -359,11 +386,20 @@ public class UuidCreator {
 	}
 	
 	/**
-	 * Returns a {@link NameBasedSha1UuidCreator} that creates UUID version 5.
+	 * Returns a {@link MssqlGuidCreator}.
 	 * 
-	 * @return {@link NameBasedSha1UuidCreator}
+	 * @return {@link MssqlGuidCreator}
 	 */
-	public static MssqlUuidCreator getMssqlCreator() {
-		return new MssqlUuidCreator();
+	public static MssqlGuidCreator getMssqlCreator() {
+		return new MssqlGuidCreator();
+	}
+	
+	/**
+	 * Returns a {@link CombGuidCreator}.
+	 * 
+	 * @return {@link CombGuidCreator}
+	 */
+	public static CombGuidCreator getCombCreator() {
+		return new CombGuidCreator();
 	}
 }

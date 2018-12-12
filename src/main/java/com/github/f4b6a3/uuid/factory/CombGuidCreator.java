@@ -17,31 +17,29 @@
 
 package com.github.f4b6a3.uuid.factory;
 
+import java.security.SecureRandom;
+
+import com.github.f4b6a3.uuid.clockseq.RandomClockSequenceStrategy;
 import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
-import com.github.f4b6a3.uuid.util.UuidUtil;
+import com.github.f4b6a3.uuid.nodeid.CombNodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.timestamp.RandomTimestampStrategy;
 
 /**
- * Factory that creates MS SQL Server 'friendly' UUIDs.
+ * Factory that creates COMB UUIDs.
+ * 
+ * @see <a href="http://www.informit.com/articles/article.aspx?p=25862>The Cost of GUIDs as Primary Keys</a>
  */
-public class MssqlUuidCreator extends AbstractTimeBasedUuidCreator {
-
-	public MssqlUuidCreator() {
-		super(VERSION_0);
+public class CombGuidCreator extends AbstractTimeBasedUuidCreator {
+	
+	public CombGuidCreator() {
+		super(VERSION_4);
+		this.timestampStrategy = new RandomTimestampStrategy(new SecureRandom());
+		this.clockSequenceStrategy = new RandomClockSequenceStrategy();
+		this.nodeIdentifierStrategy = new CombNodeIdentifierStrategy();
 	}
-
-	protected MssqlUuidCreator(int version) {
-		super(version);
-	}
-
-	/**
-	 * Generate a MS SQL Server 'friendly' UUID.
-	 * 
-	 * {@link UuidUtil#formatMssqlMostSignificantBits(long)}
-	 * 
-	 * @param timestamp
-	 */
+	
 	@Override
 	public long formatMostSignificantBits(long timestamp) {
-		return UuidUtil.formatMssqlMostSignificantBits(timestamp);
+		return timestamp;
 	}
 }

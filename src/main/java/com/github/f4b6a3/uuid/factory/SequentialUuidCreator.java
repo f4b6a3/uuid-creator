@@ -33,10 +33,6 @@ public class SequentialUuidCreator extends AbstractTimeBasedUuidCreator {
 		super(VERSION_0);
 	}
 
-	protected SequentialUuidCreator(int version) {
-		super(version);
-	}
-
 	/**
 	 * 
 	 * {@link UuidUtil#formatSequentialMostSignificantBits(long)}

@@ -37,7 +37,9 @@ import com.fasterxml.uuid.impl.RandomBasedGenerator;
 import com.fasterxml.uuid.impl.TimeBasedGenerator;
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.exception.OverrunException;
+import com.github.f4b6a3.uuid.factory.CombGuidCreator;
 import com.github.f4b6a3.uuid.factory.DceSecurityUuidCreator;
+import com.github.f4b6a3.uuid.factory.MssqlGuidCreator;
 import com.github.f4b6a3.uuid.factory.SequentialUuidCreator;
 import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
 
@@ -69,6 +71,8 @@ public class BenchmarkRunner {
 	private TimeBasedUuidCreator timeBasedMacCreator;
 	private DceSecurityUuidCreator dceSecurityCreator;
 	private DceSecurityUuidCreator dceSecurityWithMacCreator;
+	private MssqlGuidCreator mssqlCreator;
+	private CombGuidCreator combCreator;
 
 	@Setup
 	public void setUp() {
@@ -87,6 +91,9 @@ public class BenchmarkRunner {
 		timeBasedMacCreator = UuidCreator.getTimeBasedCreator().withHardwareAddress();
 		dceSecurityCreator = UuidCreator.getDceSecurityCreator();
 		dceSecurityWithMacCreator = UuidCreator.getDceSecurityCreator().withHardwareAddress();
+		mssqlCreator = UuidCreator.getMssqlCreator();
+		combCreator = UuidCreator.getCombCreator();
+		
 	}
 
 	// Java UUID
@@ -180,6 +187,16 @@ public class BenchmarkRunner {
 	@Benchmark
 	public UUID UuidCreator_TimeBasedWithMac() {
 		return timeBasedMacCreator.create();
+	}
+
+	@Benchmark
+	public UUID UuidCreator_MssqlGuid() {
+		return mssqlCreator.create();
+	}
+	
+	@Benchmark
+	public UUID UuidCreator_CombGuid() {
+		return combCreator.create();
 	}
 
 	public static void main(String[] args) throws Exception {

@@ -21,26 +21,23 @@ import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 /**
- * Factory that creates time-based UUIDs 1 of the RFC-4122.
+ * Factory that creates MS SQL Server 'friendly' UUIDs.
  */
-public class TimeBasedUuidCreator extends AbstractTimeBasedUuidCreator {
+public class MssqlGuidCreator extends AbstractTimeBasedUuidCreator {
 
-	public TimeBasedUuidCreator() {
-		this(VERSION_1);
+	public MssqlGuidCreator() {
+		super(VERSION_1);
 	}
-	
-	protected TimeBasedUuidCreator(int version) {
-		super(version);
-	}
-	
+
 	/**
+	 * Generate a MS SQL Server 'friendly' UUID.
 	 * 
-	 * {@link UuidUtil#formatTimebasedMostSignificantBits(long)}
+	 * {@link UuidUtil#formatMssqlMostSignificantBits(long)}
 	 * 
 	 * @param timestamp
 	 */
 	@Override
 	public long formatMostSignificantBits(long timestamp) {
-		return UuidUtil.formatTimeBasedMostSignificantBits(timestamp);
+		return UuidUtil.formatMssqlMostSignificantBits(timestamp);
 	}
 }

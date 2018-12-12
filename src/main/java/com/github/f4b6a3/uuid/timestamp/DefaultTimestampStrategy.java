@@ -51,7 +51,7 @@ public class DefaultTimestampStrategy extends AbstractSequence implements Timest
 	 * @param timestamp
 	 * @return
 	 */
-	public int getNextForTimestamp(long timestamp) {
+	protected int getNextForTimestamp(long timestamp) {
 		if (timestamp <= this.timestamp) {
 			return this.next();
 		}

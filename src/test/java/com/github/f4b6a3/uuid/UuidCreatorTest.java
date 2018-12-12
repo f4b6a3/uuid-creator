@@ -39,7 +39,7 @@ import static com.github.f4b6a3.uuid.util.ByteUtil.*;
 /**
  * Unit test for uuid-generator.
  */
-public class UuidGeneratorTest {
+public class UuidCreatorTest {
 
 	private static final long DEFAULT_LOOP_LIMIT = 100;
 
@@ -49,7 +49,7 @@ public class UuidGeneratorTest {
 	public void testGetRandomUuid_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UuidCreator.getRandom();
-			assertTrue(uuid.toString().matches(UuidGeneratorTest.UUID_PATTERN));
+			assertTrue(uuid.toString().matches(UuidCreatorTest.UUID_PATTERN));
 		}
 	}
 
@@ -57,7 +57,7 @@ public class UuidGeneratorTest {
 	public void testGetTimeBasedUuid_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UuidCreator.getTimeBased();
-			assertTrue(uuid.toString().matches(UuidGeneratorTest.UUID_PATTERN));
+			assertTrue(uuid.toString().matches(UuidCreatorTest.UUID_PATTERN));
 		}
 	}
 
@@ -65,7 +65,7 @@ public class UuidGeneratorTest {
 	public void testGetTimeBasedWithMac_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UuidCreator.getTimeBasedWithMac();
-			assertTrue(uuid.toString().matches(UuidGeneratorTest.UUID_PATTERN));
+			assertTrue(uuid.toString().matches(UuidCreatorTest.UUID_PATTERN));
 		}
 	}
 
@@ -73,7 +73,7 @@ public class UuidGeneratorTest {
 	public void testGetSequentialUuid_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UuidCreator.getSequential();
-			assertTrue(uuid.toString().matches(UuidGeneratorTest.UUID_PATTERN));
+			assertTrue(uuid.toString().matches(UuidCreatorTest.UUID_PATTERN));
 		}
 	}
 
@@ -81,7 +81,7 @@ public class UuidGeneratorTest {
 	public void testGetSequentialWithMac_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UuidCreator.getSequentialWithMac();
-			assertTrue(uuid.toString().matches(UuidGeneratorTest.UUID_PATTERN));
+			assertTrue(uuid.toString().matches(UuidCreatorTest.UUID_PATTERN));
 		}
 	}
 
@@ -292,7 +292,7 @@ public class UuidGeneratorTest {
 
 	@Ignore
 	public void testPrintList() {
-		int max = 10000;
+		int max = 100;
 
 		System.out.println();
 		System.out.println("----------------------------------------");
@@ -306,18 +306,32 @@ public class UuidGeneratorTest {
 			System.out.println(UuidCreator.getFastRandom());
 		}
 
-		System.out.println();
+		System.out.println("----------------------------------------");
 		System.out.println("### Time-based UUID");
 
 		for (int i = 0; i < max; i++) {
 			System.out.println(UuidCreator.getTimeBased());
 		}
-
-		System.out.println();
+		
+		System.out.println("----------------------------------------");
 		System.out.println("### Sequential UUID");
 
 		for (int i = 0; i < max; i++) {
 			System.out.println(UuidCreator.getSequential());
+		}
+		
+		System.out.println("----------------------------------------");
+		System.out.println("### MSSQL GUID");
+
+		for (int i = 0; i < max; i++) {
+			System.out.println(UuidCreator.getMssqlGuid());
+		}
+		
+		System.out.println("----------------------------------------");
+		System.out.println("### COMB GUID");
+
+		for (int i = 0; i < max; i++) {
+			System.out.println(UuidCreator.getCombGuid());
 		}
 
 		System.out.println("----------------------------------------");
