@@ -290,7 +290,7 @@ public class UuidCreatorTest {
 		System.out.println("----------------------------------------");
 	}
 
-	@Ignore
+	@Test
 	public void testPrintList() {
 		int max = 100;
 

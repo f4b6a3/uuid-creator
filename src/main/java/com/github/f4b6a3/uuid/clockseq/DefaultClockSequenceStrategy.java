@@ -67,7 +67,6 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	protected static final int SEQUENCE_MAX = 16_383; // 0x3fff;
 
 	protected static final Random random = new Xorshift128PlusRandom();
-	protected static final Logger LOGGER = Logger.getAnonymousLogger();
 
 	public DefaultClockSequenceStrategy() {
 		super(SEQUENCE_MIN, SEQUENCE_MAX);
