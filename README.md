@@ -2,10 +2,7 @@
 UUID Creator
 ======================================================
 
-Summary
-------------------------------------------------------
-
-UUID Creator is a java library that can generate UUIDs (Universally Unique Identifiers) <sup>[1]</sup>, also known as GUIDs (Globally Unique Identifiers). It provides methods for RFC-4122 <sup>[2]</sup> versions 1, 2, 3, 4, 5. It also provides methods for creating non-standard UUIDs: sequential, MSSQL and COMB. <sup>[4]</sup> <sup>[5]</sup>
+UUID Creator generates UUIDs (Universally Unique Identifiers) <sup>[1]</sup>. It provides methods for creating standard <sup>[2]</sup> and non-standard UUIDs <sup>[4]</sup> <sup>[5]</sup> <sup>[7]</sup> <sup>[8]</sup>.
 
 Standard UUIDs:
 
@@ -511,13 +508,18 @@ References
 
 [6]. DCE 1.1: Security-Version (Version 2) UUIDs. The Open Group.
 
+[7]. The Cost of GUIDs as Primary Keys (COMB Algorithm)
+
+[8]. How to Generate Sequential GUIDs for SQL Server in .NET
+
 [1]: https://en.wikipedia.org/wiki/Universally_unique_identifier
 [2]: https://tools.ietf.org/html/rfc4122
 [3]: https://www.percona.com/blog/2007/03/13/to-uuid-or-not-to-uuid
 [4]: https://www.percona.com/blog/2014/12/19/store-uuid-optimized-way
 [5]: https://bradleypeabody.github.io/uuidv6
 [6]: http://pubs.opengroup.org/onlinepubs/9696989899/chap5.htm#tagcjh_08_02_01_01
-
+[7]: http://www.informit.com/articles/printerfriendly/25862
+[8]: https://blogs.msdn.microsoft.com/dbrowne/2012/07/03/how-to-generate-sequential-guids-for-sql-server-in-net
 
 External links
 ------------------------------------------------------
@@ -526,13 +528,9 @@ External links
 
 * [How is a Time-based UUID / GUID made](https://www.famkruithof.net/guid-uuid-timebased.html)
 
-* [The Cost of GUIDs as Primary Keys - COMB Algorithm](http://www.informit.com/articles/printerfriendly/25862)
-
 * [Sequential UUID Generators](https://blog.2ndquadrant.com/sequential-uuid-generators/)
 
 * [Be Careful with UUID or GUID as Primary Keys](https://news.ycombinator.com/item?id=14523523)
-
-* [How to Generate Sequential GUIDs for SQL Server in .NET](https://blogs.msdn.microsoft.com/dbrowne/2012/07/03/how-to-generate-sequential-guids-for-sql-server-in-net/)
 
 * [Ordered-uuid - npmjs package](https://www.npmjs.com/package/ordered-uuid)
 
