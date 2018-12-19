@@ -2,7 +2,7 @@
 UUID Creator
 ======================================================
 
-UUID Creator generates UUIDs (Universally Unique Identifiers) <sup>[1]</sup>. It provides methods for creating standard <sup>[2]</sup> and non-standard UUIDs <sup>[4]</sup> <sup>[5]</sup> <sup>[7]</sup> <sup>[8]</sup>.
+UUID Creator generates standard <sup>[2]</sup> and non-standard UUIDs <sup>[4]</sup> <sup>[5]</sup> <sup>[7]</sup> <sup>[8]</sup>.
 
 Standard UUIDs:
 
