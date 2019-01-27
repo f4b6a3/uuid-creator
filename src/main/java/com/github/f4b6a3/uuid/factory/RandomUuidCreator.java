@@ -100,7 +100,7 @@ public class RandomUuidCreator extends AbstractUuidCreator {
 	/**
 	 * Replaces the default random generator with a fester one.
 	 * 
-	 * @see {@link Xorshift128PlusRandom}
+	 * {@link Xorshift128PlusRandom}
 	 * 
 	 * @return  {@link RandomUuidCreator}
 	 */

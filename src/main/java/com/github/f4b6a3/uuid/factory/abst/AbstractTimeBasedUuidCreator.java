@@ -186,7 +186,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * sequences. By default the strategy {@link DefaultClockSequenceStrategy}
 	 * is used.
 	 * 
-	 * @see {@link DefaultClockSequenceStrategy}
+	 * {@link DefaultClockSequenceStrategy}
 	 * 
 	 * @param clockSequenceStrategy a clock sequence strategy
 	 * @param <T> type parameter

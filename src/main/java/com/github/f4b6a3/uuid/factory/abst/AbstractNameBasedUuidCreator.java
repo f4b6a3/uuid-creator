@@ -63,6 +63,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * Sets a fixed namespace with in a fluent way.
 	 * 
 	 * @param namespace a namespace UUID
+	 * @param <T> the type parameter
 	 * @return {@link AbstractNameBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -77,6 +78,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * The namespace string is converted to namespace UUID.
 	 * 
 	 * @param namespace a namespace string
+	 * @param <T> the type parameter
 	 * @return {@link AbstractNameBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")

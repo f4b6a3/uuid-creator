@@ -27,8 +27,8 @@ public class UuidUtil {
 	/**
 	 * Checks whether the UUID variant is the one defined by the RFC-4122.
 	 * 
-	 * @param uuid
-	 * @return boolean
+	 * @param uuid an UUID
+	 * @return boolean true if it is an RFC4122 variant
 	 */
 	public static boolean isRfc4122Variant(UUID uuid) {
 		int variant = uuid.variant();
@@ -38,8 +38,8 @@ public class UuidUtil {
 	/**
 	 * Checks whether the UUID version 4.
 	 * 
-	 * @param uuid
-	 * @return boolean
+	 * @param uuid an UUID
+	 * @return boolean true if it is a random UUID
 	 */
 	public static boolean isRandomBasedVersion(UUID uuid) {
 		return (uuid.version() == 4);
@@ -48,8 +48,8 @@ public class UuidUtil {
 	/**
 	 * Checks whether the UUID version 3 or 5.
 	 * 
-	 * @param uuid
-	 * @return boolean
+	 * @param uuid an UUID
+	 * @return boolean true if it is a name-based UUID
 	 */
 	public static boolean isNameBasedVersion(UUID uuid) {
 		int version = uuid.version();
@@ -59,8 +59,8 @@ public class UuidUtil {
 	/**
 	 * Checks whether the UUID version 1.
 	 * 
-	 * @param uuid
-	 * @return boolean
+	 * @param uuid an UUID
+	 * @return boolean true if it is a time-based UUID
 	 */
 	public static boolean isTimeBasedVersion(UUID uuid) {
 		int version = uuid.version();
@@ -70,8 +70,8 @@ public class UuidUtil {
 	/**
 	 * Checks whether the UUID version 0.
 	 * 
-	 * @param uuid
-	 * @return boolean
+	 * @param uuid an UUID
+	 * @return boolean true if it is a sequential UUID
 	 */
 	public static boolean isSequentialVersion(UUID uuid) {
 		int version = uuid.version();
@@ -81,8 +81,8 @@ public class UuidUtil {
 	/**
 	 * Checks whether the UUID version 2.
 	 * 
-	 * @param uuid
-	 * @return boolean
+	 * @param uuid an UUID
+	 * @return boolean true if it is a DCE Security UUID
 	 */
 	public static boolean isDceSecurityVersion(UUID uuid) {
 		int version = uuid.version();
@@ -92,8 +92,8 @@ public class UuidUtil {
 	/**
 	 * Get the node identifier that is embedded in the UUID.
 	 *
-	 * @param uuid
-	 * @return long
+	 * @param uuid an UUID
+	 * @return long the node identifier
 	 */
 	public static long extractNodeIdentifier(UUID uuid) {
 
@@ -109,7 +109,7 @@ public class UuidUtil {
 	/**
 	 * Get the instant that is embedded in the UUID.
 	 *
-	 * @param uuid
+	 * @param uuid an UUID
 	 * @return {@link Instant}
 	 */
 	public static Instant extractInstant(UUID uuid) {
@@ -123,8 +123,8 @@ public class UuidUtil {
 	 * The timestamps returned by this method are the number of 100-nanos since
 	 * Gregorian Epoch.
 	 *
-	 * @param uuid
-	 * @return long
+	 * @param uuid an UUID
+	 * @return long the timestamp
 	 */
 	public static long extractTimestamp(UUID uuid) {
 
@@ -145,7 +145,7 @@ public class UuidUtil {
 	 *
 	 * @param msb
 	 *            a long value that has the "Most Significant Bits" of the UUID.
-	 * @return long
+	 * @return the timestamp
 	 */
 	private static long extractSequentialTimestamp(long msb) {
 
@@ -160,7 +160,7 @@ public class UuidUtil {
 	 *
 	 * @param msb
 	 *            a long value that has the "Most Significant Bits" of the UUID.
-	 * @return long
+	 * @return the timestamp
 	 */
 	private static long extractTimeBasedTimestamp(long msb) {
 
@@ -174,8 +174,8 @@ public class UuidUtil {
 	/**
 	 * Get the local domain number that is embedded in the DCE Security UUID.
 	 *
-	 * @param uuid
-	 * @return byte
+	 * @param uuid an UUID
+	 * @return the local domain
 	 */
 	public static byte extractDceSecurityLocalDomain(UUID uuid) {
 
@@ -190,8 +190,8 @@ public class UuidUtil {
 	 * Get the local identifier number that is embedded in the DCE Security
 	 * UUID.
 	 *
-	 * @param uuid
-	 * @return int
+	 * @param uuid an UUID
+	 * @return the local identifier
 	 */
 	public static int extractDceSecurityLocalIdentifier(UUID uuid) {
 
@@ -205,8 +205,8 @@ public class UuidUtil {
 	/**
 	 * Get the timestamp that is embedded in the DCE Security UUID.
 	 *
-	 * @param uuid
-	 * @return long
+	 * @param uuid an UUID
+	 * @return the timestamp
 	 */
 	public static long extractDceSecurityTimestamp(UUID uuid) {
 		if (!UuidUtil.isDceSecurityVersion(uuid)) {
@@ -219,7 +219,7 @@ public class UuidUtil {
 	/**
 	 * Get the instant that is embedded in the DCE Security UUID.
 	 *
-	 * @param uuid
+	 * @param uuid an UUID
 	 * @return {@link Instant}
 	 */
 	public static Instant extractDceSecurityInstant(UUID uuid) {
@@ -230,8 +230,8 @@ public class UuidUtil {
 	/**
 	 * Convert a sequential to a time-based UUID.
 	 * 
-	 * @param uuid
-	 * @return
+	 * @param uuid an UUID
+	 * @return another UUID
 	 */
 	public static UUID fromSequentialToTimeBasedUuid(UUID uuid) {
 
@@ -250,8 +250,8 @@ public class UuidUtil {
 	/**
 	 * Convert a time-based to a sequential UUID.
 	 * 
-	 * @param uuid
-	 * @return
+	 * @param uuid an UUID
+	 * @return another UUID
 	 */
 	public static UUID fromTimeBasedToSequentialUuid(UUID uuid) {
 
@@ -272,8 +272,8 @@ public class UuidUtil {
 	 * 
 	 * {@link UuidUtil#formatMssqlMostSignificantBits(long)}
 	 * 
-	 * @param uuid
-	 * @return
+	 * @param uuid an UUID
+	 * @return another UUID
 	 */
 	public static UUID fromTimeBasedToMssqlUuid(UUID uuid) {
 
@@ -294,7 +294,8 @@ public class UuidUtil {
 	 * 
 	 * It's not necessary to set the version bits because they are already ZERO.
 	 * 
-	 * @param timestamp
+	 * @param timestamp a timestamp
+	 * @return the MSB
 	 */
 	public static long formatSequentialMostSignificantBits(long timestamp) {
 
@@ -334,7 +335,8 @@ public class UuidUtil {
 	 * time_hi_and_version field to the 4-bit version number corresponding to
 	 * the UUID version being created, as shown in the table above."
 	 * 
-	 * @param timestamp
+	 * @param timestamp a timestamp
+	 * @param the MSB
 	 */
 	public static long formatTimeBasedMostSignificantBits(long timestamp) {
 
@@ -381,8 +383,8 @@ public class UuidUtil {
 	 * 
 	 * https://docs.microsoft.com/pt-br/dotnet/framework/data/adonet/sql/comparing-guid-and-uniqueidentifier-values
 	 * 
-	 * @param timestamp
-	 * @return
+	 * @param timestamp a timestamp
+	 * @return the MSB
 	 */
 	public static long formatMssqlMostSignificantBits(long timestamp) {
 
@@ -426,8 +428,9 @@ public class UuidUtil {
 	 * Set the node field to the 48-bit IEEE address in the same order of
 	 * significance as the address.
 	 * 
-	 * @param nodeIdentifier
-	 * @param clockSequence
+	 * @param nodeIdentifier a node identifier
+	 * @param clockSequence a clock sequence
+	 * @return the LSB
 	 */
 	public static long formatRfc4122LeastSignificantBits(final long nodeIdentifier, final long clockSequence) {
 

@@ -63,6 +63,7 @@ public class ByteUtil {
 	 * Get an array of bytes from a given number.
 	 *
 	 * @param number an integer
+	 * @param size the array size
 	 * @return a byte array
 	 */
 	public static byte[] toBytes(long number, int size) {

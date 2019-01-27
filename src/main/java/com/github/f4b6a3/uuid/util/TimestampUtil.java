@@ -54,7 +54,7 @@ public class TimestampUtil {
 	 * timestamp. The count will range between zero and the number of
 	 * 100-nanosecond intervals per system time interval.
 	 * 
-	 * @return
+	 * @return the current timestamp
 	 */
 	public static long getCurrentTimestamp() {
 		return (System.currentTimeMillis() - GREGORIAN_MILLISECONDS) * TIMESTAMP_RESOLUTION;
@@ -63,8 +63,8 @@ public class TimestampUtil {
 	/**
 	 * Get the timestamp of a given instant with milliseconds precision.
 	 *
-	 * @param instant
-	 * @return
+	 * @param instant an instant
+	 * @return a timestamp
 	 */
 	public static long toTimestamp(Instant instant) {
 		return (instant.toEpochMilli() - GREGORIAN_MILLISECONDS) * TIMESTAMP_RESOLUTION;
@@ -73,8 +73,8 @@ public class TimestampUtil {
 	/**
 	 * Get the instant of the given timestamp with milliseconds precision.
 	 *
-	 * @param timestamp
-	 * @return
+	 * @param timestamp a timestamp
+	 * @return an instant
 	 */
 	public static Instant toInstant(long timestamp) {
 		return Instant.ofEpochMilli((timestamp / TIMESTAMP_RESOLUTION) + GREGORIAN_MILLISECONDS);
@@ -88,7 +88,7 @@ public class TimestampUtil {
 	 * Calendar started. This expression is similar to "Unix Epoch", started in
 	 * 1970-01-01 00:00:00Z.
 	 *
-	 * @return
+	 * @return the milliseconds since gregorian epoch
 	 */
 	private static long getGregorianEpochMilliseconds() {
 		return LocalDate.parse("1582-10-15").atStartOfDay(ZoneId.of("UTC")).toInstant().getEpochSecond()

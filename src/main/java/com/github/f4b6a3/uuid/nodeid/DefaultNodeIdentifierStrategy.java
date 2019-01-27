@@ -35,7 +35,7 @@ public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * 
 	 * (2b) One approach is to contact the IEEE and get a separate block of
 	 * addresses. At the time of writing, the application could be found at
-	 * <http://standards.ieee.org/regauth/oui/pilot-ind.html>, and the cost was
+	 * http://standards.ieee.org/regauth/oui/pilot-ind.html, and the cost was
 	 * US$550.
 	 * 
 	 * (3b) A better solution is to obtain a 47-bit cryptographic quality random
@@ -57,7 +57,7 @@ public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	/**
 	 * Return a random generated node identifier.
 	 * 
-	 * @see {@link DefaultNodeIdentifierStrategy#getNodeIdentifier()}
+	 * {@link DefaultNodeIdentifierStrategy#getNodeIdentifier()}
 	 * 
 	 * @return a random multicast node identifier
 	 */
