@@ -71,7 +71,7 @@ public abstract class AbstractUuidCreator {
 	 * 
 	 * It checks whether the variant and version are correct.
 	 * 
-	 * @return boolean
+	 * @return boolean true if valid
 	 */
 	public boolean valid(long msb, long lsb) {
 		long variantBits = getVariantBits(lsb);
@@ -82,7 +82,7 @@ public abstract class AbstractUuidCreator {
 	/**
 	 * Returns the variant bits from the "Least Significant Bits".
 	 * 
-	 * @return long
+	 * @return long the variant number bits
 	 */
 	protected long getVariantBits(long lsb) {
 		return (lsb & 0xc000000000000000L);
@@ -98,7 +98,7 @@ public abstract class AbstractUuidCreator {
 	/**
 	 * Returns the version bits from the "Most Significant Bits".
 	 * 
-	 * @return long
+	 * @return long version number bits
 	 */
 	protected long getVersionBits(long msb) {
 		return (msb & 0x000000000000f000L);

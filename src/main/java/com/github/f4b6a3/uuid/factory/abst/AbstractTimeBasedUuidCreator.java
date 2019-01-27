@@ -42,7 +42,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	/**
 	 * This constructor requires a version number.
 	 * 
-	 * @param version
+	 * @param version the version number
 	 */
 	protected AbstractTimeBasedUuidCreator(int version) {
 		super(version);
@@ -154,8 +154,8 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * needs a real 100-nanosecond an implementation of
 	 * {@link TimestampStrategy} may be provided via this method.
 	 * 
-	 * @param timestampStrategy
-	 * @return
+	 * @param timestampStrategy a timestamp strategy
+	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractTimeBasedUuidCreator> T withTimestampStrategy(TimestampStrategy timestampStrategy) {
@@ -169,8 +169,8 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * multicast node identifier and returns it for every call to
 	 * {@link DefaultNodeIdentifierStrategy#getNodeIdentifier()}.
 	 * 
-	 * @param nodeIdentifierStrategy
-	 * @return
+	 * @param nodeIdentifierStrategy a node identifier strategy
+	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractTimeBasedUuidCreator> T withNodeIdentifierStrategy(
@@ -186,8 +186,8 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * 
 	 * @see {@link DefaultClockSequenceStrategy}
 	 * 
-	 * @param clockSequenceStrategy
-	 * @return
+	 * @param clockSequenceStrategy a clock sequence strategy
+	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractTimeBasedUuidCreator> T withClockSequenceStrategy(
@@ -201,8 +201,8 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * 
 	 * This method is useful for unit tests.
 	 * 
-	 * @param instant
-	 * @return
+	 * @param instant an {@link Instant}
+	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractTimeBasedUuidCreator> T withInstant(Instant instant) {
@@ -215,8 +215,8 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * 
 	 * This method is useful for unit tests.
 	 * 
-	 * @param timestamp
-	 * @return
+	 * @param timestamp a timestamp
+	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractTimeBasedUuidCreator> T withTimestamp(long timestamp) {
@@ -231,8 +231,8 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * identifier by default. Someone may think it's useful in some special case
 	 * to use a fixed node identifier other than random value.
 	 * 
-	 * @param nodeIdentifier
-	 * @return
+	 * @param nodeIdentifier a node identifier
+	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractTimeBasedUuidCreator> T withNodeIdentifier(long nodeIdentifier) {
@@ -248,7 +248,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * identifier by default. Using a real hardware address today is not
 	 * recommended anymore. But someone may prefer to use a real MAC address.
 	 * 
-	 * @return
+	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractTimeBasedUuidCreator> T withHardwareAddress() {
@@ -267,8 +267,8 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * factory instance, this value may be incremented or even replaced by
 	 * another random value to avoid repetition of UUIDs.
 	 * 
-	 * @param clockSequence
-	 * @return
+	 * @param clockSequence a clock sequence
+	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractTimeBasedUuidCreator> T withClockSequence(int clockSequence) {
@@ -279,7 +279,8 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	/**
 	 * Format the MSB UUID from the current timestamp.
 	 * 
-	 * @param timestamp
+	 * @param timestamp a timestamp
+	 * @return the MSB
 	 */
 	public abstract long formatMostSignificantBits(long timestamp);
 
@@ -301,8 +302,9 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * Set the node field to the 48-bit IEEE address in the same order of
 	 * significance as the address.
 	 * 
-	 * @param nodeIdentifier
-	 * @param clockSequence
+	 * @param nodeIdentifier a node identifier
+	 * @param clockSequence a clock sequence
+	 * @return the LSB
 	 */
 	public long formatLeastSignificantBits(final long nodeIdentifier, final long clockSequence) {
 		return UuidUtil.formatRfc4122LeastSignificantBits(nodeIdentifier, clockSequence);

@@ -27,8 +27,8 @@ import com.github.f4b6a3.uuid.timestamp.RandomTimestampStrategy;
 /**
  * Factory that creates COMB UUIDs.
  * 
- * @see <a href="http://www.informit.com/articles/article.aspx?p=25862>The Cost
- *      of GUIDs as Primary Keys</a>
+ * The Cost of GUIDs as Primary Keys
+ * http://www.informit.com/articles/article.aspx?p=25862
  */
 public class CombGuidCreator extends AbstractTimeBasedUuidCreator {
 

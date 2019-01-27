@@ -25,11 +25,13 @@ import com.github.f4b6a3.uuid.sequence.AbstractSequence;
  * 
  * Factory that creates DCE Security UUIDs, version 2.
  * 
- * Standard local domains: <br/>
- * - Local Domain Person (POSIX UserID domain): 0<br/>
- * - Local Domain Group (POSIX GroupID domain): 1<br/>
- * - Local Domain Org: 2<br/>
- *
+ * <pre>
+ * Standard local domains: 
+ * - Local Domain Person (POSIX UserID domain): 0
+ * - Local Domain Group (POSIX GroupID domain): 1
+ * - Local Domain Org: 2
+ * </pre>
+ * 
  */
 public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 
@@ -131,9 +133,9 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	 * not be suitable for cases where UUIDs are required, per
 	 * node/domain/identifier, at a rate exceeding about 1 per 7 seconds.
 	 * 
-	 * @param localDomain
-	 * @param localIdentifier
-	 * @return
+	 * @param localDomain a local domain
+	 * @param localIdentifier a local identifier
+	 * @return a UUID
 	 */
 	public synchronized UUID create(byte localDomain, int localIdentifier) {
 
@@ -158,8 +160,8 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	 * 
 	 * @see {@link DceSecurityUuidCreator#create(byte, int)}
 	 * 
-	 * @param localIdentifier
-	 * @return
+	 * @param localIdentifier a local identifier
+	 * @return a UUID
 	 */
 	public UUID create(int localIdentifier) {
 		return create(LOCAL_DOMAIN_PERSON, localIdentifier);
@@ -177,9 +179,9 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	 * GID domain in the clock_seq_low field (above), the time_low field
 	 * represents a POSIX UID or POSIX GID, respectively.
 	 * 
-	 * @param msb
-	 * @param localIdentifier
-	 * @return
+	 * @param msb the MSB
+	 * @param localIdentifier the local identifier
+	 * @return the updated MSB
 	 */
 	protected static long setLocalIdentifierBits(long msb, int localIdentifier) {
 		return (msb & 0x00000000ffffffffL) | (((long) localIdentifier) << 32);
@@ -201,9 +203,9 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	 * domain", and the value sec_rgy_domain_group is to be interpreted as the
 	 * "POSIX GID domain".
 	 * 
-	 * @param msb
-	 * @param localIdentifier
-	 * @return
+	 * @param lsb the LSB
+	 * @param localIdentifier a local identifier
+	 * @return the updated LSB
 	 */
 	protected static long setLocalDomainBits(long lsb, byte localDomain, int counter) {
 		return ((lsb & 0xff00ffffffffffffL) | (long) localDomain << 48) | ((long) counter << 56);
@@ -212,8 +214,8 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	/**
 	 * Set a fixed local domain.
 	 * 
-	 * @param localDomain
-	 * @return
+	 * @param localDomain a local domain
+	 * @return {@link DceSecurityUuidCreator}
 	 */
 	public DceSecurityUuidCreator withLocalDomain(byte localDomain) {
 		this.localDomain = localDomain;
@@ -239,7 +241,7 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 		 * Returns how many times a timestamp was used.
 		 * 
 		 * @param timestamp
-		 * @return
+		 * @return a long value
 		 */
 		protected int getNextForTimestamp(long timestamp) {
 			if (timestamp <= this.timestamp) {

@@ -23,7 +23,7 @@ import java.util.Random;
  * A subclass of {@link java.util.Random} that implements the Xoroshiro 128 Plus random
  * number generator.
  * 
- * {@link https://en.wikipedia.org/wiki/Xoroshiro128%2B}
+ * https://en.wikipedia.org/wiki/Xoroshiro128%2B
  * 
  */
 public class Xoroshiro128PlusRandom extends Random {

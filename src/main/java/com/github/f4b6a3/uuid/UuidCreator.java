@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. <br/>
  * See the License for the specific language governing permissions and <br/>
  * limitations under the License. <br/>
- *
  */
 
 package com.github.f4b6a3.uuid;
@@ -62,12 +61,14 @@ public class UuidCreator {
 	 * The random generator used is {@link java.security.SecureRandom} with
 	 * SHA1PRNG algorithm.
 	 * 
-	 * It uses the Details: <br/>
-	 * - Version number: 4 <br/>
-	 * - Variant number: 1 <br/>
+	 * <pre>
+	 * It uses the Details: 
+	 * - Version number: 4
+	 * - Variant number: 1
 	 * - Random generator: {@link SecureRandom}
-	 *
-	 * @return
+	 * </pre>
+	 * 
+	 * @return a random UUID
 	 */
 	public static UUID getRandom() {
 		if (randomCreator == null) {
@@ -81,12 +82,14 @@ public class UuidCreator {
 	 *
 	 * The random generator used is {@link Xorshift128PlusRandom}.
 	 * 
-	 * Details: <br/>
-	 * - Version number: 4 <br/>
-	 * - Variant number: 1 <br/>
+	 * <pre>
+	 * Details: 
+	 * - Version number: 4 
+	 * - Variant number: 1 
 	 * - Random generator: {@link Xorshift128PlusRandom}
+	 * </pre>
 	 * 
-	 * @return
+	 * @return a random UUID
 	 */
 	public static UUID getFastRandom() {
 		if (fastRandomCreator == null) {
@@ -99,14 +102,16 @@ public class UuidCreator {
 	 * Returns a UUID with timestamp and without machine address, but the bytes
 	 * corresponding to timestamp are arranged in the "natural" order.
 	 *
-	 * Details: <br/>
-	 * - Version number: 0 (zero) <br/>
-	 * - Variant number: 1 <br/>
-	 * - Has timestamp?: YES <br/>
-	 * - Has hardware address (MAC)?: NO <br/>
-	 * - Timestamp bytes are in the RFC-4122 order?: NO <br/>
-	 *
-	 * @return
+	 * <pre>
+	 * Details: 
+	 * - Version number: 0 (zero) 
+	 * - Variant number: 1 
+	 * - Has timestamp?: YES 
+	 * - Has hardware address (MAC)?: NO 
+	 * - Timestamp bytes are in the RFC-4122 order?: NO 
+	 * </pre>
+	 * 
+	 * @return a sequential UUID
 	 */
 	public static UUID getSequential() {
 		if (sequentialCreator == null) {
@@ -119,14 +124,16 @@ public class UuidCreator {
 	 * Returns a UUID with timestamp and machine address, but the bytes
 	 * corresponding to timestamp are arranged in the "natural" order.
 	 *
-	 * Details: <br/>
-	 * - Version number: 0 (zero) <br/>
-	 * - Variant number: 1 <br/>
-	 * - Has timestamp?: YES <br/>
-	 * - Has hardware address (MAC)?: YES <br/>
-	 * - Timestamp bytes are in the RFC-4122 order?: NO <br/>
-	 *
-	 * @return
+	 * <pre>
+	 * Details: 
+	 * - Version number: 0 (zero) 
+	 * - Variant number: 1 
+	 * - Has timestamp?: YES 
+	 * - Has hardware address (MAC)?: YES 
+	 * - Timestamp bytes are in the RFC-4122 order?: NO 
+	 * </pre>
+	 * 
+	 * @return a sequential UUID with MAC
 	 */
 	public static UUID getSequentialWithMac() {
 		if (sequentialWithMacCreator == null) {
@@ -138,14 +145,16 @@ public class UuidCreator {
 	/**
 	 * Returns a UUID with timestamp and without machine address.
 	 *
-	 * Details: <br/>
-	 * - Version number: 1 <br/>
-	 * - Variant number: 1 <br/>
-	 * - Has timestamp?: YES <br/>
-	 * - Has hardware address (MAC)?: NO <br/>
-	 * - Timestamp bytes are in the RFC-4122 order?: YES <br/>
-	 *
-	 * @return
+	 * <pre>
+	 * Details: 
+	 * - Version number: 1 
+	 * - Variant number: 1 
+	 * - Has timestamp?: YES 
+	 * - Has hardware address (MAC)?: NO 
+	 * - Timestamp bytes are in the RFC-4122 order?: YES 
+	 * </pre>
+	 * 
+	 * @return a time-based UUID
 	 */
 	public static UUID getTimeBased() {
 		if (timeBasedCreator == null) {
@@ -157,14 +166,16 @@ public class UuidCreator {
 	/**
 	 * Returns a UUID with timestamp and machine address.
 	 *
-	 * Details: <br/>
-	 * - Version number: 1 <br/>
-	 * - Variant number: 1 <br/>
-	 * - Has timestamp?: YES <br/>
-	 * - Has hardware address (MAC)?: YES <br/>
-	 * - Timestamp bytes are in the RFC-4122 order?: YES <br/>
-	 *
-	 * @return
+	 * <pre>
+	 * Details: 
+	 * - Version number: 1 
+	 * - Variant number: 1 
+	 * - Has timestamp?: YES 
+	 * - Has hardware address (MAC)?: YES 
+	 * - Timestamp bytes are in the RFC-4122 order?: YES 
+	 * </pre>
+	 * 
+	 * @return a time-based UUID
 	 */
 	public static UUID getTimeBasedWithMac() {
 		if (timeBasedWithMacCreator == null) {
@@ -177,21 +188,23 @@ public class UuidCreator {
 	 * Returns a DCE Security UUID based on a local domain and a local
 	 * identifier.
 	 *
-	 * Domain identifiers listed in the RFC-4122: <br/>
-	 * - Local Domain Person (POSIX UserID) = 0;<br/>
-	 * - Local Domain Group (POSIX GroupID) = 1;<br/>
-	 * - Local Domain Org = 2.<br/>
+	 * <pre>
+	 * Domain identifiers listed in the RFC-4122: 
+	 * - Local Domain Person (POSIX UserID) = 0;
+	 * - Local Domain Group (POSIX GroupID) = 1;
+	 * - Local Domain Org = 2.
 	 *
-	 * Details: <br/>
-	 * - Version number: 2 <br/>
-	 * - Variant number: 1 <br/>
-	 * - Local domain: informed by user <br/>
-	 * - Has hardware address (MAC)?: NO <br/>
-	 * - Timestamp bytes are in the RFC-4122 order?: YES <br/>
-	 *
-	 * @param localDomain
-	 * @param localIdentifier
-	 * @return
+	 * Details: 
+	 * - Version number: 2 
+	 * - Variant number: 1 
+	 * - Local domain: informed by user 
+	 * - Has hardware address (MAC)?: NO 
+	 * - Timestamp bytes are in the RFC-4122 order?: YES 
+	 * </pre>
+	 * 
+	 * @param localDomain a local domain
+	 * @param localIdentifier a local identifier
+	 * @return a DCE Security UUID
 	 */
 	public static UUID getDceSecurity(byte localDomain, int localIdentifier) {
 		if (dceSecurityCreator == null) {
@@ -204,19 +217,23 @@ public class UuidCreator {
 	 * Returns a DCE Security UUID with machine address based on a local domain
 	 * and a local identifier.
 	 *
-	 * Domain identifiers listed in the RFC-4122: <br/>
-	 * - Local Domain Person (POSIX UserID) = 0;<br/>
-	 * - Local Domain Group (POSIX GroupID) = 1;<br/>
-	 * - Local Domain Org = 2.<br/>
+	 * <pre>
+	 * Domain identifiers listed in the RFC-4122: 
+	 * - Local Domain Person (POSIX UserID) = 0;
+	 * - Local Domain Group (POSIX GroupID) = 1;
+	 * - Local Domain Org = 2.
 	 *
-	 * Details: <br/>
-	 * - Version number: 2 <br/>
-	 * - Variant number: 1 <br/>
-	 * - Local domain: informed by user <br/>
-	 * - Has hardware address (MAC)?: YES <br/>
-	 * - Timestamp bytes are in the RFC-4122 order?: YES <br/>
-	 *
-	 * @return
+	 * Details: 
+	 * - Version number: 2 
+	 * - Variant number: 1 
+	 * - Local domain: informed by user 
+	 * - Has hardware address (MAC)?: YES 
+	 * - Timestamp bytes are in the RFC-4122 order?: YES 
+	 * </pre>
+	 * 
+	 * @param localDomain a local domain
+	 * @param localIdentifier a local identifier
+	 * @return a DCE Security UUID
 	 */
 	public static UUID getDceSecurityWithMac(byte localDomain, int localIdentifier) {
 		if (dceSecurityWithMacCreator == null) {
@@ -228,14 +245,16 @@ public class UuidCreator {
 	/**
 	 * Returns a UUID based on a name, using MD5.
 	 * 
-	 * Details: <br/>
-	 * - Version number: 3 <br/>
-	 * - Variant number: 1 <br/>
-	 * - Hash Algorithm: MD5 <br/>
-	 * - Name Space: none <br/>
-	 *
-	 * @param name
-	 * @return
+	 * <pre>
+	 * Details: 
+	 * - Version number: 3 
+	 * - Variant number: 1 
+	 * - Hash Algorithm: MD5 
+	 * - Name Space: none 
+	 * </pre>
+	 * 
+	 * @param name a name string
+	 * @return a name-based UUID
 	 */
 	public static UUID getNameBasedMd5(String name) {
 		if (nameBasedMd5Creator == null) {
@@ -247,15 +266,17 @@ public class UuidCreator {
 	/**
 	 * Returns a UUID based on a name space and a name, using MD5.
 	 *
-	 * Details: <br/>
-	 * - Version number: 3 <br/>
-	 * - Variant number: 1 <br/>
-	 * - Hash Algorithm: MD5 <br/>
-	 * - Name Space: informed by user <br/>
-	 *
-	 * @param namespace
-	 * @param name
-	 * @return
+	 * <pre>
+	 * Details: 
+	 * - Version number: 3 
+	 * - Variant number: 1 
+	 * - Hash Algorithm: MD5 
+	 * - Name Space: informed by user 
+	 * </pre>
+	 * 
+	 * @param namespace a name space UUID
+	 * @param name a name string
+	 * @return a name-based UUID
 	 */
 	public static UUID getNameBasedMd5(UUID namespace, String name) {
 		if (nameBasedMd5Creator == null) {
@@ -267,14 +288,16 @@ public class UuidCreator {
 	/**
 	 * Returns a UUID based on a name, using SHA1.
 	 *
-	 * Details: <br/>
-	 * - Version number: 5 <br/>
-	 * - Variant number: 1 <br/>
-	 * - Hash Algorithm: SHA1 <br/>
-	 * - Name Space: none <br/>
-	 *
-	 * @param name
-	 * @return
+	 * <pre>
+	 * Details: 
+	 * - Version number: 5 
+	 * - Variant number: 1 
+	 * - Hash Algorithm: SHA1 
+	 * - Name Space: none 
+	 * </pre>
+	 * 
+	 * @param name a name string
+	 * @return a name-based UUID
 	 */
 	public static UUID getNameBasedSha1(String name) {
 		if (nameBasedSha1Creator == null) {
@@ -286,15 +309,17 @@ public class UuidCreator {
 	/**
 	 * Returns a UUID based on a name space and a name, using SHA1.
 	 *
-	 * Details: <br/>
-	 * - Version number: 5 <br/>
-	 * - Variant number: 1 <br/>
-	 * - Hash Algorithm: SHA1 <br/>
-	 * - Name Space: informed by user <br/>
-	 *
-	 * @param namespace
-	 * @param name
-	 * @return
+	 * <pre>
+	 * Details: 
+	 * - Version number: 5 
+	 * - Variant number: 1 
+	 * - Hash Algorithm: SHA1 
+	 * - Name Space: informed by user 
+	 * </pre>
+	 * 
+	 * @param namespace a name space UUID
+	 * @param name a name string
+	 * @return a name-based UUID
 	 */
 	public static UUID getNameBasedSha1(UUID namespace, String name) {
 		if (nameBasedSha1Creator == null) {
@@ -306,7 +331,7 @@ public class UuidCreator {
 	/**
 	 * Returns a time-based GUID for MS SQL Server.
 	 * 
-	 * @return
+	 * @return a MSSQL GUID
 	 */
 	public static UUID getMssqlGuid() {
 		if (mssqlGuidCreator == null) {
@@ -318,7 +343,7 @@ public class UuidCreator {
 	/**
 	 * Returns a COMB GUID for MS SQL Server.
 	 * 
-	 * @return
+	 * @return a COMB GUID
 	 */
 	public static UUID getCombGuid() {
 		if (combGuidCreator == null) {

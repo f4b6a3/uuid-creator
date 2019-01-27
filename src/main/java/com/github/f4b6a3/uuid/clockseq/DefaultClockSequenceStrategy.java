@@ -97,9 +97,9 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	 * within a single system time interval, the UUID service MUST either return
 	 * an error, or stall the UUID generator until the system clock catches up.
 	 * 
-	 * @param timestamp
-	 * @param nodeIdentifier
-	 * @return
+	 * @param timestamp a timestamp
+	 * @param nodeIdentifier a node identifier
+	 * @return a clock sequence
 	 * @throws OverrunException
 	 */
 	@Override

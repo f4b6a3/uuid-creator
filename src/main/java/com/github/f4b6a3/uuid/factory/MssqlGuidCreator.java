@@ -34,7 +34,7 @@ public class MssqlGuidCreator extends AbstractTimeBasedUuidCreator {
 	 * 
 	 * {@link UuidUtil#formatMssqlMostSignificantBits(long)}
 	 * 
-	 * @param timestamp
+	 * @param timestamp a timestamp
 	 */
 	@Override
 	public long formatMostSignificantBits(long timestamp) {

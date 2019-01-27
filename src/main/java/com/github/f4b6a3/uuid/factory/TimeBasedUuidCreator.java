@@ -35,9 +35,9 @@ public class TimeBasedUuidCreator extends AbstractTimeBasedUuidCreator {
 	
 	/**
 	 * 
-	 * {@link UuidUtil#formatTimebasedMostSignificantBits(long)}
+	 * {@link UuidUtil#formatTimeBasedMostSignificantBits(long)}
 	 * 
-	 * @param timestamp
+	 * @param timestamp a timestamp
 	 */
 	@Override
 	public long formatMostSignificantBits(long timestamp) {

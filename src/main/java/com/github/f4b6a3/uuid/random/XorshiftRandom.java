@@ -23,7 +23,7 @@ import java.util.Random;
  * A subclass of {@link java.util.Random} that implements the Xorshift random number
  * generator.
  * 
- * {@link https://en.wikipedia.org/wiki/Xorshift}
+ * https://en.wikipedia.org/wiki/Xorshift
  * 
  * Reference:
  * 
