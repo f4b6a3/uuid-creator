@@ -155,6 +155,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * {@link TimestampStrategy} may be provided via this method.
 	 * 
 	 * @param timestampStrategy a timestamp strategy
+	 * @param <T> type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -170,6 +171,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * {@link DefaultNodeIdentifierStrategy#getNodeIdentifier()}.
 	 * 
 	 * @param nodeIdentifierStrategy a node identifier strategy
+	 * @param <T> type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -187,6 +189,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * @see {@link DefaultClockSequenceStrategy}
 	 * 
 	 * @param clockSequenceStrategy a clock sequence strategy
+	 * @param <T> type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -202,6 +205,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * This method is useful for unit tests.
 	 * 
 	 * @param instant an {@link Instant}
+	 * @param <T> type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -216,6 +220,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * This method is useful for unit tests.
 	 * 
 	 * @param timestamp a timestamp
+	 * @param <T> type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -232,6 +237,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * to use a fixed node identifier other than random value.
 	 * 
 	 * @param nodeIdentifier a node identifier
+	 * @param <T> type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -248,6 +254,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * identifier by default. Using a real hardware address today is not
 	 * recommended anymore. But someone may prefer to use a real MAC address.
 	 * 
+	 * @param <T> type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -268,6 +275,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * another random value to avoid repetition of UUIDs.
 	 * 
 	 * @param clockSequence a clock sequence
+	 * @param <T> type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")

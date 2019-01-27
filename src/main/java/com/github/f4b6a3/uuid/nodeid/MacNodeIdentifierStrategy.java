@@ -43,7 +43,7 @@ public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * set in such addresses, in order that they will never conflict with
 	 * addresses obtained from network cards.
 	 * 
-	 * @return
+	 * @return a node identifier
 	 */
 	@Override
 	public long getNodeIdentifier() {
@@ -52,9 +52,9 @@ public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 	/**
 	 * 
-	 * @see {@link MacNodeIdentifierStrategy#getNodeIdentifier()}
+	 * {@link MacNodeIdentifierStrategy#getNodeIdentifier()}
 	 * 
-	 * @return
+	 * @return a hardware address
 	 */
 	protected long getHardwareAddress() {
 		try {
@@ -83,9 +83,9 @@ public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	/**
 	 * Return a random generated node identifier.
 	 * 
-	 * @see {@link MacNodeIdentifierStrategy#getNodeIdentifier()}
+	 * {@link MacNodeIdentifierStrategy#getNodeIdentifier()}
 	 * 
-	 * @return
+	 * @return a random multicast node identifier
 	 */
 	protected long getRandomMulticastNodeIdentifier() {
 		return NodeIdentifierUtil.setMulticastNodeIdentifier(random.nextLong());

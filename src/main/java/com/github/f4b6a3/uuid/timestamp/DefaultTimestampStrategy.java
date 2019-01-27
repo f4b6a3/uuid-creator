@@ -49,7 +49,7 @@ public class DefaultTimestampStrategy extends AbstractSequence implements Timest
 	 * Get how many times a timestamp.
 	 * 
 	 * @param timestamp
-	 * @return
+	 * @return the clock sequence
 	 */
 	protected int getNextForTimestamp(long timestamp) {
 		if (timestamp <= this.timestamp) {

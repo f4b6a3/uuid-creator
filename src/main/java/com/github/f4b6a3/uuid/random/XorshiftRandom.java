@@ -20,15 +20,15 @@ package com.github.f4b6a3.uuid.random;
 import java.util.Random;
 
 /**
- * A subclass of {@link java.util.Random} that implements the Xorshift random number
- * generator.
+ * A subclass of {@link java.util.Random} that implements the Xorshift random
+ * number generator.
  * 
  * https://en.wikipedia.org/wiki/Xorshift
  * 
  * Reference:
  * 
  * George Marsaglia. 2003. Xorshift RNGs. Journal of Statistical Software 8, 14
- * (2003), 1–6. {@link https://www.jstatsoft.org/article/view/v008i14}
+ * (2003), 1–6. https://www.jstatsoft.org/article/view/v008i14
  * 
  */
 public class XorshiftRandom extends Random {

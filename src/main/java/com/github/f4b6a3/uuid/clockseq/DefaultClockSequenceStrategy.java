@@ -100,7 +100,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	 * @param timestamp a timestamp
 	 * @param nodeIdentifier a node identifier
 	 * @return a clock sequence
-	 * @throws OverrunException
+	 * @throws OverrunException an overrun exception
 	 */
 	@Override
 	public int getClockSequence(long timestamp, long nodeIdentifier) {

@@ -47,7 +47,7 @@ public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * the IEEE 802 spec talks about transmission order, which is the opposite
 	 * of the in-memory representation that is discussed in this document.)
 	 * 
-	 * @return
+	 * @return a node identifier
 	 */
 	@Override
 	public long getNodeIdentifier() {
@@ -59,7 +59,7 @@ public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * 
 	 * @see {@link DefaultNodeIdentifierStrategy#getNodeIdentifier()}
 	 * 
-	 * @return
+	 * @return a random multicast node identifier
 	 */
 	protected long getRandomMulticastNodeIdentifier() {
 		return NodeIdentifierUtil.setMulticastNodeIdentifier(random.nextLong());

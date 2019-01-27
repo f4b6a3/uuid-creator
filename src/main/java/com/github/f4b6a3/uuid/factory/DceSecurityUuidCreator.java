@@ -158,7 +158,7 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	 * 
 	 * The default local domain is POSIX User ID.
 	 * 
-	 * @see {@link DceSecurityUuidCreator#create(byte, int)}
+	 * {@link DceSecurityUuidCreator#create(byte, int)}
 	 * 
 	 * @param localIdentifier a local identifier
 	 * @return a UUID
@@ -204,7 +204,8 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	 * "POSIX GID domain".
 	 * 
 	 * @param lsb the LSB
-	 * @param localIdentifier a local identifier
+	 * @param localDomain a local domain
+	 * @param counter a counter value
 	 * @return the updated LSB
 	 */
 	protected static long setLocalDomainBits(long lsb, byte localDomain, int counter) {
@@ -240,7 +241,7 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 		/**
 		 * Returns how many times a timestamp was used.
 		 * 
-		 * @param timestamp
+		 * @param timestamp a timestamp
 		 * @return a long value
 		 */
 		protected int getNextForTimestamp(long timestamp) {

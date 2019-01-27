@@ -25,9 +25,9 @@ public class RandomNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * The only difference to the {@link DefaultNodeIdentifierStrategy} is that
 	 * the random value always changes for each call.
 	 * 
-	 * @see {@link DefaultNodeIdentifierStrategy}
+	 * {@link DefaultNodeIdentifierStrategy}
 	 * 
-	 * @return
+	 * @return a random node identifier
 	 */
 	@Override
 	public long getNodeIdentifier() {

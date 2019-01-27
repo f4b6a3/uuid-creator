@@ -71,6 +71,8 @@ public abstract class AbstractUuidCreator {
 	 * 
 	 * It checks whether the variant and version are correct.
 	 * 
+	 * @param msb the MSB
+	 * @param lsb the LSB
 	 * @return boolean true if valid
 	 */
 	public boolean valid(long msb, long lsb) {
@@ -82,6 +84,7 @@ public abstract class AbstractUuidCreator {
 	/**
 	 * Returns the variant bits from the "Least Significant Bits".
 	 * 
+	 * @param lsb the LSB
 	 * @return long the variant number bits
 	 */
 	protected long getVariantBits(long lsb) {
@@ -90,6 +93,8 @@ public abstract class AbstractUuidCreator {
 	
 	/**
 	 * Set UUID variant bits into the "Least Significant Bits".
+	 * 
+	 * @param lsb the LSB
 	 */
 	protected long setVariantBits(long lsb) {
 		return (lsb & 0x3fffffffffffffffL) | RFC4122_VARIANT_BITS;
@@ -98,6 +103,7 @@ public abstract class AbstractUuidCreator {
 	/**
 	 * Returns the version bits from the "Most Significant Bits".
 	 * 
+	 * @param msb the MSB
 	 * @return long version number bits
 	 */
 	protected long getVersionBits(long msb) {
@@ -106,6 +112,8 @@ public abstract class AbstractUuidCreator {
 	
 	/**
 	 * Set UUID version bits into the "Most Significant Bits".
+	 * 
+	 * @param msb the MSB
 	 */
 	protected long setVersionBits(long msb) {
 		return (msb & 0xffffffffffff0fffL) | RFC4122_VERSION_BITS[this.version];

@@ -46,8 +46,8 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * Someone can implement a non-standard name-based factory that uses a
 	 * better message digest, by extending this abstract class.
 	 * 
-	 * @param version
-	 * @param messageDigest
+	 * @param version the version number
+	 * @param messageDigest a message digest
 	 */
 	public AbstractNameBasedUuidCreator(int version, String messageDigest) {
 		super(version);
@@ -62,8 +62,8 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	/**
 	 * Sets a fixed namespace with in a fluent way.
 	 * 
-	 * @param namespace
-	 * @return
+	 * @param namespace a namespace UUID
+	 * @return {@link AbstractNameBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractNameBasedUuidCreator> T withNamespace(UUID namespace) {
@@ -76,8 +76,8 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * 
 	 * The namespace string is converted to namespace UUID.
 	 * 
-	 * @param namespace
-	 * @return
+	 * @param namespace a namespace string
+	 * @return {@link AbstractNameBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractNameBasedUuidCreator> T withNamespace(String namespace) {
@@ -89,10 +89,10 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	/**
 	 * Returns a name-based UUID without namespace.
 	 * 
-	 * @see {@link AbstractNameBasedUuidCreator#create(UUID, String)}
+	 * {@link AbstractNameBasedUuidCreator#create(UUID, String)}
 	 * 
-	 * @param name
-	 * @return
+	 * @param name a name string
+	 * @return a name-based UUID
 	 */
 	public UUID create(String name) {
 		return create(this.namespace, name);
@@ -103,11 +103,11 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * 
 	 * The namespace string is converted to namespace UUID.
 	 * 
-	 * @see {@link AbstractNameBasedUuidCreator#create(UUID, String)}
+	 * {@link AbstractNameBasedUuidCreator#create(UUID, String)}
 	 * 
-	 * @param namespace
-	 * @param name
-	 * @return
+	 * @param namespace a namespace string
+	 * @param name a name string
+	 * @return a name-based UUID
 	 */
 	public UUID create(String namespace, String name) {
 		UUID namespaceUUID = create(namespace);
@@ -157,9 +157,9 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * 
 	 * (13) Convert the resulting UUID to local byte order.
 	 * 
-	 * @param namespace
-	 * @param name
-	 * @return
+	 * @param namespace a namespace UUID
+	 * @param name a name string
+	 * @return a name-based UUID
 	 */
 	public synchronized UUID create(UUID namespace, String name) {
 

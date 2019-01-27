@@ -52,7 +52,7 @@ public class SystemNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * digest such as MD5 [4] or SHA-1 [8], take an arbitrary 6 bytes from the
 	 * hash value, and set the multicast bit as described above.
 	 * 
-	 * @return
+	 * @return a node identifier
 	 */
 	@Override
 	public long getNodeIdentifier() {
@@ -61,9 +61,9 @@ public class SystemNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 	/**
 	 * 
-	 * @see {@link SystemNodeIdentifierStrategy#getNodeIdentifier()}
+	 * {@link SystemNodeIdentifierStrategy#getNodeIdentifier()}
 	 * 
-	 * @return
+	 * @return a system id number
 	 */
 	protected long getSystemNodeIdentifier() {
 

@@ -62,7 +62,7 @@ public class RandomUuidCreator extends AbstractUuidCreator {
 	 * (3) Set all the other bits to randomly (or pseudo-randomly) chosen
 	 * values.
 	 * 
-	 * @return UUID
+	 * @return a random UUID
 	 */
 	public UUID create() {
 
@@ -89,7 +89,8 @@ public class RandomUuidCreator extends AbstractUuidCreator {
 	 * 
 	 * {@link Random}.
 	 * 
-	 * @param random
+	 * @param random a random generator
+	 * @return {@link RandomUuidCreator}
 	 */
 	public RandomUuidCreator withRandomGenerator(Random random) {
 		this.random = random;
@@ -101,7 +102,7 @@ public class RandomUuidCreator extends AbstractUuidCreator {
 	 * 
 	 * @see {@link Xorshift128PlusRandom}
 	 * 
-	 * @return
+	 * @return  {@link RandomUuidCreator}
 	 */
 	public RandomUuidCreator withFastRandomGenerator() {
 		this.random = new Xorshift128PlusRandom();
@@ -113,7 +114,7 @@ public class RandomUuidCreator extends AbstractUuidCreator {
 	 *
 	 * If this algorithm is not present, it uses JVM's default.
 	 * 
-	 * @see {@link java.security.SecureRandom}
+	 * {@link java.security.SecureRandom}
 	 * 
 	 */
 	private static SecureRandom getSecureRandom() {

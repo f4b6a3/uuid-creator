@@ -28,8 +28,8 @@ public class ByteUtil {
 	/**
 	 * Get a number from a given hexadecimal string.
 	 *
-	 * @param hexadecimal
-	 * @return
+	 * @param hexadecimal a string
+	 * @return a long
 	 */
 	public static long toNumber(String hexadecimal) {
 		return toNumber(toBytes(hexadecimal));
@@ -38,8 +38,8 @@ public class ByteUtil {
 	/**
 	 * Get a number from a given array of bytes.
 	 * 
-	 * @param bytes
-	 * @return
+	 * @param bytes a byte array
+	 * @return a long
 	 */
 	public static long toNumber(byte[] bytes) {
 		long result = 0;
@@ -52,8 +52,8 @@ public class ByteUtil {
 	/**
 	 * Get an array of bytes from a given number.
 	 *
-	 * @param number
-	 * @return
+	 * @param number a long value
+	 * @return a byte array
 	 */
 	public static byte[] toBytes(long number) {
 		return toBytes(number, 8);
@@ -62,8 +62,8 @@ public class ByteUtil {
 	/**
 	 * Get an array of bytes from a given number.
 	 *
-	 * @param number
-	 * @return
+	 * @param number an integer
+	 * @return a byte array
 	 */
 	public static byte[] toBytes(long number, int size) {
 		byte[] bytes = new byte[size];
@@ -76,8 +76,8 @@ public class ByteUtil {
 	/**
 	 * Get an array of bytes from a given hexadecimal string.
 	 *
-	 * @param hexadecimal
-	 * @return
+	 * @param hexadecimal a string
+	 * @return a byte array
 	 */
 	public static byte[] toBytes(String hexadecimal) {
 		int len = hexadecimal.length();
@@ -91,8 +91,8 @@ public class ByteUtil {
 	/**
 	 * Get a hexadecimal string from given array of bytes.
 	 *
-	 * @param bytes
-	 * @return
+	 * @param bytes byte array
+	 * @return a string
 	 */
 	public static String toHexadecimal(byte[] bytes) {
 		char[] hexadecimal = new char[bytes.length * 2];
@@ -107,8 +107,8 @@ public class ByteUtil {
 	/**
 	 * Get a hexadecimal string from given number.
 	 * 
-	 * @param number
-	 * @return
+	 * @param number an integer
+	 * @return a string
 	 */
 	public static String toHexadecimal(long number) {
 		return toHexadecimal(toBytes(number));
@@ -117,8 +117,8 @@ public class ByteUtil {
 	/**
 	 * Get a number value from a hexadecimal char.
 	 * 
-	 * @param chr
-	 * @return
+	 * @param chr a character
+	 * @return an integer
 	 */
 	public static int fromHexChar(char chr) {
 
@@ -139,8 +139,8 @@ public class ByteUtil {
 	/**
 	 * Get a hexadecimal from a number value.
 	 * 
-	 * @param number
-	 * @return
+	 * @param number an integer
+	 * @return a char
 	 */
 	public static char toHexChar(int number) {
 
@@ -158,9 +158,9 @@ public class ByteUtil {
 	/**
 	 * Get a new array with a specific length and filled with a byte value.
 	 *
-	 * @param length
-	 * @param value
-	 * @return
+	 * @param length array size
+	 * @param value byte value
+	 * @return a byte array
 	 */
 	public static byte[] array(int length, byte value) {
 		byte[] result = new byte[length];
@@ -173,8 +173,8 @@ public class ByteUtil {
 	/**
 	 * Copy an entire array.
 	 *
-	 * @param bytes
-	 * @return
+	 * @param bytes byte array
+	 * @return a byte array
 	 */
 	public static byte[] copy(final byte[] bytes) {
 		byte[] result = copy(bytes, 0, bytes.length);
@@ -184,10 +184,10 @@ public class ByteUtil {
 	/**
 	 * Copy part of an array.
 	 *
-	 * @param bytes
-	 * @param start
-	 * @param end
-	 * @return
+	 * @param bytes byte array
+	 * @param start start position
+	 * @param end end position
+	 * @return a byte array
 	 */
 	public static byte[] copy(byte[] bytes, int start, int end) {
 
@@ -201,9 +201,9 @@ public class ByteUtil {
 	/**
 	 * Concatenates two byte arrays.
 	 * 
-	 * @param bytes1
-	 * @param bytes2
-	 * @return
+	 * @param bytes1 byte array 1
+	 * @param bytes2 byte array 2
+	 * @return a byte array
 	 */
 	public static byte[] concat(byte[] bytes1, byte[] bytes2) {
 
@@ -223,10 +223,10 @@ public class ByteUtil {
 	 * Replace part of an array of bytes with another subarray of bytes and
 	 * starting from a given index.
 	 *
-	 * @param bytes
-	 * @param replacement
-	 * @param index
-	 * @return
+	 * @param bytes byte array
+	 * @param replacement replacement byte array
+	 * @param index start position
+	 * @return a byte array
 	 */
 	public static byte[] replace(final byte[] bytes, final byte[] replacement, int index) {
 
@@ -245,9 +245,9 @@ public class ByteUtil {
 	/**
 	 * Check if two arrays of bytes are equal.
 	 *
-	 * @param bytes1
-	 * @param bytes2
-	 * @return
+	 * @param bytes1 byte array 1
+	 * @param bytes2 byte array 2
+	 * @return a boolean
 	 */
 	public static boolean equalArrays(byte[] bytes1, byte[] bytes2) {
 		if (bytes1.length != bytes2.length) {
