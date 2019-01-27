@@ -2,10 +2,7 @@
 UUID Creator
 ======================================================
 
-Summary
-------------------------------------------------------
-
-UUID Creator is a java library that can generate UUIDs (Universally Unique Identifiers) <sup>[1]</sup>, also known as GUIDs (Globally Unique Identifiers). It provides methods for RFC-4122 <sup>[2]</sup> versions 1, 2, 3, 4, 5. It also provides methods for creating non-standard UUIDs: sequential, MSSQL and COMB. <sup>[4]</sup> <sup>[5]</sup>
+UUID Creator generates standard <sup>[2]</sup> and non-standard UUIDs <sup>[4]</sup> <sup>[5]</sup> <sup>[7]</sup> <sup>[8]</sup>.
 
 Standard UUIDs:
 
@@ -183,32 +180,32 @@ All the examples in this subsection are also valid for Sequential and DCE Securi
 
 // with fixed instant (now)
 // Result: b9c7f4c0-fa7f-11e8-8cb2-af51de005196
-UUID uuid = UuidGenerator.getTimeBasedCreator()
+UUID uuid = UuidCreator.getTimeBasedCreator()
     .withInstant(Instant.now())
     .create();
 
 // with fixed timestamp (now as timestamp)
 // Result: b9c7f4c0-fa7f-11e8-898a-65c735295f15
 long timestamp = TimestampUtil.toTimestamp(Instant.now());
-UUID uuid = UuidGenerator.getTimeBasedCreator()
+UUID uuid = UuidCreator.getTimeBasedCreator()
     .withTimestamp(timestamp)
     .create();
 
 // with fixed clock sequence (0x8888)
 // Result: b9c81bd0-fa7f-11e8-8888-c3393cfe8550
-UUID uuid = UuidGenerator.getTimeBasedCreator()
+UUID uuid = UuidCreator.getTimeBasedCreator()
     .withClockSequence(0x8888)
     .create();
 
 // with fixed node identifier (0x111111111111L)
 // Result: b9c81bd0-fa7f-11e8-b717-111111111111
-UUID uuid = UuidGenerator.getTimeBasedCreator()
+UUID uuid = UuidCreator.getTimeBasedCreator()
     .withNodeIdentifier(0x111111111111L)
     .create();
 
 // with hardware address (first MAC found)
 // Result: b9c81bd0-fa7f-11e8-ba0b-5254xxxxxxxx
-UUID uuid = UuidGenerator.getTimeBasedCreator()
+UUID uuid = UuidCreator.getTimeBasedCreator()
     .withHardwareAddress()
     .create();
 
@@ -220,19 +217,19 @@ UUID uuid = UuidGenerator.getTimeBasedCreator()
 
 // with default timestamp strategy (System.currentTimeMillis() + counter)
 // Result: b9c81bd0-fa7f-11e8-93c4-1f0d5328f95f
-UUID uuid = UuidGenerator.getTimeBasedCreator()
+UUID uuid = UuidCreator.getTimeBasedCreator()
     .withTimestampStrategy(new DefaultTimestampStrategy())
     .create();
 
 // with nanoseconds timestamp strategy (Instant.getNano())
 // Result: b9c842e0-fa7f-11e8-9168-0b57beda5626
-UUID uuid = UuidGenerator.getTimeBasedCreator()
+UUID uuid = UuidCreator.getTimeBasedCreator()
     .withTimestampStrategy(new NanosecondTimestampStrategy())
     .create();
 
 // with delta timestamp strategy (diff of subsequent System.nanoTime())
 // Result: b9c86aa6-fa7f-11e8-a299-27ce0b9c1a91
-UUID uuid = UuidGenerator.getTimeBasedCreator()
+UUID uuid = UuidCreator.getTimeBasedCreator()
     .withTimestampStrategy(new DeltaTimestampStrategy())
     .create();
 
@@ -244,25 +241,25 @@ UUID uuid = UuidGenerator.getTimeBasedCreator()
 
 // with default node identifier strategy (random number generated once)
 // Result: b9c869f0-fa7f-11e8-a04e-cbb1015db3ad
-UUID uuid = UuidGenerator.getTimeBasedCreator()
+UUID uuid = UuidCreator.getTimeBasedCreator()
     .withNodeIdentifierStrategy(new DefaultNodeIdentifierStrategy())
     .create();
 
 // with random node identifier strategy (random number generated every time)
 // Result: b9c869f0-fa7f-11e8-8dba-0b2212ac1723
-UUID uuid = UuidGenerator.getTimeBasedCreator()
+UUID uuid = UuidCreator.getTimeBasedCreator()
     .withNodeIdentifierStrategy(new RandomNodeIdentifierStrategy())
     .create();
 
 // with hardware address node identifier strategy (first MAC found)
 // Result: b9c89100-fa7f-11e8-bf97-5254xxxxxxxx
-UUID uuid = UuidGenerator.getTimeBasedCreator()
+UUID uuid = UuidCreator.getTimeBasedCreator()
     .withNodeIdentifierStrategy(new MacNodeIdentifierStrategy())
     .create();
 
 // with system node identifier strategy (SHA-1 of hostname+MAC+IP+OS+JVM)
 // Result: b9c89100-fa7f-11e8-9573-678d16c4a97a
-UUID uuid = UuidGenerator.getTimeBasedCreator()
+UUID uuid = UuidCreator.getTimeBasedCreator()
     .withNodeIdentifierStrategy(new SystemNodeIdentifierStrategy())
     .create();
 
@@ -276,13 +273,13 @@ All the examples in this subsection are also valid for SHA1 UUIDs.
 
 // with fixed and custom namespace as string (USERS)
 // Result: a69660c2-481e-3114-b91b-7f0c7727cc72
-UUID uuid = UuidGenerator.getNameBasedMd5Creator()
+UUID uuid = UuidCreator.getNameBasedMd5Creator()
     .withNamespace("USERS")
     .create("Paul");
 
 // with fixed and standard namespace as UUID (standard DNS namespace)
 // Result: 2c02fba1-0794-3c12-b62b-578ec5f03908
-UUID uuid = UuidGenerator.getNameBasedMd5Creator()
+UUID uuid = UuidCreator.getNameBasedMd5Creator()
     .withNamespace(NameBasedMd5UuidCreator.NAMESPACE_DNS)
     .create("www.github.com");
 
@@ -294,13 +291,13 @@ UUID uuid = UuidGenerator.getNameBasedMd5Creator()
 
 // with java random generator (java.util.Random)
 // Result: 8586fdd9-f654-4d28-a1a4-0d76c29d1455
-UUID uuid = UuidGenerator.getRandomCreator()
+UUID uuid = UuidCreator.getRandomCreator()
     .withRandomGenerator(new Random())
     .create();
 
 // with fast random generator (Xorshift128Plus)
 // Result: 2cc034e7-d51e-4eca-adb2-c0da06157723
-UUID uuid = UuidGenerator.getRandomCreator()
+UUID uuid = UuidCreator.getRandomCreator()
     .withFastRandomGenerator()
     .create();
 
@@ -312,7 +309,7 @@ UUID uuid = UuidGenerator.getRandomCreator()
 
 // with fixed local domain (standard POSIX User ID)
 // Result: 000006a5-fa7f-21e8-8d00-5ba01f846124
-UUID uuid = UuidGenerator.getDceSecurityCreator()
+UUID uuid = UuidCreator.getDceSecurityCreator()
     .withLocalDomain(DceSecurityUuidCreator.LOCAL_DOMAIN_PERSON)
     .create(1701);
 
@@ -511,13 +508,18 @@ References
 
 [6]. DCE 1.1: Security-Version (Version 2) UUIDs. The Open Group.
 
+[7]. The Cost of GUIDs as Primary Keys (COMB Algorithm)
+
+[8]. How to Generate Sequential GUIDs for SQL Server in .NET
+
 [1]: https://en.wikipedia.org/wiki/Universally_unique_identifier
 [2]: https://tools.ietf.org/html/rfc4122
 [3]: https://www.percona.com/blog/2007/03/13/to-uuid-or-not-to-uuid
 [4]: https://www.percona.com/blog/2014/12/19/store-uuid-optimized-way
 [5]: https://bradleypeabody.github.io/uuidv6
 [6]: http://pubs.opengroup.org/onlinepubs/9696989899/chap5.htm#tagcjh_08_02_01_01
-
+[7]: http://www.informit.com/articles/printerfriendly/25862
+[8]: https://blogs.msdn.microsoft.com/dbrowne/2012/07/03/how-to-generate-sequential-guids-for-sql-server-in-net
 
 External links
 ------------------------------------------------------
@@ -526,13 +528,9 @@ External links
 
 * [How is a Time-based UUID / GUID made](https://www.famkruithof.net/guid-uuid-timebased.html)
 
-* [The Cost of GUIDs as Primary Keys - COMB Algorithm](http://www.informit.com/articles/printerfriendly/25862)
-
 * [Sequential UUID Generators](https://blog.2ndquadrant.com/sequential-uuid-generators/)
 
 * [Be Careful with UUID or GUID as Primary Keys](https://news.ycombinator.com/item?id=14523523)
-
-* [How to Generate Sequential GUIDs for SQL Server in .NET](https://blogs.msdn.microsoft.com/dbrowne/2012/07/03/how-to-generate-sequential-guids-for-sql-server-in-net/)
 
 * [Ordered-uuid - npmjs package](https://www.npmjs.com/package/ordered-uuid)
 
