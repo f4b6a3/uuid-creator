@@ -29,14 +29,14 @@ How to Use
 Add these lines to your `pom.xml`.
 
 ```xml
-<!-- https://oss.sonatype.org/content/groups/public/com/github/f4b6a3/uuid-creator -->
+<!-- https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator -->
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
   <version>0.9.0</version>
 </dependency>
 ```
-See other options [here](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator/0.9.0/jar)
+See other options [here](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator)
 
 ### Sequential (version 0, non-standard)
 
