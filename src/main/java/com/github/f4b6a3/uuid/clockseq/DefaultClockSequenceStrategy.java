@@ -18,7 +18,6 @@
 package com.github.f4b6a3.uuid.clockseq;
 
 import java.util.Random;
-import java.util.logging.Logger;
 
 import com.github.f4b6a3.uuid.exception.OverrunException;
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
