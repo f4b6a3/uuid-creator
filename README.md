@@ -24,6 +24,19 @@ Non-standard UUIDs:
 How to Use
 ------------------------------------------------------
 
+### Maven dependency
+
+Add these lines to your `pom.xml`.
+
+```xml
+<!-- https://oss.sonatype.org/content/groups/public/com/github/f4b6a3/uuid-creator -->
+<dependency>
+	<groupId>com.github.f4b6a3</groupId>
+	<artifactId>uuid-creator</artifactId>
+	<version>0.9.0</version>
+</dependency>
+```
+
 ### Sequential (version 0, non-standard)
 
 The sequential UUID is a modified time-based UUID. The timestamp bits in this version are not rearranged as in the time-based version 1. The version number 0 (zero) was chosen to identify  UUIDs. It may be considered as an 'extension' of the RFC-4122.
