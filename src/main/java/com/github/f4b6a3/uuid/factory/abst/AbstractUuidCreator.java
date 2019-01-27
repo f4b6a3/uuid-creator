@@ -114,6 +114,7 @@ public abstract class AbstractUuidCreator {
 	 * Set UUID version bits into the "Most Significant Bits".
 	 * 
 	 * @param msb the MSB
+	 * @return the MSB
 	 */
 	protected long setVersionBits(long msb) {
 		return (msb & 0xffffffffffff0fffL) | RFC4122_VERSION_BITS[this.version];

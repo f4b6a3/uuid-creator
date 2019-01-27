@@ -336,7 +336,7 @@ public class UuidUtil {
 	 * the UUID version being created, as shown in the table above."
 	 * 
 	 * @param timestamp a timestamp
-	 * @param the MSB
+	 * @return the MSB
 	 */
 	public static long formatTimeBasedMostSignificantBits(long timestamp) {
 
