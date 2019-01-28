@@ -36,7 +36,7 @@ Add these lines to your `pom.xml`.
   <version>0.9.0</version>
 </dependency>
 ```
-See other options [here](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
+See more options [here](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
 
 ### Sequential (version 0, non-standard)
 
