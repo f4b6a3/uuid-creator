@@ -371,6 +371,9 @@ Representation in java.util.UUID
 
 msb: Most Significant Bits
 lsb: Least Significant Bits
+
+v: version number
+m: variant number (sharing bits with clock-sequence)
 ```
 
 ###  Time-based
@@ -386,9 +389,6 @@ Time-based UUID structure
 1: timestamp
 2: clock-sequence
 3: node identifier
-
-v: version number
-m: variant number (sharing bits with clock-sequence)
 ```
 #### Timestamp
 
@@ -413,9 +413,9 @@ If the default timestamp strategy is not desired, other two strategies are provi
 
 #### Clock sequence
 
-The clock sequence is used to help avoid duplicates. The first bits of the clock sequence part are multiplexed with the variant number of the RFC-4122. Because of that, the clock sequence always starts with one of this hexadecimal chars: `8`, `9`, `a` or `b`. In this implementation, every instance of a time-based factory has it's own clock sequence started with a random value from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards.
+The clock sequence is used to help avoid duplicates. The first bits of the clock sequence part are multiplexed with the variant number of the RFC-4122. Because of that, the clock sequence always starts with one of these hexadecimal chars: `8`, `9`, `a` or `b`. In this implementation, every instance of a time-based factory has it's own clock sequence started with a random value from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards.
 
-There's no 'non-volatile storage' in this implementation. That's why the clock sequence is always initialized to a random number, although it is the 'least desirable implementation'.
+There's no 'non-volatile storage' in this implementation. That's why the clock sequence is always initialized to a random number.
 
 #### Node identifier
 
