@@ -33,7 +33,7 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>0.9.0</version>
+  <version>0.9.1</version>
 </dependency>
 ```
 See more options [here](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
