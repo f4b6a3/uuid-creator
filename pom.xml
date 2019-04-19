@@ -36,26 +36,6 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.openjdk.jmh</groupId>
-			<artifactId>jmh-core</artifactId>
-			<version>1.19</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openjdk.jmh</groupId>
-			<artifactId>jmh-generator-annprocess</artifactId>
-			<version>1.19</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.uuid</groupId>
-			<artifactId>java-uuid-generator</artifactId>
-			<version>3.1.4</version>
-		</dependency>
-		<dependency>
-			<groupId>com.eaio.uuid</groupId>
-			<artifactId>uuid</artifactId>
-			<version>3.2</version>
-		</dependency>
 	</dependencies>
 
 	<scm>

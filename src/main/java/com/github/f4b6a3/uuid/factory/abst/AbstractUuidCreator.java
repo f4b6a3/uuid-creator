@@ -22,9 +22,6 @@ import java.util.UUID;
 
 /**
  * Abstract class for subclasses that create {@link UUID} objects.
- * 
- * @author fabiolimace
- *
  */
 public abstract class AbstractUuidCreator {
 	

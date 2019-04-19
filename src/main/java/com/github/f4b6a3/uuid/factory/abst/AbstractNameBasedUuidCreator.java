@@ -25,9 +25,6 @@ import static com.github.f4b6a3.uuid.util.ByteUtil.*;
 
 /**
  * Factory that creates name-based UUIDs versions 3 and 5.
- * 
- * @author fabiolimace
- *
  */
 public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 
