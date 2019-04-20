@@ -14,12 +14,10 @@ import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 	protected long nodeIdentifier;
-	protected Random random;
+	protected static Random random;
 
 	public MacNodeIdentifierStrategy() {
-		this.random = new SecureRandom();
 		this.nodeIdentifier = getHardwareAddress();
-
 	}
 
 	/**
@@ -88,6 +86,9 @@ public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * @return a random multicast node identifier
 	 */
 	protected long getRandomMulticastNodeIdentifier() {
+		if (random == null) {
+			random = new SecureRandom();
+		}
 		return NodeIdentifierUtil.setMulticastNodeIdentifier(random.nextLong());
 	}
 }

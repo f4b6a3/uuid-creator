@@ -17,11 +17,10 @@
 
 package com.github.f4b6a3.uuid.clockseq;
 
-import java.util.Random;
-
 import com.github.f4b6a3.uuid.exception.OverrunException;
-import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.uuid.sequence.AbstractSequence;
+import com.github.f4b6a3.uuid.util.RandomUtil;
+import com.github.f4b6a3.uuid.util.SettingsUtil;
 
 /**
  * This class is an implementation of the 'clock sequence' of the RFC-4122. The
@@ -65,11 +64,13 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	protected static final int SEQUENCE_MIN = 0; // 0x0000;
 	protected static final int SEQUENCE_MAX = 16_383; // 0x3fff;
 
-	protected static final Random random = new Xorshift128PlusRandom();
-
 	public DefaultClockSequenceStrategy() {
 		super(SEQUENCE_MIN, SEQUENCE_MAX);
-		this.reset();
+
+		this.value = SettingsUtil.getClockSequence();
+		if (this.value == 0) {
+			this.reset();
+		}
 	}
 
 	/**
@@ -97,10 +98,13 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	 * within a single system time interval, the UUID service MUST either return
 	 * an error, or stall the UUID generator until the system clock catches up.
 	 * 
-	 * @param timestamp a timestamp
-	 * @param nodeIdentifier a node identifier
+	 * @param timestamp
+	 *            a timestamp
+	 * @param nodeIdentifier
+	 *            a node identifier
 	 * @return a clock sequence
-	 * @throws OverrunException an overrun exception
+	 * @throws OverrunException
+	 *             an overrun exception
 	 */
 	@Override
 	public int getClockSequence(long timestamp, long nodeIdentifier) {
@@ -120,6 +124,6 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 
 	@Override
 	public void reset() {
-		this.value = random.nextInt(SEQUENCE_MAX);
+		this.value = RandomUtil.nextInt(SEQUENCE_MAX);
 	}
 }

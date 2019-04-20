@@ -101,7 +101,7 @@ public class UuidCreator {
 	 *
 	 * <pre>
 	 * Details: 
-	 * - Version number: 0 (zero) 
+	 * - Version number: 0 (non-standard)
 	 * - Variant number: 1 
 	 * - Has timestamp?: YES 
 	 * - Has hardware address (MAC)?: NO 
@@ -123,7 +123,7 @@ public class UuidCreator {
 	 *
 	 * <pre>
 	 * Details: 
-	 * - Version number: 0 (zero) 
+	 * - Version number: 0 (non-standard)
 	 * - Variant number: 1 
 	 * - Has timestamp?: YES 
 	 * - Has hardware address (MAC)?: YES 

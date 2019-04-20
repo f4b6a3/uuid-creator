@@ -166,9 +166,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 
 	/**
 	 * Use an alternative {@link NodeIdentifierStrategy} to generate node
-	 * identifiers. The {@link DefaultNodeIdentifierStrategy} generates a random
-	 * multicast node identifier and returns it for every call to
-	 * {@link DefaultNodeIdentifierStrategy#getNodeIdentifier()}.
+	 * identifiers.
 	 * 
 	 * @param nodeIdentifierStrategy a node identifier strategy
 	 * @param <T> type parameter
@@ -183,10 +181,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 
 	/**
 	 * Use an alternative {@link ClockSequenceStrategy} to generate clock
-	 * sequences. By default the strategy {@link DefaultClockSequenceStrategy}
-	 * is used.
-	 * 
-	 * {@link DefaultClockSequenceStrategy}
+	 * sequences.
 	 * 
 	 * @param clockSequenceStrategy a clock sequence strategy
 	 * @param <T> type parameter
@@ -232,10 +227,6 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	/**
 	 * Set a fixed node identifier to generate UUIDs.
 	 * 
-	 * Every time a factory is instantiated a random value is set to the node
-	 * identifier by default. Someone may think it's useful in some special case
-	 * to use a fixed node identifier other than random value.
-	 * 
 	 * @param nodeIdentifier a node identifier
 	 * @param <T> type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
@@ -249,10 +240,6 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	/**
 	 * Set the node identifier to be a real hardware address of the host
 	 * machine.
-	 * 
-	 * Every time a factory is instantiated a random value is set to the node
-	 * identifier by default. Using a real hardware address today is not
-	 * recommended anymore. But someone may prefer to use a real MAC address.
 	 * 
 	 * @param <T> type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
