@@ -6,7 +6,6 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.junit.Ignore;
-import org.junit.Test;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.factory.DceSecurityUuidCreator;

@@ -339,13 +339,15 @@ The `clockseq` property is used by `DefaultClockSequenceStrategy`. If this prope
 * Using system property:
 
 ```bash
--Duuidcreator.clockseq="9abc"
+// append to VM arguments
+-Duuidcreator.clockseq="0x9abc"
 ```
 
 * Using environment variable:
 
 ```bash
-UUIDCREATOR_CLOCKSEQ="9abc"
+// append to /etc/environment or ~/.profile
+export UUIDCREATOR_CLOCKSEQ="0x9abc"
 ```
 
 ### Node identifier
@@ -355,13 +357,15 @@ The `nodeid` property is used by `DefaultNodeIdentifierStrategy`. If this proper
 * Using system property:
 
 ```bash
--Duuidcreator.nodeid="c0da06157723"
+// append to VM arguments
+-Duuidcreator.nodeid="0xc0da06157723"
 ```
 
 * Using environment variable:
 
 ```bash
-UUIDCREATOR_NODEID="c0da06157723"
+// append to /etc/environment or ~/.profile
+export UUIDCREATOR_NODEID="0xc0da06157723"
 ```
 
 Implementation
