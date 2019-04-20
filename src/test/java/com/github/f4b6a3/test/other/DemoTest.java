@@ -28,7 +28,7 @@ import com.github.f4b6a3.uuid.util.UuidUtil;
 
 public class DemoTest {
 
-	@Test
+	@Ignore
 	public void testPrintList() {
 		int max = 100;
 
