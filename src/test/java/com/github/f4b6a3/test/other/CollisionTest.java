@@ -1,4 +1,4 @@
-package com.github.f4b6a3.test.collision;
+package com.github.f4b6a3.test.other;
 
 import java.util.UUID;
 
