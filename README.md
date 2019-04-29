@@ -33,10 +33,10 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>0.9.1</version>
+  <version>0.9.4</version>
 </dependency>
 ```
-See more options [here](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
+See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/uuid-creator).
 
 ### Sequential (version 0, non-standard)
 
@@ -454,13 +454,17 @@ If the default timestamp strategy is not desired, other two strategies are provi
 
 The clock sequence is used to help avoid duplicates. The first bits of the clock sequence part are multiplexed with the variant number of the RFC-4122. Because of that, the clock sequence always starts with one of these hexadecimal chars: `8`, `9`, `a` or `b`. In this implementation, every instance of a time-based factory has it's own clock sequence started with a random value from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards.
 
-There's no 'non-volatile storage' in this implementation. That's why the clock sequence is always initialized to a random number.
+It's possible to use a initial clock sequence by setting a system property or environment variable. The system property is `uuidcreator.clockseq` and the environment variable is `UUIDCREATOR_CLOCKSEQ`. All UUIDs created will use the value present in the property or variable, until it's necessary to increment this value to avoid duplicates.
+
+There's no 'non-volatile storage' in this implementation. That's why the clock sequence is always initialized to a random number, if no system variable or environment variable exists. 
 
 #### Node identifier
 
 The node identifier part consists of an IEEE 802 MAC address, usually the host address. But the standard allows the usage of a random generated value or a system information hash if no address is available, or if its use is not desired. In this implementation, the default behavior is to use a system information hash (SHA-256). The system information used are: host name, IP, MAC, Operating System and Java Virtual Machine.
 
-But this implementation provides other strategies: random generator strategy and machine address strategy.
+This implementation provides other strategies if the default strategy is not desired: random generator strategy and machine address strategy.
+
+It's possible to use a fixed node identifier by setting a system property or environment variable. The system property is `uuidcreator.nodeid` and the environment variable is `UUIDCREATOR_NODEID`. All UUIDs created will use the value present in the property or variable.
 
 ###  Sequential
 
