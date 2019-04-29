@@ -4,20 +4,25 @@ import java.security.SecureRandom;
 import java.util.Random;
 
 import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
+import com.github.f4b6a3.uuid.util.RandomUtil;
 
 public class RandomNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 	protected long nodeIdentifier;
-	protected static Random random;
+	protected Random random;
 
 	public RandomNodeIdentifierStrategy() {
 		this.nodeIdentifier = getRandomNodeIdentifier();
 	}
 
+	public RandomNodeIdentifierStrategy(Random random) {
+		this.random = random;
+	}
+	
 	/**
 	 * Return a random node identifier.
 	 * 
-	 * It uses {@link SecureRandom} to generate 'cryptographic quality random
+	 * It uses {@link SecureRandom} by default to generate 'cryptographic quality random
 	 * number'. The first generated number is returned for all calls.
 	 * 
 	 * ### RFC-4122 - 4.1.6. Node
@@ -56,9 +61,9 @@ public class RandomNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * @return a random multicast node identifier
 	 */
 	protected long getRandomNodeIdentifier() {
-		if (random == null) {
-			random = new SecureRandom();
+		if (this.random == null) {
+			return NodeIdentifierUtil.setMulticastNodeIdentifier(RandomUtil.nextLong());
 		}
-		return NodeIdentifierUtil.setMulticastNodeIdentifier(random.nextLong());
+		return NodeIdentifierUtil.setMulticastNodeIdentifier(this.random.nextLong());
 	}
 }

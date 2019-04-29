@@ -397,6 +397,17 @@ public class UuidCreator {
 	public static RandomUuidCreator getRandomCreator() {
 		return new RandomUuidCreator();
 	}
+	
+	/**
+	 * Returns a {@link RandomUuidCreator} that creates UUID version 4.
+	 * 
+	 * The random generator used is {@link Xorshift128PlusRandom}.
+	 * 
+	 * @return {@link RandomUuidCreator}
+	 */
+	public static RandomUuidCreator getFastRandomCreator() {
+		return new RandomUuidCreator().withFastRandomGenerator();
+	}
 
 	/**
 	 * Returns a {@link NameBasedSha1UuidCreator} that creates UUID version 5.

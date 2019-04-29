@@ -534,17 +534,9 @@ Total time: 00:01:49
 ---------------------------------------------------------------------------------
 ```
 
-These are the configurations used to run this benchmark:
-
-```java
-@State(Scope.Thread)
-@Warmup(iterations = 1, batchSize = 1000)
-@Measurement(iterations = 10, batchSize = 100000)
-@BenchmarkMode(Mode.SingleShotTime)
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
-```
-
 This benchmark was executed in a machine Intel i5-3330 with 8GB RAM.
+
+You can find the benchmark source code at [uuid-creator-benchmark](https://github.com/fabiolimace/uuid-creator-benchmark).
 
 References
 ------------------------------------------------------

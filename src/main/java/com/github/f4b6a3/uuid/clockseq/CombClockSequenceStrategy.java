@@ -1,9 +1,7 @@
 package com.github.f4b6a3.uuid.clockseq;
 
-import java.util.Random;
-
-import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.uuid.sequence.AbstractSequence;
+import com.github.f4b6a3.uuid.util.RandomUtil;
 
 public class CombClockSequenceStrategy extends AbstractSequence implements ClockSequenceStrategy {
 
@@ -11,8 +9,6 @@ public class CombClockSequenceStrategy extends AbstractSequence implements Clock
 	
 	protected static final int SEQUENCE_MIN = 0; // 0x0000;
 	protected static final int SEQUENCE_MAX = 65_535; // 0xffff;
-
-	protected static final Random random = new Xorshift128PlusRandom();
 
 	public CombClockSequenceStrategy() {
 		super(SEQUENCE_MIN, SEQUENCE_MAX);
@@ -30,6 +26,6 @@ public class CombClockSequenceStrategy extends AbstractSequence implements Clock
 
 	@Override
 	public void reset() {
-		this.value = random.nextInt(SEQUENCE_MAX);
+		this.value = RandomUtil.nextInt(SEQUENCE_MAX);
 	}
 }

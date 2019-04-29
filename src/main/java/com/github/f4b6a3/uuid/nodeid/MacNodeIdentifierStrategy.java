@@ -3,18 +3,16 @@ package com.github.f4b6a3.uuid.nodeid;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.security.SecureRandom;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Random;
 
 import com.github.f4b6a3.uuid.util.ByteUtil;
 import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
+import com.github.f4b6a3.uuid.util.RandomUtil;
 
 public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 	protected long nodeIdentifier;
-	protected static Random random;
 
 	public MacNodeIdentifierStrategy() {
 		this.nodeIdentifier = getHardwareAddress();
@@ -86,9 +84,6 @@ public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * @return a random multicast node identifier
 	 */
 	protected long getRandomMulticastNodeIdentifier() {
-		if (random == null) {
-			random = new SecureRandom();
-		}
-		return NodeIdentifierUtil.setMulticastNodeIdentifier(random.nextLong());
+		return NodeIdentifierUtil.setMulticastNodeIdentifier(RandomUtil.nextLong());
 	}
 }
