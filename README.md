@@ -45,7 +45,7 @@ Or else, if you want a UUID that is also based on date and time, but looks like 
 UUID uuid = UuidCreator.getSequential();
 ```
 
-And if you have enouth time, you can read the rest of this document.
+And if you have enough time, you can read the rest of this document.
 
 ### Maven dependency
 
