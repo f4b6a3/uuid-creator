@@ -1,4 +1,4 @@
-package com.github.f4b6a3.test.other;
+package com.github.f4b6a3.other;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

@@ -1,4 +1,4 @@
-package com.github.f4b6a3.test.other;
+package com.github.f4b6a3.demo;
 
 import java.security.SecureRandom;
 import java.time.Instant;
@@ -8,6 +8,10 @@ import java.util.UUID;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.github.f4b6a3.other.CollisionTest;
+import com.github.f4b6a3.other.RandomImage;
+import com.github.f4b6a3.other.RandomnessTest;
+import com.github.f4b6a3.other.SimpleBenchmark;
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.factory.DceSecurityUuidCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedMd5UuidCreator;
