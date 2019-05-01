@@ -15,9 +15,9 @@ Standard UUIDs:
 
 Non-standard UUIDs:
 
+* __Fast Random__: a pseudo-randomly generated version, using a fast RNG;
 * __Sequential:__ a modified time-based UUID that doesn't change the timestamp byte order;
 * __Sequential with MAC:__ a sequential UUID with hardware address;
-* __Fast Random__: a pseudo-randomly generated version, using a fast RNG;
 * __MSSQL Guid:__ a modified time-based UUID that changes the timestamp byte order for MSSQL Server database;
 * __COMB Guid:__ a modified random UUID that replaces the last 6 bytes with a Unix epoch milliseconds for MSSQL Server database.
 
@@ -54,6 +54,21 @@ UUID uuid = UuidCreator.getSequential();
 UUID uuid = UuidCreator.getSequentialWithMac();
 ```
 
+Examples of sequential UUID:
+
+```text
+1e96c51a-960b-0970-a083-4546d757de20
+1e96c51a-960b-0971-a083-4546d757de20
+1e96c51a-960b-0972-a083-4546d757de20
+1e96c51a-960b-0973-a083-4546d757de20
+1e96c51a-960b-0974-a083-4546d757de20
+1e96c51a-960b-0975-a083-4546d757de20
+1e96c51a-960b-0976-a083-4546d757de20
+1e96c51a-960b-0977-a083-4546d757de20
+1e96c51a-960b-0978-a083-4546d757de20
+1e96c51a-960b-0979-a083-4546d757de20
+```
+
 ### Time-based (version 1)
 
 The Time-based UUID has a timestamp and may have a hardware address.
@@ -68,6 +83,21 @@ UUID uuid = UuidCreator.getTimeBased();
 // Time-based with hardware address
 // Result: 15670d26-8c44-11e8-bda5-47f8xxxxxxxx
 UUID uuid = UuidCreator.getTimeBasedWithMac();
+```
+
+Examples of time-based UUID:
+
+```text
+a9601d3a-6c51-11e9-9711-4546d757de20
+a9601d3b-6c51-11e9-9711-4546d757de20
+a9601d3c-6c51-11e9-9711-4546d757de20
+a9601d3d-6c51-11e9-9711-4546d757de20
+a9601d3e-6c51-11e9-9711-4546d757de20
+a9601d3f-6c51-11e9-9711-4546d757de20
+a9601d40-6c51-11e9-9711-4546d757de20
+a9601d41-6c51-11e9-9711-4546d757de20
+a9601d42-6c51-11e9-9711-4546d757de20
+a9601d43-6c51-11e9-9711-4546d757de20
 ```
 
 ### DCE Security (version 2)
@@ -134,6 +164,21 @@ UUID uuid = UuidCreator.getRandom();
 UUID uuid = UuidCreator.getFastRandom();
 ```
 
+Examples of random-based UUID:
+
+```text
+ba1059e8-42ce-4a17-8c43-53c83353e23e
+6658b049-44f2-4db6-862a-7e8a3d45a41d
+4b6c87c3-dfba-40b3-8865-69a4432721e9
+9b0872a9-2f84-4b4d-8480-c81741e6b730
+bbe05770-3ed8-4064-a400-287ea1869585
+dfff7f23-2ba4-4ad1-bcae-0e17b2c261de
+d2b42ff7-2c79-4a8e-aa23-e0af1f1fb4e2
+9c498979-39f8-4f8f-8ab7-312e51ff0c38
+4b4a8b3b-9371-4a2a-b7de-55d070de8604
+ca4de6d2-63b8-4a49-8ab6-bfccd32a27e8
+```
+
 ### Name-based using SHA-1 (version 5)
 
 The Name-based UUID version 5 is a SHA-1 hash of a name space and a name.
@@ -167,6 +212,21 @@ The MSSQL GUID is a modified time-based UUID that changes the timestamp byte ord
 UUID uuid = UuidCreator.getMssqlGuid();
 ```
 
+Examples of MSSQL GUID:
+
+```text
+a02e61a9-516c-e911-9bd6-4546d757de20
+a12e61a9-516c-e911-9bd6-4546d757de20
+a22e61a9-516c-e911-9bd6-4546d757de20
+a32e61a9-516c-e911-9bd6-4546d757de20
+a42e61a9-516c-e911-9bd6-4546d757de20
+a52e61a9-516c-e911-9bd6-4546d757de20
+a62e61a9-516c-e911-9bd6-4546d757de20
+a72e61a9-516c-e911-9bd6-4546d757de20
+b05561a9-516c-e911-9bd6-4546d757de20
+b15561a9-516c-e911-9bd6-4546d757de20
+```
+
 ### COMB GUID (non-standard)
 
 The COMB GUID is a modified random UUID that replaces the last 6 bytes with Unix epoch milliseconds for MSSQL Server database.
@@ -175,6 +235,21 @@ The COMB GUID is a modified random UUID that replaces the last 6 bytes with Unix
 // COMB GUID
 // Result: 990676e9-5bb8-1a3d-b17c-0167a0739235
 UUID uuid = UuidCreator.getCombGuid();
+```
+
+Examples of COMB GUID:
+
+```text
+cc6347bb-bd7a-5904-945e-016a75228e8e
+967426cb-89c4-fcb5-945f-016a75228e8e
+28e86a61-085b-1385-9460-016a75228e8e
+ab831b05-8ff0-fc80-9461-016a75228e8e
+e260f564-3ae0-8396-efa6-016a75228e8f
+1cc5a7cc-4016-f39c-efa7-016a75228e8f
+bc84674c-406c-e2de-efa8-016a75228e8f
+109c9408-9ff0-34b3-efa9-016a75228e8f
+a9c86b5f-4d97-c767-efaa-016a75228e8f
+1777eb4e-20f7-09e7-efab-016a75228e8f
 ```
 
 Fluent interface
