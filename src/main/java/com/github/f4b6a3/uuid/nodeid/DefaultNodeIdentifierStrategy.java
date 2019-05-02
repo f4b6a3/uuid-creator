@@ -22,8 +22,11 @@ public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	protected static MessageDigest md;
 
 	public DefaultNodeIdentifierStrategy() {
-		this.nodeIdentifier = SettingsUtil.getNodeIdentifier();
-		if (this.nodeIdentifier == 0) {
+		
+		long preferedNodeIdentifier = SettingsUtil.getNodeIdentifier();
+		if (preferedNodeIdentifier != 0) {
+			this.nodeIdentifier = preferedNodeIdentifier;
+		} else {
 			this.nodeIdentifier = getSystemNodeIdentifier();
 		}
 	}
@@ -81,7 +84,7 @@ public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 		bytes = string.getBytes();
 		hash = md.digest(bytes);
-		number = ByteUtil.toNumber(hash);
+		number = ByteUtil.toNumber(hash) & 0x0000FFFFFFFFFFFFL;
 
 		return NodeIdentifierUtil.setMulticastNodeIdentifier(number);
 	}

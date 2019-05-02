@@ -30,11 +30,18 @@ import com.github.f4b6a3.uuid.nodeid.NodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.FixedTimestampStretegy;
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
+import com.github.f4b6a3.uuid.util.SettingsUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
+	
+	protected UuidState state;
 
+	protected long timestamp;
+	protected long nodeIdentifier;
+	protected long clockSequence;
+	
 	protected TimestampStrategy timestampStrategy;
 	protected ClockSequenceStrategy clockSequenceStrategy;
 	protected NodeIdentifierStrategy nodeIdentifierStrategy;
@@ -46,9 +53,22 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	protected AbstractTimeBasedUuidCreator(int version) {
 		super(version);
+		
 		this.timestampStrategy = new DefaultTimestampStrategy();
-		this.clockSequenceStrategy = new DefaultClockSequenceStrategy();
 		this.nodeIdentifierStrategy = new DefaultNodeIdentifierStrategy();
+
+		if (SettingsUtil.isStateEnabled()) {
+			// load the previous state
+			this.state = new UuidState();
+			long timestamp = this.timestampStrategy.getTimestamp();
+			long nodeIdentifier = this.nodeIdentifierStrategy.getNodeIdentifier();
+			this.clockSequenceStrategy = new DefaultClockSequenceStrategy(timestamp, nodeIdentifier, this.state);
+
+			// Add a hook for when the program exits or is terminated
+			Runtime.getRuntime().addShutdownHook(new ShutdownHook(this));
+		} else {
+			this.clockSequenceStrategy = new DefaultClockSequenceStrategy();
+		}
 	}
 
 	/**
@@ -130,19 +150,19 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	public synchronized UUID create() {
 
 		// (3a) get the timestamp
-		long timestamp = this.timestampStrategy.getTimestamp();
+		this.timestamp = this.timestampStrategy.getTimestamp();
 
 		// (4a)(5a) get the node identifier
-		long nodeIdentifier = this.nodeIdentifierStrategy.getNodeIdentifier();
+		this.nodeIdentifier = this.nodeIdentifierStrategy.getNodeIdentifier();
 
 		// (5a)(6a) get the sequence value
-		long sequence = this.clockSequenceStrategy.getClockSequence(timestamp, nodeIdentifier);
+		this.clockSequence = this.clockSequenceStrategy.getClockSequence(this.timestamp, this.nodeIdentifier);
 
 		// (9a) format the most significant bits
-		long msb = this.formatMostSignificantBits(timestamp);
+		long msb = this.formatMostSignificantBits(this.timestamp);
 
 		// (9a) format the least significant bits
-		long lsb = this.formatLeastSignificantBits(nodeIdentifier, sequence);
+		long lsb = this.formatLeastSignificantBits(this.nodeIdentifier, this.clockSequence);
 
 		// (9a) format a UUID from the MSB and LSB
 		return new UUID(msb, lsb);
@@ -303,5 +323,24 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	public long formatLeastSignificantBits(final long nodeIdentifier, final long clockSequence) {
 		return UuidUtil.formatRfc4122LeastSignificantBits(nodeIdentifier, clockSequence);
+	}
+	
+	protected void storeState() {
+		if (SettingsUtil.isStateEnabled()) {
+			this.state.setNodeIdentifier(nodeIdentifier);
+			this.state.setTimestamp(timestamp);
+			this.state.setClockSequence((int) clockSequence);
+			this.state.store();
+		}
+	}
+	
+	static class ShutdownHook extends Thread {
+		private AbstractTimeBasedUuidCreator creator;
+		public ShutdownHook(AbstractTimeBasedUuidCreator creator) {
+			this.creator = creator;
+		}
+		public void run() {
+			this.creator.storeState();
+		}
 	}
 }

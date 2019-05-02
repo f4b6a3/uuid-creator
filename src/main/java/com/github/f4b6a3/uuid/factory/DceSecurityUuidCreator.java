@@ -251,7 +251,10 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 			this.timestamp = timestamp;
 			this.reset();
 			return this.current();
-		}
-		
+		}	
+	}
+	
+	@Override
+	protected void storeState() {
 	}
 }

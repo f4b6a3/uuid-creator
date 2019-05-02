@@ -18,6 +18,7 @@
 package com.github.f4b6a3.uuid.clockseq;
 
 import com.github.f4b6a3.uuid.exception.OverrunException;
+import com.github.f4b6a3.uuid.factory.abst.UuidState;
 import com.github.f4b6a3.uuid.sequence.AbstractSequence;
 import com.github.f4b6a3.uuid.util.RandomUtil;
 import com.github.f4b6a3.uuid.util.SettingsUtil;
@@ -67,8 +68,81 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	public DefaultClockSequenceStrategy() {
 		super(SEQUENCE_MIN, SEQUENCE_MAX);
 
-		this.value = SettingsUtil.getClockSequence();
-		if (this.value == 0) {
+		int preferedClockSequence = SettingsUtil.getClockSequence();
+		if (preferedClockSequence != 0) {
+			this.set(preferedClockSequence);
+		} else {
+			this.reset();
+		}
+	}
+
+	/**
+	 * This constructor uses a state stored previously.
+	 * 
+	 * ### RFC-4122 - 4.1.5. Clock Sequence
+	 * 
+	 * (1) For UUID version 1, the clock sequence is used to help avoid
+	 * duplicates that could arise when the clock is set backwards in time or if
+	 * the node ID changes.
+	 * 
+	 * (2) If the clock is set backwards, or might have been set backwards
+	 * (e.g., while the system was powered off), and the UUID generator can not
+	 * be sure that no UUIDs were generated with timestamps larger than the
+	 * value to which the clock was set, then the clock sequence has to be
+	 * changed. If the previous value of the clock sequence is known, it can
+	 * just be incremented; otherwise it should be set to a random or
+	 * high-quality pseudo-random value.
+	 * 
+	 * (3) Similarly, if the node ID changes (e.g., because a network card has
+	 * been moved between machines), setting the clock sequence to a random
+	 * number minimizes the probability of a duplicate due to slight differences
+	 * in the clock settings of the machines. If the value of clock sequence
+	 * associated with the changed node ID were known, then the clock sequence
+	 * could just be incremented, but that is unlikely.
+	 * 
+	 * (4) The clock sequence MUST be originally (i.e., once in the lifetime of
+	 * a system) initialized to a random number to minimize the correlation
+	 * across systems. This provides maximum protection against node identifiers
+	 * that may move or switch from system to system rapidly. The initial value
+	 * MUST NOT be correlated to the node identifier.
+	 * 
+	 * @param timestamp
+	 *            the current timestamp
+	 * @param nodeIdentifier
+	 *            the current node identifier
+	 * @param state
+	 *            the previous state saved
+	 */
+	public DefaultClockSequenceStrategy(long timestamp, long nodeIdentifier, UuidState state) {
+		super(SEQUENCE_MIN, SEQUENCE_MAX);
+
+		long lastTimestamp = state.getTimestamp();
+		long lastNodeIdentifier = state.getNodeIdentifier();
+		int lastClockSequence = state.getClockSequence();
+
+		// set the clock sequence to a random number if:
+		// (4) the last clock sequence is not initialized;
+		// (2)(3) or the last clock sequence is unknown.
+		if (!state.isStored() || lastClockSequence == 0) {
+			this.reset();
+			return;
+		}
+		
+		// increment the previous clock sequence if:
+		// (2) the timestamp is set backwards;
+		// (3) orthe node identifier has changed.
+		if ((timestamp <= lastTimestamp) || (nodeIdentifier != lastNodeIdentifier)) {
+			this.set(lastClockSequence);
+			this.next();
+			return;
+		}
+
+		int preferedClockSequence = SettingsUtil.getClockSequence();
+		if (preferedClockSequence != 0) {
+			this.set(preferedClockSequence);
+		} else if (lastClockSequence != 0) {
+			this.set(lastClockSequence);
+		} else {
 			this.reset();
 		}
 	}

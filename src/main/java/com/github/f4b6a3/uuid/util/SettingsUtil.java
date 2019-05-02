@@ -5,23 +5,41 @@ public class SettingsUtil {
 	public static final String PROPERTY_PREFIX = "uuidcreator";
 	public static final String PROPERTY_CLOCKSEQ = "clockseq";
 	public static final String PROPERTY_NODEID = "nodeid";
+	public static final String PROPERTY_STATE_DIRECTORY = "state.directory";
+	public static final String PROPERTY_STATE_ENABLED = "state.enabled";
 
 	public static long getNodeIdentifier() {
-		String nodeid = getProperty(PROPERTY_NODEID);
-		if (nodeid == null) {
+		String value = getProperty(PROPERTY_NODEID);
+		if (value == null) {
 			return 0;
 		}
-		return toNumber(nodeid) & 0x0000FFFFFFFFFFFFL;
+		return ByteUtil.toNumber(value) & 0x0000FFFFFFFFFFFFL;
 	}
 
 	public static int getClockSequence() {
-		String clockseq = getProperty(PROPERTY_CLOCKSEQ);
-		if (clockseq == null) {
+		String value = getProperty(PROPERTY_CLOCKSEQ);
+		if (value == null) {
 			return 0;
 		}
-		return ((int) toNumber(clockseq)) & 0x00003FFF;
+		return ((int) ByteUtil.toNumber(value)) & 0x00003FFF;
 	}
 
+	public static String getStateDirectory() {
+		String value = getProperty(PROPERTY_STATE_DIRECTORY);
+		if (value == null) {
+			return System.getProperty("java.io.tmpdir");
+		}
+		return value;
+	}
+	
+	public static boolean isStateEnabled() {
+		String value = getProperty(PROPERTY_STATE_ENABLED);
+		if (value == null) {
+			return false;
+		}
+		return value.equals("true");
+	}
+	
 	private static String getProperty(String name) {
 		
 		String fullName = getPropertyName(name);
@@ -44,18 +62,10 @@ public class SettingsUtil {
 	}
 
 	private static String getEnvinronmentName(String key) {
-		return String.join("_", PROPERTY_PREFIX, key).toUpperCase();
+		return String.join("_", PROPERTY_PREFIX, key).toUpperCase().replace(".", "_");
 	}
 
 	private static boolean isEmpty(String value) {
 		return value == null || value.isEmpty();
-	}
-
-	private static long toNumber(String value) {
-		try {
-			return Long.decode(value);
-		} catch (NumberFormatException e) {
-			return 0;
-		}
 	}
 }
