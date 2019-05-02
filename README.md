@@ -24,6 +24,29 @@ Non-standard UUIDs:
 How to Use
 ------------------------------------------------------
 
+### No time to read
+
+This library is very simple, but this document is too long. So, this section summarizes what most people may be looking for.
+
+If you just want a random UUID, which seems to be the most common case, use this single line of code:
+
+```java
+UUID uuid = UuidCreator.getRandom();
+```
+
+Or if you want a UUID that is based on date and time, use this line of code:
+
+```java
+UUID uuid = UuidCreator.getTimeBased();
+```
+Or else, if you want a UUID that is also based on date and time, but looks like a sequential number, use this line:
+
+```java
+UUID uuid = UuidCreator.getSequential();
+```
+
+And if you have enough time, you can read the rest of this document.
+
 ### Maven dependency
 
 Add these lines to your `pom.xml`.
