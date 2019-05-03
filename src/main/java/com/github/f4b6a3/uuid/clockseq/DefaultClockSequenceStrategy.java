@@ -137,11 +137,11 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 			return;
 		}
 
-		int preferedClockSequence = SettingsUtil.getClockSequence();
-		if (preferedClockSequence != 0) {
-			this.set(preferedClockSequence);
-		} else if (lastClockSequence != 0) {
+		int defaultClockSequence = SettingsUtil.getClockSequence();
+		if (lastClockSequence != 0) {
 			this.set(lastClockSequence);
+		} else if (defaultClockSequence != 0) {
+			this.set(defaultClockSequence);
 		} else {
 			this.reset();
 		}
