@@ -433,10 +433,6 @@ public class UuidUtil {
 	 * @return the LSB
 	 */
 	public static long formatRfc4122LeastSignificantBits(final long nodeIdentifier, final long clockSequence) {
-
-		long seq = clockSequence << 48;
-		long nod = nodeIdentifier & 0x0000ffffffffffffL;
-
-		return (seq | nod | 0x8000000000000000L);
+		return ((clockSequence << 48) | (nodeIdentifier & 0x0000ffffffffffffL) | 0x8000000000000000L);
 	}
 }
