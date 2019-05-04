@@ -25,6 +25,7 @@ import com.github.f4b6a3.uuid.factory.MssqlGuidCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedMd5UuidCreator;
 import com.github.f4b6a3.uuid.factory.RandomUuidCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedSha1UuidCreator;
+import com.github.f4b6a3.uuid.factory.NameBasedSha256UuidCreator;
 import com.github.f4b6a3.uuid.factory.SequentialUuidCreator;
 import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.factory.abst.AbstractNameBasedUuidCreator;
@@ -41,6 +42,7 @@ public class UuidCreator {
 	private static TimeBasedUuidCreator timeBasedWithMacCreator;
 	private static AbstractNameBasedUuidCreator nameBasedMd5Creator;
 	private static AbstractNameBasedUuidCreator nameBasedSha1Creator;
+	private static AbstractNameBasedUuidCreator nameBasedSha256Creator;
 	private static RandomUuidCreator randomCreator;
 	private static RandomUuidCreator fastRandomCreator;
 	private static DceSecurityUuidCreator dceSecurityCreator;
@@ -326,6 +328,49 @@ public class UuidCreator {
 	}
 	
 	/**
+	 * Returns a UUID based on a name, using SHA256.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 4 
+	 * - Variant number: 1 
+	 * - Hash Algorithm: SHA256 
+	 * - Name Space: none 
+	 * </pre>
+	 * 
+	 * @param name a name string
+	 * @return a name-based UUID
+	 */
+	public static UUID getNameBasedSha256(String name) {
+		if (nameBasedSha256Creator == null) {
+			nameBasedSha256Creator = getNameBasedSha256Creator();
+		}
+		return nameBasedSha256Creator.create(name);
+	}
+
+	/**
+	 * Returns a UUID based on a name space and a name, using SHA256.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 4 
+	 * - Variant number: 1 
+	 * - Hash Algorithm: SHA256 
+	 * - Name Space: informed by user 
+	 * </pre>
+	 * 
+	 * @param namespace a name space UUID
+	 * @param name a name string
+	 * @return a name-based UUID
+	 */
+	public static UUID getNameBasedSha256(UUID namespace, String name) {
+		if (nameBasedSha256Creator == null) {
+			nameBasedSha256Creator = getNameBasedSha256Creator();
+		}
+		return nameBasedSha256Creator.create(namespace, name);
+	}
+	
+	/**
 	 * Returns a time-based GUID for MS SQL Server.
 	 * 
 	 * @return a MSSQL GUID
@@ -416,6 +461,15 @@ public class UuidCreator {
 	 */
 	public static NameBasedSha1UuidCreator getNameBasedSha1Creator() {
 		return new NameBasedSha1UuidCreator();
+	}
+	
+	/**
+	 * Returns a {@link NameBasedSha256UuidCreator} that creates UUID version 4.
+	 * 
+	 * @return {@link NameBasedSha256UuidCreator}
+	 */
+	public static NameBasedSha256UuidCreator getNameBasedSha256Creator() {
+		return new NameBasedSha256UuidCreator();
 	}
 	
 	/**

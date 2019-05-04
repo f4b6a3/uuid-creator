@@ -18,6 +18,7 @@ Non-standard UUIDs:
 * __Fast Random__: a pseudo-randomly generated version, using a fast RNG;
 * __Sequential:__ a modified time-based UUID that doesn't change the timestamp byte order;
 * __Sequential with MAC:__ a sequential UUID with hardware address;
+* __Name-based SHA256:__ the base-named version that uses SHA-256;
 * __MSSQL Guid:__ a modified time-based UUID that changes the timestamp byte order for MSSQL Server database;
 * __COMB Guid:__ a modified random UUID that replaces the last 6 bytes with a Unix epoch milliseconds for MSSQL Server database.
 

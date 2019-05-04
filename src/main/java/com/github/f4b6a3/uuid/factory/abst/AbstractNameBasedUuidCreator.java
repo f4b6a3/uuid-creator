@@ -33,6 +33,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 
 	protected static final String MESSAGE_DIGEST_MD5 = "MD5";
 	protected static final String MESSAGE_DIGEST_SHA1 = "SHA-1";
+	protected static final String MESSAGE_DIGEST_SHA256 = "SHA-256";
 
 	/**
 	 * This constructor receives the name of a message digest.
@@ -82,6 +83,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	public <T extends AbstractNameBasedUuidCreator> T withNamespace(String namespace) {
 		UUID namespaceUUID = create(namespace);
 		this.namespace = namespaceUUID;
+		System.out.println(this.namespace.toString());
 		return (T) this;
 	}
 
@@ -94,7 +96,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * @return a name-based UUID
 	 */
 	public UUID create(String name) {
-		return create(this.namespace, name);
+		return create((UUID) null, name);
 	}
 
 	/**
