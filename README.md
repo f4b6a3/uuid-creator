@@ -173,7 +173,7 @@ UUID uuid = UuidCreator.getNameBasedMd5(name);
 
 ### Random (version 4)
 
-The Random UUID is a simple random array of 16 bytes. The default random generator is SecureRandom, but any one can be used.
+The Random UUID is a simple random array of 16 bytes. The default random generator is `SecureRandom`, but any one can be used.
 
 ```java
 // Random using the default SecureRandom generator
@@ -278,12 +278,12 @@ a9c86b5f-4d97-c767-efaa-016a75228e8f
 Fluent interface
 ------------------------------------------------------
 
-The UUID factories are configurable via fluent interface methods. This section lists a series of examples for each version of UUID.
+The UUID factories are configurable via [fluent interface](https://en.wikipedia.org/wiki/Fluent_interface) methods. This section lists a series of examples for each version of UUID.
 
 
 #### Time-based
 
-All the examples in this subsection are also valid for Sequential and DCE Security UUIDs.
+All the examples in this subsection are also valid for [Sequential](#sequential-version-0-non-standard) and [DCE Security](#dce-security-version-2) UUIDs.
 
 ##### Fixed values
 
@@ -587,7 +587,15 @@ If the default timestamp strategy is not desired, other two strategies are provi
 
 The clock sequence is used to help avoid duplicates. The first bits of the clock sequence part are multiplexed with the variant number of the RFC-4122. Because of that, it has a range from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards.
 
-It's possible to use a *initial or default clock sequence* by setting a system property or environment variable. The system property is `uuidcreator.clockseq` and the environment variable is `UUIDCREATOR_CLOCKSEQ`. If no previous clock sequence exists, all UUIDs created will use the value present in the property or variable, until it's necessary to increment or reset this value to avoid duplicates.
+It's possible to use a *initial or default clock sequence* by setting a [system property or environment variable](#system-properties-and-environment-variables). The system property is `uuidcreator.clockseq` and the environment variable is `UUIDCREATOR_CLOCKSEQ`. If no previous clock sequence exists in a state file, all UUIDs created will use the value present in the property or variable, until it's necessary to increment or reset this value to avoid duplicates.
+
+##### State file
+
+The state file is a simple file that keeps three key-value pairs: previous timestamp, previous node identifier and previous clock sequence. This file is used by the `DefaultClockSequenceStrategy` to decide what is the next clock sequence to use. 
+
+Since the state file is disabled by default, it can be enabled by [system property or environment variable](#system-properties-and-environment-variables).
+
+The key-value pairs of the state file has effect in these factories: `TimeBasedUuidCreator` and `SequentialUuidCreator`. The the other factories ignore the state file.
 
 #### Node identifier
 
@@ -595,7 +603,7 @@ The node identifier part consists of an IEEE 802 MAC address, usually the host a
 
 This implementation provides other strategies if the default strategy is not desired: random generator strategy and machine address strategy.
 
-It's possible to use a *preferred node identifier* by setting a system property or environment variable. The system property is `uuidcreator.nodeid` and the environment variable is `UUIDCREATOR_NODEID`. All UUIDs created will use the value present in the property or variable.
+It's possible to use a *preferred node identifier* by setting a [system property or environment variable](#system-properties-and-environment-variables). The system property is `uuidcreator.nodeid` and the environment variable is `UUIDCREATOR_NODEID`. All UUIDs created will use the value present in the property or variable.
 
 ###  Sequential
 
@@ -757,4 +765,5 @@ External links
 * [UUID1 vs UUID4](https://www.sohamkamani.com/blog/2016/10/05/uuid1-vs-uuid4/)
 
 * [Probability of GUID collisions with different versions](https://news.ycombinator.com/item?id=10924343)
+
 
