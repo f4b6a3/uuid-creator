@@ -2,8 +2,7 @@ package com.github.f4b6a3.uuid.util;
 
 public class SettingsUtil {
 
-	public static final String PROPERTY_PREFIX = "uuidcreator";
-	public static final String PROPERTY_CLOCKSEQ = "clockseq";
+	protected static final String PROPERTY_PREFIX = "uuidcreator";
 	public static final String PROPERTY_NODEID = "nodeid";
 	public static final String PROPERTY_STATE_DIRECTORY = "state.directory";
 	public static final String PROPERTY_STATE_ENABLED = "state.enabled";
@@ -21,19 +20,6 @@ public class SettingsUtil {
 	public static void setNodeIdentifier(long nodeid) {
 		String value = ByteUtil.toHexadecimal(nodeid & 0x0000FFFFFFFFFFFFL);
 		setProperty(PROPERTY_NODEID, value);
-	}
-
-	public static int getClockSequence() {
-		String value = getProperty(PROPERTY_CLOCKSEQ);
-		if (value == null) {
-			return 0;
-		}
-		return ((int) ByteUtil.toNumber(value)) & 0x00003FFF;
-	}
-	
-	public static void setClockSequence(int clockseq) {
-		String value = ByteUtil.toHexadecimal(clockseq & 0x00003FFF);
-		setProperty(PROPERTY_CLOCKSEQ, value);
 	}
 
 	public static String getStateDirectory() {

@@ -21,6 +21,8 @@ public class FileUuidState extends AbstractUuidState {
 	private String directory;
 	private String fileName;
 
+	private boolean valid;
+
 	public FileUuidState() {
 		super();
 		this.directory = SettingsUtil.getStateDirectory();
@@ -36,13 +38,18 @@ public class FileUuidState extends AbstractUuidState {
 	@Override
 	public void store() {
 		try {
+			String timestampHex = ByteUtil.toHexadecimal(this.timestamp);
+			String clockseqHex = ByteUtil.toHexadecimal(this.clockSequence);
+			String nodeidHex = ByteUtil.toHexadecimal(this.nodeIdentifier);
+			this.validate(timestampHex, clockseqHex, nodeidHex);
 
-			Properties properties = new Properties();
-			properties.setProperty(PROPERTY_TIMESTAMP, ByteUtil.toHexadecimal(timestamp));
-			properties.setProperty(PROPERTY_CLOCKSEQ, ByteUtil.toHexadecimal(clockSequence));
-			properties.setProperty(PROPERTY_NODEID, ByteUtil.toHexadecimal(nodeIdentifier));
-			properties.store(new FileWriter(this.fileName), null);
-
+			if (this.valid) {
+				Properties properties = new Properties();
+				properties.setProperty(PROPERTY_TIMESTAMP, timestampHex);
+				properties.setProperty(PROPERTY_CLOCKSEQ, clockseqHex);
+				properties.setProperty(PROPERTY_NODEID, nodeidHex);
+				properties.store(new FileWriter(this.fileName), null);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -51,21 +58,39 @@ public class FileUuidState extends AbstractUuidState {
 	@Override
 	public void load() {
 		try {
-
 			Properties properties = new Properties();
 			properties.load(new FileInputStream(fileName));
-			String timestamp = properties.getProperty(PROPERTY_TIMESTAMP, "0");
-			String clockseq = properties.getProperty(PROPERTY_CLOCKSEQ, "0");
-			String nodeid = properties.getProperty(PROPERTY_NODEID, "0");
+			String timestampHex = properties.getProperty(PROPERTY_TIMESTAMP, "0");
+			String clockseqHex = properties.getProperty(PROPERTY_CLOCKSEQ, "0");
+			String nodeidHex = properties.getProperty(PROPERTY_NODEID, "0");
+			this.validate(timestampHex, clockseqHex, nodeidHex);
 
-			this.timestamp = ByteUtil.toNumber(timestamp);
-			this.clockSequence = ((int) ByteUtil.toNumber(clockseq)) & 0x00003FFF;
-			this.nodeIdentifier = ByteUtil.toNumber(nodeid) & 0x0000FFFFFFFFFFFFL;
-
+			if (this.valid) {
+				this.timestamp = ByteUtil.toNumber(timestampHex);
+				this.clockSequence = ((int) ByteUtil.toNumber(clockseqHex)) & 0x00003FFF;
+				this.nodeIdentifier = ByteUtil.toNumber(nodeidHex) & 0x0000FFFFFFFFFFFFL;
+			}
 		} catch (FileNotFoundException e) {
 			// do nothing
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public boolean isValid() {
+		return this.valid;
+	}
+
+	private void validate(String timestampHex, String clockseqHex, String nodeidHex) {
+
+		String zero = "^[0]{1,16}$";
+		String hexa = "[0-9a-fA-F]{1,16}";
+
+		boolean validTimestamp = timestampHex != null && timestampHex.matches(hexa) && !timestampHex.matches(zero);
+		boolean validClockseq = clockseqHex != null && clockseqHex.matches(hexa) && !clockseqHex.matches(zero);
+		boolean validNodeid = nodeidHex != null && nodeidHex.matches(hexa) && !nodeidHex.matches(zero);
+
+		this.valid = validTimestamp && validClockseq && validNodeid;
 	}
 }

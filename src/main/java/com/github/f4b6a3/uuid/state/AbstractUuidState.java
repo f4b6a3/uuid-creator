@@ -36,4 +36,6 @@ public abstract class AbstractUuidState {
 	public abstract void store();
 
 	public abstract void load();
+	
+	public abstract boolean isValid();
 }

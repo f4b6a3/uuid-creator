@@ -27,6 +27,7 @@ import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.DeltaTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.NanosecondTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.StoppedDefaultTimestampStrategy;
+import com.github.f4b6a3.uuid.util.SettingsUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
@@ -36,6 +37,8 @@ public class DemoTest {
 	public void testPrintList() {
 		int max = 100;
 
+		SettingsUtil.setStateEnabled(true);
+		
 		System.out.println();
 		System.out.println("----------------------------------------");
 		System.out.println("Print list of UUIDs");

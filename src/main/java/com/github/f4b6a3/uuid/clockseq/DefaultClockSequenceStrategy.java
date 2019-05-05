@@ -111,42 +111,35 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 		this.timestamp = timestamp;
 		this.nodeIdentifier = nodeIdentifier;
 
-		int defaultClockSequence = SettingsUtil.getClockSequence();
-
 		if (SettingsUtil.isStateEnabled()) {
-			
-			if (state == null) {
+
+			this.state = state;
+
+			if (this.state == null) {
 				this.state = new FileUuidState();
-			} else {
-				this.state = state;
+			}
+
+			if (!this.state.isValid()) {
+				// System.out.println("0");
+				this.reset();
+				return;
 			}
 
 			long lastTimestamp = this.state.getTimestamp();
 			long lastNodeIdentifier = this.state.getNodeIdentifier();
 			int lastClockSequence = this.state.getClockSequence();
 
-			if (lastClockSequence != 0) {
-				this.set(lastClockSequence);
-				if ((this.timestamp <= lastTimestamp) || (this.nodeIdentifier != lastNodeIdentifier)) {
-					this.next();
-				}
-			} else if (defaultClockSequence != 0) {
-				this.set(defaultClockSequence);
-			} else {
-				this.reset();
+			this.set(lastClockSequence);
+			if ((this.timestamp <= lastTimestamp) || (this.nodeIdentifier != lastNodeIdentifier)) {
+				this.next();
 			}
-			
+
 			// Add a hook for when the program exits or is terminated
 			Runtime.getRuntime().addShutdownHook(new DefaultClockSequenceShutdownHook(this));
-			
-		} else {
-			if (defaultClockSequence != 0) {
-				this.set(defaultClockSequence);
-			} else {
-				this.reset();
-			}
-		}
 
+		} else {
+			this.reset();
+		}
 	}
 
 	public DefaultClockSequenceStrategy(long timestamp, long nodeIdentifier) {
