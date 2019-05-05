@@ -2,6 +2,8 @@ package com.github.f4b6a3.uuid.factory.abst;
 
 import org.junit.Test;
 
+import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
+
 import static com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator.*;
 
 import static org.junit.Assert.*;

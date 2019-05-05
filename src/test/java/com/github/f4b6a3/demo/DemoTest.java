@@ -8,14 +8,14 @@ import java.util.UUID;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.github.f4b6a3.other.CollisionTest;
+import com.github.f4b6a3.collision.CollisionTest;
 import com.github.f4b6a3.other.RandomImage;
 import com.github.f4b6a3.other.RandomnessTest;
 import com.github.f4b6a3.other.SimpleBenchmark;
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.factory.DceSecurityUuidCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedMd5UuidCreator;
-import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
+import com.github.f4b6a3.uuid.factory.SequentialUuidCreator;
 import com.github.f4b6a3.uuid.nodeid.RandomNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.MacNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.DefaultNodeIdentifierStrategy;
@@ -77,25 +77,6 @@ public class DemoTest {
 		}
 
 		System.out.println("----------------------------------------");
-	}
-
-	/**
-	 * Test if there are collisions when executing many threds.
-	 * 
-	 * It may take too long.
-	 */
-	@Ignore
-	public void testCollisionTest() {
-
-		boolean verbose = true;
-		int threadCount = 10; // Number of threads to run
-		int requestCount = 1000; // Number of requests for thread
-
-		AbstractTimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator()
-				.withTimestampStrategy(new StoppedDefaultTimestampStrategy()).withNodeIdentifier(0x111111111111L);
-
-		CollisionTest test = new CollisionTest(threadCount, requestCount, creator, verbose);
-		test.start();
 	}
 
 	/**

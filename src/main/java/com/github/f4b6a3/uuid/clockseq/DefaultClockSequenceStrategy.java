@@ -18,8 +18,9 @@
 package com.github.f4b6a3.uuid.clockseq;
 
 import com.github.f4b6a3.uuid.exception.OverrunException;
-import com.github.f4b6a3.uuid.factory.abst.UuidState;
 import com.github.f4b6a3.uuid.sequence.AbstractSequence;
+import com.github.f4b6a3.uuid.state.AbstractUuidState;
+import com.github.f4b6a3.uuid.state.FileUuidState;
 import com.github.f4b6a3.uuid.util.RandomUtil;
 import com.github.f4b6a3.uuid.util.SettingsUtil;
 
@@ -56,25 +57,16 @@ import com.github.f4b6a3.uuid.util.SettingsUtil;
  */
 public class DefaultClockSequenceStrategy extends AbstractSequence implements ClockSequenceStrategy {
 
-	// keeps the previous timestamp
 	private long timestamp = 0;
+	private long nodeIdentifier = 0;
 
 	// keeps count of values returned
 	private int counter = 0;
 
+	protected AbstractUuidState state;
+
 	protected static final int SEQUENCE_MIN = 0; // 0x0000;
 	protected static final int SEQUENCE_MAX = 16_383; // 0x3fff;
-
-	public DefaultClockSequenceStrategy() {
-		super(SEQUENCE_MIN, SEQUENCE_MAX);
-
-		int preferedClockSequence = SettingsUtil.getClockSequence();
-		if (preferedClockSequence != 0) {
-			this.set(preferedClockSequence);
-		} else {
-			this.reset();
-		}
-	}
 
 	/**
 	 * This constructor uses a state stored previously.
@@ -113,38 +105,56 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	 * @param state
 	 *            the previous state saved
 	 */
-	public DefaultClockSequenceStrategy(long timestamp, long nodeIdentifier, UuidState state) {
+	public DefaultClockSequenceStrategy(long timestamp, long nodeIdentifier, AbstractUuidState state) {
 		super(SEQUENCE_MIN, SEQUENCE_MAX);
 
-		long lastTimestamp = state.getTimestamp();
-		long lastNodeIdentifier = state.getNodeIdentifier();
-		int lastClockSequence = state.getClockSequence();
-
-		// set the clock sequence to a random number if:
-		// (4) the last clock sequence is not initialized;
-		// (2)(3) or the last clock sequence is unknown.
-		if (!state.isStored() || lastClockSequence == 0) {
-			this.reset();
-			return;
-		}
-		
-		// increment the previous clock sequence if:
-		// (2) the timestamp is set backwards;
-		// (3) orthe node identifier has changed.
-		if ((timestamp <= lastTimestamp) || (nodeIdentifier != lastNodeIdentifier)) {
-			this.set(lastClockSequence);
-			this.next();
-			return;
-		}
+		this.timestamp = timestamp;
+		this.nodeIdentifier = nodeIdentifier;
 
 		int defaultClockSequence = SettingsUtil.getClockSequence();
-		if (lastClockSequence != 0) {
-			this.set(lastClockSequence);
-		} else if (defaultClockSequence != 0) {
-			this.set(defaultClockSequence);
+
+		if (SettingsUtil.isStateEnabled()) {
+			
+			if (state == null) {
+				this.state = new FileUuidState();
+			} else {
+				this.state = state;
+			}
+
+			long lastTimestamp = this.state.getTimestamp();
+			long lastNodeIdentifier = this.state.getNodeIdentifier();
+			int lastClockSequence = this.state.getClockSequence();
+
+			if (lastClockSequence != 0) {
+				this.set(lastClockSequence);
+				if ((this.timestamp <= lastTimestamp) || (this.nodeIdentifier != lastNodeIdentifier)) {
+					this.next();
+				}
+			} else if (defaultClockSequence != 0) {
+				this.set(defaultClockSequence);
+			} else {
+				this.reset();
+			}
+			
+			// Add a hook for when the program exits or is terminated
+			Runtime.getRuntime().addShutdownHook(new DefaultClockSequenceShutdownHook(this));
+			
 		} else {
-			this.reset();
+			if (defaultClockSequence != 0) {
+				this.set(defaultClockSequence);
+			} else {
+				this.reset();
+			}
 		}
+
+	}
+
+	public DefaultClockSequenceStrategy(long timestamp, long nodeIdentifier) {
+		this(timestamp, nodeIdentifier, null);
+	}
+
+	public DefaultClockSequenceStrategy() {
+		this(0, 0, null);
 	}
 
 	/**
@@ -199,5 +209,26 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	@Override
 	public void reset() {
 		this.value = RandomUtil.nextInt(SEQUENCE_MAX);
+	}
+
+	protected void storeState() {
+		if (SettingsUtil.isStateEnabled()) {
+			this.state.setNodeIdentifier(nodeIdentifier);
+			this.state.setTimestamp(timestamp);
+			this.state.setClockSequence((int) this.value);
+			this.state.store();
+		}
+	}
+
+	protected static class DefaultClockSequenceShutdownHook extends Thread {
+		private DefaultClockSequenceStrategy strategy;
+
+		public DefaultClockSequenceShutdownHook(DefaultClockSequenceStrategy strategy) {
+			this.strategy = strategy;
+		}
+
+		public void run() {
+			this.strategy.storeState();
+		}
 	}
 }

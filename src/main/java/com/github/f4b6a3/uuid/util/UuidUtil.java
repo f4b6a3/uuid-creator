@@ -100,10 +100,27 @@ public class UuidUtil {
 		if (!(UuidUtil.isTimeBasedVersion(uuid) || UuidUtil.isSequentialVersion(uuid)
 				|| UuidUtil.isDceSecurityVersion(uuid))) {
 			throw new UnsupportedOperationException(
-					String.format("Not a time-based, sequential DCE Security UUID: %s.", uuid.toString()));
+					String.format("Not a time-based, sequential or DCE Security UUID: %s.", uuid.toString()));
 		}
 
 		return uuid.getLeastSignificantBits() & 0x0000ffffffffffffL;
+	}
+	
+	/**
+	 * Get the clock sequence that is embedded in the UUID.
+	 *
+	 * @param uuid an UUID
+	 * @return long the node identifier
+	 */
+	public static long extractClockSequence(UUID uuid) {
+
+		if (!(UuidUtil.isTimeBasedVersion(uuid) || UuidUtil.isSequentialVersion(uuid)
+				|| UuidUtil.isDceSecurityVersion(uuid))) {
+			throw new UnsupportedOperationException(
+					String.format("Not a time-based or sequential UUID: %s.", uuid.toString()));
+		}
+
+		return (uuid.getLeastSignificantBits() >>> 48) & 0x0000000000003fffL;
 	}
 
 	/**

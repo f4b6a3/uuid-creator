@@ -7,6 +7,8 @@ public class SettingsUtil {
 	public static final String PROPERTY_NODEID = "nodeid";
 	public static final String PROPERTY_STATE_DIRECTORY = "state.directory";
 	public static final String PROPERTY_STATE_ENABLED = "state.enabled";
+	
+	private static final String[] trueValues = { "true", "t", "yes", "y", "on", "1" };
 
 	public static long getNodeIdentifier() {
 		String value = getProperty(PROPERTY_NODEID);
@@ -15,6 +17,11 @@ public class SettingsUtil {
 		}
 		return ByteUtil.toNumber(value) & 0x0000FFFFFFFFFFFFL;
 	}
+	
+	public static void setNodeIdentifier(long nodeid) {
+		String value = ByteUtil.toHexadecimal(nodeid & 0x0000FFFFFFFFFFFFL);
+		setProperty(PROPERTY_NODEID, value);
+	}
 
 	public static int getClockSequence() {
 		String value = getProperty(PROPERTY_CLOCKSEQ);
@@ -22,6 +29,11 @@ public class SettingsUtil {
 			return 0;
 		}
 		return ((int) ByteUtil.toNumber(value)) & 0x00003FFF;
+	}
+	
+	public static void setClockSequence(int clockseq) {
+		String value = ByteUtil.toHexadecimal(clockseq & 0x00003FFF);
+		setProperty(PROPERTY_CLOCKSEQ, value);
 	}
 
 	public static String getStateDirectory() {
@@ -32,12 +44,22 @@ public class SettingsUtil {
 		return value;
 	}
 	
+	public static void setStateDirectory(String directory) {
+		String value = directory.replaceAll("/$", "");
+		setProperty(PROPERTY_STATE_DIRECTORY, value);
+	}
+
 	public static boolean isStateEnabled() {
 		String value = getProperty(PROPERTY_STATE_ENABLED);
 		if (value == null) {
 			return false;
 		}
-		return value.equals("true");
+
+		return isTrue(value);
+	}
+	
+	public static void setStateEnabled(boolean enabled) {
+		setProperty(PROPERTY_STATE_ENABLED, "true");
 	}
 	
 	private static String getProperty(String name) {
@@ -56,6 +78,10 @@ public class SettingsUtil {
 
 		return null;
 	}
+	
+	private static void setProperty(String key, String value) {
+		System.setProperty(getPropertyName(key), value);
+	}
 
 	private static String getPropertyName(String key) {
 		return String.join(".", PROPERTY_PREFIX, key);
@@ -67,5 +93,12 @@ public class SettingsUtil {
 
 	private static boolean isEmpty(String value) {
 		return value == null || value.isEmpty();
+	}
+	
+	private static boolean isTrue(String value) {
+		for (String t : trueValues) {
+			return value.toLowerCase().equals(t);
+		}
+		return false;
 	}
 }

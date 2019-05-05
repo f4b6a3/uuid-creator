@@ -65,6 +65,9 @@ public abstract class AbstractSequence implements Sequence {
 	
 	@Override
 	public void set(int value) {
+		if (value < MIN_VALUE || value > MAX_VALUE) {
+			this.reset();
+		}
 		this.value = value;
 	}
 }

@@ -1,9 +1,10 @@
-package com.github.f4b6a3.other;
+package com.github.f4b6a3.collision;
 
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
+import com.github.f4b6a3.uuid.factory.SequentialUuidCreator;
+import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.timestamp.StoppedDefaultTimestampStrategy;
 
 /**
@@ -23,17 +24,16 @@ import com.github.f4b6a3.uuid.timestamp.StoppedDefaultTimestampStrategy;
  */
 public class CollisionTest {
 
-	private UUID uuid;
-
 	public int threadCount; // Number of threads to run
 	public int requestCount; // Number of requests for thread
 
-	private long[][] cache; // Store values generated per thread
+	private long[][] cacheLong; // Store values generated per thread
+	private UUID[][] cacheUUID; // Store UUIDs generated per thread
 
 	private boolean verbose; // Show progress or not
 
 	// Time based UUID creator
-	private AbstractTimeBasedUuidCreator creator;
+	private TimeBasedUuidCreator creator;
 
 	/**
 	 * Initialize the test.
@@ -42,12 +42,22 @@ public class CollisionTest {
 	 * @param requestCount
 	 * @param creator
 	 */
-	public CollisionTest(int threadCount, int requestCount, AbstractTimeBasedUuidCreator creator, boolean progress) {
+	public CollisionTest(int threadCount, int requestCount, TimeBasedUuidCreator creator, boolean progress) {
 		this.threadCount = threadCount;
 		this.requestCount = requestCount;
 		this.creator = creator;
 		this.verbose = progress;
-		this.cache = new long[threadCount][requestCount];
+		this.initCache();
+	}
+
+	private void initCache() {
+		this.cacheUUID = new UUID[threadCount][requestCount];
+		this.cacheLong = new long[threadCount][requestCount];
+		for (int i = 0; i < cacheLong.length; i++) {
+			for (int j = 0; j < cacheLong[0].length; j++) {
+				cacheLong[i][j] = 0;
+			}
+		}
 	}
 
 	/**
@@ -56,17 +66,18 @@ public class CollisionTest {
 	 * @param value
 	 * @return
 	 */
-	private boolean contains(long value) {
-		for (int i = 0; i < cache.length; i++) {
-			for (int j = 0; j < cache[0].length; j++) {
-				if (cache[i][j] == value) {
-					return true;
-				} else if (cache[i][j] == 0) {
-					j = cache[0].length - 1;
+	private int[] find(long value) {
+		for (int i = 0; i < cacheLong.length; i++) {
+			for (int j = 0; j < cacheLong[0].length; j++) {
+				if (cacheLong[i][j] == value) {
+					int tmp[] = { i, j };
+					return tmp;
+				} else if (cacheLong[i][j] == 0) {
+					j = cacheLong[0].length - 1;
 				}
 			}
 		}
-		return false;
+		return null;
 	}
 
 	/**
@@ -77,19 +88,6 @@ public class CollisionTest {
 			Thread thread = new Thread(new CollisionThread(i, verbose));
 			thread.start();
 		}
-	}
-
-	public static void main(String[] args) {
-
-		boolean verbose = true;
-		int threadCount = 10; // Number of threads to run
-		int requestCount = 100_000; // Number of requests for thread
-
-		AbstractTimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator()
-				.withTimestampStrategy(new StoppedDefaultTimestampStrategy()).withNodeIdentifier(0x111111111111L);
-
-		CollisionTest test = new CollisionTest(threadCount, requestCount, creator, verbose);
-		test.start();
 	}
 
 	public class CollisionThread implements Runnable {
@@ -112,38 +110,56 @@ public class CollisionTest {
 			long lsb = 0;
 			long value = 0;
 			double progress = 0;
-			int max = cache[0].length;
+			int max = cacheLong[0].length;
 
 			for (int i = 0; i < max; i++) {
 
 				// Request a UUID
-				uuid = creator.create();
+				UUID uuid = creator.create();
 
 				// Convert UUID into a long value, ignoring fixed bits
 				msb = uuid.getMostSignificantBits() & 0xffffffffffff0000L;
 				lsb = (uuid.getLeastSignificantBits() & 0xffff000000000000L) >>> 48;
+
+				
 				value = (msb | lsb);
 
 				if (verbose) {
 					// Calculate and show progress
 					progress = (i * 1.0 / max) * 100;
 					if (progress % 1 == 0) {
-						System.out.println(String.format("[Thread %s] %s %s %s%%", id, uuid, i, (int) progress));
+						System.out.println(String.format("[Thread %06d] %s %s %s%%", id, uuid, i, (int) progress));
 					}
 				}
 
+				int position[] = find(value);
+
 				// Insert the value in cache, if it does not exist in it.
-				if (!contains(value)) {
-					cache[id][i] = value;
+				if (position == null) {
+					cacheLong[id][i] = value;
+					cacheUUID[id][i] = uuid;
 				} else {
-					// The current value have been created by another thread.
+					UUID other = cacheUUID[position[0]][position[1]];
 					throw new RuntimeException(
-							String.format("[COLLISION][Thread %s] %s %s %s%%", id, uuid, i, (int) progress));
+							String.format("[COLLISION][Thread %s] %s %s %s%%", id, uuid, other, i, (int) progress));
 				}
 			}
 
 			// Finished
 			System.out.println(String.format("[Thread %s] Done.", id));
 		}
+	}
+
+	public static void main(String[] args) {
+
+		boolean verbose = true;
+		int threadCount = 10; // Number of threads to run
+		int requestCount = 100_000; // Number of requests for thread
+
+		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator()
+				.withTimestampStrategy(new StoppedDefaultTimestampStrategy()).withNodeIdentifier(0x111111111111L);
+
+		CollisionTest test = new CollisionTest(threadCount, requestCount, creator, verbose);
+		test.start();
 	}
 }

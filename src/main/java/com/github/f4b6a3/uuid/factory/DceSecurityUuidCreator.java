@@ -227,9 +227,7 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	 * Class used to keep a counter to simulate minimize repetition.
 	 */
 	protected class DCESTimestampCounter extends AbstractSequence {
-
-		private long timestamp = 0;
-
+		
 		// COUNTER_MAX: 2^6 (14 bits of the clock sequence minus 8 bytes)
 		private static final int COUNTER_MIN = 0;
 		private static final int COUNTER_MAX = 63;
@@ -237,24 +235,5 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 		protected DCESTimestampCounter() {
 			super(COUNTER_MIN, COUNTER_MAX);
 		}
-
-		/**
-		 * Returns how many times a timestamp was used.
-		 * 
-		 * @param timestamp a timestamp
-		 * @return a long value
-		 */
-		protected int getNextForTimestamp(long timestamp) {
-			if (timestamp <= this.timestamp) {
-				return this.next();
-			}
-			this.timestamp = timestamp;
-			this.reset();
-			return this.current();
-		}	
-	}
-	
-	@Override
-	protected void storeState() {
 	}
 }

@@ -35,8 +35,6 @@ import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
-	
-	protected UuidState state;
 
 	protected long timestamp;
 	protected long nodeIdentifier;
@@ -58,14 +56,9 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 		this.nodeIdentifierStrategy = new DefaultNodeIdentifierStrategy();
 
 		if (SettingsUtil.isStateEnabled()) {
-			// load the previous state
-			this.state = new UuidState();
 			long timestamp = this.timestampStrategy.getTimestamp();
 			long nodeIdentifier = this.nodeIdentifierStrategy.getNodeIdentifier();
-			this.clockSequenceStrategy = new DefaultClockSequenceStrategy(timestamp, nodeIdentifier, this.state);
-
-			// Add a hook for when the program exits or is terminated
-			Runtime.getRuntime().addShutdownHook(new ShutdownHook(this));
+			this.clockSequenceStrategy = new DefaultClockSequenceStrategy(timestamp, nodeIdentifier);
 		} else {
 			this.clockSequenceStrategy = new DefaultClockSequenceStrategy();
 		}
@@ -323,24 +316,5 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	public long formatLeastSignificantBits(final long nodeIdentifier, final long clockSequence) {
 		return UuidUtil.formatRfc4122LeastSignificantBits(nodeIdentifier, clockSequence);
-	}
-	
-	protected void storeState() {
-		if (SettingsUtil.isStateEnabled()) {
-			this.state.setNodeIdentifier(nodeIdentifier);
-			this.state.setTimestamp(timestamp);
-			this.state.setClockSequence((int) clockSequence);
-			this.state.store();
-		}
-	}
-	
-	static class ShutdownHook extends Thread {
-		private AbstractTimeBasedUuidCreator creator;
-		public ShutdownHook(AbstractTimeBasedUuidCreator creator) {
-			this.creator = creator;
-		}
-		public void run() {
-			this.creator.storeState();
-		}
 	}
 }

@@ -10,6 +10,8 @@ import org.junit.Test;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
+import com.github.f4b6a3.uuid.util.TimestampUtil;
+import com.github.f4b6a3.uuid.util.UuidUtil;
 
 import static com.github.f4b6a3.uuid.util.UuidUtil.*;
 
