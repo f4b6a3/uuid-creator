@@ -67,6 +67,8 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 
 	protected static final int SEQUENCE_MIN = 0; // 0x0000;
 	protected static final int SEQUENCE_MAX = 16_383; // 0x3fff;
+	
+	protected static int instances;
 
 	/**
 	 * This constructor uses a state stored previously.
@@ -108,19 +110,21 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	public DefaultClockSequenceStrategy(long timestamp, long nodeIdentifier, AbstractUuidState state) {
 		super(SEQUENCE_MIN, SEQUENCE_MAX);
 
+		instances++;
 		this.timestamp = timestamp;
 		this.nodeIdentifier = nodeIdentifier;
 
 		if (SettingsUtil.isStateEnabled()) {
 
+			this.addShutdownHook();
+			
 			this.state = state;
 
 			if (this.state == null) {
 				this.state = new FileUuidState();
 			}
 
-			if (!this.state.isValid()) {
-				// System.out.println("0");
+			if (!this.state.isValid() || instances > 0) {
 				this.reset();
 				return;
 			}
@@ -133,9 +137,6 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 			if ((this.timestamp <= lastTimestamp) || (this.nodeIdentifier != lastNodeIdentifier)) {
 				this.next();
 			}
-
-			// Add a hook for when the program exits or is terminated
-			Runtime.getRuntime().addShutdownHook(new DefaultClockSequenceShutdownHook(this));
 
 		} else {
 			this.reset();
@@ -211,6 +212,11 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 			this.state.setClockSequence((int) this.value);
 			this.state.store();
 		}
+	}
+	
+	private void addShutdownHook() {
+		// Add a hook for when the program exits or is terminated
+		Runtime.getRuntime().addShutdownHook(new DefaultClockSequenceShutdownHook(this));
 	}
 
 	protected static class DefaultClockSequenceShutdownHook extends Thread {
