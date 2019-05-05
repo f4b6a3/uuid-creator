@@ -50,7 +50,7 @@ public class SettingsUtilTest {
 	}
 	
 	@Test
-	public void clockSequenceShouldBeIgualToSystemProperty() {
+	public void clockSequenceShouldBeIqualToSystemProperty() {
 		SettingsUtil.setClockSequence(CLOCKSEQ);
 		UUID uuid = UuidCreator.getTimeBasedCreator().create();
 		long clockseq = UuidUtil.extractClockSequence(uuid);
@@ -58,13 +58,12 @@ public class SettingsUtilTest {
 	}
 	
 	@Test
-	public void clockSequenceShouldNotBeIgualToSystemProperty() {
+	public void clockSequenceShouldNotBeIqualToSystemProperty() {
 		SettingsUtil.setClockSequence(CLOCKSEQ_ZERO);
 		UUID uuid = UuidCreator.getTimeBasedCreator().create();
 		long clockseq = UuidUtil.extractClockSequence(uuid);
 		assertNotEquals(ByteUtil.toHexadecimal(CLOCKSEQ), ByteUtil.toHexadecimal(clockseq));
 		
-		clearSystemProperties();
 		uuid = UuidCreator.getTimeBasedCreator().create();
 		clockseq = UuidUtil.extractClockSequence(uuid);
 		assertNotEquals(ByteUtil.toHexadecimal(CLOCKSEQ), ByteUtil.toHexadecimal(clockseq));
