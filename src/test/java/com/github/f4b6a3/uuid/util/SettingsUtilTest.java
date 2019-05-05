@@ -22,6 +22,7 @@ public class SettingsUtilTest {
 	
 	@Before
 	public void clearSystemProperties() {
+		SettingsUtil.setStateEnabled(false);
 		System.clearProperty(SettingsUtil.PROPERTY_NODEID);
 		System.clearProperty(SettingsUtil.PROPERTY_CLOCKSEQ);
 		System.clearProperty(SettingsUtil.PROPERTY_STATE_ENABLED);

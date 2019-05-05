@@ -59,7 +59,7 @@ public class SettingsUtil {
 	}
 	
 	public static void setStateEnabled(boolean enabled) {
-		setProperty(PROPERTY_STATE_ENABLED, "true");
+		setProperty(PROPERTY_STATE_ENABLED, String.valueOf(enabled));
 	}
 	
 	private static String getProperty(String name) {
