@@ -107,13 +107,13 @@ public class DefaultClockSequenceStrategyTest {
 
 		int first = balancer.first();
 		for (int i = 1; i < list.length; i++) {
-			assertEquals((list[i] + first) % degrees, Math.abs(balancer.next()));
+			assertEquals((list[i] + first) % degrees, balancer.next());
 		}
 		
 		// Restart the sequence
 		first = balancer.next();
 		for (int i = 1; i < list.length; i++) {
-			assertEquals((list[i] + first) % degrees, Math.abs(balancer.next()));
+			assertEquals((list[i] + first) % degrees, balancer.next());
 		}
 	}
 
