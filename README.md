@@ -447,6 +447,8 @@ export UUIDCREATOR_NODEID="c0da06157723"
 
 The `state.enabled` property is used by `AbstractTimeBasedUuidCreator`. If this property or variable exists, `true` is returned. Otherwise, `false` is returned. When this property is `true`, it tells the factory to save the state file in the file system when the program is closed. The state file is used in the next time the library is loaded into memory. The state contains three key-value pairs: `timestamp`, `nodeid` and `cloqseq`. These values are used by `DefaultClockSequenceStrategy` to decide when to reset or increment the clock sequence. By default, the state file is disabled. It accepts `true` or `false`. No property or variable means `false`.
 
+Don't enable the state file if you want to use many instances of UUID generators. This file is for systems with only one UUID generator.
+
 * Using system property:
 
 ```bash
@@ -570,11 +572,13 @@ You can create any strategy that implements the `TimestampStrategy`, if none of 
 
 #### Clock sequence
 
-The clock sequence is used to help avoid duplicates. It comes in action when the system clock is backwards or when the node identifier changes. It also helps to expand the maximum amount of UUIDs created at the same second.
+The clock sequence is used to help avoid duplicates. It comes in when the system clock is backwards or when the node identifier changes. It also helps to expand the maximum amount of UUIDs created at the same second. 
 
 The first bits of the clock sequence part are multiplexed with the variant number of the RFC-4122. Because of that, it has a range from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards. 
 
 With the incrementing clock sequence the limit of UUIDs created in the same second and in a single host machine rises to 163,840,000,000, since the timestamp resolution is 10,000,000 and the range is 16,384. So, the maximum average rate is 163 billion per second per node identifier.
+
+This implementation generates balanced clock sequences in the case that there are many instances of `AbstractUuidCreator` running. This is done to avoid more than one instance using the same clock sequence.
 
 You can create any strategy that implements the `ClockSequenceStrategy`, if none of the strategies are good for you.
 
@@ -587,6 +591,9 @@ The directory in which the file `uuidcreator.state` lies is configured by the sy
 Since the state file is disabled by default, it can be enabled by the system property `uuidcreator.state.enabled` or the environment variable `UUIDCREATOR_STATE_ENABLED`.
 
 The key-value pairs of the state file has effect in these factories: `TimeBasedUuidCreator`, `SequentialUuidCreator`, `DceSecurityUuidCreator` and `MssqlGuidCreator`. The the other factories ignore the state file.
+
+Don't enable the state file if you want to use multiple instances of UUID generators. If do it it, all instances of UUID generators will use the same clock sequence. Just let the algorithm generate different clock sequences for each generator in a balanced way.
+
 
 #### Node identifier
 
