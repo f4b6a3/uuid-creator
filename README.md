@@ -57,7 +57,7 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/uuid-creator).
@@ -447,7 +447,7 @@ export UUIDCREATOR_NODEID="c0da06157723"
 
 The `state.enabled` property is used by `AbstractTimeBasedUuidCreator`. If this property or variable exists, `true` is returned. Otherwise, `false` is returned. When this property is `true`, it tells the factory to save the state file in the file system when the program is closed. The state file is used in the next time the library is loaded into memory. The state contains three key-value pairs: `timestamp`, `nodeid` and `cloqseq`. These values are used by `DefaultClockSequenceStrategy` to decide when to reset or increment the clock sequence. By default, the state file is disabled. It accepts `true` or `false`. No property or variable means `false`.
 
-Don't enable the state file if you want to use many instances of UUID generators. This file is for systems with only one UUID generator.
+Don't enable the state file if you want to use many instances of UUID generators running at the same time.
 
 * Using system property:
 
@@ -578,7 +578,7 @@ The first bits of the clock sequence part are multiplexed with the variant numbe
 
 With the incrementing clock sequence the limit of UUIDs created in the same second and in a single host machine rises to 163,840,000,000, since the timestamp resolution is 10,000,000 and the range is 16,384. So, the maximum average rate is 163 billion per second per node identifier.
 
-This implementation generates balanced clock sequences in the case that there are many instances of `AbstractUuidCreator` running. This is done to avoid more than one instance using the same clock sequence.
+This implementation generates _balanced_ clock sequences in the case that there are many instances of `AbstractUuidCreator` running. This is done to avoid more than one instance using the same clock sequence. It generates a clock sequence numbers as far as possible from the previous numbers generated.
 
 You can create any strategy that implements the `ClockSequenceStrategy`, if none of the strategies are good for you.
 

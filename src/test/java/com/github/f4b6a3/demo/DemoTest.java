@@ -37,7 +37,7 @@ public class DemoTest {
 	public void testPrintList() {
 		int max = 100;
 
-		SettingsUtil.setStateEnabled(true);
+		SettingsUtil.setStateEnabled(false);
 		
 		System.out.println();
 		System.out.println("----------------------------------------");
