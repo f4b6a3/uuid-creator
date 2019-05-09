@@ -578,9 +578,21 @@ The first bits of the clock sequence part are multiplexed with the variant numbe
 
 With the incrementing clock sequence the limit of UUIDs created in the same second and in a single host machine rises to 163,840,000,000, since the timestamp resolution is 10,000,000 and the range is 16,384. So, the maximum average rate is 163 billion per second per node identifier.
 
-This implementation generates _balanced_ clock sequences in the case that there are many instances of `AbstractUuidCreator` running. This is done to avoid more than one instance using the same clock sequence. It generates a clock sequence numbers as far as possible from the previous numbers generated.
+This implementation generates _well distributed clock sequences_ in the case that there are many instances of `AbstractUuidCreator` running. This is done to avoid more than one instance using the same clock sequence. To assure that the clock sequence values will not be repeated and will be distant enough from the other values, it uses an algorithm created for this purpose `CyclicDistributor`.
 
 You can create any strategy that implements the `ClockSequenceStrategy`, if none of the strategies are good for you.
+
+##### Cyclic Distributor
+
+The Cyclic Distributor is just a simple algorithm that hands out values. It's like a sequence, but the first number is random, and the rest is calculated as point of a circle. I don't know if this algorithm already existed. I just called Cyclic Distributor, because it hands out or _distributes_ values as if they where on the perimeter of a _circle_ and does it in iterations or _cycles_.
+
+The class `CyclicDistributor` hands out numbers between the range ZERO and `max` so that the first value is always random and the rest or values will not be repeated. The range is treated as the perimeter of a circle. Each value is a point in this perimeter. The first point handed out is always random. The next values are calculated in iterations or cycles. Each cycle has a 2^n number of values to hand out. All the values are at the same distance from the other values of the same iteration.
+
+The iterations proceed until the quantity of values to be handed out in the current iteration is greater than a half of the max value. When it happens, the algorithm is restarted. Another random number is generated and handed out. The following numbers will be calculated the same way as above.
+
+For example, say the a range is between ZERO and 360, similar to the 360 degrees of a circle. The first number handed out is random, and for coincidence it is ZERO. The second value handed out is 180 degrees away from the first point. The third is at 270 degrees far from the first one. The forth 90 degrees. And so on...
+
+This algorithm is very simple, but is easier to understand watching it running. There's an animation written with HTML canvas in the `doc` directory that shows the algorithm in action. Each point drawn in the circle of the animation is like a value been handed out. Each value is at the same distance of the others in the same iteration or cycle.
 
 ##### State file
 
@@ -592,7 +604,7 @@ Since the state file is disabled by default, it can be enabled by the system pro
 
 The key-value pairs of the state file has effect in these factories: `TimeBasedUuidCreator`, `SequentialUuidCreator`, `DceSecurityUuidCreator` and `MssqlGuidCreator`. The the other factories ignore the state file.
 
-Don't enable the state file if you want to use multiple instances of UUID generators. If do it it, all instances of UUID generators will use the same clock sequence. Just let the algorithm generate different clock sequences for each generator in a balanced way.
+Don't enable the state file if you want to use multiple instances of UUID generators. If do it, all instances of UUID generators will use the same clock sequence. Just let the algorithm generate different clock sequences for each generator in a well distributed way.
 
 
 #### Node identifier

@@ -17,11 +17,12 @@
 
 package com.github.f4b6a3.uuid.clockseq;
 
+import com.github.f4b6a3.uuid.distrib.CyclicDistributor;
+import com.github.f4b6a3.uuid.distrib.Distributor;
 import com.github.f4b6a3.uuid.exception.OverrunException;
 import com.github.f4b6a3.uuid.sequence.AbstractSequence;
 import com.github.f4b6a3.uuid.state.AbstractUuidState;
 import com.github.f4b6a3.uuid.state.FileUuidState;
-import com.github.f4b6a3.uuid.util.RandomUtil;
 import com.github.f4b6a3.uuid.util.SettingsUtil;
 
 /**
@@ -63,7 +64,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	// keeps count of values returned
 	private int counter = 0;
 
-	private static Balancer balancer;
+	private static Distributor distributor;
 
 	protected AbstractUuidState state;
 
@@ -113,8 +114,8 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 		this.timestamp = timestamp;
 		this.nodeIdentifier = nodeIdentifier;
 
-		if (balancer == null) {
-			balancer = new Balancer(SEQUENCE_MAX);
+		if (distributor == null) {
+			distributor = new CyclicDistributor(SEQUENCE_MAX);
 		}
 
 		if (SettingsUtil.isStateEnabled()) {
@@ -205,68 +206,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 
 	@Override
 	public void reset() {
-		this.value = balancer.next();
-	}
-	
-	/**
-	 * This {@link Balancer} helps to avoid more than one instance of UUID
-	 * generator with the same clock sequence.
-	 * 
-	 * It generates a clock sequence as far as possible from the previous
-	 * numbers generated.
-	 * 
-	 * The first number generated is always random. The next ones follow the
-	 * algorithm.
-	 * 
-	 **/
-	protected static class Balancer {
-
-		private float perimeter;
-		private float offset;
-		private float iteration;
-		private float remaining;
-		private float arc;
-
-		public Balancer(int max) {
-			this.perimeter = max;
-			this.reset();
-		}
-
-		private void reset() {
-			this.offset = 0;
-			this.iteration = 0;
-			this.remaining = 0;
-			this.arc = 0;
-		}
-
-		public int first() {
-			this.reset();
-			this.offset = RandomUtil.nextInt((int) this.perimeter);
-			if (this.offset == 0) {
-				this.offset = this.perimeter;
-			}
-			return (int) this.offset;
-		}
-
-		public synchronized int next() {
-
-			if (this.offset == 0) {
-				return this.first();
-			}
-
-			if (this.remaining == 0) {
-				this.remaining = (float) Math.pow(2.0, this.iteration);
-
-				if (this.remaining > this.perimeter / 2.0) {
-					return this.first();
-				}
-
-				this.arc = (this.perimeter / this.remaining);
-				this.iteration++;
-			}
-
-			return (int) ((this.offset + (this.arc * --this.remaining) + (this.arc / 2.0)) % this.perimeter);
-		}
+		this.value = distributor.handOut();
 	}
 	
 	protected void storeState() {

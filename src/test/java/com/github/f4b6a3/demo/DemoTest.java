@@ -6,16 +6,13 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.junit.Ignore;
-import org.junit.Test;
 
-import com.github.f4b6a3.collision.CollisionTest;
 import com.github.f4b6a3.other.RandomImage;
 import com.github.f4b6a3.other.RandomnessTest;
 import com.github.f4b6a3.other.SimpleBenchmark;
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.factory.DceSecurityUuidCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedMd5UuidCreator;
-import com.github.f4b6a3.uuid.factory.SequentialUuidCreator;
 import com.github.f4b6a3.uuid.nodeid.RandomNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.MacNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.DefaultNodeIdentifierStrategy;
@@ -26,7 +23,6 @@ import com.github.f4b6a3.uuid.random.XorshiftStarRandom;
 import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.DeltaTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.NanosecondTimestampStrategy;
-import com.github.f4b6a3.uuid.timestamp.StoppedDefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.util.SettingsUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
