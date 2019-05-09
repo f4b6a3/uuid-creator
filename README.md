@@ -582,13 +582,13 @@ This implementation generates _well distributed clock sequences_ in the case tha
 
 You can create any strategy that implements the `ClockSequenceStrategy`, if none of the strategies are good for you.
 
-##### Cyclic Distributor
+##### Cyclic distributor
 
-The Cyclic Distributor is just a simple algorithm that hands out values. It's like a sequence, but the first number is random, and the rest is calculated as point of a circle. I don't know if this algorithm already existed. I just called Cyclic Distributor, because it hands out or _distributes_ values as if they where on the perimeter of a _circle_ and does it in iterations or _cycles_.
+The cyclic distributor is just a simple algorithm that hands out values. It's like a sequence, but the first number is random, and the rest is calculated as points of a circle. I don't know if this algorithm already exists. I've just called "cyclic distributor", because it hands out or _distributes_ values as if they were on the perimeter of a _circle_ and does it in iterations or _cycles_.
 
-The class `CyclicDistributor` hands out numbers between the range ZERO and `max` so that the first value is always random and the rest or values will not be repeated. The range is treated as the perimeter of a circle. Each value is a point in this perimeter. The first point handed out is always random. The next values are calculated in iterations or cycles. Each cycle has a 2^n number of values to hand out. All the values are at the same distance from the other values of the same iteration.
+The class `CyclicDistributor` hands out numbers between the range ZERO and `max` so that the first value is always random and the rest or values will not be repeated. The range is treated as the perimeter of a circle. Each value is a point in this perimeter. The first point handed out is random. The next values are calculated in iterations or cycles. Each cycle has a 2^n number of values to hand out. All the values are at the same distance from the other values of the same iteration.
 
-The iterations proceed until the quantity of values to be handed out in the current iteration is greater than a half of the max value. When it happens, the algorithm is restarted. Another random number is generated and handed out. The following numbers will be calculated the same way as above.
+The iterations proceed until the quantity of values to be handed out in the current iteration is greater than a half of the `max` value. When it happens, the algorithm is restarted. Another random number is generated and handed out. The following numbers will be calculated the same way as above.
 
 For example, say the a range is between ZERO and 360, similar to the 360 degrees of a circle. The first number handed out is random, and for coincidence it is ZERO. The second value handed out is 180 degrees away from the first point. The third is at 270 degrees far from the first one. The forth 90 degrees. And so on...
 
