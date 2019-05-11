@@ -3,7 +3,7 @@ package com.github.f4b6a3.uuid.distrib;
 import com.github.f4b6a3.uuid.util.RandomUtil;
 
 /**
- * This class hands out numbers between the range ZERO and `max` so that the
+ * This class hands out numbers between the range ZERO and `range` so that the
  * first value is random and the rest values will not repeat.
  *
  * The range is treated as the perimeter of a circle. Each value is a point in
@@ -13,7 +13,7 @@ import com.github.f4b6a3.uuid.util.RandomUtil;
  * circle.
  * 
  * The iterations proceed until the quantity of values to be handed out in the
- * current iteration is greater than a half of the max value. When it happens,
+ * current iteration is greater than a half of the range. When it happens,
  * the algorithm is restarted. Another random number is generated and handed
  * out. The following numbers will be calculated the same way as above.
  * 
