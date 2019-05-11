@@ -2,6 +2,7 @@ package com.github.f4b6a3.uuid.state;
 
 import java.util.UUID;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -32,6 +33,11 @@ public class UuidStateTest {
 		SettingsUtil.setStateEnabled(true);
 		this.state = new MockUuidState();
 		this.state.setValid(true);
+	}
+	
+	@After
+	public void after() {
+		SettingsUtil.setStateEnabled(false);
 	}
 	
 	@Test
@@ -81,8 +87,6 @@ public class UuidStateTest {
 	
 	@Test
 	public void clockSequenceShouldNotBeIqualToZeroIfStateFileIsDesabled() {
-		
-		SettingsUtil.setStateEnabled(false);
 		
 		DefaultClockSequenceStrategy clockSequenceStrategy = new DefaultClockSequenceStrategy(this.timestamp, NODEID, this.state);
 		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator().withClockSequenceStrategy(clockSequenceStrategy);

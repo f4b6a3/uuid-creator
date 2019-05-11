@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.UUID;
 import java.time.Instant;
 
+import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -25,7 +26,7 @@ public class UuidCreatorTest {
 	private static final int DEFAULT_LOOP_LIMIT = 10_000;
 
 	private static final String UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
-
+	
 	@Test
 	public void testGetRandomUuid_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
@@ -349,30 +350,30 @@ public class UuidCreatorTest {
 		}
 	}
 
-//	@Test
-//	public void testCompGuid() {
-//		UUID[] list = new UUID[DEFAULT_LOOP_LIMIT];
-//
-//		long startTime = System.currentTimeMillis();
-//
-//		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-//			list[i] = UuidCreator.getCombGuid();
-//		}
-//
-//		long endTime = System.currentTimeMillis();
-//
-//		checkUniqueness(list);
-//		checkVersion(list, UuidVersion.RANDOM_BASED);
-//		
-//		long previous = 0;
-//		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-//			long creationTime = list[i].getLeastSignificantBits() & 0x0000ffffffffffffL;
-//			assertTrue("Comb Guid creation time before start time", startTime <= creationTime);
-//			assertTrue("Comb Guid creation time after end time", creationTime <= endTime);
-//			assertTrue("Comb Guid sequence is not sorted " + previous + " " + creationTime , previous <= creationTime);
-//			previous = creationTime;
-//		}
-//	}
+	@Test
+	public void testCompGuid() {
+		UUID[] list = new UUID[DEFAULT_LOOP_LIMIT];
+
+		long startTime = System.currentTimeMillis();
+
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			list[i] = UuidCreator.getCombGuid();
+		}
+
+		long endTime = System.currentTimeMillis();
+
+		checkUniqueness(list);
+		checkVersion(list, UuidVersion.RANDOM_BASED);
+		
+		long previous = 0;
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			long creationTime = list[i].getLeastSignificantBits() & 0x0000ffffffffffffL;
+			assertTrue("Comb Guid creation time before start time", startTime <= creationTime);
+			assertTrue("Comb Guid creation time after end time", creationTime <= endTime);
+			assertTrue("Comb Guid sequence is not sorted " + previous + " " + creationTime , previous <= creationTime);
+			previous = creationTime;
+		}
+	}
 	
 	@Test
 	public void testCreateMssqlGuid() {
