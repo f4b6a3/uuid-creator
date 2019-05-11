@@ -588,11 +588,9 @@ The cyclic distributor is just a simple algorithm that hands out values. It's li
 
 The class `CyclicDistributor` hands out numbers between the range ZERO and `range` so that the first value is always random and the rest or values will not be repeated. The range is treated as the perimeter of a circle. Each value is a point in this perimeter. The first point handed out is random. The next values are calculated in iterations or cycles. Each cycle has a 2^n number of values to hand out. All the values are at the same distance from the other values of the same iteration.
 
-The iterations proceed until the quantity of values to be handed out in the current iteration is greater than a half of the range. When it happens, the algorithm is restarted. Another random number is generated and handed out. The following numbers will be calculated the same way as above.
+For example, say the a range is 360, similar to the 360 degrees of a circle. The first number handed out is random, and for coincidence it is ZERO. The second value handed out is 180 degrees away from the first point. The third is at 270 degrees far from the first one. The forth 90 degrees. And so on...
 
-For example, say the a range is between ZERO and 360, similar to the 360 degrees of a circle. The first number handed out is random, and for coincidence it is ZERO. The second value handed out is 180 degrees away from the first point. The third is at 270 degrees far from the first one. The forth 90 degrees. And so on...
-
-This algorithm is very simple, but is easier to understand watching it running. There's an animation written with HTML canvas in the `doc` directory that shows the algorithm in action. Each point drawn in the circle of the animation is like a value been handed out. Each value is at the same distance of the others in the same iteration or cycle.
+This algorithm is very simple, but it's easier to understand watching it running. There's an animation written in HTML canvas in the `doc` directory that shows the algorithm in action. Each point drawn in the circle of the animation is like a value been handed out. Each value is at the same distance of the others in the same iteration or cycle.
 
 ##### State file
 
