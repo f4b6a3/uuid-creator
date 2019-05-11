@@ -17,7 +17,7 @@ import com.github.f4b6a3.uuid.util.UuidUtil;
 import static com.github.f4b6a3.uuid.util.UuidUtil.*;
 
 public class UuidUtilTest {
-
+	
 	@Test
 	public void testIsNameBasedVersion() {
 		UUID uuid = UUID.nameUUIDFromBytes("test".getBytes());

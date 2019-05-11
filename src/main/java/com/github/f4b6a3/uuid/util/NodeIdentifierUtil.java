@@ -23,4 +23,14 @@ public class NodeIdentifierUtil {
 	public static long setUnicastNodeIdentifier(long nodeIdentifier) {
 		return nodeIdentifier & 0xFFFFFEFFFFFFFFFFL;
 	}
+	
+	/**
+	 * Checks if a node identifier is multicast.
+	 * 
+	 * @param nodeIdentifier
+	 * @return true if is multicast
+	 */
+	public static boolean isMulticastNodeIdentifier(long nodeIdentifier) {
+		return (nodeIdentifier & 0x0000010000000000L) == 0x0000010000000000L;
+	}
 }

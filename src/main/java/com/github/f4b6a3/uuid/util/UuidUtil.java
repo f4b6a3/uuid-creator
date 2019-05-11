@@ -23,7 +23,7 @@ import java.util.UUID;
 import com.github.f4b6a3.uuid.enums.UuidVariant;
 
 public class UuidUtil {
-
+	
 	/**
 	 * Checks whether the UUID variant is the one defined by the RFC-4122.
 	 * 
@@ -114,8 +114,7 @@ public class UuidUtil {
 	 */
 	public static long extractClockSequence(UUID uuid) {
 
-		if (!(UuidUtil.isTimeBasedVersion(uuid) || UuidUtil.isSequentialVersion(uuid)
-				|| UuidUtil.isDceSecurityVersion(uuid))) {
+		if (!(UuidUtil.isTimeBasedVersion(uuid) || UuidUtil.isSequentialVersion(uuid))) {
 			throw new UnsupportedOperationException(
 					String.format("Not a time-based or sequential UUID: %s.", uuid.toString()));
 		}
@@ -132,6 +131,17 @@ public class UuidUtil {
 	public static Instant extractInstant(UUID uuid) {
 		long timestamp = extractTimestamp(uuid);
 		return TimestampUtil.toInstant(timestamp);
+	}
+	
+	/**
+	 * Get the epoch milliseconds that is embedded in the UUID.
+	 *
+	 * @param uuid an UUID
+	 * @return epoch milliseconds
+	 */
+	public static long extractEpochMilliseconds(UUID uuid) {
+		long timestamp = extractTimestamp(uuid);
+		return TimestampUtil.toInstant(timestamp).toEpochMilli();
 	}
 
 	/**

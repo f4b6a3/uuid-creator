@@ -1,5 +1,7 @@
 package com.github.f4b6a3.uuid;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.UUID;
 import java.time.Instant;
 
@@ -8,7 +10,9 @@ import static org.junit.Assert.*;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
+import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.NameBasedMd5UuidCreator;
+import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 import static com.github.f4b6a3.uuid.util.ByteUtil.*;
@@ -18,7 +22,7 @@ import static com.github.f4b6a3.uuid.util.ByteUtil.*;
  */
 public class UuidCreatorTest {
 
-	private static final long DEFAULT_LOOP_LIMIT = 100;
+	private static final int DEFAULT_LOOP_LIMIT = 10_000;
 
 	private static final String UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
 
@@ -228,5 +232,207 @@ public class UuidCreatorTest {
 		UUID uuid3 = UUID.fromString("07147717-36a9-4da8-9181-77ebd224ae8d");
 		UUID uuid4 = UuidCreator.getNameBasedSha256(name);
 		assertEquals(uuid3, uuid4);
+	}
+
+	@Test
+	public void testCreateTimeBasedUuid() {
+
+		UUID[] list = new UUID[DEFAULT_LOOP_LIMIT];
+
+		long startTime = System.currentTimeMillis();
+
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			list[i] = UuidCreator.getTimeBased();
+		}
+
+		long endTime = System.currentTimeMillis();
+
+		checkNullOrInvalid(list);
+		checkUniqueness(list);
+		checkVersion(list, UuidVersion.TIME_BASED);
+		checkCreationTime(list, startTime, endTime);
+		checkNodeIdentifier(list);
+		checkOrdering(list);
+
+	}
+
+	@Test
+	public void testSequentialUuid() {
+
+		UUID[] list = new UUID[DEFAULT_LOOP_LIMIT];
+
+		long startTime = System.currentTimeMillis();
+
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			list[i] = UuidCreator.getSequential();
+		}
+
+		long endTime = System.currentTimeMillis();
+
+		checkNullOrInvalid(list);
+		checkUniqueness(list);
+		checkVersion(list, UuidVersion.SEQUENTIAL);
+		checkCreationTime(list, startTime, endTime);
+		checkNodeIdentifier(list);
+		checkOrdering(list);
+
+	}
+
+	@Test
+	public void testRandomUuid() {
+
+		UUID[] list = new UUID[DEFAULT_LOOP_LIMIT];
+
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			list[i] = UuidCreator.getRandom();
+		}
+
+		checkNullOrInvalid(list);
+		checkUniqueness(list);
+		checkVersion(list, UuidVersion.RANDOM_BASED);
+	}
+
+	@Test
+	public void testNameBasedMd5Uuid() {
+
+		UUID[] list = new UUID[DEFAULT_LOOP_LIMIT];
+
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			list[i] = UuidCreator.getNameBasedMd5(UuidNamespace.NAMESPACE_URL.getValue(), "url" + i);
+		}
+
+		checkNullOrInvalid(list);
+		checkUniqueness(list);
+		checkVersion(list, UuidVersion.NAME_BASED_MD5);
+		
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			UUID other = UuidCreator.getNameBasedMd5(UuidNamespace.NAMESPACE_URL.getValue(), "url" + i);
+			assertTrue("Two different MD5 UUIDs for the same input", list[i].equals(other));
+		}
+	}
+
+	@Test
+	public void testNameBasedSha1Uuid() {
+
+		UUID[] list = new UUID[DEFAULT_LOOP_LIMIT];
+
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			list[i] = UuidCreator.getNameBasedSha1(UuidNamespace.NAMESPACE_URL.getValue(), "url" + i);
+		}
+		
+		checkNullOrInvalid(list);
+		checkUniqueness(list);
+		checkVersion(list, UuidVersion.NAMBE_BASED_SHA1);
+		
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			UUID other = UuidCreator.getNameBasedSha1(UuidNamespace.NAMESPACE_URL.getValue(), "url" + i);
+			assertTrue("Two different SHA1 UUIDs for the same input", list[i].equals(other));
+		}
+	}
+	
+	@Test
+	public void testNameBasedSha256Uuid() {
+
+		UUID[] list = new UUID[DEFAULT_LOOP_LIMIT];
+
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			list[i] = UuidCreator.getNameBasedSha256(UuidNamespace.NAMESPACE_URL.getValue(), "url" + i);
+		}
+		
+		checkNullOrInvalid(list);
+		checkUniqueness(list);
+		checkVersion(list, UuidVersion.RANDOM_BASED);
+		
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			UUID other = UuidCreator.getNameBasedSha256(UuidNamespace.NAMESPACE_URL.getValue(), "url" + i);
+			assertTrue("Two different SHA256 UUIDs for the same input", list[i].equals(other));
+		}
+	}
+
+	@Test
+	public void testCompGuid() {
+		UUID[] list = new UUID[DEFAULT_LOOP_LIMIT];
+
+		long startTime = System.currentTimeMillis();
+
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			list[i] = UuidCreator.getCombGuid();
+		}
+
+		long endTime = System.currentTimeMillis();
+
+		checkUniqueness(list);
+		checkVersion(list, UuidVersion.RANDOM_BASED);
+		
+		long previous = 0;
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			long creationTime = list[i].getLeastSignificantBits() & 0x0000ffffffffffffL;
+			assertTrue("Comb Guid creation time before start time", startTime <= creationTime);
+			assertTrue("Comb Guid creation time after end time", creationTime <= endTime);
+			assertTrue("Comb Guid sequence is not sorted " + previous + " " + creationTime , previous <= creationTime);
+			previous = creationTime;
+		}
+	}
+	
+	@Test
+	public void testCreateMssqlGuid() {
+
+		UUID[] list = new UUID[DEFAULT_LOOP_LIMIT];
+		
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			list[i] = UuidCreator.getMssqlGuid();
+		}
+
+		checkNullOrInvalid(list);
+		checkUniqueness(list);
+	}
+	
+	private void checkNullOrInvalid(UUID[] list) {
+		for (UUID uuid : list) {
+			assertTrue("UUID is null", uuid != null);
+			assertTrue("UUID is not RFC-4122 variant", UuidUtil.isRfc4122Variant(uuid));
+		}
+	}
+
+	private void checkVersion(UUID[] list, UuidVersion version) {
+		for (UUID uuid : list) {
+			assertTrue(String.format("UUID is not %s (version %s)", version.name(), version.getValue()),
+					uuid.version() == version.getValue());
+		}
+	}
+
+	private void checkUniqueness(UUID[] list) {
+		HashSet<UUID> set = new HashSet<>();
+		for (UUID uuid : list) {
+			assertTrue(String.format("UUID is duplicated %s", uuid), set.add(uuid));
+			assertTrue(String.format("UUID list size is different of %s", DEFAULT_LOOP_LIMIT), list.length == DEFAULT_LOOP_LIMIT);
+		}
+	}
+	
+	private void checkCreationTime(UUID[] list, long startTime, long endTime) {
+		
+		assertTrue("Start time was after end time", startTime <= endTime);
+		
+		for (UUID uuid : list) {
+			long creationTime = UuidUtil.extractEpochMilliseconds(uuid);
+			assertTrue("Creation time was before start time", creationTime >= startTime);
+			assertTrue("Creation time was after end time", creationTime <= endTime);
+		}
+		
+	}
+	
+	private void checkNodeIdentifier(UUID[] list) {
+		for (UUID uuid : list) {
+			long nodeIdentifier = UuidUtil.extractNodeIdentifier(uuid);
+			assertTrue("Node identifier is not multicast", NodeIdentifierUtil.isMulticastNodeIdentifier(nodeIdentifier));
+		}
+	}
+	
+	private void checkOrdering(UUID[] list) {
+		UUID[] other = Arrays.copyOf(list, list.length);
+		Arrays.sort(other);
+		for(int i = 0; i < list.length; i++) {
+			assertTrue("The UUID list is not ordered", list[i].equals(other[i]));
+		}
 	}
 }
