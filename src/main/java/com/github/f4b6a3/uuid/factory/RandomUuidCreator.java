@@ -22,6 +22,7 @@ import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.uuid.random.XorshiftRandom;
@@ -43,7 +44,7 @@ public class RandomUuidCreator extends AbstractUuidCreator {
 	private Random random;
 
 	public RandomUuidCreator() {
-		super(VERSION_4);
+		super(UuidVersion.RANDOM_BASED);
 		random = getSecureRandom();
 	}
 

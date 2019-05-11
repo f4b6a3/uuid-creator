@@ -17,6 +17,7 @@
 
 package com.github.f4b6a3.uuid.factory;
 
+import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.abst.AbstractNameBasedUuidCreator;
 
 public class NameBasedSha256UuidCreator extends AbstractNameBasedUuidCreator {
@@ -26,6 +27,6 @@ public class NameBasedSha256UuidCreator extends AbstractNameBasedUuidCreator {
 	 * borrowed from random version).
 	 */
 	public NameBasedSha256UuidCreator() {
-		super(VERSION_4, MESSAGE_DIGEST_SHA256);
+		super(UuidVersion.RANDOM_BASED, MESSAGE_DIGEST_SHA256);
 	}	
 }

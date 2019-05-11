@@ -18,6 +18,7 @@
 package com.github.f4b6a3.uuid.factory;
 
 import com.github.f4b6a3.uuid.clockseq.CombClockSequenceStrategy;
+import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.nodeid.CombNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.timestamp.RandomTimestampStrategy;
@@ -31,7 +32,7 @@ import com.github.f4b6a3.uuid.timestamp.RandomTimestampStrategy;
 public class CombGuidCreator extends AbstractTimeBasedUuidCreator {
 
 	public CombGuidCreator() {
-		super(VERSION_4);
+		super(UuidVersion.RANDOM_BASED);
 		this.timestampStrategy = new RandomTimestampStrategy();
 		this.clockSequenceStrategy = new CombClockSequenceStrategy();
 		this.nodeIdentifierStrategy = new CombNodeIdentifierStrategy();

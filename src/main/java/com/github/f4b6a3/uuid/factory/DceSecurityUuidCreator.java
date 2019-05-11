@@ -19,6 +19,7 @@ package com.github.f4b6a3.uuid.factory;
 
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.sequence.AbstractSequence;
 
 /**
@@ -48,7 +49,7 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	 * Facoty that creates DCE Security UUIDs, version 2.
 	 */
 	public DceSecurityUuidCreator() {
-		super(VERSION_2);
+		super(UuidVersion.DCE_SECURITY);
 		timestampCounter = new DCESTimestampCounter();
 	}
 	

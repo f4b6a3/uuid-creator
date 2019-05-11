@@ -20,26 +20,20 @@ package com.github.f4b6a3.uuid.factory.abst;
 
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.enums.UuidVersion;
+
 /**
  * Abstract class for subclasses that create {@link UUID} objects.
  */
 public abstract class AbstractUuidCreator {
 	
-	protected final int version;
+	protected final UuidVersion version;
 	
 	// UUID variants defined by RFC-4122
 	public static final int VARIANT_RESERVED_NCS = 0;
 	public static final int VARIANT_RFC4122 = 2;
 	public static final int VARIANT_RESERVED_MICROSOFT = 6;
 	public static final int VARIANT_RESERVED_FUTURE = 7;
-	
-	// UUID versions defined by RFC-4122, plus an extension (zero)
-	public static final int VERSION_0 = 0;
-	public static final int VERSION_1 = 1;
-	public static final int VERSION_2 = 2;
-	public static final int VERSION_3 = 3;
-	public static final int VERSION_4 = 4;
-	public static final int VERSION_5 = 5;
 	
 	// UUIDs objects defined by RFC-4122
 	public static final UUID NIL_UUID = new UUID(0x0000000000000000L, 0x0000000000000000L);
@@ -55,12 +49,12 @@ public abstract class AbstractUuidCreator {
 			0x0000000000002000L, 0x0000000000003000L, 
 			0x0000000000004000L, 0x0000000000005000L };
 	
-	public AbstractUuidCreator(int version) {
+	public AbstractUuidCreator(UuidVersion version) {
 		this.version = version;
 	}
 
-	public int getVersion() {
-		return version;
+	public UuidVersion getVersion() {
+		return this.version;
 	}
 	
 	/**
@@ -75,7 +69,7 @@ public abstract class AbstractUuidCreator {
 	public boolean valid(long msb, long lsb) {
 		long variantBits = getVariantBits(lsb);
 		long versionBits = getVersionBits(msb);
-		return variantBits == RFC4122_VARIANT_BITS && versionBits == RFC4122_VERSION_BITS[version];
+		return variantBits == RFC4122_VARIANT_BITS && versionBits == RFC4122_VERSION_BITS[version.getValue()];
 	}
 
 	/**
@@ -114,6 +108,6 @@ public abstract class AbstractUuidCreator {
 	 * @return the MSB
 	 */
 	protected long setVersionBits(long msb) {
-		return (msb & 0xffffffffffff0fffL) | RFC4122_VERSION_BITS[this.version];
+		return (msb & 0xffffffffffff0fffL) | RFC4122_VERSION_BITS[this.version.getValue()];
 	}
 }

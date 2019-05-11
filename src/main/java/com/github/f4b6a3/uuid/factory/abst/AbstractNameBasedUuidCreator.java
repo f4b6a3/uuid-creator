@@ -21,6 +21,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.enums.UuidVersion;
+
 import static com.github.f4b6a3.uuid.util.ByteUtil.*;
 
 /**
@@ -47,7 +49,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * @param version the version number
 	 * @param messageDigest a message digest
 	 */
-	public AbstractNameBasedUuidCreator(int version, String messageDigest) {
+	public AbstractNameBasedUuidCreator(UuidVersion version, String messageDigest) {
 		super(version);
 
 		try {

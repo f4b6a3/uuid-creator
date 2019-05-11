@@ -23,6 +23,7 @@ import java.util.UUID;
 import com.github.f4b6a3.uuid.clockseq.ClockSequenceStrategy;
 import com.github.f4b6a3.uuid.clockseq.DefaultClockSequenceStrategy;
 import com.github.f4b6a3.uuid.clockseq.FixedClockSequenceStrategy;
+import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.nodeid.DefaultNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.FixedNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.MacNodeIdentifierStrategy;
@@ -49,7 +50,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * 
 	 * @param version the version number
 	 */
-	protected AbstractTimeBasedUuidCreator(int version) {
+	protected AbstractTimeBasedUuidCreator(UuidVersion version) {
 		super(version);
 		
 		this.timestampStrategy = new DefaultTimestampStrategy();
