@@ -11,8 +11,8 @@ import com.github.f4b6a3.other.RandomImage;
 import com.github.f4b6a3.other.RandomnessTest;
 import com.github.f4b6a3.other.SimpleBenchmark;
 import com.github.f4b6a3.uuid.UuidCreator;
+import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.factory.DceSecurityUuidCreator;
-import com.github.f4b6a3.uuid.factory.NameBasedMd5UuidCreator;
 import com.github.f4b6a3.uuid.nodeid.RandomNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.MacNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.DefaultNodeIdentifierStrategy;
@@ -233,7 +233,7 @@ public class DemoTest {
 		uuid = UuidCreator.getNameBasedMd5Creator().withNamespace("USERS").create("Paul");
 		System.out.println(String.format("%s // with fixed namespace as string (USERS)", uuid));
 
-		uuid = UuidCreator.getNameBasedMd5Creator().withNamespace(NameBasedMd5UuidCreator.NAMESPACE_DNS).create("www.github.com");
+		uuid = UuidCreator.getNameBasedMd5Creator().withNamespace(UuidNamespace.NAMESPACE_DNS.getValue()).create("www.github.com");
 		System.out.println(String.format("%s // with fixed namespace as UUID (standard DNS namespace)", uuid));
 
 		System.out.println("\n#### Random");

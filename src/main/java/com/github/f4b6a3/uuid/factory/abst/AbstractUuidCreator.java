@@ -31,10 +31,6 @@ public abstract class AbstractUuidCreator {
 	
 	// UUIDs objects defined by RFC-4122
 	public static final UUID NIL_UUID = new UUID(0x0000000000000000L, 0x0000000000000000L);
-	public static final UUID NAMESPACE_DNS = new UUID(0x6ba7b8109dad11d1L, 0x80b400c04fd430c8L);
-	public static final UUID NAMESPACE_URL = new UUID(0x6ba7b8119dad11d1L, 0x80b400c04fd430c8L);
-	public static final UUID NAMESPACE_OID = new UUID(0x6ba7b8129dad11d1L, 0x80b400c04fd430c8L);
-	public static final UUID NAMESPACE_X500 = new UUID(0x6ba7b8149dad11d1L, 0x80b400c04fd430c8L);
 	
 	// Values to be used in bitwise operations
 	public static final long RFC4122_VARIANT_BITS = 0x8000000000000000L;

@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.UuidCreator;
+import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
@@ -85,7 +86,7 @@ public class UuidUtilTest {
 
 	@Test
 	public void testIsRfc4122Variant() {
-		UUID uuid1 = AbstractUuidCreator.NAMESPACE_DNS;
+		UUID uuid1 = UuidNamespace.NAMESPACE_DNS.getValue();
 		UUID uuid2 = AbstractUuidCreator.NIL_UUID;
 
 		assertTrue(isRfc4122Variant(uuid1));
