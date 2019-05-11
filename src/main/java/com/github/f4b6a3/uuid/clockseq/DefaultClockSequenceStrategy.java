@@ -115,7 +115,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 		this.nodeIdentifier = nodeIdentifier;
 
 		if (distributor == null) {
-			distributor = new CyclicDistributor(SEQUENCE_MAX);
+			distributor = new CyclicDistributor(SEQUENCE_MAX + 1);
 		}
 
 		if (SettingsUtil.isStateEnabled()) {

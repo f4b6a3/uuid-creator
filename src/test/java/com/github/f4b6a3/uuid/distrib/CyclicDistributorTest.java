@@ -3,18 +3,13 @@ package com.github.f4b6a3.uuid.distrib;
 import static org.junit.Assert.*;
 
 import java.util.HashSet;
-import java.util.UUID;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.UuidCreator;
-import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
-import com.github.f4b6a3.uuid.util.TimestampUtil;
-
 public class CyclicDistributorTest {
-
+	
 	@Test
-	public void testClockSequenceBalancer_should_follow_the_precalculated_sequence() {
+	public void testCyclicDistributor_should_follow_the_precalculated_sequence() {
 
 		int[] list = { 0, 180, 270, 90, 315, 225, 135, 45, 337, 292, 247, 202, 157, 112, 67, 22, 348, 326, 303, 281,
 				258, 236, 213, 191, 168, 146, 123, 101, 78, 56, 33, 11, 354, 343, 331, 320, 309, 298, 286, 275, 264,
@@ -39,34 +34,16 @@ public class CyclicDistributorTest {
 	}
 
 	@Test
-	public void testClockSequenceBalancer_should_not_repeat_values() {
+	public void testCyclicDistributor_should_not_repeat_values() {
 
-		int loopMax = 100_000;
+		int loopMax = 0x3fff; // 16383
 		HashSet<Integer> set = new HashSet<>();
-		Distributor distributor = new CyclicDistributor(loopMax * 2);
+		Distributor distributor = new CyclicDistributor(loopMax + 1);
 
 		for (int i = 0; i < loopMax; i++) {
-			set.add(distributor.handOut());
+			assertTrue("There are duplicate values", set.add(distributor.handOut()));
 		}
 
 		assertEquals(loopMax, set.size());
-	}
-
-	@Test
-	public void testClockSequenceBalancer_should_not_repeat_values_with_the_clock_stopped() {
-
-		int clockseqMax = 0x3fff;
-
-		HashSet<UUID> set = new HashSet<>();
-
-		long timestamp = TimestampUtil.getCurrentTimestamp();
-		for (int i = 0; i <= clockseqMax; i++) {
-			// Create a generator with a clock stopped in time
-			TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator().withTimestamp(timestamp);
-			UUID uuid = creator.create();
-			set.add(uuid);
-		}
-
-		assertEquals(clockseqMax, set.size());
 	}
 }

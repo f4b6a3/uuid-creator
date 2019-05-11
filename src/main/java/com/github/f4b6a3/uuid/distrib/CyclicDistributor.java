@@ -39,8 +39,8 @@ public class CyclicDistributor implements Distributor {
 	private double remaining;
 	private double arc;
 
-	public CyclicDistributor(int max) {
-		this.perimeter = max;
+	public CyclicDistributor(int range) {
+		this.perimeter = range;
 		this.reset();
 	}
 
