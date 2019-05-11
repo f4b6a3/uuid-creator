@@ -20,7 +20,7 @@ package com.github.f4b6a3.uuid.util;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
+import com.github.f4b6a3.uuid.enums.UuidVariant;
 
 public class UuidUtil {
 
@@ -32,7 +32,7 @@ public class UuidUtil {
 	 */
 	public static boolean isRfc4122Variant(UUID uuid) {
 		int variant = uuid.variant();
-		return (variant == AbstractUuidCreator.VARIANT_RFC4122);
+		return (variant == UuidVariant.VARIANT_RFC4122.getValue());
 	}
 
 	/**

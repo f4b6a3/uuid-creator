@@ -29,12 +29,6 @@ public abstract class AbstractUuidCreator {
 	
 	protected final UuidVersion version;
 	
-	// UUID variants defined by RFC-4122
-	public static final int VARIANT_RESERVED_NCS = 0;
-	public static final int VARIANT_RFC4122 = 2;
-	public static final int VARIANT_RESERVED_MICROSOFT = 6;
-	public static final int VARIANT_RESERVED_FUTURE = 7;
-	
 	// UUIDs objects defined by RFC-4122
 	public static final UUID NIL_UUID = new UUID(0x0000000000000000L, 0x0000000000000000L);
 	public static final UUID NAMESPACE_DNS = new UUID(0x6ba7b8109dad11d1L, 0x80b400c04fd430c8L);
