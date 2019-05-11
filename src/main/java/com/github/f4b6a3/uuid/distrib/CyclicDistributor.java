@@ -33,8 +33,8 @@ import com.github.f4b6a3.uuid.util.RandomUtil;
  **/
 public class CyclicDistributor implements Distributor {
 
+	private double offset = -1;
 	private double perimeter;
-	private double offset;
 	private double iteration;
 	private double remaining;
 	private double arc;
@@ -53,16 +53,13 @@ public class CyclicDistributor implements Distributor {
 	private int first() {
 		this.reset();
 		this.offset = RandomUtil.nextInt((int) this.perimeter);
-		if (this.offset == 0) {
-			this.offset = this.perimeter;
-		}
 		return (int) this.offset;
 	}
 
 	@Override
 	public synchronized int handOut() {
 
-		if (this.offset == 0) {
+		if (this.offset == -1) {
 			return this.first();
 		}
 
@@ -71,11 +68,9 @@ public class CyclicDistributor implements Distributor {
 
 			this.arc = (this.perimeter / this.remaining);
 			this.iteration++;
-			
+
 			if (this.remaining > this.perimeter / 2.0) {
-				this.offset =  (this.offset +  (this.arc / 2.0)) % this.perimeter;
-				this.reset();
-				return (int) this.offset;
+				this.first();
 			}
 		}
 

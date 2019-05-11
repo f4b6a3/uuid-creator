@@ -4,6 +4,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 import com.github.f4b6a3.uuid.clockseq.DefaultClockSequenceStrategyTest;
+import com.github.f4b6a3.uuid.distrib.CyclicDistributorTest;
 import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreatorTest;
 import com.github.f4b6a3.uuid.sequence.AbstractSequenceTest;
 import com.github.f4b6a3.uuid.state.UuidStateTest;
@@ -24,7 +25,8 @@ import com.github.f4b6a3.uuid.util.UuidUtilTest;
    TimestampUtilTest.class,
    UuidUtilTest.class,
    SettingsUtilTest.class,
-   UuidStateTest.class
+   UuidStateTest.class,
+   CyclicDistributorTest.class
 })
 
 public class TestSuite {   

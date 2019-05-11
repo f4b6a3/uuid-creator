@@ -1,6 +1,6 @@
 package com.github.f4b6a3.uuid.distrib;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.HashSet;
 import java.util.UUID;
@@ -36,12 +36,6 @@ public class CyclicDistributorTest {
 		for (int i = 1; i < list.length; i++) {
 			assertEquals((list[i] + first) % degrees, distributor.handOut());
 		}
-
-		// Restart the sequence
-		first = distributor.handOut();
-		for (int i = 1; i < list.length; i++) {
-			assertEquals((list[i] + first) % degrees, distributor.handOut());
-		}
 	}
 
 	@Test
@@ -61,20 +55,19 @@ public class CyclicDistributorTest {
 	@Test
 	public void testClockSequenceBalancer_should_not_repeat_values_with_the_clock_stopped() {
 
-		int loopMax = 20_000;
 		int clockseqMax = 0x3fff;
 
 		HashSet<UUID> set = new HashSet<>();
 
 		long timestamp = TimestampUtil.getCurrentTimestamp();
-		for (int i = 0; i < loopMax; i++) {
+		for (int i = 0; i < clockseqMax / 2; i++) {
 			// Create a generator with a clock stopped in time
 			TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator().withTimestamp(timestamp);
 			UUID uuid = creator.create();
-			set.add(uuid);
+			assertTrue("UUID duplicated ", set.add(uuid));
 		}
 
-		// There should be 16,383 different UUIDs
-		assertEquals(clockseqMax, set.size());
+		// There should be 8191 different UUIDs
+		assertEquals(clockseqMax / 2, set.size());
 	}
 }
