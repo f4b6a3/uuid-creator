@@ -60,14 +60,13 @@ public class CyclicDistributorTest {
 		HashSet<UUID> set = new HashSet<>();
 
 		long timestamp = TimestampUtil.getCurrentTimestamp();
-		for (int i = 0; i < clockseqMax / 2; i++) {
+		for (int i = 0; i <= clockseqMax; i++) {
 			// Create a generator with a clock stopped in time
 			TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator().withTimestamp(timestamp);
 			UUID uuid = creator.create();
-			assertTrue("UUID duplicated ", set.add(uuid));
+			set.add(uuid);
 		}
 
-		// There should be 8191 different UUIDs
-		assertEquals(clockseqMax / 2, set.size());
+		assertEquals(clockseqMax, set.size());
 	}
 }
