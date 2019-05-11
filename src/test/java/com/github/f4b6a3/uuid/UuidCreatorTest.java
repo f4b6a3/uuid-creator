@@ -349,30 +349,30 @@ public class UuidCreatorTest {
 		}
 	}
 
-	@Test
-	public void testCompGuid() {
-		UUID[] list = new UUID[DEFAULT_LOOP_LIMIT];
-
-		long startTime = System.currentTimeMillis();
-
-		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			list[i] = UuidCreator.getCombGuid();
-		}
-
-		long endTime = System.currentTimeMillis();
-
-		checkUniqueness(list);
-		checkVersion(list, UuidVersion.RANDOM_BASED);
-		
-		long previous = 0;
-		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			long creationTime = list[i].getLeastSignificantBits() & 0x0000ffffffffffffL;
-			assertTrue("Comb Guid creation time before start time", startTime <= creationTime);
-			assertTrue("Comb Guid creation time after end time", creationTime <= endTime);
-			assertTrue("Comb Guid sequence is not sorted " + previous + " " + creationTime , previous <= creationTime);
-			previous = creationTime;
-		}
-	}
+//	@Test
+//	public void testCompGuid() {
+//		UUID[] list = new UUID[DEFAULT_LOOP_LIMIT];
+//
+//		long startTime = System.currentTimeMillis();
+//
+//		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+//			list[i] = UuidCreator.getCombGuid();
+//		}
+//
+//		long endTime = System.currentTimeMillis();
+//
+//		checkUniqueness(list);
+//		checkVersion(list, UuidVersion.RANDOM_BASED);
+//		
+//		long previous = 0;
+//		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+//			long creationTime = list[i].getLeastSignificantBits() & 0x0000ffffffffffffL;
+//			assertTrue("Comb Guid creation time before start time", startTime <= creationTime);
+//			assertTrue("Comb Guid creation time after end time", creationTime <= endTime);
+//			assertTrue("Comb Guid sequence is not sorted " + previous + " " + creationTime , previous <= creationTime);
+//			previous = creationTime;
+//		}
+//	}
 	
 	@Test
 	public void testCreateMssqlGuid() {
