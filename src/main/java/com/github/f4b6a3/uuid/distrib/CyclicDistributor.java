@@ -33,11 +33,11 @@ import com.github.f4b6a3.uuid.util.RandomUtil;
  **/
 public class CyclicDistributor implements Distributor {
 
-	private float perimeter;
-	private float offset;
-	private float iteration;
-	private float remaining;
-	private float arc;
+	private double perimeter;
+	private double offset;
+	private double iteration;
+	private double remaining;
+	private double arc;
 
 	public CyclicDistributor(int max) {
 		this.perimeter = max;
@@ -45,7 +45,6 @@ public class CyclicDistributor implements Distributor {
 	}
 
 	private void reset() {
-		this.offset = 0;
 		this.iteration = 0;
 		this.remaining = 0;
 		this.arc = 0;
@@ -70,12 +69,14 @@ public class CyclicDistributor implements Distributor {
 		if (this.remaining == 0) {
 			this.remaining = (float) Math.pow(2.0, this.iteration);
 
-			if (this.remaining > this.perimeter / 2.0) {
-				return this.first();
-			}
-
 			this.arc = (this.perimeter / this.remaining);
 			this.iteration++;
+			
+			if (this.remaining > this.perimeter / 2.0) {
+				this.offset =  (this.offset +  (this.arc / 2.0)) % this.perimeter;
+				this.reset();
+				return (int) this.offset;
+			}
 		}
 
 		return (int) ((this.offset + (this.arc * --this.remaining) + (this.arc / 2.0)) % this.perimeter);

@@ -3,8 +3,13 @@ package com.github.f4b6a3.uuid.distrib;
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashSet;
+import java.util.UUID;
 
 import org.junit.Test;
+
+import com.github.f4b6a3.uuid.UuidCreator;
+import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
+import com.github.f4b6a3.uuid.util.TimestampUtil;
 
 public class CyclicDistributorTest {
 
@@ -31,25 +36,45 @@ public class CyclicDistributorTest {
 		for (int i = 1; i < list.length; i++) {
 			assertEquals((list[i] + first) % degrees, distributor.handOut());
 		}
-		
+
 		// Restart the sequence
 		first = distributor.handOut();
 		for (int i = 1; i < list.length; i++) {
 			assertEquals((list[i] + first) % degrees, distributor.handOut());
 		}
 	}
-	
+
 	@Test
 	public void testClockSequenceBalancer_should_not_repeat_values() {
 
-		int max = 100_000;
+		int loopMax = 100_000;
 		HashSet<Integer> set = new HashSet<>();
-		Distributor distributor = new CyclicDistributor(max * 2);
+		Distributor distributor = new CyclicDistributor(loopMax * 2);
 
-		for (int i = 0; i < max; i++) {
+		for (int i = 0; i < loopMax; i++) {
 			set.add(distributor.handOut());
 		}
-		
-		assertEquals(max, set.size());
+
+		assertEquals(loopMax, set.size());
+	}
+
+	@Test
+	public void testClockSequenceBalancer_should_not_repeat_values_with_the_clock_stopped() {
+
+		int loopMax = 20_000;
+		int clockseqMax = 0x3fff;
+
+		HashSet<UUID> set = new HashSet<>();
+
+		long timestamp = TimestampUtil.getCurrentTimestamp();
+		for (int i = 0; i < loopMax; i++) {
+			// Create a generator with a clock stopped in time
+			TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator().withTimestamp(timestamp);
+			UUID uuid = creator.create();
+			set.add(uuid);
+		}
+
+		// There should be 16,383 different UUIDs
+		assertEquals(clockseqMax, set.size());
 	}
 }
