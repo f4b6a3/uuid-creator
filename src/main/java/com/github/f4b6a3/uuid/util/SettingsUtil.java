@@ -4,6 +4,7 @@ public class SettingsUtil {
 
 	protected static final String PROPERTY_PREFIX = "uuidcreator";
 	public static final String PROPERTY_NODEID = "nodeid";
+	public static final String PROPERTY_NODEID_SALT = "nodeid.salt";
 	public static final String PROPERTY_STATE_DIRECTORY = "state.directory";
 	public static final String PROPERTY_STATE_ENABLED = "state.enabled";
 	
@@ -20,6 +21,14 @@ public class SettingsUtil {
 	public static void setNodeIdentifier(long nodeid) {
 		String value = ByteUtil.toHexadecimal(nodeid & 0x0000FFFFFFFFFFFFL);
 		setProperty(PROPERTY_NODEID, value);
+	}
+	
+	public static String getNodeIdentifierSalt() {
+		return getProperty(PROPERTY_NODEID_SALT);
+	}
+	
+	public static void setNodeIdentifierString(String salt) {
+		setProperty(PROPERTY_NODEID_SALT, salt);
 	}
 
 	public static String getStateDirectory() {

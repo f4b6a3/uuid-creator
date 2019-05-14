@@ -1,14 +1,12 @@
 package com.github.f4b6a3.uuid.nodeid;
 
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
 import java.util.List;
 
 import com.github.f4b6a3.uuid.util.ByteUtil;
+import com.github.f4b6a3.uuid.util.NetworkData;
 import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 import com.github.f4b6a3.uuid.util.RandomUtil;
+import com.github.f4b6a3.uuid.util.SystemUtil;
 
 public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
@@ -53,26 +51,22 @@ public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * @return a hardware address
 	 */
 	protected long getHardwareAddress() {
-		try {
-			byte[] mac;
-			NetworkInterface nic;
-			List<InterfaceAddress> list;
-			Enumeration<NetworkInterface> enm;
-
-			enm = NetworkInterface.getNetworkInterfaces();
-			while (enm.hasMoreElements()) {
-				nic = enm.nextElement();
-				list = nic.getInterfaceAddresses();
-				mac = nic.getHardwareAddress();
-				if ((mac != null) && (!list.isEmpty()) && !(nic.isLoopback() || nic.isVirtual())) {
-					return ByteUtil.toNumber(mac);
-				}
+		NetworkData networkData = SystemUtil.getNetworkData();
+		
+		if (networkData == null) {
+			List<NetworkData> networkDataList = SystemUtil.getNetworkDataList();
+			if (networkDataList != null && !networkDataList.isEmpty()) {
+				networkData = networkDataList.get(0);
 			}
-		} catch (SocketException | NullPointerException e) {
-			// (2) return random number
-			return getRandomMulticastNodeIdentifier();
 		}
-		// (2) return random number
+		
+		if (networkData != null) {
+			String hardwareAddress = networkData.getInterfaceHardwareAddress();
+			if (hardwareAddress != null && !hardwareAddress.isEmpty()) {
+				return ByteUtil.toNumber(networkData.getInterfaceHardwareAddress());
+			}
+		}
+		
 		return getRandomMulticastNodeIdentifier();
 	}
 

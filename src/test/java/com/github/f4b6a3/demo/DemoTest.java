@@ -25,6 +25,7 @@ import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.DeltaTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.NanosecondTimestampStrategy;
 import com.github.f4b6a3.uuid.util.SettingsUtil;
+import com.github.f4b6a3.uuid.util.SystemUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
@@ -248,5 +249,32 @@ public class DemoTest {
 		uuid = UuidCreator.getDceSecurityCreator().withLocalDomain(DceSecurityUuidCreator.LOCAL_DOMAIN_PERSON).create(1701);
 		System.out.println(String.format("%s // with fixed local domain (standard POSIX User ID)", uuid));
 		// @formatter:on
+	}
+	
+	@Ignore
+	public void testGetNetworkData() {
+		
+		long startTime = 0;
+		long endTime = 0;
+		
+		startTime = System.currentTimeMillis();
+		
+		for(int i = 0; i < 100; i++) {
+			SystemUtil.getNetworkData();
+		}
+		
+		endTime = System.currentTimeMillis();
+		
+		System.out.println("get network data: " + (endTime - startTime) + " ms");
+		
+		startTime = System.currentTimeMillis();
+		
+		for(int i = 0; i < 100; i++) {
+			SystemUtil.getNetworkDataList();
+		}
+		
+		endTime = System.currentTimeMillis();
+		
+		System.out.println("get network data list: " + (endTime - startTime) + " ms");
 	}
 }

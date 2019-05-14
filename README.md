@@ -352,7 +352,7 @@ UUID uuid = UuidCreator.getTimeBasedCreator()
 
 ```java
 
-// with default node identifier strategy (SHA-256 of hostname+MAC+IP+OS+JVM)
+// with default node identifier strategy (SHA-256 of OS+JVM+Network+Salt)
 // Result: b9c869f0-fa7f-11e8-a04e-cbb1015db3ad
 UUID uuid = UuidCreator.getTimeBasedCreator()
     .withNodeIdentifierStrategy(new DefaultNodeIdentifierStrategy())
@@ -441,6 +441,24 @@ The `nodeid` property is used by `DefaultNodeIdentifierStrategy`. If this proper
 ```bash
 // append to /etc/environment or ~/.profile
 export UUIDCREATOR_NODEID="c0da06157723"
+```
+
+### Node identifier salt
+
+The `nodeid.salt` property is used by `DefaultNodeIdentifierStrategy`. If this property or variable exists, it's value is used to calculate the system information hash. It may be any string.
+
+* Using system property:
+
+```bash
+// append to VM arguments
+-Duuidcreator.nodeid.salt="this is my salt"
+```
+
+* Using environment variable:
+
+```bash
+// append to /etc/environment or ~/.profile
+export UUIDCREATOR_NODEID_SALT="this is my salt"
 ```
 
 ### State enabled
@@ -609,11 +627,13 @@ Don't enable the state file if you want to use multiple instances of UUID genera
 
 The node identifier part consists of an IEEE 802 MAC address, usually the host address. But the standard allows the usage of a random generated value or a system information hash if no address is available, or if the usage of MAC address is not desired. 
 
-In this implementation, the default behavior is to use a system information hash (SHA-256). The system information used are: host name, domain name, list of IPs, list of MACs addresses, operating system and Java Virtual Machine. It's like a device identifier to differentiate one of the other based on it's hardware and software configurations. The specification recommends to accumulate as many sources as possible into a buffer to generate the hash value. So other information are included in the hash input like version number and other details of the OS and JVM. Note that if one of these details change, the node identifier also changes. So, _the resulting node identifier is as unique and mutable as the host machine settings_.
+In this implementation, the default behavior is to use a system information hash (SHA-256). The system information used are: operating system, java virtual machine and network details. It's like a device identifier to differentiate one of the other based on it's hardware and software configurations. The specification recommends to accumulate as many sources as possible into a buffer to generate the hash value. So other information are included in the hash input like version number and other details of the OS and JVM. Note that if one of these details change, the node identifier also changes. So, _the resulting node identifier is as unique and mutable as the host machine settings_.
 
 Other strategies are provided by this implementation if the default strategy is not desired: random generator strategy and machine address strategy. If you really need to identify the UUIDs with MAC address just use the `MacNodeIdentifierStrategy`. Or if you feel comfortable with random generated node identifiers, use the `RandomNodeIdentifierStrategy`.
 
 It's possible to use a *preferred node identifier* by setting a system property or environment variable. The system property is `uuidcreator.nodeid` and the environment variable is `UUIDCREATOR_NODEID`. All UUIDs created will use the value present in the property or variable.
+
+It's also possible to use a `salt` to change the system information hash by setting the system property `uuidcreator.nodeid.salt`  or the environment variable `UUIDCREATOR_NODEID_SALT`. It accepts any string as salt value.
 
 Again, you can create your own strategy that implements the `NodeIdentifierStrategy`.
 
