@@ -122,9 +122,7 @@ public class SystemUtil {
 		if (networkData == null) {
 			return null;
 		}
-
-		System.out.println(networkData.toString());
-
+		
 		return networkData.toString();
 	}
 
