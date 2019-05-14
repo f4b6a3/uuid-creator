@@ -28,27 +28,12 @@ import com.github.f4b6a3.uuid.factory.NameBasedSha1UuidCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedSha256UuidCreator;
 import com.github.f4b6a3.uuid.factory.SequentialUuidCreator;
 import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
-import com.github.f4b6a3.uuid.factory.abst.AbstractNameBasedUuidCreator;
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 
 /**
  * Facade to the UUID factories.
  */
 public class UuidCreator {
-
-	private static SequentialUuidCreator sequentialCreator;
-	private static SequentialUuidCreator sequentialWithMacCreator;
-	private static TimeBasedUuidCreator timeBasedCreator;
-	private static TimeBasedUuidCreator timeBasedWithMacCreator;
-	private static AbstractNameBasedUuidCreator nameBasedMd5Creator;
-	private static AbstractNameBasedUuidCreator nameBasedSha1Creator;
-	private static AbstractNameBasedUuidCreator nameBasedSha256Creator;
-	private static RandomUuidCreator randomCreator;
-	private static RandomUuidCreator fastRandomCreator;
-	private static DceSecurityUuidCreator dceSecurityCreator;
-	private static DceSecurityUuidCreator dceSecurityWithMacCreator;
-	private static MssqlGuidCreator mssqlGuidCreator;
-	private static CombGuidCreator combGuidCreator;
 
 	/*
 	 * Public static methods for creating UUIDs
@@ -70,10 +55,7 @@ public class UuidCreator {
 	 * @return a random UUID
 	 */
 	public static UUID getRandom() {
-		if (randomCreator == null) {
-			randomCreator = getRandomCreator();
-		}
-		return randomCreator.create();
+		return RandomCreatorLazyHolder.INSTANCE.create();
 	}
 
 	/**
@@ -91,10 +73,7 @@ public class UuidCreator {
 	 * @return a random UUID
 	 */
 	public static UUID getFastRandom() {
-		if (fastRandomCreator == null) {
-			fastRandomCreator = getRandomCreator().withFastRandomGenerator();
-		}
-		return fastRandomCreator.create();
+		return FastRandomCreatorLazyHolder.INSTANCE.create();
 	}
 
 	/**
@@ -113,10 +92,7 @@ public class UuidCreator {
 	 * @return a sequential UUID
 	 */
 	public static UUID getSequential() {
-		if (sequentialCreator == null) {
-			sequentialCreator = getSequentialCreator();
-		}
-		return sequentialCreator.create();
+		return SequentialCreatorLazyHolder.INSTANCE.create();
 	}
 
 	/**
@@ -135,10 +111,7 @@ public class UuidCreator {
 	 * @return a sequential UUID with MAC
 	 */
 	public static UUID getSequentialWithMac() {
-		if (sequentialWithMacCreator == null) {
-			sequentialWithMacCreator = getSequentialCreator().withHardwareAddress();
-		}
-		return sequentialWithMacCreator.create();
+		return SequentialWithMacCreatorLazyHolder.INSTANCE.create();
 	}
 
 	/**
@@ -156,10 +129,7 @@ public class UuidCreator {
 	 * @return a time-based UUID
 	 */
 	public static UUID getTimeBased() {
-		if (timeBasedCreator == null) {
-			timeBasedCreator = getTimeBasedCreator();
-		}
-		return timeBasedCreator.create();
+		return TimeBasedCreatorLazyHolder.INSTANCE.create();
 	}
 
 	/**
@@ -177,10 +147,7 @@ public class UuidCreator {
 	 * @return a time-based UUID
 	 */
 	public static UUID getTimeBasedWithMac() {
-		if (timeBasedWithMacCreator == null) {
-			timeBasedWithMacCreator = getTimeBasedCreator().withHardwareAddress();
-		}
-		return timeBasedWithMacCreator.create();
+		return TimeBasedWithMacCreatorLazyHolder.INSTANCE.create();
 	}
 
 	/**
@@ -206,10 +173,7 @@ public class UuidCreator {
 	 * @return a DCE Security UUID
 	 */
 	public static UUID getDceSecurity(byte localDomain, int localIdentifier) {
-		if (dceSecurityCreator == null) {
-			dceSecurityCreator = getDceSecurityCreator();
-		}
-		return dceSecurityCreator.create(localDomain, localIdentifier);
+		return DceSecurityCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
@@ -235,10 +199,7 @@ public class UuidCreator {
 	 * @return a DCE Security UUID
 	 */
 	public static UUID getDceSecurityWithMac(byte localDomain, int localIdentifier) {
-		if (dceSecurityWithMacCreator == null) {
-			dceSecurityWithMacCreator = getDceSecurityCreator().withHardwareAddress();
-		}
-		return dceSecurityCreator.create(localDomain, localIdentifier);
+		return DceSecurityWithMacCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
@@ -256,10 +217,7 @@ public class UuidCreator {
 	 * @return a name-based UUID
 	 */
 	public static UUID getNameBasedMd5(String name) {
-		if (nameBasedMd5Creator == null) {
-			nameBasedMd5Creator = getNameBasedMd5Creator();
-		}
-		return nameBasedMd5Creator.create(name);
+		return NameBasedMd5CreatorLazyHolder.INSTANCE.create(name);
 	}
 
 	/**
@@ -278,10 +236,7 @@ public class UuidCreator {
 	 * @return a name-based UUID
 	 */
 	public static UUID getNameBasedMd5(UUID namespace, String name) {
-		if (nameBasedMd5Creator == null) {
-			nameBasedMd5Creator = getNameBasedMd5Creator();
-		}
-		return nameBasedMd5Creator.create(namespace, name);
+		return NameBasedMd5CreatorLazyHolder.INSTANCE.create(namespace, name);
 	}
 
 	/**
@@ -299,10 +254,7 @@ public class UuidCreator {
 	 * @return a name-based UUID
 	 */
 	public static UUID getNameBasedSha1(String name) {
-		if (nameBasedSha1Creator == null) {
-			nameBasedSha1Creator = getNameBasedSha1Creator();
-		}
-		return nameBasedSha1Creator.create(name);
+		return NameBasedSha1CreatorLazyHolder.INSTANCE.create(name);
 	}
 
 	/**
@@ -321,10 +273,7 @@ public class UuidCreator {
 	 * @return a name-based UUID
 	 */
 	public static UUID getNameBasedSha1(UUID namespace, String name) {
-		if (nameBasedSha1Creator == null) {
-			nameBasedSha1Creator = getNameBasedSha1Creator();
-		}
-		return nameBasedSha1Creator.create(namespace, name);
+		return NameBasedSha1CreatorLazyHolder.INSTANCE.create(namespace, name);
 	}
 	
 	/**
@@ -342,10 +291,7 @@ public class UuidCreator {
 	 * @return a name-based UUID
 	 */
 	public static UUID getNameBasedSha256(String name) {
-		if (nameBasedSha256Creator == null) {
-			nameBasedSha256Creator = getNameBasedSha256Creator();
-		}
-		return nameBasedSha256Creator.create(name);
+		return NameBasedSha256CreatorLazyHolder.INSTANCE.create(name);
 	}
 
 	/**
@@ -364,10 +310,7 @@ public class UuidCreator {
 	 * @return a name-based UUID
 	 */
 	public static UUID getNameBasedSha256(UUID namespace, String name) {
-		if (nameBasedSha256Creator == null) {
-			nameBasedSha256Creator = getNameBasedSha256Creator();
-		}
-		return nameBasedSha256Creator.create(namespace, name);
+		return NameBasedSha256CreatorLazyHolder.INSTANCE.create(namespace, name);
 	}
 	
 	/**
@@ -376,10 +319,7 @@ public class UuidCreator {
 	 * @return a MSSQL GUID
 	 */
 	public static UUID getMssqlGuid() {
-		if (mssqlGuidCreator == null) {
-			mssqlGuidCreator = getMssqlCreator();
-		}
-		return mssqlGuidCreator.create();
+		return MssqlGuidCreatorLazyHolder.INSTANCE.create();
 	}
 	
 	/**
@@ -388,10 +328,7 @@ public class UuidCreator {
 	 * @return a COMB GUID
 	 */
 	public static UUID getCombGuid() {
-		if (combGuidCreator == null) {
-			combGuidCreator = getCombCreator();
-		}
-		return combGuidCreator.create();
+		return CombGuidCreatorLazyHolder.INSTANCE.create();
 	}
 
 	/*
@@ -477,7 +414,7 @@ public class UuidCreator {
 	 * 
 	 * @return {@link MssqlGuidCreator}
 	 */
-	public static MssqlGuidCreator getMssqlCreator() {
+	public static MssqlGuidCreator getMssqlGuidCreator() {
 		return new MssqlGuidCreator();
 	}
 	
@@ -486,7 +423,63 @@ public class UuidCreator {
 	 * 
 	 * @return {@link CombGuidCreator}
 	 */
-	public static CombGuidCreator getCombCreator() {
+	public static CombGuidCreator getCombGuidCreator() {
 		return new CombGuidCreator();
 	}
+	
+	/*
+	 * Private classes for lazy holders
+	 */
+	
+    private static class RandomCreatorLazyHolder {
+        static final RandomUuidCreator INSTANCE = getRandomCreator();
+    }
+    
+    private static class FastRandomCreatorLazyHolder {
+        static final RandomUuidCreator INSTANCE = getFastRandomCreator();
+    }
+    
+    private static class SequentialCreatorLazyHolder {
+        static final SequentialUuidCreator INSTANCE = getSequentialCreator();
+    }
+
+    private static class SequentialWithMacCreatorLazyHolder {
+        static final SequentialUuidCreator INSTANCE = getSequentialCreator().withHardwareAddress();
+    }
+    
+    private static class TimeBasedCreatorLazyHolder {
+        static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator();
+    }
+    
+    private static class TimeBasedWithMacCreatorLazyHolder {
+        static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withHardwareAddress();
+    }
+    
+    private static class NameBasedMd5CreatorLazyHolder {
+        static final NameBasedMd5UuidCreator INSTANCE = getNameBasedMd5Creator();
+    }
+    
+    private static class NameBasedSha1CreatorLazyHolder {
+        static final NameBasedSha1UuidCreator INSTANCE = getNameBasedSha1Creator();
+    }
+    
+    private static class NameBasedSha256CreatorLazyHolder {
+        static final NameBasedSha256UuidCreator INSTANCE = getNameBasedSha256Creator();
+    }
+    
+    private static class DceSecurityCreatorLazyHolder {
+        static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator();
+    }
+    
+    private static class DceSecurityWithMacCreatorLazyHolder {
+        static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator().withHardwareAddress();
+    }
+    
+    private static class MssqlGuidCreatorLazyHolder {
+        static final MssqlGuidCreator INSTANCE = getMssqlGuidCreator();
+    }
+    
+    private static class CombGuidCreatorLazyHolder {
+        static final CombGuidCreator INSTANCE = getCombGuidCreator();
+    }
 }
