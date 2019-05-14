@@ -19,10 +19,13 @@ public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	/**
 	 * Get the machine address.
 	 * 
-	 * It looks for the first MAC that is up and running. If none is up, it
-	 * looks for the first MAC.
+	 * It returns the first MAC that can be found. First it tries to find the
+	 * MAC that is associated with the host name. Otherwise, it tries to find
+	 * the first MAC that is up and running. This second try may be very
+	 * expensive on Windows, because it iterates over a lot of virtual network
+	 * interfaces created by the operating system.
 	 * 
-	 * It returns ZERO if none is found.
+	 * If no MAC is found, a random node identifier is returned.
 	 * 
 	 * ### RFC-4122 - 4.1.6. Node
 	 * 
@@ -51,22 +54,27 @@ public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * @return a hardware address
 	 */
 	protected long getHardwareAddress() {
+
+		// first try
 		NetworkData networkData = SystemUtil.getNetworkData();
-		
+
+		// second try, if the first one failed
 		if (networkData == null) {
 			List<NetworkData> networkDataList = SystemUtil.getNetworkDataList();
 			if (networkDataList != null && !networkDataList.isEmpty()) {
 				networkData = networkDataList.get(0);
 			}
 		}
-		
+
+		// Return the hardware address if found
 		if (networkData != null) {
 			String hardwareAddress = networkData.getInterfaceHardwareAddress();
 			if (hardwareAddress != null && !hardwareAddress.isEmpty()) {
 				return ByteUtil.toNumber(networkData.getInterfaceHardwareAddress());
 			}
 		}
-		
+
+		// Return a random node identifier
 		return getRandomMulticastNodeIdentifier();
 	}
 

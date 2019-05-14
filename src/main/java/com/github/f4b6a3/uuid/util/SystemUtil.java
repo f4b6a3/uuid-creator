@@ -17,6 +17,9 @@ public class SystemUtil {
 	protected static MessageDigest md;
 
 	/**
+	 * Returns a system hash ID generated from all the system details
+	 * concatenated: OS + JVM + Network + SALT.
+	 * 
 	 * Get a system identifier generated from system information.
 	 * 
 	 * It uses these information to generate the node identifier: operating
@@ -40,7 +43,8 @@ public class SystemUtil {
 	 * digest such as MD5 [4] or SHA-1 [8], take an arbitrary 6 bytes from the
 	 * hash value, and set the multicast bit as described above.
 	 * 
-	 * @param salt a string to be used by the hash function
+	 * @param salt
+	 *            an arbitrary string to change the final hash
 	 * @return a system identifier
 	 */
 	public static long getSystemHashId(String salt) {
@@ -49,6 +53,14 @@ public class SystemUtil {
 		return NodeIdentifierUtil.setMulticastNodeIdentifier(number);
 	}
 
+	/**
+	 * Returns a hash string generated from all the system details concatenated:
+	 * OS + JVM + Network + SALT.
+	 * 
+	 * @param salt
+	 *            an arbitrary string to change the final hash
+	 * @return a string
+	 */
 	public static String getSystemHash(String salt) {
 
 		md = getMessageDigest();
@@ -64,6 +76,11 @@ public class SystemUtil {
 		return ByteUtil.toHexadecimal(hash);
 	}
 
+	/**
+	 * Returns a string of the OS details.
+	 * 
+	 * @return a string
+	 */
 	public static String getOperatingSystem() {
 		String name = System.getProperty("os.name");
 		String version = System.getProperty("os.version");
@@ -71,6 +88,11 @@ public class SystemUtil {
 		return String.join(" ", name, version, arch);
 	}
 
+	/**
+	 * Returns a string of the JVM details.
+	 * 
+	 * @return a string
+	 */
 	public static String getJavaVirtualMachine() {
 		String vendor = System.getProperty("java.vendor");
 		String version = System.getProperty("java.version");
@@ -81,6 +103,11 @@ public class SystemUtil {
 		return String.join(" ", vendor, version, rtName, rtVersion, vmName, vmVersion);
 	}
 
+	/**
+	 * Returns a string of the network details.
+	 * 
+	 * @return a string
+	 */
 	public static String getNetwork() {
 
 		NetworkData networkData = getNetworkData();
@@ -96,9 +123,16 @@ public class SystemUtil {
 			return null;
 		}
 
+		System.out.println(networkData.toString());
+
 		return networkData.toString();
 	}
 
+	/**
+	 * Returns a {@link NetworkData}
+	 * 
+	 * @return a {@link NetworkData}
+	 */
 	public static NetworkData getNetworkData() {
 
 		try {
@@ -110,6 +144,15 @@ public class SystemUtil {
 		}
 	}
 
+	/**
+	 * Returns a list of {@link NetworkData}
+	 * 
+	 * This method iterates over all the network interfaces. It may be VERY
+	 * EXPENSIVE on Windows systems, because it creates a lot of virtual network
+	 * interfaces.
+	 * 
+	 * @return a list of {@link NetworkData}
+	 */
 	public static List<NetworkData> getNetworkDataList() {
 		try {
 			InetAddress inetAddress = InetAddress.getLocalHost();
@@ -154,7 +197,8 @@ public class SystemUtil {
 
 	private static boolean isPhysicalNetworkInterface(NetworkInterface networkInterface) {
 		try {
-			return networkInterface != null && !(networkInterface.isLoopback() || networkInterface.isVirtual());
+			return networkInterface != null && networkInterface.isUp()
+					&& !(networkInterface.isLoopback() || networkInterface.isVirtual());
 		} catch (SocketException e) {
 			return false;
 		}
@@ -171,13 +215,6 @@ public class SystemUtil {
 			}
 		}
 		return new ArrayList<>(addresses);
-	}
-
-	public static void main(String[] args) {
-		System.out.println(getOperatingSystem());
-		System.out.println(getJavaVirtualMachine());
-		System.out.println(getNetwork());
-		System.out.println(getSystemHashId(null));
 	}
 
 	private static MessageDigest getMessageDigest() {
