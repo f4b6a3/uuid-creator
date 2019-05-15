@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-public class SystemUtil {
+public class SystemDataUtil {
 
 	protected static MessageDigest md;
 
@@ -47,28 +47,29 @@ public class SystemUtil {
 	 *            an arbitrary string to change the final hash
 	 * @return a system identifier
 	 */
-	public static long getSystemHashId(String salt) {
-		String hash = getSystemHash(salt);
+	public static long getSystemId(String salt) {
+		String hash = getSystemDataHash(salt);
 		long number = ByteUtil.toNumber(hash) & 0x0000FFFFFFFFFFFFL;
 		return NodeIdentifierUtil.setMulticastNodeIdentifier(number);
 	}
 
 	/**
-	 * Returns a hash string generated from all the system details concatenated:
-	 * OS + JVM + Network + SALT.
+	 * Returns a hash string generated from all the system data concatenated:
+	 * OS + JVM + Network + Resources + SALT.
 	 * 
 	 * @param salt
 	 *            an arbitrary string to change the final hash
 	 * @return a string
 	 */
-	public static String getSystemHash(String salt) {
+	public static String getSystemDataHash(String salt) {
 
 		md = getMessageDigest();
 
 		String os = getOperatingSystem();
 		String jvm = getJavaVirtualMachine();
 		String net = getNetwork();
-		String string = String.join(" ", os, jvm, net, salt);
+		String res =  getResources();
+		String string = String.join(" ", os, jvm, net, res, salt);
 
 		byte[] bytes = string.getBytes();
 		byte[] hash = md.digest(bytes);
@@ -103,6 +104,20 @@ public class SystemUtil {
 		return String.join(" ", vendor, version, rtName, rtVersion, vmName, vmVersion);
 	}
 
+	public static String getResources() {
+		int procs = getAvailableProcessors();
+		long memory = getMaxMemory();
+		return String.join(" ", procs + " processors ", memory + " bytes");
+	}
+	
+	public static int getAvailableProcessors() {
+		return Runtime.getRuntime().availableProcessors();
+	}
+	
+	public static long getMaxMemory() {
+		return Runtime.getRuntime().maxMemory();
+	}
+	
 	/**
 	 * Returns a string of the network details.
 	 * 

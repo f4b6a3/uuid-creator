@@ -25,7 +25,7 @@ import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.DeltaTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.NanosecondTimestampStrategy;
 import com.github.f4b6a3.uuid.util.SettingsUtil;
-import com.github.f4b6a3.uuid.util.SystemUtil;
+import com.github.f4b6a3.uuid.util.SystemDataUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
@@ -260,7 +260,7 @@ public class DemoTest {
 		startTime = System.currentTimeMillis();
 		
 		for(int i = 0; i < 100; i++) {
-			SystemUtil.getNetworkData();
+			SystemDataUtil.getNetworkData();
 		}
 		
 		endTime = System.currentTimeMillis();
@@ -270,7 +270,7 @@ public class DemoTest {
 		startTime = System.currentTimeMillis();
 		
 		for(int i = 0; i < 100; i++) {
-			SystemUtil.getNetworkDataList();
+			SystemDataUtil.getNetworkDataList();
 		}
 		
 		endTime = System.currentTimeMillis();

@@ -1,7 +1,7 @@
 package com.github.f4b6a3.uuid.nodeid;
 
 import com.github.f4b6a3.uuid.util.SettingsUtil;
-import com.github.f4b6a3.uuid.util.SystemUtil;
+import com.github.f4b6a3.uuid.util.SystemDataUtil;
 
 public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
@@ -14,7 +14,7 @@ public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 			this.nodeIdentifier = preferedNodeIdentifier;
 		} else {
 			String salt = SettingsUtil.getNodeIdentifierSalt();
-			this.nodeIdentifier = SystemUtil.getSystemHashId(salt);
+			this.nodeIdentifier = SystemDataUtil.getSystemId(salt);
 		}
 	}
 

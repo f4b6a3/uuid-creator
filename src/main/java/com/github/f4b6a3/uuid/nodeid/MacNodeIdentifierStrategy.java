@@ -6,7 +6,7 @@ import com.github.f4b6a3.uuid.util.ByteUtil;
 import com.github.f4b6a3.uuid.util.NetworkData;
 import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 import com.github.f4b6a3.uuid.util.RandomUtil;
-import com.github.f4b6a3.uuid.util.SystemUtil;
+import com.github.f4b6a3.uuid.util.SystemDataUtil;
 
 public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
@@ -56,11 +56,11 @@ public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	protected long getHardwareAddress() {
 
 		// first try
-		NetworkData networkData = SystemUtil.getNetworkData();
+		NetworkData networkData = SystemDataUtil.getNetworkData();
 
 		// second try, if the first one failed
 		if (networkData == null) {
-			List<NetworkData> networkDataList = SystemUtil.getNetworkDataList();
+			List<NetworkData> networkDataList = SystemDataUtil.getNetworkDataList();
 			if (networkDataList != null && !networkDataList.isEmpty()) {
 				networkData = networkDataList.get(0);
 			}
