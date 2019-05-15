@@ -534,9 +534,8 @@ public class UuidCreatorTest {
 		HashSet<UUID> set = new HashSet<>();
 		for (UUID uuid : list) {
 			assertTrue(String.format("UUID is duplicated %s", uuid), set.add(uuid));
-			assertTrue(String.format("UUID list size is different of %s", DEFAULT_LOOP_LIMIT),
-					list.length == DEFAULT_LOOP_LIMIT);
 		}
+		assertTrue("There are duplicated UUIDs", set.size() == DEFAULT_LOOP_LIMIT);
 	}
 
 	private void checkCreationTime(UUID[] list, long startTime, long endTime) {
