@@ -4,12 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.UUID;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -21,7 +16,6 @@ import com.github.f4b6a3.uuid.factory.NameBasedMd5UuidCreator;
 import com.github.f4b6a3.uuid.factory.SequentialUuidCreator;
 import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
-import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
 import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
