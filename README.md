@@ -576,7 +576,7 @@ Standard timestamp arrangement
 3: timestamp high   *****
 ```
 
-In the standard the bytes of the timestamp are rearranged so that the highest bits are put in the end of the array of bits and the lowest in the beginning of the resulting array of bits. The standard _timestamp resolution_ is one second divided by 10,000,000. The timestamp is the count of 100 nanoseconds intervals since 1582-10-15.
+In the standard the bytes of the timestamp are rearranged so that the highest bits are put in the end of the array of bits and the lowest in the beginning of the resulting array of bits. The standard _timestamp resolution_ is one second divided by 10,000,000. The timestamp is the count of 100 nanoseconds intervals since 1582-10-15. It uses 60 bits to represent date and time and 4 bits to indicate the UUID version. The maximum date and time that can be represented is 5236-03-31T21:21:00.684Z.
 
 In this implementation, the timestamp has milliseconds accuracy, that is, it uses `System.currentTimeMillis()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis()) to get the current milliseconds. An internal counter is used to _simulate_ the standard timestamp resolution of 10 million clock ticks per second. The counter range is from 0 to 9,999. Every time a request is made at the same millisecond, the counter is increased by 1. Each counter value corresponds to a 100 nanosecond interval. The timestamp is calculated with this formula: MILLISECONDS * 10,000 + COUNTER. The reason why this strategy is used is that the JVM may not guarantee[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#nanoTime()) a resolution higher than milliseconds.
 
@@ -594,9 +594,9 @@ The clock sequence is used to help avoid duplicates. It comes in when the system
 
 The first bits of the clock sequence part are multiplexed with the variant number of the RFC-4122. Because of that, it has a range from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards. 
 
-With the incrementing clock sequence the limit of UUIDs created in the same second and in a single host machine rises to 163,840,000,000, since the timestamp resolution is 10,000,000 and the range is 16,384. So, the maximum average rate is 163 billion per second per node identifier.
+With the incrementing clock sequence, the limit of UUIDs created at the same second and at a single host machine rises to 163,840,000,000, since the timestamp resolution is 10,000,000 and the clock sequence range is 16,384. So, the maximum generation rate is 163 billion per second per node identifier.
 
-This implementation generates _well distributed clock sequences_ in the case that there are many instances of `AbstractUuidCreator` running. This is done to avoid more than one instance using the same clock sequence. To assure that the clock sequence values will not be repeated and will be distant enough from the other values, it uses an algorithm created for this purpose `CyclicDistributor`.
+This implementation generates _well distributed clock sequences_ in the case that there are many instances of `AbstractTimeBasedUuidCreator` running in parallel. This is done to avoid more than one instance using the same clock sequence. To assure that the clock sequence values will not be repeated and will be distant enough from the other values, it uses an algorithm created for this purpose: `CyclicDistributor`. We could just use a random clock sequence every time a generator is instantiated, but there's a small risk of the same clock sequence being given to more than one generator. The cyclic distributor reduces this risk to ZERO up to 16 thousand parallel generators. Besides, there's a risk of a clock sequence being incremented to conflict with the clock sequence of another generator. The cyclic distributor hands out a value as far as possible from the other values to minimize this risk related to incrementing.
 
 You can create any strategy that implements the `ClockSequenceStrategy`, if none of the strategies are good for you.
 
@@ -608,7 +608,7 @@ The class `CyclicDistributor` hands out numbers between the range ZERO and `rang
 
 For example, say the a range is 360, similar to the 360 degrees of a circle. The first number handed out is random, and for coincidence it is ZERO. The second value handed out is 180 degrees away from the first point. The third is at 270 degrees far from the first one. The forth 90 degrees. And so on...
 
-This algorithm is very simple, but it's easier to understand watching it running. There's an animation written in HTML canvas in the `doc` directory that shows the algorithm in action. Each point drawn in the circle of the animation is like a value been handed out. Each value is at the same distance of the others in the same iteration or cycle.
+This algorithm is very simple, but it's easier to understand watching it running. There's an animation in the `doc` directory that shows the algorithm in action. Each point drawn in the circle of the animation is like a value being handed out. Each value is at the same distance of the others in the same iteration or cycle.
 
 ##### State file
 
