@@ -20,6 +20,7 @@ package com.github.f4b6a3.uuid.clockseq;
 import com.github.f4b6a3.uuid.distrib.CyclicDistributor;
 import com.github.f4b6a3.uuid.distrib.Distributor;
 import com.github.f4b6a3.uuid.exception.OverrunException;
+import com.github.f4b6a3.uuid.factory.CombGuidCreator;
 import com.github.f4b6a3.uuid.sequence.AbstractSequence;
 import com.github.f4b6a3.uuid.state.AbstractUuidState;
 import com.github.f4b6a3.uuid.state.FileUuidState;
@@ -63,8 +64,6 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 
 	// keeps count of values returned
 	private int counter = 0;
-
-	private static Distributor distributor;
 
 	protected AbstractUuidState state;
 
@@ -113,10 +112,6 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 
 		this.timestamp = timestamp;
 		this.nodeIdentifier = nodeIdentifier;
-
-		if (distributor == null) {
-			distributor = new CyclicDistributor(SEQUENCE_MAX + 1);
-		}
 
 		if (SettingsUtil.isStateEnabled()) {
 
@@ -206,7 +201,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 
 	@Override
 	public void reset() {
-		this.value = distributor.handOut();
+		this.value = DistributorLazyHolder.INSTANCE.handOut();
 	}
 	
 	protected void storeState() {
@@ -235,4 +230,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 		}
 	}
 
+    private static class DistributorLazyHolder {
+        static final Distributor INSTANCE = new CyclicDistributor(SEQUENCE_MAX + 1);
+    }
 }

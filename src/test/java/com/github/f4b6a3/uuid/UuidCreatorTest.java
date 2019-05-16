@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.UUID;
 import java.time.Instant;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -17,6 +18,7 @@ import com.github.f4b6a3.uuid.factory.SequentialUuidCreator;
 import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
+import com.github.f4b6a3.uuid.util.SystemDataUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 import static com.github.f4b6a3.uuid.util.ByteUtil.*;
@@ -26,10 +28,19 @@ import static com.github.f4b6a3.uuid.util.ByteUtil.*;
  */
 public class UuidCreatorTest {
 
+	private static int processors;
 	private static final int DEFAULT_LOOP_LIMIT = 10_000;
 
 	private static final String UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
 
+	@BeforeClass
+	public static void beforeClass() {
+		processors = SystemDataUtil.getAvailableProcessors();
+		if(processors < 4) {
+			processors = 4;
+		}
+	}
+	
 	@Test
 	public void testGetRandomUuid_StringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
@@ -299,12 +310,11 @@ public class UuidCreatorTest {
 	@Test
 	public void testGetTimeBased_concurrent_factories_should_create_unique_uuids() throws InterruptedException {
 
-		int threadCount = 4;
-		Thread[] threads = new Thread[threadCount];
+		Thread[] threads = new Thread[processors];
 		TestThread.clearHashSet();
 
 		// Instantiate and start many threads
-		for (int i = 0; i < threadCount; i++) {
+		for (int i = 0; i < processors; i++) {
 			threads[i] = new TestThread(UuidCreator.getTimeBasedCreator(), DEFAULT_LOOP_LIMIT);
 			threads[i].start();
 		}
@@ -315,18 +325,17 @@ public class UuidCreatorTest {
 		}
 
 		// Check if the quantity of unique UUIDs is correct
-		assertTrue("A duplicate UUID whas created", TestThread.hashSet.size() == (DEFAULT_LOOP_LIMIT * threadCount));
+		assertTrue("A duplicate UUID whas created", TestThread.hashSet.size() == (DEFAULT_LOOP_LIMIT * processors));
 	}
 
 	@Test
 	public void testGetSequential_concurrent_factories_should_create_unique_uuids() throws InterruptedException {
 
-		int threadCount = 4;
-		Thread[] threads = new Thread[threadCount];
+		Thread[] threads = new Thread[processors];
 		TestThread.clearHashSet();
 
 		// Instantiate and start many threads
-		for (int i = 0; i < threadCount; i++) {
+		for (int i = 0; i < processors; i++) {
 			threads[i] = new TestThread(UuidCreator.getSequentialCreator(), DEFAULT_LOOP_LIMIT);
 			threads[i].start();
 		}
@@ -337,7 +346,7 @@ public class UuidCreatorTest {
 		}
 
 		// Check if the quantity of unique UUIDs is correct
-		assertTrue("A duplicate UUID whas created", TestThread.hashSet.size() == (DEFAULT_LOOP_LIMIT * threadCount));
+		assertTrue("A duplicate UUID whas created", TestThread.hashSet.size() == (DEFAULT_LOOP_LIMIT * processors));
 	}
 	
 	@Test
