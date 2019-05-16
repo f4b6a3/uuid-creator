@@ -2,34 +2,34 @@
 UUID Creator
 ======================================================
 
-UUID Creator generates standard <sup>[2]</sup> and non-standard UUIDs <sup>[4]</sup> <sup>[5]</sup> <sup>[7]</sup> <sup>[8]</sup>.
+UUID Creator is a library that generates standard <sup>[2]</sup> and non-standard UUIDs <sup>[4]</sup> <sup>[5]</sup> <sup>[7]</sup> <sup>[8]</sup>.
 
 Standard UUIDs:
 
-* __Random__: the pseudo-randomly generated version, using a secure RNG;
+* __Random__: the pseudo-randomly generated version that uses a secure RNG;
 * __Time-based:__ the time-based version;
 * __Time-based with MAC:__ the time-based version with hardware address;
 * __Name-based MD5:__ the base-named version that uses MD5;
-* __Name-based SHA1:__ the base-named version that uses SHA-1;
+* __Name-based SHA-1:__ the base-named version that uses SHA-1;
 * __DCE Security:__ the time-based version that embeds local domains and identifiers.
 
 Non-standard UUIDs:
 
-* __Fast Random__: a pseudo-randomly generated version, using a fast RNG;
-* __Sequential:__ a modified time-based UUID that doesn't change the timestamp byte order;
-* __Sequential with MAC:__ a sequential UUID with hardware address;
-* __Name-based SHA256:__ the base-named version that uses SHA-256;
-* __MSSQL Guid:__ a modified time-based UUID that changes the timestamp byte order for MSSQL Server database;
-* __COMB Guid:__ a modified random UUID that replaces the last 6 bytes with a Unix epoch milliseconds for MSSQL Server database.
+* __Fast Random__: a pseudo-randomly generated version that uses a fast RNG;
+* __Sequential:__ a modified time-based version that doesn't change the timestamp byte order;
+* __Sequential with MAC:__ a sequential version with hardware address;
+* __Name-based SHA-256:__ a base-named version that uses SHA-256;
+* __MSSQL Guid:__ a modified time-based version that changes the timestamp byte order for MSSQL Server database;
+* __COMB Guid:__ a modified random version that replaces the last 6 bytes with Unix epoch milliseconds for MSSQL Server database.
 
 How to Use
 ------------------------------------------------------
 
 ### No time to read
 
-This library is very simple, but this document is too long. So, this section summarizes what most people may be looking for.
+This library is very simple, but this document is too long. So this section shows what most people are looking for.
 
-If you just want a random UUID, which seems to be the most common case, use this single line of code:
+If you just want a random UUID, which is the most common case, use this single line of code:
 
 ```java
 UUID uuid = UuidCreator.getRandom();
@@ -40,13 +40,13 @@ Or if you want a UUID that is based on date and time, use this line of code:
 ```java
 UUID uuid = UuidCreator.getTimeBased();
 ```
-Or else, if you want a UUID that is also based on date and time, but looks like a sequential number, use this line:
+Or if you want a UUID that is also based on date and time, but looks like a sequential number, use this line:
 
 ```java
 UUID uuid = UuidCreator.getSequential();
 ```
 
-And if you have enough time, you can read the rest of this document.
+You can read the rest of this document if you have enough time.
 
 ### Maven dependency
 
@@ -64,7 +64,7 @@ See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b
 
 ### Sequential (version 0, non-standard)
 
-The sequential UUID is a modified time-based UUID. The timestamp bits in this version are not rearranged as in the time-based version 1. The version number 0 (zero) was chosen to identify this type of UUID. It may be considered as an 'extension' of the RFC-4122.
+The sequential UUID is a modified time-based UUID. The timestamp bits in this version are not rearranged as in the time-based version 1. It is an extension of the [RFC-4122](https://tools.ietf.org/html/rfc4122).
 
 ```java
 // Sequential
@@ -124,9 +124,9 @@ a9601d42-6c51-11e9-9711-4546d757de20
 a9601d43-6c51-11e9-9711-4546d757de20
 ```
 
-### DCE Security (version 2)
+### DCE security (version 2)
 
-The DCE Security is a Time-based UUID that also has local domain and local identifier.
+The DCE Security is a time-based UUID that also has a local domain and a local identifier.
 
 ```java
 // DCE Security
@@ -279,7 +279,7 @@ a9c86b5f-4d97-c767-efaa-016a75228e8f
 Fluent interface
 ------------------------------------------------------
 
-The UUID factories are configurable via [fluent interface](https://en.wikipedia.org/wiki/Fluent_interface) methods. This section lists a series of examples for each version of UUID.
+The UUID factories are configurable via [fluent interface](https://en.wikipedia.org/wiki/Fluent_interface) methods. This section lists a lot of examples for each UUID version.
 
 
 #### Time-based
@@ -374,7 +374,7 @@ UUID uuid = UuidCreator.getTimeBasedCreator()
 
 #### Name-based
 
-All the examples in this subsection are also valid for SHA1 UUIDs.
+All the examples in this subsection are also valid for SHA-1 and SHA-256 UUIDs.
 
 ```java
 
@@ -427,7 +427,7 @@ System properties and environment variables
 
 ### Node identifier
 
-The `nodeid` property is used by `DefaultNodeIdentifierStrategy`. If this property or variable exists, it's value is returned. Otherwise, a system information hash is returned. In the default strategy the `nodeid` property is a *preferred value* for the node identifier, that is, it overrides the system information hash generated by the node identifier strategy. It may be useful if you want to identify each single machine by yourself, instead of allowing the algorithm do it for you. It accepts 12 hexadecimal chars.
+The `nodeid` property is used by the `DefaultNodeIdentifierStrategy`. If this property or variable exists, its value is returned. Otherwise, a system data hash is returned. In the default strategy the `nodeid` property is a *preferred value* for the node identifier, that is, it overrides the system data hash generated by the node identifier strategy. It may be useful if you want to identify each single machine by yourself, instead of allowing the algorithm do it for you. It accepts 12 hexadecimal chars.
 
 * Using system property:
 
@@ -445,7 +445,7 @@ export UUIDCREATOR_NODEID="c0da06157723"
 
 ### Node identifier salt
 
-The `nodeid.salt` property is used by `DefaultNodeIdentifierStrategy`. If this property or variable exists, it's value is used to calculate the system information hash. It may be any string.
+The `nodeid.salt` property is used by the `DefaultNodeIdentifierStrategy`. If this property or variable exists, its value is used to calculate the system data hash. It may be any string.
 
 * Using system property:
 
@@ -463,7 +463,7 @@ export UUIDCREATOR_NODEID_SALT="this is my salt"
 
 ### State enabled
 
-The `state.enabled` property is used by `AbstractTimeBasedUuidCreator`. If this property or variable exists, `true` is returned. Otherwise, `false` is returned. When this property is `true`, it tells the factory to save the state file in the file system when the program is closed. The state file is used in the next time the library is loaded into memory. The state contains three key-value pairs: `timestamp`, `nodeid` and `cloqseq`. These values are used by `DefaultClockSequenceStrategy` to decide when to reset or increment the clock sequence. By default, the state file is disabled. It accepts `true` or `false`. No property or variable means `false`.
+The `state.enabled` property is used by the `AbstractTimeBasedUuidCreator`. When this property is `true`, it tells the factory to save the state file in the file system when the program exits. The state file is used in the next time the library is loaded into memory. The state has three key-value pairs: `timestamp`, `nodeid` and `cloqseq`. These values are used by the `DefaultClockSequenceStrategy` to decide when to reset or increment the clock sequence. The state file is disabled by default. It accepts `true` or `false`.
 
 Don't enable the state file if you want to use many instances of UUID generators running at the same time.
 
@@ -483,7 +483,7 @@ export UUIDCREATOR_STATE_ENABLED="true"
 
 ### State directory
 
-The `state.directory` property is used by `AbstractTimeBasedUuidCreator`.  If this property or variable exists, it's value is returned. Otherwise, the default java directory for temporary files is returned. It may be used to set a different directory other than the "/tmp" directory on Linux, which may not keep the files after reboot. It accepts a file system path without trailing slash.
+The `state.directory` property is used by the `AbstractTimeBasedUuidCreator`. If this property or variable exists, its value is returned. Otherwise, the default directory for temporary files is returned. It may be used to set a different directory other than the "/tmp" directory on Linux, which may not keep its files after reboot. It accepts a file system path without trailing slash.
 
 * Using system property:
 
@@ -505,7 +505,7 @@ Implementation
 
 ### Format and representation
 
-A UUID is simply a 128-bit value that may be represented as:
+A UUID is simply a 128-bit value that is represented as:
 * An array of 2 longs; or
 * An array of 16 bytes; or
 * An array of 32 chars (without dashes).
@@ -527,12 +527,12 @@ Canonical format
 5: 12 chars
 
 v: version number
-m: variant number (sharing bits with clock-sequence)
+m: variant number (sharing bits with the clock-sequence)
 ```
 
 #### Representation
 
-The `java.util.UUID`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/util/UUID.html) class represents a UUID with two `long` fields, called Most Significant Bits (MSB) and Least Significant Bits (LSB). The MSB contains the version number. The LSB contains the variant number.
+The `java.util.UUID`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/util/UUID.html) class represents a UUID with two `long` fields, called most significant bits (MSB) and least significant bits (LSB). The MSB has the version number. The LSB has the variant number.
 
 ```
 Representation in java.util.UUID
@@ -563,7 +563,7 @@ Time-based UUID structure
 ```
 #### Timestamp
 
-The timestamp is a value that represents date and time. It has 4 subparts: timestamp low, timestamp mid, timestamp high and version number.
+The timestamp is a value that represents date and time. It has 4 subparts: low timestamp, middle timestamp, high timestamp and version number.
 
 ```
 Standard timestamp arrangement
@@ -576,39 +576,39 @@ Standard timestamp arrangement
 3: timestamp high   *****
 ```
 
-In the standard the bytes of the timestamp are rearranged so that the highest bits are put in the end of the array of bits and the lowest in the beginning of the resulting array of bits. The standard _timestamp resolution_ is one second divided by 10,000,000. The timestamp is the count of 100 nanoseconds intervals since 1582-10-15. It uses 60 bits to represent date and time and 4 bits to indicate the UUID version. The maximum date and time that can be represented is 5236-03-31T21:21:00.684Z.
+In the standard the bytes of the timestamp are rearranged so that the highest bits are put in the end of the array of bits and the lowest ones in the beginning. The standard _timestamp resolution_ is 1 second divided by 10,000,000. The timestamp is the amount of 100 nanoseconds intervals since 1582-10-15. Since the timestamp has 60 bits, the greatest date and time that can be represented is 5236-03-31T21:21:00.684Z.
 
-In this implementation, the timestamp has milliseconds accuracy, that is, it uses `System.currentTimeMillis()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis()) to get the current milliseconds. An internal counter is used to _simulate_ the standard timestamp resolution of 10 million clock ticks per second. The counter range is from 0 to 9,999. Every time a request is made at the same millisecond, the counter is increased by 1. Each counter value corresponds to a 100 nanosecond interval. The timestamp is calculated with this formula: MILLISECONDS * 10,000 + COUNTER. The reason why this strategy is used is that the JVM may not guarantee[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#nanoTime()) a resolution higher than milliseconds.
+In this implementation, the timestamp has milliseconds accuracy, that is, it uses `System.currentTimeMillis()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis()) to get the current milliseconds. An internal counter is used to _simulate_ the standard timestamp resolution of 10 million intervals per second. The counter range is from 0 to 9,999. Every time a request is made at the same millisecond, the counter is increased by 1. Each counter value corresponds to a 100 nanosecond interval. The timestamp is calculated with this formula: MILLISECONDS * 10,000 + COUNTER. The reason this strategy is used is that the JVM may not guarantee[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#nanoTime()) a resolution higher than milliseconds.
 
-If the default timestamp strategy is not desired, other two strategies are provided: nanoseconds strategy and delta strategy. 
+Two alternate strategies are provided in the case that the default timestamp strategy is not desired: nanoseconds strategy and delta strategy. 
 
-The nanoseconds strategy uses `Instant.getNano()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html#getNano--). You can use the `NanossecondTimestampStrategy` if your machine provides this time of resolution. My personal development PC doesn't.
+The nanoseconds strategy uses `Instant.getNano()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html#getNano--). You can use the `NanosecondTimestampStrategy` if your machine provides high time resolution. My personal development PC doesn't.
 
-The delta strategy uses `System.nanoTime()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#nanoTime()). This `DeltaTimestampStrategy` calculates the difference in nanoseconds between two calls to the `getTimestamp()` method. This difference is used to figure out the current timestamp in nanoseconds. As you can see, it is not precise, but it's an alternative option if you really need nanoseconds resolution.
+The delta strategy uses `System.nanoTime()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#nanoTime()). The `DeltaTimestampStrategy` calculates the difference in nanoseconds between two calls to the `getTimestamp()` method. This difference is used to figure out the current timestamp in nanoseconds. As you can see, it is not precise, but it's an alternate option if you really need nanoseconds resolution.
 
-You can create any strategy that implements the `TimestampStrategy`, if none of the strategies provided suffices.
+You can create any strategy that implements the `TimestampStrategy` in the case that none of the strategies provided suffices.
 
 #### Clock sequence
 
-The clock sequence is used to help avoid duplicates. It comes in when the system clock is backwards or when the node identifier changes. It also helps to expand the maximum amount of UUIDs created at the same second. 
+The clock sequence helps to avoid duplicates. It comes in when the system clock is backwards or when the node identifier changes. It also expands the amount of UUIDs that can be created at the same second. 
 
-The first bits of the clock sequence part are multiplexed with the variant number of the RFC-4122. Because of that, it has a range from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards. 
+The first bits of the clock sequence are multiplexed with the variant number of the RFC-4122. Because of that, it has a range from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards. 
 
-With the incrementing clock sequence, the limit of UUIDs created at the same second and at a single host machine rises to 163,840,000,000, since the timestamp resolution is 10,000,000 and the clock sequence range is 16,384. So, the maximum generation rate is 163 billion per second per node identifier.
+With the incrementing clock sequence, the limit of UUIDs created at the same second rises to 163,840,000,000 at a single host machine, since the clock sequence range is 16,384 and the timestamp resolution is 10,000,000. So the fastest generation rate is 163 billion UUIDs per second per node identifier.
 
-This implementation generates _well distributed clock sequences_ in the case that there are many instances of `AbstractTimeBasedUuidCreator` running in parallel. This is done to avoid more than one instance using the same clock sequence. To assure that the clock sequence values will not be repeated and will be distant enough from the other values, it uses an algorithm created for this purpose: `CyclicDistributor`. We could just use a random clock sequence every time a generator is instantiated, but there's a small risk of the same clock sequence being given to more than one generator. The cyclic distributor reduces this risk to ZERO up to 16 thousand parallel generators. Besides, there's a risk of a clock sequence being incremented to conflict with the clock sequence of another generator. The cyclic distributor hands out a value as far as possible from the other values to minimize this risk related to incrementing.
+This implementation generates _well distributed clock sequences_ in the case that there are many instances of the `AbstractTimeBasedUuidCreator` running in parallel. This is done to avoid more than one instance using the same clock sequence. To assure that the clock sequence values won't be repeated and will be distant enough from the other values, it uses an algorithm created for this purpose: the `CyclicDistributor`. We could just use a random clock sequence every time a generator is instantiated, but there's a small risk of the same clock sequence being given to more than one generator. The cyclic distributor reduces this risk to ZERO with up to 16 thousand parallel generators. Besides, there's a risk of an incremented clock sequence conflicting with the clock sequence of another generator. The cyclic distributor hands out a value as distant as possible from the other values to minimize the risk related to incrementing.
 
-You can create any strategy that implements the `ClockSequenceStrategy`, if none of the strategies are good for you.
+You can create any strategy that implements the `ClockSequenceStrategy` in the case that none of the strategies are good for you.
 
 ##### Cyclic distributor
 
-The cyclic distributor is just a simple algorithm that hands out values. It's like a sequence, but the first number is random, and the rest is calculated as points of a circle. I don't know if this algorithm already exists. I've just called "cyclic distributor", because it hands out or _distributes_ values as if they were on the perimeter of a _circle_ and does it in iterations or _cycles_.
+The cyclic distributor is just a simple algorithm that hands out values. It's like a sequence, but the first number is random, and the rest is calculated as points of a circle. I don't know if this algorithm already exists. I call it "cyclic distributor" because it hands out or _distributes_ values as if they were on the perimeter of a _circle_ and does it in iterations or _cycles_.
 
-The class `CyclicDistributor` hands out numbers between the range ZERO and `range` so that the first value is always random and the rest or values will not be repeated. The range is treated as the perimeter of a circle. Each value is a point in this perimeter. The first point handed out is random. The next values are calculated in iterations or cycles. Each cycle has a 2^n number of values to hand out. All the values are at the same distance from the other values of the same iteration.
+The class `CyclicDistributor` hands out numbers in a range of values, so that the first value is always random and the rest of values won't repeat. The range is treated as the perimeter of a circle. Each value is a point in this perimeter. The first point handed out is random. The next values are calculated in iterations or cycles. Each cycle has a 2^n number of values to hand out. All the values are at the same distance from the other values of the same iteration.
 
-For example, say the a range is 360, similar to the 360 degrees of a circle. The first number handed out is random, and for coincidence it is ZERO. The second value handed out is 180 degrees away from the first point. The third is at 270 degrees far from the first one. The forth 90 degrees. And so on...
+For example, say a range is 360, similar to the 360 degrees of a circle. The first number handed out is random, and for coincidence it is ZERO. The second value handed out is 180 degrees away from the first point. The third is at 270 degrees far from the first one. The fourth is at 90 degrees far. And so on...
 
-This algorithm is very simple, but it's easier to understand watching it running. There's an animation in the `doc` directory that shows the algorithm in action. Each point drawn in the circle of the animation is like a value being handed out. Each value is at the same distance of the others in the same iteration or cycle.
+This algorithm is very simple, but it's easier to understand it watching it running. There's an animation in the `doc` directory that shows the algorithm in action. Each point drawn in the circle of the animation is like a value being handed out. Each value is at the same distance of the others in the same iteration or cycle.
 
 ##### State file
 
@@ -620,14 +620,14 @@ Since the state file is disabled by default, it can be enabled by the system pro
 
 The key-value pairs of the state file has effect in these factories: `TimeBasedUuidCreator`, `SequentialUuidCreator`, `DceSecurityUuidCreator` and `MssqlGuidCreator`. The the other factories ignore the state file.
 
-Don't enable the state file if you want to use multiple instances of UUID generators. If do it, all instances of UUID generators will use the same clock sequence. Just let the algorithm generate different clock sequences for each generator in a well distributed way.
+Don't enable the state file if you want to use multiple instances of UUID generators in parallel. If you do it, all instances of UUID generators will use the same clock sequence. Just let the algorithm generate different clock sequences for each generator in a well distributed way.
 
 
 #### Node identifier
 
-The node identifier part consists of an IEEE 802 MAC address, usually the host address. But the standard allows the usage of a random generated value or a system information hash if no address is available, or if the usage of MAC address is not desired. 
+The node identifier is an IEEE 802 MAC address, usually the host machine address. But the standard allows the usage of a random generated value or a system data hash if no address is available, or if the usage of MAC address is not desired. 
 
-In this implementation, the default behavior is to use a _system data hash_ (SHA-256). The data used are: operating system, java virtual machine, network and resources available. It's like a device identifier based on it's hardware and software configurations. The specification recommends to accumulate _as many sources as possible_ into a buffer to generate the hash value. Note that if one of these data change, the node identifier also changes. So, _the resulting node identifier is as unique and mutable as the host machine settings_.
+In this implementation, the default behavior is to use a _system data hash_ (SHA-256). The data used are: operating system, java virtual machine, network and resources available. It's like a device identifier based on its hardware and software configurations. The specification recommends to accumulate _as many sources as possible_ into a buffer to generate the hash value. Note that if one of these data changes, the node identifier also changes. So _the resulting node identifier is as unique and mutable as the host machine settings_.
 
 It's possible to use a `salt` to change the system data hash by setting the system property `uuidcreator.nodeid.salt`  or the environment variable `UUIDCREATOR_NODEID_SALT`. It accepts any string as salt value.
 
@@ -635,7 +635,7 @@ It's also possible to use a _preferred node identifier_ by setting a system prop
 
 Other strategies are provided by this implementation if the default strategy is not desired: random generator strategy and machine address strategy. If you really need to identify the UUIDs with MAC address, just use the `MacNodeIdentifierStrategy`. Or if you feel comfortable with random generated node identifiers, use the `RandomNodeIdentifierStrategy`.
 
-Again, you can create your own strategy that implements the `NodeIdentifierStrategy`.
+You can also create your own strategy that implements the `NodeIdentifierStrategy`.
 
 ###  Sequential
 
@@ -662,7 +662,7 @@ The difference is that it also contains information of local domain and local id
 
 There are two types of name-based UUIDs: MD5 and SHA-1. The MD5 is registered as version 3. And the SHA-1 is version 5.
 
-Two parameters are needed to generate a name-based UUID: a name space and a name. 
+Two parameters are needed to generate a name-based UUID: a name space and a name.
 
 The name space is a UUID object. But a string may be passed as argument. The factory converts it to UUID. The name space is optional.
 
