@@ -359,11 +359,6 @@ Implementation
 
 ### Format and representation
 
-A UUID is simply a 128-bit value that is represented as:
-* An array of 2 longs; or
-* An array of 16 bytes; or
-* An array of 32 chars (without dashes).
-
 #### Format
 
 The canonical format has 5 groups separated by dashes.
