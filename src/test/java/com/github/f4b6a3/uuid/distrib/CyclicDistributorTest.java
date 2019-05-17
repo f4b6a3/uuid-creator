@@ -9,7 +9,7 @@ import org.junit.Test;
 public class CyclicDistributorTest {
 	
 	@Test
-	public void testCyclicDistributor_should_follow_the_precalculated_sequence() {
+	public void testCyclicDistributor_TheValuesHandedOutShouldFollowThePrecalculatedSequence () {
 
 		int[] list = { 0, 180, 270, 90, 315, 225, 135, 45, 338, 293, 248, 203, 158, 113, 68, 23, 349, 326, 304, 281,
 				259, 236, 214, 191, 169, 146, 124, 101, 79, 56, 34, 11, 354, 343, 332, 321, 309, 298, 287, 276, 264,
@@ -34,7 +34,7 @@ public class CyclicDistributorTest {
 	}
 
 	@Test
-	public void testCyclicDistributor_should_not_repeat_values() {
+	public void testCyclicDistributor_TheValuesHandedOutShouldNotRepeat() {
 
 		int loopMax = 0x3fff; // 16383
 		HashSet<Integer> set = new HashSet<>();

@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 public class DefaultClockSequenceStrategyTest {
 
 	@Test
-	public void testNextFor_should_increment_if_the_new_timestamp_is_lower_or_equal_to_the_old_timestamp() {
+	public void testNextFor_TheClockSequenceShouldBeIncrementedIfTheNewTimestampIsLowerOrEqualToTheOldTimestamp() {
 
 		// It should increment if the new timestamp is LOWER THAN the old
 		// timestamp
@@ -33,7 +33,7 @@ public class DefaultClockSequenceStrategyTest {
 	}
 
 	@Test
-	public void testNextFor_should_not_increment_if_the_new_timestamp_is_equal_to_the_old_timestamp() {
+	public void testNextFor_TheClockSequenceShouldNotIncrementIfTheNewTimestampIsGreaterThanTheOldTimestamp() {
 
 		// It should NOT increment if the new timestamp is GREATER THAN the old
 		// timestamp
@@ -46,7 +46,7 @@ public class DefaultClockSequenceStrategyTest {
 	}
 
 	@Test()
-	public void testNextForTimestamp_the_last_value_should_be_equal_to_the_first_value_minus_one() {
+	public void testNextForTimestamp_TheLastValueShouldBeEqualToTheFirstValueMinusOne() {
 
 		int first = 0;
 		int last = 0;
@@ -62,7 +62,7 @@ public class DefaultClockSequenceStrategyTest {
 	}
 
 	@Test(expected = OverrunException.class)
-	public void testNextForTimestamp_should_throw_overrun_exception() {
+	public void testNextForTimestamp_AnOverrunExceptionShouldBeThrown() {
 
 		long timestamp = TimestampUtil.getCurrentTimestamp();
 		DefaultClockSequenceStrategy clockSequence = new DefaultClockSequenceStrategy();

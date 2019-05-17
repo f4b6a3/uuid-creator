@@ -66,7 +66,7 @@ public class AbstractSequenceTest {
 	}
 	
 	@Test
-	public void testNext_should_increment() {
+	public void testNext_TheSequenceShouldIncrement() {
 		
 		TestSequence testSequence = new TestSequence();
 		long old_value = testSequence.current();
@@ -82,7 +82,7 @@ public class AbstractSequenceTest {
 	}
 	
 	@Test
-	public void testNext_should_be_reset_to_min_value_if_the_max_value_is_reached() {
+	public void testNext_TheSequenceShouldBeResetToTheMinimumValueIfTheMaximumValueIsReached() {
 		
 		TestSequence testSequence = new TestSequence();
 		
@@ -95,7 +95,7 @@ public class AbstractSequenceTest {
 		assertEquals(TestSequence.MAX_TEST, value); // Should be MAX_VALUE
 		
 		value = testSequence.next();
-		assertEquals(TestSequence.MIN_TEST, value); // Sould be reset to MIN_VALUE
+		assertEquals(TestSequence.MIN_TEST, value); // Should be reset to MIN_VALUE
 		
 	}
 
