@@ -8,7 +8,7 @@
 
 	<name>uuid-creator</name>
 	<url>http://github.com/f4b6a3</url>
-	<description>UUID Creator</description>
+	<description>UUID Creator is a Java library for generating sequential, time-based, name-based and random universally unique identifiers and more.</description>
 
 	<licenses>
 		<license>
