@@ -24,7 +24,6 @@ import com.github.f4b6a3.uuid.random.XorshiftStarRandom;
 import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.DeltaTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.NanosecondTimestampStrategy;
-import com.github.f4b6a3.uuid.util.SettingsUtil;
 import com.github.f4b6a3.uuid.util.SystemDataUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
@@ -92,7 +91,7 @@ public class DemoTest {
 		long getSequentialUUID = (SimpleBenchmark.run(null, UuidCreator.class, "getSequential", loopMax) * loopMax)
 				/ nano;
 		long javaNextLong = (SimpleBenchmark.run(new Random(), null, "nextLong", loopMax) * loopMax) / nano;
-		long XorshiftNextLong = (SimpleBenchmark.run(new XorshiftRandom(), null, "nextLong", loopMax) * loopMax) / nano;
+		long xorshiftNextLong = (SimpleBenchmark.run(new XorshiftRandom(), null, "nextLong", loopMax) * loopMax) / nano;
 
 		System.out.println();
 		System.out.println("----------------------------------------");
@@ -103,7 +102,7 @@ public class DemoTest {
 		System.out.println(String.format("* UUIDGenerator.getTimeBasedUUID():  %s ms", getTimeBasedUUID));
 		System.out.println(String.format("* UUIDGenerator.getSequentialUUID(): %s ms", getSequentialUUID));
 		System.out.println(String.format("* java.util.Random.nextLong(): %s ms", javaNextLong));
-		System.out.println(String.format("* XorshiftRandom.nextLong(): %s ms", XorshiftNextLong));
+		System.out.println(String.format("* XorshiftRandom.nextLong(): %s ms", xorshiftNextLong));
 		System.out.println("----------------------------------------");
 	}
 

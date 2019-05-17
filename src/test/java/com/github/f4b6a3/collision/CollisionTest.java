@@ -76,7 +76,7 @@ public class CollisionTest {
 				}
 			}
 		}
-		return null;
+		return new int[0];
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class CollisionTest {
 				int position[] = find(value);
 
 				// Insert the value in cache, if it does not exist in it.
-				if (position == null) {
+				if (position.length == 0) {
 					cacheLong[id][i] = value;
 					cacheUUID[id][i] = uuid;
 				} else {

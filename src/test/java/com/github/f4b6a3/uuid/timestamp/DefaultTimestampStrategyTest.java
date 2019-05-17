@@ -38,8 +38,8 @@ public class DefaultTimestampStrategyTest {
 		// timestamp
 		long timestamp = 1000;
 		DefaultTimestampStrategy timestampCounter = new DefaultTimestampStrategy();
-		long counter = timestampCounter.getNextForTimestamp(timestamp);
-		counter = timestampCounter.getNextForTimestamp(timestamp + 1);
+		timestampCounter.getNextForTimestamp(timestamp);
+		long counter = timestampCounter.getNextForTimestamp(timestamp + 1);
 		assertEquals(0, counter);
 		
 	}
@@ -51,8 +51,9 @@ public class DefaultTimestampStrategyTest {
 		// old timestamp
 		long timestamp = 1000;
 		DefaultTimestampStrategy timestampCounter = new DefaultTimestampStrategy();
+		
+		timestampCounter.getNextForTimestamp(timestamp);
 		long counter = timestampCounter.getNextForTimestamp(timestamp);
-		counter = timestampCounter.getNextForTimestamp(timestamp);
 		assertEquals(1, counter);
 		counter = timestampCounter.getNextForTimestamp(timestamp);
 		assertEquals(2, counter);

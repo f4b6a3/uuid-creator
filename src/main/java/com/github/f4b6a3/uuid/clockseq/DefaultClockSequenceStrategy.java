@@ -67,8 +67,8 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 
 	protected AbstractUuidState state;
 
-	protected static final int SEQUENCE_MIN = 0; // 0x0000;
-	protected static final int SEQUENCE_MAX = 16_383; // 0x3fff;
+	protected static final int SEQUENCE_MIN = 0x0000;
+	protected static final int SEQUENCE_MAX = 0x3fff;
 
 	/**
 	 * This constructor uses a state stored previously.
@@ -225,6 +225,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 			this.strategy = strategy;
 		}
 
+		@Override
 		public void run() {
 			this.strategy.storeState();
 		}

@@ -85,7 +85,6 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	public <T extends AbstractNameBasedUuidCreator> T withNamespace(String namespace) {
 		UUID namespaceUUID = create(namespace);
 		this.namespace = namespaceUUID;
-		System.out.println(this.namespace.toString());
 		return (T) this;
 	}
 
@@ -166,9 +165,6 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	public synchronized UUID create(UUID namespace, String name) {
 
-		long msb = 0x0000000000000000L;
-		long lsb = 0x0000000000000000L;
-
 		byte[] namespaceBytes = null;
 		byte[] nameBytes = null;
 		byte[] bytes = null;
@@ -190,8 +186,8 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 
 		hash = md.digest(bytes);
 
-		msb = toNumber(copy(hash, 0, 8));
-		lsb = toNumber(copy(hash, 8, 16));
+		long msb = toNumber(copy(hash, 0, 8));
+		long lsb = toNumber(copy(hash, 8, 16));
 
 		lsb = setVariantBits(lsb);
 		msb = setVersionBits(msb);

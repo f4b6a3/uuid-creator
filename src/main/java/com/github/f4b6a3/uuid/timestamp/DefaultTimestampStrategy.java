@@ -26,7 +26,7 @@ import com.github.f4b6a3.uuid.util.TimestampUtil;
  */
 public class DefaultTimestampStrategy extends AbstractSequence implements TimestampStrategy {
 
-	protected long timestamp = 0;
+	protected long previousTimestamp = 0;
 
 	protected static final int COUNTER_MIN = 0;
 	protected static final int COUNTER_MAX = 9_999;
@@ -52,11 +52,11 @@ public class DefaultTimestampStrategy extends AbstractSequence implements Timest
 	 * @return the clock sequence
 	 */
 	protected int getNextForTimestamp(long timestamp) {
-		if (timestamp <= this.timestamp) {
+		if (timestamp <= this.previousTimestamp) {
 			return this.next();
 		}
 
-		this.timestamp = timestamp;
+		this.previousTimestamp = timestamp;
 		this.value = MIN_VALUE;
 		return MIN_VALUE;
 	}

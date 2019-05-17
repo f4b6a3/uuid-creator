@@ -7,8 +7,8 @@ public class CombClockSequenceStrategy extends AbstractSequence implements Clock
 
 	protected long nodeIdentifier;
 	
-	protected static final int SEQUENCE_MIN = 0; // 0x0000;
-	protected static final int SEQUENCE_MAX = 65_535; // 0xffff;
+	protected static final int SEQUENCE_MIN = 0x0000;
+	protected static final int SEQUENCE_MAX = 0xffff;
 
 	public CombClockSequenceStrategy() {
 		super(SEQUENCE_MIN, SEQUENCE_MAX);

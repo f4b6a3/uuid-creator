@@ -75,7 +75,7 @@ public class DefaultClockSequenceStrategyTest {
 			}
 		} catch (OverrunException e) {
 			// fail if the exception is thrown before the maximum value
-			fail(String.format("Overrun exception thrown before the maximum value is reached."));
+			fail("Overrun exception thrown before the maximum value is reached.");
 		}
 
 		// It should throw an exception now
