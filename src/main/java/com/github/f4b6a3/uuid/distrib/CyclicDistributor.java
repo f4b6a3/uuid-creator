@@ -66,10 +66,10 @@ public class CyclicDistributor implements Distributor {
 			if (this.remaining > this.perimeter / 2.0) {
 				this.offset = (this.offset + (this.arc / 2.0)) % this.perimeter;
 				this.reset();
-				return (int) Math.round(this.offset);
+				return (int) this.offset;
 			}
 		}
 
-		return (int) Math.round(((this.offset + (this.arc * --this.remaining) + (this.arc / 2.0)) % this.perimeter));
+		return (int) ((this.offset + (this.arc * --this.remaining) + (this.arc / 2.0)) % this.perimeter);
 	}
 }
