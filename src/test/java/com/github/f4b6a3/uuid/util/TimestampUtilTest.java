@@ -2,8 +2,6 @@ package com.github.f4b6a3.uuid.util;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.util.TimestampUtil;
-
 import static com.github.f4b6a3.uuid.util.TimestampUtil.*;
 
 import static org.junit.Assert.*;

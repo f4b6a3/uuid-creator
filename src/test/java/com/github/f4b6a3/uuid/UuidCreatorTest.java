@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
-import com.github.f4b6a3.uuid.exception.OverrunException;
+import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.factory.NameBasedMd5UuidCreator;
 import com.github.f4b6a3.uuid.factory.SequentialUuidCreator;
 import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
@@ -197,7 +197,7 @@ public class UuidCreatorTest {
 	}
 	
 	@Test
-	public void testGetSequentialUuid_StringIsValid() {
+	public void testGetSequentialUuidStringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UuidCreator.getSequential();
 			checkIfStringIsValid(uuid);
@@ -205,7 +205,7 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testGetSequentialWithMac_StringIsValid() {
+	public void testGetSequentialWithMacStringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UuidCreator.getSequentialWithMac();
 			checkIfStringIsValid(uuid);
@@ -213,7 +213,7 @@ public class UuidCreatorTest {
 	}
 	
 	@Test
-	public void testGetRandomUuid_StringIsValid() {
+	public void testGetRandomUuidStringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UuidCreator.getRandom();
 			checkIfStringIsValid(uuid);
@@ -221,7 +221,7 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testGetTimeBasedUuid_StringIsValid() {
+	public void testGetTimeBasedUuidStringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UuidCreator.getTimeBased();
 			checkIfStringIsValid(uuid);
@@ -229,7 +229,7 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testGetTimeBasedWithMac_StringIsValid() {
+	public void testGetTimeBasedWithMacStringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UuidCreator.getTimeBasedWithMac();
 			checkIfStringIsValid(uuid);
@@ -237,7 +237,7 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testGetSequential_TimestampBitsAreSequential() {
+	public void testGetSequentialTimestampBitsAreSequential() {
 
 		long oldTimestemp = 0;
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
@@ -252,7 +252,7 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testGetSequential_MostSignificantBitsAreSequential() {
+	public void testGetSequentialMostSignificantBitsAreSequential() {
 
 		long oldMsb = 0;
 
@@ -268,7 +268,7 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testGetTimeBased_TimestampIsCorrect() {
+	public void testGetTimeBasedTimestampIsCorrect() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 
 			Instant instant1 = Instant.now();
@@ -284,7 +284,7 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testGetSequential_TimestampIsCorrect() {
+	public void testGetSequentialTimestampIsCorrect() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 
 			Instant instant1 = Instant.now();
@@ -300,7 +300,7 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testGetDCESecurityl_LocalDomainAndLocalIdentifierAreCorrect() {
+	public void testGetDCESecuritylLocalDomainAndLocalIdentifierAreCorrect() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 
 			byte localDomain = (byte) i;
@@ -317,7 +317,7 @@ public class UuidCreatorTest {
 	}
 	
 	@Test
-	public void testGetNameBasedMd5_CompareWithJavaUtilUuidNameUuidFromBytes() {
+	public void testGetNameBasedMd5CompareWithJavaUtilUuidNameUuidFromBytes() {
 
 		UUID namespace = UuidNamespace.NAMESPACE_DNS.getValue();
 		String name = null;
@@ -337,7 +337,7 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testGetNameBasedMd5_NamespaceDnsAndSiteGithub() {
+	public void testGetNameBasedMd5NamespaceDnsAndSiteGithub() {
 		UUID namespace = UuidNamespace.NAMESPACE_DNS.getValue();
 		String name = GITHUB_URL;
 
@@ -359,7 +359,7 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testGetNameBasedSha1_NamespaceDnsAndSiteGithub() {
+	public void testGetNameBasedSha1NamespaceDnsAndSiteGithub() {
 
 		UUID namespace = UuidNamespace.NAMESPACE_DNS.getValue();
 		String name = GITHUB_URL;
@@ -376,7 +376,7 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testGetNameBasedSha256_NamespaceDnsAndSiteGithub() {
+	public void testGetNameBasedSha256NamespaceDnsAndSiteGithub() {
 
 		UUID namespace = UUID.fromString("30313233-3435-3637-3839-616263646566");
 		String name = GITHUB_URL;
@@ -393,7 +393,7 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testGetTimeBased_ShouldCreateAboutSixteenThousandUniqueUuidsWithTheTimeStopped() {
+	public void testGetTimeBasedShouldCreateAboutSixteenThousandUniqueUuidsWithTheTimeStopped() {
 
 		int clockSequenceRange = 0x3fff + 1; // 16,384
 		Instant stoppedTime = Instant.now();
@@ -415,14 +415,14 @@ public class UuidCreatorTest {
 		try {
 			creator.create();
 			fail("The overrun exception must be thrown");
-		} catch (OverrunException e) {
+		} catch (UuidCreatorException e) {
 			// The factory must throw an exception if the maximum clock sequence
 			// is reached.
 		}
 	}
 
 	@Test
-	public void testGetSequential_ShouldCreateAboutSixteenThousandUniqueUuidsWithTheTimeStopped() {
+	public void testGetSequentialShouldCreateAboutSixteenThousandUniqueUuidsWithTheTimeStopped() {
 
 		int clockSequenceRange = 0x3fff + 1; // 16,384
 		Instant stoppedTime = Instant.now();
@@ -444,14 +444,14 @@ public class UuidCreatorTest {
 		try {
 			creator.create();
 			fail("The overrun exception must be thrown");
-		} catch (OverrunException e) {
+		} catch (UuidCreatorException e) {
 			// The factory must throw an exception if the maximum clock sequence
 			// is reached.
 		}
 	}
 
 	@Test
-	public void testGetTimeBased_ParallelGeneratorsShouldCreateUniqueUuids() throws InterruptedException {
+	public void testGetTimeBasedParallelGeneratorsShouldCreateUniqueUuids() throws InterruptedException {
 
 		Thread[] threads = new Thread[processors];
 		TestThread.clearHashSet();
@@ -472,7 +472,7 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testGetSequential_ParallelGeneratorsShouldCreateUniqueUuids() throws InterruptedException {
+	public void testGetSequentialParallelGeneratorsShouldCreateUniqueUuids() throws InterruptedException {
 
 		Thread[] threads = new Thread[processors];
 		TestThread.clearHashSet();
@@ -493,7 +493,7 @@ public class UuidCreatorTest {
 	}
 	
 	@Test
-	public void testCreateTimeBasedUuid_TheGreatestDateAndTimeShouldBeAtYear5236() {
+	public void testCreateTimeBasedUuidTheGreatestDateAndTimeShouldBeAtYear5236() {
 		
 		// Check if the maximum 60 bit timestamp corresponds to the date and time
 		long timestamp0 = 0x0fffffffffffffffL;

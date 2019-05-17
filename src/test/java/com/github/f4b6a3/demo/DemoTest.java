@@ -7,10 +7,8 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.junit.Ignore;
-import org.junit.Test;
 
 import com.github.f4b6a3.other.RandomImage;
-import com.github.f4b6a3.other.RandomnessTest;
 import com.github.f4b6a3.other.SimpleBenchmark;
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
@@ -150,37 +148,6 @@ public class DemoTest {
 		RandomImage.createRandomImageFile("/tmp/XorshiftStarRandom.png", new XorshiftStarRandom(), 0, 0);
 		RandomImage.createRandomImageFile("/tmp/Xorshift128PlusRandom.png", new Xorshift128PlusRandom(), 0, 0);
 		RandomImage.createRandomImageFile("/tmp/Xoroshiro128PlusRandom.png", new Xoroshiro128PlusRandom(), 0, 0);
-
-		LogUtil.log(HORIZONTAL_LINE);
-	}
-
-	/**
-	 * Test randomness of a random number generator.
-	 * 
-	 * If ENT is not installed, just annotate this test with @Ignore.
-	 * 
-	 * @param path
-	 * @param random
-	 */
-	@Ignore
-	public void testPseudoNumberSequence() throws Exception {
-
-		Random random = new SecureRandom();
-		// Random random = new Random();
-		// Random random = new XorshiftRandom();
-		// Random random = new XorshiftStarRandom();
-		// Random random = new Xorshift128PlusRandom();
-		// Random random = new Xoroshirot128PlusRandom();
-
-		String path = "/tmp/testPseudoNumberSequence.dat";
-
-		LogUtil.log();
-		LogUtil.log(HORIZONTAL_LINE);
-		LogUtil.log("Test pseudo-number sequence");
-		LogUtil.log(HORIZONTAL_LINE);
-
-		LogUtil.log(String.format("ent %s%n", path));
-		RandomnessTest.runPseudoNumberSequenceTestProgram(path, random);
 
 		LogUtil.log(HORIZONTAL_LINE);
 	}

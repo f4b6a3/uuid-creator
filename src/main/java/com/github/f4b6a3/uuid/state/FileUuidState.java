@@ -1,6 +1,5 @@
 package com.github.f4b6a3.uuid.state;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -37,53 +36,42 @@ public class FileUuidState extends AbstractUuidState {
 
 	@Override
 	public void store() {
-		try {
+		try (FileWriter file = new FileWriter(this.fileName)) {
 			String timestampHex = ByteUtil.toHexadecimal(this.timestamp);
 			String clockseqHex = ByteUtil.toHexadecimal(this.clockSequence);
 			String nodeidHex = ByteUtil.toHexadecimal(this.nodeIdentifier);
 			this.validate(timestampHex, clockseqHex, nodeidHex);
 
 			if (this.valid) {
-				
-				FileWriter file = new FileWriter(this.fileName);
-				
 				Properties properties = new Properties();
 				properties.setProperty(PROPERTY_TIMESTAMP, timestampHex);
 				properties.setProperty(PROPERTY_CLOCKSEQ, clockseqHex);
 				properties.setProperty(PROPERTY_NODEID, nodeidHex);
 				properties.store(file, null);
-				
-				file.close();
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			// Do nothing
 		}
 	}
 
 	@Override
 	public void load() {
-		try {
-			
-			FileReader file = new FileReader(fileName);
-			
+		try (FileReader file = new FileReader(fileName)) {
+
 			Properties properties = new Properties();
 			properties.load(file);
 			String timestampHex = properties.getProperty(PROPERTY_TIMESTAMP, "0");
 			String clockseqHex = properties.getProperty(PROPERTY_CLOCKSEQ, "0");
 			String nodeidHex = properties.getProperty(PROPERTY_NODEID, "0");
 			this.validate(timestampHex, clockseqHex, nodeidHex);
-			
-			file.close();
 
 			if (this.valid) {
 				this.timestamp = ByteUtil.toNumber(timestampHex);
 				this.clockSequence = ((int) ByteUtil.toNumber(clockseqHex)) & 0x00003FFF;
 				this.nodeIdentifier = ByteUtil.toNumber(nodeidHex) & 0x0000FFFFFFFFFFFFL;
 			}
-		} catch (FileNotFoundException e) {
-			// do nothing
 		} catch (IOException e) {
-			e.printStackTrace();
+			// do nothing
 		}
 	}
 

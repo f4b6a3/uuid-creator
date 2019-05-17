@@ -53,7 +53,7 @@ public class UuidStateTest {
 		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator().withClockSequenceStrategy(clockSequenceStrategy);
 		UUID uuid = creator.create();
 		long clockseq = UuidUtil.extractClockSequence(uuid);
-		assertEquals(ByteUtil.toHexadecimal(CLOCKSEQ + 1), ByteUtil.toHexadecimal(clockseq));
+		assertEquals(ByteUtil.toHexadecimal(CLOCKSEQ + 1L), ByteUtil.toHexadecimal(clockseq));
 	}
 	
 	@Test
@@ -69,7 +69,7 @@ public class UuidStateTest {
 		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator().withClockSequenceStrategy(clockSequenceStrategy);
 		UUID uuid = creator.create();
 		long clockseq = UuidUtil.extractClockSequence(uuid);
-		assertEquals(ByteUtil.toHexadecimal(CLOCKSEQ + 1), ByteUtil.toHexadecimal(clockseq));
+		assertEquals(ByteUtil.toHexadecimal(CLOCKSEQ + 1L), ByteUtil.toHexadecimal(clockseq));
 	}
 
 	@Test

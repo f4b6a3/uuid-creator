@@ -2,7 +2,7 @@ package com.github.f4b6a3.uuid.clockseq;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.exception.OverrunException;
+import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 
 import static org.junit.Assert.*;
@@ -10,42 +10,42 @@ import static org.junit.Assert.*;
 public class DefaultClockSequenceStrategyTest {
 
 	@Test
-	public void testNextFor_TheClockSequenceShouldBeIncrementedIfTheNewTimestampIsLowerOrEqualToTheOldTimestamp() {
+	public void testNextForTheClockSequenceShouldBeIncrementedIfTheNewTimestampIsLowerOrEqualToTheOldTimestamp() {
 
 		// It should increment if the new timestamp is LOWER THAN the old
 		// timestamp
-		long old_timestamp = 1000;
-		long new_timestamp = 999;
+		long oldTimestamp = 1000;
+		long newTimestamp = 999;
 		DefaultClockSequenceStrategy clockSequence = new DefaultClockSequenceStrategy();
-		long old_sequence = clockSequence.getClockSequence(old_timestamp, 0);
-		long new_sequence = clockSequence.getClockSequence(new_timestamp, 0);
-		assertEquals(old_sequence + 1, new_sequence);
+		long oldSequence = clockSequence.getClockSequence(oldTimestamp, 0);
+		long newSequence = clockSequence.getClockSequence(newTimestamp, 0);
+		assertEquals(oldSequence + 1, newSequence);
 
 		// It should increment if the new timestamp is EQUAL TO the old
 		// timestamp
-		old_timestamp = 1000;
-		new_timestamp = 1000;
+		oldTimestamp = 1000;
+		newTimestamp = 1000;
 		clockSequence = new DefaultClockSequenceStrategy();
-		old_sequence = clockSequence.getClockSequence(old_timestamp, 0);
-		new_sequence = clockSequence.getClockSequence(new_timestamp, 0);
-		assertEquals(old_sequence + 1, new_sequence);
+		oldSequence = clockSequence.getClockSequence(oldTimestamp, 0);
+		newSequence = clockSequence.getClockSequence(newTimestamp, 0);
+		assertEquals(oldSequence + 1, newSequence);
 	}
 
 	@Test
-	public void testNextFor_TheClockSequenceShouldNotIncrementIfTheNewTimestampIsGreaterThanTheOldTimestamp() {
+	public void testNextForTheClockSequenceShouldNotIncrementIfTheNewTimestampIsGreaterThanTheOldTimestamp() {
 
 		// It should NOT increment if the new timestamp is GREATER THAN the old
 		// timestamp
-		long old_timestamp = 1000;
-		long new_timestamp = 1001;
+		long oldTimestamp = 1000;
+		long newTimestamp = 1001;
 		DefaultClockSequenceStrategy clockSequence = new DefaultClockSequenceStrategy();
-		long old_sequence = clockSequence.getClockSequence(old_timestamp, 0);
-		long new_sequence = clockSequence.getClockSequence(new_timestamp, 0);
-		assertEquals(old_sequence, new_sequence);
+		long oldSequence = clockSequence.getClockSequence(oldTimestamp, 0);
+		long newSequence = clockSequence.getClockSequence(newTimestamp, 0);
+		assertEquals(oldSequence, newSequence);
 	}
 
 	@Test()
-	public void testNextForTimestamp_TheLastValueShouldBeEqualToTheFirstValueMinusOne() {
+	public void testNextForTimestampTheLastValueShouldBeEqualToTheFirstValueMinusOne() {
 
 		int first = 0;
 		int last = 0;
@@ -60,8 +60,8 @@ public class DefaultClockSequenceStrategyTest {
 		assertEquals(first - 1L, last);
 	}
 
-	@Test(expected = OverrunException.class)
-	public void testNextForTimestamp_AnOverrunExceptionShouldBeThrown() {
+	@Test(expected = UuidCreatorException.class)
+	public void testNextForTimestampAnOverrunExceptionShouldBeThrown() {
 
 		long timestamp = TimestampUtil.getCurrentTimestamp();
 		DefaultClockSequenceStrategy clockSequence = new DefaultClockSequenceStrategy();
@@ -72,7 +72,7 @@ public class DefaultClockSequenceStrategyTest {
 			for (i = 0; i <= DefaultClockSequenceStrategy.SEQUENCE_MAX; i++) {
 				clockSequence.getClockSequence(timestamp, 0);
 			}
-		} catch (OverrunException e) {
+		} catch (UuidCreatorException e) {
 			// fail if the exception is thrown before the maximum value
 			fail("Overrun exception thrown before the maximum value is reached.");
 		}

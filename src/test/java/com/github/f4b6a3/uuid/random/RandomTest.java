@@ -17,7 +17,7 @@ public class RandomTest {
 	private static final String EXPECTED_BIT_COUNT_RANDOM_LONG = "The average bit count expected for random long values is 32";
 	
 	@Test
-	public void testGetRandomUuid_NaiveAverageBitCount() {
+	public void testGetRandomUuidNaiveAverageBitCount() {
 		
 		double accumulator = 0;
 		
@@ -34,7 +34,7 @@ public class RandomTest {
 	}
 	
 	@Test
-	public void testGetFastRandomUuid_NaiveAverageBitCount() {
+	public void testGetFastRandomUuidNaiveAverageBitCount() {
 		
 		double accumulator = 0;
 		
@@ -51,7 +51,7 @@ public class RandomTest {
 	}
 	
 	@Test
-	public void testRandomUtilNextLong_NaiveAverageBitCount() {
+	public void testRandomUtilNextLongNaiveAverageBitCount() {
 		
 		double accumulator = 0;
 		
@@ -66,7 +66,7 @@ public class RandomTest {
 	}
 	
 	@Test
-	public void testXorshiftNextLong_NaiveAverageBitCount() {
+	public void testXorshiftNextLongNaiveAverageBitCount() {
 		
 		double accumulator = 0;
 		
@@ -83,7 +83,7 @@ public class RandomTest {
 	}
 	
 	@Test
-	public void testXorshiftStarNextLong_NaiveAverageBitCount() {
+	public void testXorshiftStarNextLongNaiveAverageBitCount() {
 		
 		double accumulator = 0;
 		
@@ -100,7 +100,7 @@ public class RandomTest {
 	}
 	
 	@Test
-	public void testXorshift128PlusNextLong_NaiveAverageBitCount() {
+	public void testXorshift128PlusNextLongNaiveAverageBitCount() {
 		
 		double accumulator = 0;
 		
@@ -117,7 +117,7 @@ public class RandomTest {
 	}
 	
 	@Test
-	public void testXoroshiro128PlusNextLong_NaiveAverageBitCount() {
+	public void testXoroshiro128PlusNextLongNaiveAverageBitCount() {
 		
 		double accumulator = 0;
 		

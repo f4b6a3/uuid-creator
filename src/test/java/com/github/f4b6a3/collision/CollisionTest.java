@@ -3,6 +3,7 @@ package com.github.f4b6a3.collision;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.UuidCreator;
+import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.timestamp.StoppedDefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.util.LogUtil;
@@ -58,26 +59,6 @@ public class CollisionTest {
 				cacheLong[i][j] = 0;
 			}
 		}
-	}
-
-	/**
-	 * Check if a value aready exists in cache.
-	 * 
-	 * @param value
-	 * @return
-	 */
-	private int[] find(long value) {
-		for (int i = 0; i < cacheLong.length; i++) {
-			for (int j = 0; j < cacheLong[0].length; j++) {
-				if (cacheLong[i][j] == value) {
-					int tmp[] = { i, j };
-					return tmp;
-				} else if (cacheLong[i][j] == 0) {
-					j = cacheLong[0].length - 1;
-				}
-			}
-		}
-		return new int[0];
 	}
 
 	/**
@@ -140,13 +121,32 @@ public class CollisionTest {
 					cacheUUID[id][i] = uuid;
 				} else {
 					UUID other = cacheUUID[position[0]][position[1]];
-					throw new RuntimeException(
+					throw new UuidCreatorException(
 							String.format("[COLLISION][Thread %s] %s %s %s %s%%", id, uuid, other, i, (int) progress));
 				}
 			}
 
 			// Finished
 			LogUtil.log(String.format("[Thread %s] Done.", id));
+		}
+		
+		/**
+		 * Check if a value aready exists in cache.
+		 * 
+		 * @param value
+		 * @return
+		 */
+		private int[] find(long value) {
+			for (int i = 0; i < cacheLong.length; i++) {
+				for (int j = 0; j < cacheLong[0].length; j++) {
+					if (cacheLong[i][j] == value) {
+						return new int[] { i, j };
+					} else if (cacheLong[i][j] == 0) {
+						break;
+					}
+				}
+			}
+			return new int[0];
 		}
 	}
 

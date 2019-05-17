@@ -19,7 +19,7 @@ package com.github.f4b6a3.uuid.clockseq;
 
 import com.github.f4b6a3.uuid.distrib.CyclicDistributor;
 import com.github.f4b6a3.uuid.distrib.Distributor;
-import com.github.f4b6a3.uuid.exception.OverrunException;
+import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.sequence.AbstractSequence;
 import com.github.f4b6a3.uuid.state.AbstractUuidState;
 import com.github.f4b6a3.uuid.state.FileUuidState;
@@ -187,7 +187,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 		if (timestamp <= this.timestamp) {
 			// (3c) return an error if the clock sequence overruns.
 			if (this.counter >= SEQUENCE_MAX) {
-				throw new OverrunException("Too many requests.");
+				throw new UuidCreatorException("Too many requests.");
 			}
 			this.counter++;
 			this.timestamp = timestamp;

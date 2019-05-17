@@ -57,7 +57,7 @@ public class DefaultTimestampStrategy extends AbstractSequence implements Timest
 		}
 
 		this.previousTimestamp = timestamp;
-		this.value = MIN_VALUE;
-		return MIN_VALUE;
+		this.value = minValue;
+		return minValue;
 	}
 }

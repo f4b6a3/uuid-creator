@@ -20,7 +20,7 @@ package com.github.f4b6a3.uuid.factory;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
-import com.github.f4b6a3.uuid.exception.NotImplementedException;
+import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.sequence.AbstractSequence;
 
 /**
@@ -56,7 +56,7 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	
 	@Override
 	public synchronized UUID create() {
-		throw new NotImplementedException("Not implemented.");
+		throw new UuidCreatorException("Not implemented.");
 	}
 
 	/**

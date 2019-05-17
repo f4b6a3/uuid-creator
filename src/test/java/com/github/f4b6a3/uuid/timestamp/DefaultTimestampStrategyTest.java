@@ -2,37 +2,35 @@ package com.github.f4b6a3.uuid.timestamp;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
-
 import static org.junit.Assert.*;
 
 public class DefaultTimestampStrategyTest {
 
 	@Test
-	public void testNextFor_TheCounterShouldBeIncrementedIfTheNewTimestampIsLowerThanOrEqualToTheOldTimestamp() {
+	public void testNextForTheCounterShouldBeIncrementedIfTheNewTimestampIsLowerThanOrEqualToTheOldTimestamp() {
 
 		// It should increment if the new timestamp is LOWER THAN the old
 		// timestamp
-		long old_timestamp = 1000;
-		long new_timestamp = 999;
+		long oldTimestamp = 1000;
+		long newTimestamp = 999;
 		DefaultTimestampStrategy timestampCounter = new DefaultTimestampStrategy();
-		long old_counter = timestampCounter.getNextForTimestamp(old_timestamp);
-		long new_counter = timestampCounter.getNextForTimestamp(new_timestamp);
-		assertEquals(old_counter + 1, new_counter);
+		long oldCounter = timestampCounter.getNextForTimestamp(oldTimestamp);
+		long newCounter = timestampCounter.getNextForTimestamp(newTimestamp);
+		assertEquals(oldCounter + 1, newCounter);
 
 		// It should increment if the new timestamp is EQUAL TO the old
 		// timestamp
-		old_timestamp = 1000;
-		new_timestamp = 1000;
+		oldTimestamp = 1000;
+		newTimestamp = 1000;
 		timestampCounter = new DefaultTimestampStrategy();
-		old_counter = timestampCounter.getNextForTimestamp(old_timestamp);
-		new_counter = timestampCounter.getNextForTimestamp(new_timestamp);
-		assertEquals(old_counter + 1, new_counter);
+		oldCounter = timestampCounter.getNextForTimestamp(oldTimestamp);
+		newCounter = timestampCounter.getNextForTimestamp(newTimestamp);
+		assertEquals(oldCounter + 1, newCounter);
 
 	}
 
 	@Test
-	public void testNextFor_TheCounterShouldBeZeroIfTheNewTimestampIsGreaterThanTheOldTimestamp() {
+	public void testNextForTheCounterShouldBeZeroIfTheNewTimestampIsGreaterThanTheOldTimestamp() {
 
 		// It should be ZERO if the new timestamp is GREATER THAN the old
 		// timestamp
@@ -45,7 +43,7 @@ public class DefaultTimestampStrategyTest {
 	}
 
 	@Test
-	public void testNextFor_TheCounterShouldBeResetToZeroIfTheNewTimestampIsGreaterThanTheOldTimestamp() {
+	public void testNextForTheCounterShouldBeResetToZeroIfTheNewTimestampIsGreaterThanTheOldTimestamp() {
 
 		// It should be RESET to ZERO if the new timestamp is GREATER THAN the
 		// old timestamp

@@ -8,9 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import com.github.f4b6a3.uuid.util.ByteUtil;
-import com.github.f4b6a3.uuid.util.SettingsUtil;
-import com.github.f4b6a3.uuid.util.UuidUtil;
 
 public class SettingsUtilTest {
 	

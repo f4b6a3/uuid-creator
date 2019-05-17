@@ -11,8 +11,6 @@ import org.junit.Test;
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
-import com.github.f4b6a3.uuid.util.TimestampUtil;
-import com.github.f4b6a3.uuid.util.UuidUtil;
 
 import static com.github.f4b6a3.uuid.util.UuidUtil.*;
 
@@ -142,7 +140,7 @@ public class UuidUtilTest {
 	}
 	
 	@Test
-	public void testExtractAll_catchExceptions() {
+	public void testExtractAllCatchExceptions() {
 		UUID uuid = UUID.randomUUID();
 
 		try {
@@ -196,7 +194,7 @@ public class UuidUtilTest {
 	}
 	
 	@Test
-	public void testFromTimeBasedToMssqlUuid_IsCorrect() {
+	public void testFromTimeBasedToMssqlUuidIsCorrect() {
 		UUID uuid1 = new UUID(0x0011223344551677L,0x8888888888888888L);
 		UUID uuid2 = UuidUtil.fromTimeBasedToMssqlUuid(uuid1);
 		long timestamp = uuid2.getMostSignificantBits();

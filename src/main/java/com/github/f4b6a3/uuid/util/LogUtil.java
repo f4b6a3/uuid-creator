@@ -21,6 +21,6 @@ public class LogUtil {
 	}
 	
 	public static void err(String msg) {
-		Logger.getAnonymousLogger().log(Level.SEVERE, msg);;
+		Logger.getAnonymousLogger().log(Level.SEVERE, msg);
 	}
 }
