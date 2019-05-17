@@ -564,6 +564,11 @@ public class UuidCreatorTest {
 	private void checkOrdering(UUID[] list) {
 		UUID[] other = Arrays.copyOf(list, list.length);
 		Arrays.sort(other);
+
+		// FIXME: handle counter overrun in sequential UUID
+		// 1e9786c4-7abe-06ff-8d67-111111111111 137773670065759999
+		// 1e9786c4-7abb-0ff0-8d68-111111111111 137773670065750000
+
 		for (int i = 0; i < list.length; i++) {
 			assertTrue("The UUID list is not ordered", list[i].equals(other[i]));
 		}
