@@ -16,6 +16,9 @@ public class SystemDataUtil {
 
 	protected static MessageDigest md;
 
+	private SystemDataUtil() {
+	}
+	
 	/**
 	 * Returns a system hash ID generated from all the system details
 	 * concatenated: OS + JVM + Network + SALT.
@@ -180,7 +183,7 @@ public class SystemDataUtil {
 			}
 			return new ArrayList<>(networkDataHashSet);
 		} catch (SocketException | NullPointerException | UnknownHostException e) {
-			return null;
+			return Collections.emptyList();
 		}
 	}
 

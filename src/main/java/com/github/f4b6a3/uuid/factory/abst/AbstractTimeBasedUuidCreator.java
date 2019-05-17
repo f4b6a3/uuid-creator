@@ -36,10 +36,6 @@ import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
-
-	protected long timestamp;
-	protected long nodeIdentifier;
-	protected long clockSequence;
 	
 	protected TimestampStrategy timestampStrategy;
 	protected ClockSequenceStrategy clockSequenceStrategy;
@@ -144,19 +140,19 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	public synchronized UUID create() {
 
 		// (3a) get the timestamp
-		this.timestamp = this.timestampStrategy.getTimestamp();
+		long timestamp = this.timestampStrategy.getTimestamp();
 
 		// (4a)(5a) get the node identifier
-		this.nodeIdentifier = this.nodeIdentifierStrategy.getNodeIdentifier();
+		long nodeIdentifier = this.nodeIdentifierStrategy.getNodeIdentifier();
 
 		// (5a)(6a) get the sequence value
-		this.clockSequence = this.clockSequenceStrategy.getClockSequence(this.timestamp, this.nodeIdentifier);
+		long clockSequence = this.clockSequenceStrategy.getClockSequence(timestamp, nodeIdentifier);
 
 		// (9a) format the most significant bits
-		long msb = this.formatMostSignificantBits(this.timestamp);
+		long msb = this.formatMostSignificantBits(timestamp);
 
 		// (9a) format the least significant bits
-		long lsb = this.formatLeastSignificantBits(this.nodeIdentifier, this.clockSequence);
+		long lsb = this.formatLeastSignificantBits(nodeIdentifier, clockSequence);
 
 		// (9a) format a UUID from the MSB and LSB
 		return new UUID(msb, lsb);

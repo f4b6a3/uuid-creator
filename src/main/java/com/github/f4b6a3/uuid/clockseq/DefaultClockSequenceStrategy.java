@@ -20,7 +20,6 @@ package com.github.f4b6a3.uuid.clockseq;
 import com.github.f4b6a3.uuid.distrib.CyclicDistributor;
 import com.github.f4b6a3.uuid.distrib.Distributor;
 import com.github.f4b6a3.uuid.exception.OverrunException;
-import com.github.f4b6a3.uuid.factory.CombGuidCreator;
 import com.github.f4b6a3.uuid.sequence.AbstractSequence;
 import com.github.f4b6a3.uuid.state.AbstractUuidState;
 import com.github.f4b6a3.uuid.state.FileUuidState;

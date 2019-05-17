@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.timestamp.StoppedDefaultTimestampStrategy;
+import com.github.f4b6a3.uuid.util.LogUtil;
 
 /**
  * Runnable to test if a UUID is created more than once.
@@ -23,8 +24,8 @@ import com.github.f4b6a3.uuid.timestamp.StoppedDefaultTimestampStrategy;
  */
 public class CollisionTest {
 
-	public int threadCount; // Number of threads to run
-	public int requestCount; // Number of requests for thread
+	private int threadCount; // Number of threads to run
+	private int requestCount; // Number of requests for thread
 
 	private long[][] cacheLong; // Store values generated per thread
 	private UUID[][] cacheUUID; // Store UUIDs generated per thread
@@ -127,11 +128,11 @@ public class CollisionTest {
 					// Calculate and show progress
 					progress = (i * 1.0 / max) * 100;
 					if (progress % 1 == 0) {
-						System.out.println(String.format("[Thread %06d] %s %s %s%%", id, uuid, i, (int) progress));
+						LogUtil.log(String.format("[Thread %06d] %s %s %s%%", id, uuid, i, (int) progress));
 					}
 				}
 
-				int position[] = find(value);
+				int[] position = find(value);
 
 				// Insert the value in cache, if it does not exist in it.
 				if (position.length == 0) {
@@ -140,12 +141,12 @@ public class CollisionTest {
 				} else {
 					UUID other = cacheUUID[position[0]][position[1]];
 					throw new RuntimeException(
-							String.format("[COLLISION][Thread %s] %s %s %s%%", id, uuid, other, i, (int) progress));
+							String.format("[COLLISION][Thread %s] %s %s %s %s%%", id, uuid, other, i, (int) progress));
 				}
 			}
 
 			// Finished
-			System.out.println(String.format("[Thread %s] Done.", id));
+			LogUtil.log(String.format("[Thread %s] Done.", id));
 		}
 	}
 

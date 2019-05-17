@@ -7,6 +7,9 @@ public class RandomUtil {
 
 	private static final Random random = new SecureRandom();
 	
+	private RandomUtil() {
+	}
+	
 	public static long nextLong() {
 		return random.nextLong();
 	}

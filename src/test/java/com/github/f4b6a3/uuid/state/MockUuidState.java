@@ -8,10 +8,12 @@ public class MockUuidState extends AbstractUuidState {
 	
 	@Override
 	public void store() {
+		// Do nothing
 	}
 
 	@Override
 	public void load() {
+		// Do nothing
 	}
 
 	public void setValid(boolean valid) {

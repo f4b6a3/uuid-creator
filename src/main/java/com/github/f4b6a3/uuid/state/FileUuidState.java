@@ -1,6 +1,5 @@
 package com.github.f4b6a3.uuid.state;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;

@@ -2,6 +2,8 @@ package com.github.f4b6a3.uuid.util;
 
 public class NodeIdentifierUtil {
 
+	private NodeIdentifierUtil() {
+	}
 	
 	/**
 	 * Sets the the multicast bit ON to indicate that it's NOT a real MAC

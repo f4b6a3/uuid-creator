@@ -10,6 +10,9 @@ public class SettingsUtil {
 	
 	private static final String[] trueValues = { "true", "t", "yes", "y", "on", "1" };
 
+	private SettingsUtil() {
+	}
+	
 	public static long getNodeIdentifier() {
 		String value = getProperty(PROPERTY_NODEID);
 		if (value == null) {
@@ -92,7 +95,9 @@ public class SettingsUtil {
 	
 	private static boolean isTrue(String value) {
 		for (String t : trueValues) {
-			return value.toLowerCase().equals(t);
+			if(value.equalsIgnoreCase(t)) {
+				return true;
+			}
 		}
 		return false;
 	}

@@ -34,7 +34,7 @@ public abstract class AbstractUuidCreator {
 	
 	// Values to be used in bitwise operations
 	public static final long RFC4122_VARIANT_BITS = 0x8000000000000000L;
-	public static final long[] RFC4122_VERSION_BITS = {
+	protected static final long[] RFC4122_VERSION_BITS = {
 			0x0000000000000000L, 0x0000000000001000L, 
 			0x0000000000002000L, 0x0000000000003000L, 
 			0x0000000000004000L, 0x0000000000005000L };

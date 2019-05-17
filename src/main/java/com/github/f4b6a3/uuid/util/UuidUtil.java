@@ -24,6 +24,11 @@ import com.github.f4b6a3.uuid.enums.UuidVariant;
 
 public class UuidUtil {
 	
+	private static final String NOT_DCE_SECURITY = "Not a DCE Security UUID: %s.";
+
+	private UuidUtil() {
+	}
+	
 	/**
 	 * Checks whether the UUID variant is the one defined by the RFC-4122.
 	 * 
@@ -207,7 +212,7 @@ public class UuidUtil {
 	public static byte extractDceSecurityLocalDomain(UUID uuid) {
 
 		if (!UuidUtil.isDceSecurityVersion(uuid)) {
-			throw new UnsupportedOperationException(String.format("Not a DCE Security UUID: %s.", uuid.toString()));
+			throw new UnsupportedOperationException(String.format(NOT_DCE_SECURITY, uuid.toString()));
 		}
 
 		return (byte) ((uuid.getLeastSignificantBits() & 0x00ff000000000000L) >> 48);
@@ -223,7 +228,7 @@ public class UuidUtil {
 	public static int extractDceSecurityLocalIdentifier(UUID uuid) {
 
 		if (!UuidUtil.isDceSecurityVersion(uuid)) {
-			throw new UnsupportedOperationException(String.format("Not a DCE Security UUID: %s.", uuid.toString()));
+			throw new UnsupportedOperationException(String.format(NOT_DCE_SECURITY, uuid.toString()));
 		}
 
 		return (int) (uuid.getMostSignificantBits() >> 32);
@@ -237,7 +242,7 @@ public class UuidUtil {
 	 */
 	public static long extractDceSecurityTimestamp(UUID uuid) {
 		if (!UuidUtil.isDceSecurityVersion(uuid)) {
-			throw new UnsupportedOperationException(String.format("Not a DCE Security UUID: %s.", uuid.toString()));
+			throw new UnsupportedOperationException(String.format(NOT_DCE_SECURITY, uuid.toString()));
 		}
 
 		return extractTimeBasedTimestamp((uuid.getMostSignificantBits() & 0x00000000ffffffffL));

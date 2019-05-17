@@ -2,7 +2,6 @@ package com.github.f4b6a3.uuid.clockseq;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.clockseq.DefaultClockSequenceStrategy;
 import com.github.f4b6a3.uuid.exception.OverrunException;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 
@@ -58,7 +57,7 @@ public class DefaultClockSequenceStrategyTest {
 			last = clockSequence.getClockSequence(timestamp, 0);
 		}
 
-		assertEquals(first - 1, last);
+		assertEquals(first - 1L, last);
 	}
 
 	@Test(expected = OverrunException.class)

@@ -149,42 +149,49 @@ public class UuidUtilTest {
 			extractInstant(uuid);
 			fail();
 		} catch (UnsupportedOperationException e) {
+			// Success
 		}
 
 		try {
 			extractTimestamp(uuid);
 			fail();
 		} catch (UnsupportedOperationException e) {
+			// Success
 		}
 
 		try {
 			extractNodeIdentifier(uuid);
 			fail();
 		} catch (UnsupportedOperationException e) {
+			// Success
 		}
 
 		try {
 			extractDceSecurityInstant(uuid);
 			fail();
 		} catch (UnsupportedOperationException e) {
+			// Success
 		}
 
 		try {
 			extractDceSecurityTimestamp(uuid);
 			fail();
 		} catch (UnsupportedOperationException e) {
+			// Success
 		}
 
 		try {
 			extractDceSecurityLocalDomain(uuid);
 			fail();
 		} catch (UnsupportedOperationException e) {
+			// Success
 		}
 
 		try {
 			extractDceSecurityLocalIdentifier(uuid);
 			fail();
 		} catch (UnsupportedOperationException e) {
+			// Success
 		}
 	}
 	

@@ -6,7 +6,12 @@ import java.util.Random;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
+import com.github.f4b6a3.uuid.util.LogUtil;
+
 public class RandomImage {
+	
+	private RandomImage() {
+	}
 
 	public static void createRandomImageFile(String path, Random random, int width, int height) {
 
@@ -25,9 +30,9 @@ public class RandomImage {
 		for (int y = 0; y < h; y++) {
 			for (int x = 0; x < w; x++) {
 				int a = 255; // alpha
-				int r = (int) (random.nextInt() >>> 56); // red
-				int g = (int) (random.nextInt() >>> 56); // green
-				int b = (int) (random.nextInt() >>> 56); // blue
+				int r = (random.nextInt() >>> 56); // red
+				int g = (random.nextInt() >>> 56); // green
+				int b = (random.nextInt() >>> 56); // blue
 				
 				int p = (a << 24) | (r << 16) | (g << 8) | b; // pixel
 
@@ -38,9 +43,9 @@ public class RandomImage {
 			f = new File(path);
 			ImageIO.write(img, "png", f);
 		} catch (IOException e) {
-			System.out.println("Error: " + e);
+			LogUtil.log("Error: " + e);
 		}
 
-		System.out.println(String.format("Created file '%s'", path));
+		LogUtil.log(String.format("Created file '%s'", path));
 	}
 }

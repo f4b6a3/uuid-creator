@@ -8,8 +8,13 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.Random;
 
+import com.github.f4b6a3.uuid.util.LogUtil;
+
 public class RandomnessTest {
 
+	private RandomnessTest(){
+	}
+	
 	/**
 	 * Execute ENT for simple randomness test.
 	 * 
@@ -31,11 +36,11 @@ public class RandomnessTest {
 				}
 
 				String s;
-				Runtime.getRuntime().exec(String.format("sync "));
+				Runtime.getRuntime().exec("sync ");
 				Process p = Runtime.getRuntime().exec(String.format("ent %s", path));
 				BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
 				while ((s = stdInput.readLine()) != null) {
-					System.out.println(s);
+					LogUtil.log(s);
 				}
 			}
 		} catch (Exception e) {

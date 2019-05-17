@@ -13,6 +13,9 @@ public class RandomTest {
 
 	private static final int DEFAULT_LOOP_LIMIT = 10_000;
 	
+	private static final String EXPECTED_BIT_COUNT_RANDOM_UUID = "The average bit count expected for random UUIDs is 63";
+	private static final String EXPECTED_BIT_COUNT_RANDOM_LONG = "The average bit count expected for random long values is 32";
+	
 	@Test
 	public void testGetRandomUuid_NaiveAverageBitCount() {
 		
@@ -27,7 +30,7 @@ public class RandomTest {
 		
 		double average = Math.round(accumulator / DEFAULT_LOOP_LIMIT);
 		
-		assertTrue("The average bit count expected for random UUUIDs is 63", average == 63);
+		assertTrue(EXPECTED_BIT_COUNT_RANDOM_UUID, average == 63);
 	}
 	
 	@Test
@@ -44,7 +47,7 @@ public class RandomTest {
 		
 		double average = Math.round(accumulator / DEFAULT_LOOP_LIMIT);
 		
-		assertTrue("The average bit count expected for random UUUIDs is 63", average == 63);
+		assertTrue(EXPECTED_BIT_COUNT_RANDOM_UUID, average == 63);
 	}
 	
 	@Test
@@ -59,7 +62,7 @@ public class RandomTest {
 		
 		double average = Math.round(accumulator / DEFAULT_LOOP_LIMIT);
 		
-		assertTrue("The average bit count expected for random long values is 32", average == 32);
+		assertTrue(EXPECTED_BIT_COUNT_RANDOM_LONG, average == 32);
 	}
 	
 	@Test
@@ -76,7 +79,7 @@ public class RandomTest {
 		
 		double average = Math.round(accumulator / DEFAULT_LOOP_LIMIT);
 		
-		assertTrue("The average bit count expected for random long values is 32", average == 32);
+		assertTrue(EXPECTED_BIT_COUNT_RANDOM_LONG, average == 32);
 	}
 	
 	@Test
@@ -93,7 +96,7 @@ public class RandomTest {
 		
 		double average = Math.round(accumulator / DEFAULT_LOOP_LIMIT);
 		
-		assertTrue("The average bit count expected for random long values is 32", average == 32);
+		assertTrue(EXPECTED_BIT_COUNT_RANDOM_LONG, average == 32);
 	}
 	
 	@Test
@@ -110,7 +113,7 @@ public class RandomTest {
 		
 		double average = Math.round(accumulator / DEFAULT_LOOP_LIMIT);
 		
-		assertTrue("The average bit count expected for random long values is 32", average == 32);
+		assertTrue(EXPECTED_BIT_COUNT_RANDOM_LONG, average == 32);
 	}
 	
 	@Test
@@ -127,6 +130,6 @@ public class RandomTest {
 		
 		double average = Math.round(accumulator / DEFAULT_LOOP_LIMIT);
 		
-		assertTrue("The average bit count expected for random long values is 32", average == 32);
+		assertTrue(EXPECTED_BIT_COUNT_RANDOM_LONG, average == 32);
 	}
 }

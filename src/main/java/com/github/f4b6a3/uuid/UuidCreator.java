@@ -34,6 +34,9 @@ import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
  * Facade to the UUID factories.
  */
 public class UuidCreator {
+	
+	private UuidCreator() {
+	}
 
 	/*
 	 * Public static methods for creating UUIDs
