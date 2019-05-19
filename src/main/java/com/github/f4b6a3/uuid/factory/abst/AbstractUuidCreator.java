@@ -76,6 +76,7 @@ public abstract class AbstractUuidCreator {
 	 * Set UUID variant bits into the "Least Significant Bits".
 	 * 
 	 * @param lsb the LSB
+	 * @return the LSB with the correct variant bits
 	 */
 	protected long setVariantBits(long lsb) {
 		return (lsb & 0x3fffffffffffffffL) | RFC4122_VARIANT_BITS;

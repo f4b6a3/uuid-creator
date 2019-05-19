@@ -17,7 +17,7 @@ public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * based on system data like: operating system, java virtual machine,
 	 * network details and system resources.
 	 * 
-	 * @see {@link SystemDataUtil#getSystemId(String)}
+	 * See {@link SystemDataUtil#getSystemId(String)}.
 	 */
 	public DefaultNodeIdentifierStrategy() {
 
@@ -40,8 +40,7 @@ public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * by setting a preferred node identifier via system property or environment
 	 * variable.
 	 * 
-	 * @see {@link SystemDataUtil}
-	 * 
+	 * See {@link SystemDataUtil#getSystemId(String)}.
 	 */
 	@Override
 	public long getNodeIdentifier() {

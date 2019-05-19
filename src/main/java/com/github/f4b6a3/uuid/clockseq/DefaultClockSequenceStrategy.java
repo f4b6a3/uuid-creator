@@ -150,7 +150,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	 * @param nodeIdentifier
 	 *            a node identifier (ignored in this subclass)
 	 * @return a clock sequence
-	 * @throws OverrunException
+	 * @throws UuidCreatorException
 	 *             an overrun exception
 	 */
 	@Override
