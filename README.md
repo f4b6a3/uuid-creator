@@ -794,4 +794,4 @@ External links
 
 * [Probability of GUID collisions with different versions](https://news.ycombinator.com/item?id=10924343)
 
-
+* [Are UUIDs really unique?](https://towardsdatascience.com/are-uuids-really-unique-57eb80fc2a87)
