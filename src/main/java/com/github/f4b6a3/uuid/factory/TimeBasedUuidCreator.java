@@ -17,19 +17,22 @@
 
 package com.github.f4b6a3.uuid.factory;
 
+import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 /**
- * Factory that creates time-based UUIDs 1 of the RFC-4122.
+ * Factory that creates time-based UUIDs.
+ * 
+ * RFC-4122 version: 1.
  */
 public class TimeBasedUuidCreator extends AbstractTimeBasedUuidCreator {
 
 	public TimeBasedUuidCreator() {
-		this(VERSION_1);
+		this(UuidVersion.TIME_BASED);
 	}
 	
-	protected TimeBasedUuidCreator(int version) {
+	protected TimeBasedUuidCreator(UuidVersion version) {
 		super(version);
 	}
 	

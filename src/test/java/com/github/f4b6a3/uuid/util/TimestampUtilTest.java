@@ -20,14 +20,13 @@ public class TimestampUtilTest {
 	}
 	
 	/**
-	 * It works because the resolution of TimestampUtils is milliseconds.
+	 * It works because the TimestampUtils precision is milliseconds.
 	 */
 	@Test
 	public void testGetCurrentTimestamp() {
 	
-		long timestamp1 = getCurrentTimestamp();
 		Instant instant1 = Instant.now();
-		Instant instant2 = TimestampUtil.toInstant(timestamp1);
+		Instant instant2 = TimestampUtil.toInstant(getCurrentTimestamp());
 		
 		assertEquals(instant1, instant2);
 	}

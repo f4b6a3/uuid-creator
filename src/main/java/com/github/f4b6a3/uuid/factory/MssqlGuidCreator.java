@@ -17,16 +17,20 @@
 
 package com.github.f4b6a3.uuid.factory;
 
+import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 /**
  * Factory that creates MS SQL Server 'friendly' UUIDs.
+ * 
+ * RFC-4122 version: 1.
+ * 
  */
 public class MssqlGuidCreator extends AbstractTimeBasedUuidCreator {
 
 	public MssqlGuidCreator() {
-		super(VERSION_1);
+		super(UuidVersion.TIME_BASED);
 	}
 
 	/**

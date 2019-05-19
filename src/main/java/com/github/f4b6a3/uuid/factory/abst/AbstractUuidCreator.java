@@ -20,54 +20,35 @@ package com.github.f4b6a3.uuid.factory.abst;
 
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.enums.UuidVersion;
+
 /**
  * Abstract class for subclasses that create {@link UUID} objects.
- * 
- * @author fabiolimace
- *
  */
 public abstract class AbstractUuidCreator {
 	
-	protected final int version;
-	
-	// UUID variants defined by RFC-4122
-	public static final int VARIANT_RESERVED_NCS = 0;
-	public static final int VARIANT_RFC4122 = 2;
-	public static final int VARIANT_RESERVED_MICROSOFT = 6;
-	public static final int VARIANT_RESERVED_FUTURE = 7;
-	
-	// UUID versions defined by RFC-4122, plus an extension (zero)
-	public static final int VERSION_0 = 0;
-	public static final int VERSION_1 = 1;
-	public static final int VERSION_2 = 2;
-	public static final int VERSION_3 = 3;
-	public static final int VERSION_4 = 4;
-	public static final int VERSION_5 = 5;
+	protected final UuidVersion version;
 	
 	// UUIDs objects defined by RFC-4122
 	public static final UUID NIL_UUID = new UUID(0x0000000000000000L, 0x0000000000000000L);
-	public static final UUID NAMESPACE_DNS = new UUID(0x6ba7b8109dad11d1L, 0x80b400c04fd430c8L);
-	public static final UUID NAMESPACE_URL = new UUID(0x6ba7b8119dad11d1L, 0x80b400c04fd430c8L);
-	public static final UUID NAMESPACE_OID = new UUID(0x6ba7b8129dad11d1L, 0x80b400c04fd430c8L);
-	public static final UUID NAMESPACE_X500 = new UUID(0x6ba7b8149dad11d1L, 0x80b400c04fd430c8L);
 	
 	// Values to be used in bitwise operations
 	public static final long RFC4122_VARIANT_BITS = 0x8000000000000000L;
-	public static final long[] RFC4122_VERSION_BITS = {
+	protected static final long[] RFC4122_VERSION_BITS = {
 			0x0000000000000000L, 0x0000000000001000L, 
 			0x0000000000002000L, 0x0000000000003000L, 
 			0x0000000000004000L, 0x0000000000005000L };
 	
-	public AbstractUuidCreator(int version) {
+	public AbstractUuidCreator(UuidVersion version) {
 		this.version = version;
 	}
 
-	public int getVersion() {
-		return version;
+	public UuidVersion getVersion() {
+		return this.version;
 	}
 	
 	/**
-	 * Check if the {@link UUID} to been created is valid.
+	 * Check if the {@link UUID} is valid.
 	 * 
 	 * It checks whether the variant and version are correct.
 	 * 
@@ -78,7 +59,7 @@ public abstract class AbstractUuidCreator {
 	public boolean valid(long msb, long lsb) {
 		long variantBits = getVariantBits(lsb);
 		long versionBits = getVersionBits(msb);
-		return variantBits == RFC4122_VARIANT_BITS && versionBits == RFC4122_VERSION_BITS[version];
+		return variantBits == RFC4122_VARIANT_BITS && versionBits == RFC4122_VERSION_BITS[version.getValue()];
 	}
 
 	/**
@@ -95,6 +76,7 @@ public abstract class AbstractUuidCreator {
 	 * Set UUID variant bits into the "Least Significant Bits".
 	 * 
 	 * @param lsb the LSB
+	 * @return the LSB with the correct variant bits
 	 */
 	protected long setVariantBits(long lsb) {
 		return (lsb & 0x3fffffffffffffffL) | RFC4122_VARIANT_BITS;
@@ -117,6 +99,6 @@ public abstract class AbstractUuidCreator {
 	 * @return the MSB
 	 */
 	protected long setVersionBits(long msb) {
-		return (msb & 0xffffffffffff0fffL) | RFC4122_VERSION_BITS[this.version];
+		return (msb & 0xffffffffffff0fffL) | RFC4122_VERSION_BITS[this.version.getValue()];
 	}
 }

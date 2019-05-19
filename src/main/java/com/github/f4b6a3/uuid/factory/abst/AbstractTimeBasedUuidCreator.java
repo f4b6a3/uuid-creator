@@ -23,6 +23,7 @@ import java.util.UUID;
 import com.github.f4b6a3.uuid.clockseq.ClockSequenceStrategy;
 import com.github.f4b6a3.uuid.clockseq.DefaultClockSequenceStrategy;
 import com.github.f4b6a3.uuid.clockseq.FixedClockSequenceStrategy;
+import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.nodeid.DefaultNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.FixedNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.MacNodeIdentifierStrategy;
@@ -30,11 +31,12 @@ import com.github.f4b6a3.uuid.nodeid.NodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.FixedTimestampStretegy;
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
+import com.github.f4b6a3.uuid.util.SettingsUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
-
+	
 	protected TimestampStrategy timestampStrategy;
 	protected ClockSequenceStrategy clockSequenceStrategy;
 	protected NodeIdentifierStrategy nodeIdentifierStrategy;
@@ -44,11 +46,19 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * 
 	 * @param version the version number
 	 */
-	protected AbstractTimeBasedUuidCreator(int version) {
+	protected AbstractTimeBasedUuidCreator(UuidVersion version) {
 		super(version);
+		
 		this.timestampStrategy = new DefaultTimestampStrategy();
-		this.clockSequenceStrategy = new DefaultClockSequenceStrategy();
 		this.nodeIdentifierStrategy = new DefaultNodeIdentifierStrategy();
+
+		if (SettingsUtil.isStateEnabled()) {
+			long timestamp = this.timestampStrategy.getTimestamp();
+			long nodeIdentifier = this.nodeIdentifierStrategy.getNodeIdentifier();
+			this.clockSequenceStrategy = new DefaultClockSequenceStrategy(timestamp, nodeIdentifier);
+		} else {
+			this.clockSequenceStrategy = new DefaultClockSequenceStrategy();
+		}
 	}
 
 	/**
@@ -136,22 +146,22 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 		long nodeIdentifier = this.nodeIdentifierStrategy.getNodeIdentifier();
 
 		// (5a)(6a) get the sequence value
-		long sequence = this.clockSequenceStrategy.getClockSequence(timestamp, nodeIdentifier);
+		long clockSequence = this.clockSequenceStrategy.getClockSequence(timestamp, nodeIdentifier);
 
 		// (9a) format the most significant bits
 		long msb = this.formatMostSignificantBits(timestamp);
 
 		// (9a) format the least significant bits
-		long lsb = this.formatLeastSignificantBits(nodeIdentifier, sequence);
+		long lsb = this.formatLeastSignificantBits(nodeIdentifier, clockSequence);
 
 		// (9a) format a UUID from the MSB and LSB
 		return new UUID(msb, lsb);
 	}
 
 	/**
-	 * Use an alternative {@link TimestampStrategy} to generate timestamps. The
+	 * Use an alternate {@link TimestampStrategy} to generate timestamps. The
 	 * {@link DefaultTimestampStrategy} has accuracy of milliseconds. If someone
-	 * needs a real 100-nanosecond an implementation of
+	 * needs a real 100-nanosecond resolution, another implementation of
 	 * {@link TimestampStrategy} may be provided via this method.
 	 * 
 	 * @param timestampStrategy a timestamp strategy
@@ -165,10 +175,8 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	}
 
 	/**
-	 * Use an alternative {@link NodeIdentifierStrategy} to generate node
-	 * identifiers. The {@link DefaultNodeIdentifierStrategy} generates a random
-	 * multicast node identifier and returns it for every call to
-	 * {@link DefaultNodeIdentifierStrategy#getNodeIdentifier()}.
+	 * Use an alternate {@link NodeIdentifierStrategy} to generate node
+	 * identifiers.
 	 * 
 	 * @param nodeIdentifierStrategy a node identifier strategy
 	 * @param <T> type parameter
@@ -182,11 +190,8 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	}
 
 	/**
-	 * Use an alternative {@link ClockSequenceStrategy} to generate clock
-	 * sequences. By default the strategy {@link DefaultClockSequenceStrategy}
-	 * is used.
-	 * 
-	 * {@link DefaultClockSequenceStrategy}
+	 * Use an alternate {@link ClockSequenceStrategy} to generate clock
+	 * sequences.
 	 * 
 	 * @param clockSequenceStrategy a clock sequence strategy
 	 * @param <T> type parameter
@@ -232,10 +237,6 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	/**
 	 * Set a fixed node identifier to generate UUIDs.
 	 * 
-	 * Every time a factory is instantiated a random value is set to the node
-	 * identifier by default. Someone may think it's useful in some special case
-	 * to use a fixed node identifier other than random value.
-	 * 
 	 * @param nodeIdentifier a node identifier
 	 * @param <T> type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
@@ -250,10 +251,6 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	 * Set the node identifier to be a real hardware address of the host
 	 * machine.
 	 * 
-	 * Every time a factory is instantiated a random value is set to the node
-	 * identifier by default. Using a real hardware address today is not
-	 * recommended anymore. But someone may prefer to use a real MAC address.
-	 * 
 	 * @param <T> type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
@@ -264,15 +261,9 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	}
 
 	/**
-	 * Set a fixed initial clock sequence value to generate UUIDs.
+	 * Set a fixed clock sequence value to generate UUIDs.
 	 * 
-	 * The sequence has a range from 0 to 16,383 (0x3fff).
-	 * 
-	 * Every time a factory is instantiated a random value is set to the
-	 * sequence by default. This method allows someone to change this value with
-	 * a desired one. It is called "initial" because during the lifetime of the
-	 * factory instance, this value may be incremented or even replaced by
-	 * another random value to avoid repetition of UUIDs.
+	 * The clock sequence has a range from 0 to 16,383 (0x3fff).
 	 * 
 	 * @param clockSequence a clock sequence
 	 * @param <T> type parameter
@@ -285,7 +276,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	}
 
 	/**
-	 * Format the MSB UUID from the current timestamp.
+	 * Formats the most significant bits of the UUID.
 	 * 
 	 * @param timestamp a timestamp
 	 * @return the MSB
@@ -293,7 +284,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	public abstract long formatMostSignificantBits(long timestamp);
 
 	/**
-	 * Returns the least significant bits of the UUID.
+	 * Formats the least significant bits of the UUID.
 	 * 
 	 * ### RFC-4122 - 4.2.2. Generation Details
 	 * 

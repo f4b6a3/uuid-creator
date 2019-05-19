@@ -21,13 +21,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.enums.UuidVersion;
+
 import static com.github.f4b6a3.uuid.util.ByteUtil.*;
 
 /**
- * Factory that creates name-based UUIDs versions 3 and 5.
- * 
- * @author fabiolimace
- *
+ * Factory that creates name-based UUIDs.
  */
 public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 
@@ -36,6 +35,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 
 	protected static final String MESSAGE_DIGEST_MD5 = "MD5";
 	protected static final String MESSAGE_DIGEST_SHA1 = "SHA-1";
+	protected static final String MESSAGE_DIGEST_SHA256 = "SHA-256";
 
 	/**
 	 * This constructor receives the name of a message digest.
@@ -46,10 +46,14 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * Someone can implement a non-standard name-based factory that uses a
 	 * better message digest, by extending this abstract class.
 	 * 
-	 * @param version the version number
-	 * @param messageDigest a message digest
+	 * A subclass that uses the algorithm SHA-256 is provided by this library.
+	 * 
+	 * @param version
+	 *            the version number
+	 * @param messageDigest
+	 *            a message digest
 	 */
-	public AbstractNameBasedUuidCreator(int version, String messageDigest) {
+	public AbstractNameBasedUuidCreator(UuidVersion version, String messageDigest) {
 		super(version);
 
 		try {
@@ -60,10 +64,12 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	}
 
 	/**
-	 * Sets a fixed namespace with in a fluent way.
+	 * Sets a fixed name space with in a fluent way.
 	 * 
-	 * @param namespace a namespace UUID
-	 * @param <T> the type parameter
+	 * @param namespace
+	 *            a namespace UUID
+	 * @param <T>
+	 *            the type parameter
 	 * @return {@link AbstractNameBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -73,12 +79,14 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	}
 
 	/**
-	 * Sets a fixed namespace with in a fluent way.
+	 * Sets a fixed name space with in a fluent way.
 	 * 
-	 * The namespace string is converted to namespace UUID.
+	 * The name space string is converted to name space UUID.
 	 * 
-	 * @param namespace a namespace string
-	 * @param <T> the type parameter
+	 * @param namespace
+	 *            a name space string
+	 * @param <T>
+	 *            the type parameter
 	 * @return {@link AbstractNameBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -89,26 +97,29 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	}
 
 	/**
-	 * Returns a name-based UUID without namespace.
+	 * Returns a name-based UUID without name space.
 	 * 
 	 * {@link AbstractNameBasedUuidCreator#create(UUID, String)}
 	 * 
-	 * @param name a name string
+	 * @param name
+	 *            a name string
 	 * @return a name-based UUID
 	 */
 	public UUID create(String name) {
-		return create(this.namespace, name);
+		return create((UUID) null, name);
 	}
 
 	/**
-	 * Returns a name-based UUID with a namespace and a name.
+	 * Returns a name-based UUID with a name space and a name.
 	 * 
-	 * The namespace string is converted to namespace UUID.
+	 * The name space string is converted to name space UUID.
 	 * 
 	 * {@link AbstractNameBasedUuidCreator#create(UUID, String)}
 	 * 
-	 * @param namespace a namespace string
-	 * @param name a name string
+	 * @param namespace
+	 *            a name space string
+	 * @param name
+	 *            a name string
 	 * @return a name-based UUID
 	 */
 	public UUID create(String namespace, String name) {
@@ -117,7 +128,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	}
 
 	/**
-	 * Returns a name-based UUID with a namespace and a name.
+	 * Returns a name-based UUID with a name space and a name.
 	 * 
 	 * ### RFC-4122 - 4.3. Algorithm for Creating a Name-Based UUID
 	 * 
@@ -159,14 +170,13 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * 
 	 * (13) Convert the resulting UUID to local byte order.
 	 * 
-	 * @param namespace a namespace UUID
-	 * @param name a name string
+	 * @param namespace
+	 *            a name space UUID
+	 * @param name
+	 *            a name string
 	 * @return a name-based UUID
 	 */
 	public synchronized UUID create(UUID namespace, String name) {
-
-		long msb = 0x0000000000000000L;
-		long lsb = 0x0000000000000000L;
 
 		byte[] namespaceBytes = null;
 		byte[] nameBytes = null;
@@ -189,8 +199,8 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 
 		hash = md.digest(bytes);
 
-		msb = toNumber(copy(hash, 0, 8));
-		lsb = toNumber(copy(hash, 8, 16));
+		long msb = toNumber(copy(hash, 0, 8));
+		long lsb = toNumber(copy(hash, 8, 16));
 
 		lsb = setVariantBits(lsb);
 		msb = setVersionBits(msb);

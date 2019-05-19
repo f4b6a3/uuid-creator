@@ -9,12 +9,13 @@ import java.util.UUID;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.UuidCreator;
+import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
 
 import static com.github.f4b6a3.uuid.util.UuidUtil.*;
 
 public class UuidUtilTest {
-
+	
 	@Test
 	public void testIsNameBasedVersion() {
 		UUID uuid = UUID.nameUUIDFromBytes("test".getBytes());
@@ -83,13 +84,32 @@ public class UuidUtilTest {
 
 	@Test
 	public void testIsRfc4122Variant() {
-		UUID uuid1 = AbstractUuidCreator.NAMESPACE_DNS;
+		UUID uuid1 = UuidNamespace.NAMESPACE_DNS.getValue();
 		UUID uuid2 = AbstractUuidCreator.NIL_UUID;
 
 		assertTrue(isRfc4122Variant(uuid1));
 		assertFalse(isRfc4122Variant(uuid2));
 	}
 
+	@Test
+	public void testFromUuidToBytes() {
+		UUID uuid1 = UuidCreator.getTimeBased();
+		byte[] bytes = UuidUtil.fromUuidToBytes(uuid1);
+		long msb = ByteUtil.toNumber(ByteUtil.copy(bytes, 0, 8));
+		long lsb = ByteUtil.toNumber(ByteUtil.copy(bytes, 8, 16));
+		UUID uuid2 = new UUID(msb, lsb);
+		assertEquals(uuid1, uuid2);
+	}
+
+	@Test
+	public void testFromBytesToUuid() {
+		UUID uuid1 = UuidCreator.getTimeBased();
+		byte[] bytes = UuidUtil.fromUuidToBytes(uuid1);
+		UUID uuid2 = UuidUtil.fromBytesToUuid(bytes);
+		assertEquals(uuid1, uuid2);
+	}
+
+	
 	@Test
 	public void testExtractDceSecurityTimestamp() {
 
@@ -139,54 +159,61 @@ public class UuidUtilTest {
 	}
 	
 	@Test
-	public void testExtractAll_catchExceptions() {
+	public void testExtractAllCatchExceptions() {
 		UUID uuid = UUID.randomUUID();
 
 		try {
 			extractInstant(uuid);
 			fail();
 		} catch (UnsupportedOperationException e) {
+			// Success
 		}
 
 		try {
 			extractTimestamp(uuid);
 			fail();
 		} catch (UnsupportedOperationException e) {
+			// Success
 		}
 
 		try {
 			extractNodeIdentifier(uuid);
 			fail();
 		} catch (UnsupportedOperationException e) {
+			// Success
 		}
 
 		try {
 			extractDceSecurityInstant(uuid);
 			fail();
 		} catch (UnsupportedOperationException e) {
+			// Success
 		}
 
 		try {
 			extractDceSecurityTimestamp(uuid);
 			fail();
 		} catch (UnsupportedOperationException e) {
+			// Success
 		}
 
 		try {
 			extractDceSecurityLocalDomain(uuid);
 			fail();
 		} catch (UnsupportedOperationException e) {
+			// Success
 		}
 
 		try {
 			extractDceSecurityLocalIdentifier(uuid);
 			fail();
 		} catch (UnsupportedOperationException e) {
+			// Success
 		}
 	}
 	
 	@Test
-	public void testFromTimeBasedToMssqlUuid_IsCorrect() {
+	public void testFromTimeBasedToMssqlUuidIsCorrect() {
 		UUID uuid1 = new UUID(0x0011223344551677L,0x8888888888888888L);
 		UUID uuid2 = UuidUtil.fromTimeBasedToMssqlUuid(uuid1);
 		long timestamp = uuid2.getMostSignificantBits();

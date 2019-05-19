@@ -34,6 +34,9 @@ public class TimestampUtil {
 	public static final long MILLISECONDS_PER_SECOND = 1_000L;
 	public static final long TIMESTAMP_RESOLUTION = 10_000L;
 
+	private TimestampUtil(){
+	}
+	
 	/**
 	 * Get the current timestamp with milliseconds precision.
 	 * 

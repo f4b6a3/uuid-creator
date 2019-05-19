@@ -92,5 +92,25 @@ public class DeltaTimestampStrategy implements TimestampStrategy {
 			this.initialInstant = this.clock.instant();
 			this.initialNanoseconds = System.nanoTime();
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = super.hashCode();
+			result = prime * result + (int) (initialNanoseconds ^ (initialNanoseconds >>> 32));
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (!super.equals(obj))
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			NanosClock other = (NanosClock) obj;
+			return (initialNanoseconds == other.initialNanoseconds);
+		}
 	}
 }

@@ -3,12 +3,12 @@
 
 	<groupId>com.github.f4b6a3</groupId>
 	<artifactId>uuid-creator</artifactId>
-	<version>0.9.1-SNAPSHOT</version>
+	<version>1.2.6-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>uuid-creator</name>
 	<url>http://github.com/f4b6a3</url>
-	<description>UUID Creator</description>
+	<description>UUID Creator is a Java library for generating sequential, time-based, name-based and random universally unique identifiers and more.</description>
 
 	<licenses>
 		<license>
@@ -36,33 +36,13 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.openjdk.jmh</groupId>
-			<artifactId>jmh-core</artifactId>
-			<version>1.19</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openjdk.jmh</groupId>
-			<artifactId>jmh-generator-annprocess</artifactId>
-			<version>1.19</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.uuid</groupId>
-			<artifactId>java-uuid-generator</artifactId>
-			<version>3.1.4</version>
-		</dependency>
-		<dependency>
-			<groupId>com.eaio.uuid</groupId>
-			<artifactId>uuid</artifactId>
-			<version>3.2</version>
-		</dependency>
 	</dependencies>
 
 	<scm>
 		<connection>scm:git:git://github.com/dexecutor/dependent-tasks-executor.git</connection>
 		<developerConnection>scm:git:git@github.com:dexecutor/dexecutor.git</developerConnection>
 		<url>https://github.com/dexecutor/dependent-tasks-executor</url>
-		<tag>HEAD</tag>
+		<tag>uuid-creator-1.2.5</tag>
 	</scm>
 
 	<distributionManagement>

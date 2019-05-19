@@ -17,9 +17,8 @@
 
 package com.github.f4b6a3.uuid.factory;
 
-import java.security.SecureRandom;
-
 import com.github.f4b6a3.uuid.clockseq.CombClockSequenceStrategy;
+import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.nodeid.CombNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.timestamp.RandomTimestampStrategy;
@@ -27,20 +26,22 @@ import com.github.f4b6a3.uuid.timestamp.RandomTimestampStrategy;
 /**
  * Factory that creates COMB UUIDs.
  * 
+ * RFC-4122 version: 4 (number borrowed from the random-based version).
+ * 
  * The Cost of GUIDs as Primary Keys
  * http://www.informit.com/articles/article.aspx?p=25862
  */
 public class CombGuidCreator extends AbstractTimeBasedUuidCreator {
 
 	public CombGuidCreator() {
-		super(VERSION_4);
-		this.timestampStrategy = new RandomTimestampStrategy(new SecureRandom());
+		super(UuidVersion.RANDOM_BASED);
+		this.timestampStrategy = new RandomTimestampStrategy();
 		this.clockSequenceStrategy = new CombClockSequenceStrategy();
 		this.nodeIdentifierStrategy = new CombNodeIdentifierStrategy();
 	}
 
 	@Override
 	public long formatMostSignificantBits(long timestamp) {
-		return timestamp;
+		return setVersionBits(timestamp);
 	}
 }

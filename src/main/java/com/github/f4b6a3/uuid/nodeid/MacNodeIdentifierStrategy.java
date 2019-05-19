@@ -1,34 +1,31 @@
 package com.github.f4b6a3.uuid.nodeid;
 
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.security.SecureRandom;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Random;
 
 import com.github.f4b6a3.uuid.util.ByteUtil;
+import com.github.f4b6a3.uuid.util.NetworkData;
 import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
+import com.github.f4b6a3.uuid.util.RandomUtil;
+import com.github.f4b6a3.uuid.util.SystemDataUtil;
 
 public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 	protected long nodeIdentifier;
-	protected Random random;
 
 	public MacNodeIdentifierStrategy() {
-		this.random = new SecureRandom();
 		this.nodeIdentifier = getHardwareAddress();
-
 	}
 
 	/**
 	 * Get the machine address.
 	 * 
-	 * It looks for the first MAC that is up and running. If none is up, it
-	 * looks for the first MAC.
+	 * It returns the first MAC that can be found. First it tries to find the
+	 * MAC that is associated with the host name. Otherwise, it tries to find
+	 * the first MAC that is up and running. This second try may be very
+	 * expensive on Windows, because it iterates over a lot of virtual network
+	 * interfaces created by the operating system.
 	 * 
-	 * It returns ZERO if none is found.
+	 * If no MAC is found, a random node identifier is returned.
 	 * 
 	 * ### RFC-4122 - 4.1.6. Node
 	 * 
@@ -57,26 +54,27 @@ public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * @return a hardware address
 	 */
 	protected long getHardwareAddress() {
-		try {
-			byte[] mac;
-			NetworkInterface nic;
-			List<InterfaceAddress> list;
-			Enumeration<NetworkInterface> enm;
 
-			enm = NetworkInterface.getNetworkInterfaces();
-			while (enm.hasMoreElements()) {
-				nic = enm.nextElement();
-				list = nic.getInterfaceAddresses();
-				mac = nic.getHardwareAddress();
-				if ((mac != null) && (!list.isEmpty()) && !(nic.isLoopback() || nic.isVirtual())) {
-					return ByteUtil.toNumber(mac);
-				}
+		// first try
+		NetworkData networkData = SystemDataUtil.getNetworkData();
+
+		// second try, if the first one failed
+		if (networkData == null) {
+			List<NetworkData> networkDataList = SystemDataUtil.getNetworkDataList();
+			if (networkDataList != null && !networkDataList.isEmpty()) {
+				networkData = networkDataList.get(0);
 			}
-		} catch (SocketException | NullPointerException e) {
-			// (2) return random number
-			return getRandomMulticastNodeIdentifier();
 		}
-		// (2) return random number
+
+		// Return the hardware address if found
+		if (networkData != null) {
+			String hardwareAddress = networkData.getInterfaceHardwareAddress();
+			if (hardwareAddress != null && !hardwareAddress.isEmpty()) {
+				return ByteUtil.toNumber(networkData.getInterfaceHardwareAddress());
+			}
+		}
+
+		// Return a random node identifier
 		return getRandomMulticastNodeIdentifier();
 	}
 
@@ -88,6 +86,6 @@ public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * @return a random multicast node identifier
 	 */
 	protected long getRandomMulticastNodeIdentifier() {
-		return NodeIdentifierUtil.setMulticastNodeIdentifier(random.nextLong());
+		return NodeIdentifierUtil.setMulticastNodeIdentifier(RandomUtil.nextLong());
 	}
 }

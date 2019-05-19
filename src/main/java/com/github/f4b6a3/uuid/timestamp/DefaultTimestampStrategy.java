@@ -1,6 +1,7 @@
 package com.github.f4b6a3.uuid.timestamp;
 
 import com.github.f4b6a3.uuid.sequence.AbstractSequence;
+import com.github.f4b6a3.uuid.util.RandomUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 
 /**
@@ -9,11 +10,12 @@ import com.github.f4b6a3.uuid.util.TimestampUtil;
  * value of a counter that is incremented at every call to the method
  * {@link TimestampStrategy#getTimestamp()}.
  * 
- * This class counts how many times a timestamp was used. This value added to
- * the timestamp is used to simulate a high resolution clock.
+ * The counter's range is from 0 to 9,999, that is, the number of 100-nanosecond
+ * intervals per millisecond.
  * 
- * The maximum value of this counter is 10,000, 'the number of 100-nanosecond
- * intervals per' milliseconds.
+ * The counter is initialized with a random number between 0 and 255 to void
+ * duplicates in the case of multiple time-based generators running in different
+ * JVMs.
  * 
  * ### RFC-4122 - 4.2.1.2. System Clock Resolution
  * 
@@ -26,38 +28,47 @@ import com.github.f4b6a3.uuid.util.TimestampUtil;
  */
 public class DefaultTimestampStrategy extends AbstractSequence implements TimestampStrategy {
 
-	protected long timestamp = 0;
+	protected long previousTimestamp = 0;
 
 	protected static final int COUNTER_MIN = 0;
 	protected static final int COUNTER_MAX = 9_999;
 
+	protected static final int COUNTER_OFFSET_MAX = 0xff; // 255
+
 	public DefaultTimestampStrategy() {
 		super(COUNTER_MIN, COUNTER_MAX);
+		this.value = RandomUtil.nextInt(COUNTER_OFFSET_MAX);
 	}
 
 	@Override
 	public long getTimestamp() {
 
 		long timestamp = TimestampUtil.getCurrentTimestamp();
-		long counter = getNextForTimestamp(timestamp);
+		long counter = getNextCounter(timestamp);
 
 		// (4) simulate a high resolution timestamp
 		return timestamp + counter;
 	}
 
 	/**
-	 * Get how many times a timestamp.
+	 * Get the next counter value.
 	 * 
-	 * @param timestamp a timestamp
-	 * @return the clock sequence
+	 * @param timestamp
+	 *            a timestamp
+	 * @return the next counter value
 	 */
-	protected int getNextForTimestamp(long timestamp) {
-		if (timestamp <= this.timestamp) {
-			return this.next();
+	protected int getNextCounter(long timestamp) {
+
+		if (timestamp > this.previousTimestamp) {
+			reset();
 		}
 
-		this.timestamp = timestamp;
-		this.reset();
-		return this.current();
+		this.previousTimestamp = timestamp;
+		return this.next();
+	}
+
+	@Override
+	public void reset() {
+		this.value = (this.value & COUNTER_OFFSET_MAX);
 	}
 }

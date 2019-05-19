@@ -46,6 +46,7 @@ public class XorshiftRandom extends Random {
 		this.seed = seed;
 	}
 	
+	@Override
 	protected int next(int bits) {
 		return (int) (nextLong() >>> (64 - bits));
 	}

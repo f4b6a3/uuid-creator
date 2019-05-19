@@ -8,5 +8,4 @@ log/
 target/
 
 # Other
-.factorypath
 release.properties

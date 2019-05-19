@@ -20,10 +20,15 @@ package com.github.f4b6a3.uuid.util;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
+import com.github.f4b6a3.uuid.enums.UuidVariant;
 
 public class UuidUtil {
+	
+	private static final String NOT_DCE_SECURITY = "Not a DCE Security UUID: %s.";
 
+	private UuidUtil() {
+	}
+	
 	/**
 	 * Checks whether the UUID variant is the one defined by the RFC-4122.
 	 * 
@@ -32,7 +37,7 @@ public class UuidUtil {
 	 */
 	public static boolean isRfc4122Variant(UUID uuid) {
 		int variant = uuid.variant();
-		return (variant == AbstractUuidCreator.VARIANT_RFC4122);
+		return (variant == UuidVariant.VARIANT_RFC4122.getValue());
 	}
 
 	/**
@@ -88,7 +93,7 @@ public class UuidUtil {
 		int version = uuid.version();
 		return (version == 2);
 	}
-
+	
 	/**
 	 * Get the node identifier that is embedded in the UUID.
 	 *
@@ -100,10 +105,26 @@ public class UuidUtil {
 		if (!(UuidUtil.isTimeBasedVersion(uuid) || UuidUtil.isSequentialVersion(uuid)
 				|| UuidUtil.isDceSecurityVersion(uuid))) {
 			throw new UnsupportedOperationException(
-					String.format("Not a time-based, sequential DCE Security UUID: %s.", uuid.toString()));
+					String.format("Not a time-based, sequential or DCE Security UUID: %s.", uuid.toString()));
 		}
 
 		return uuid.getLeastSignificantBits() & 0x0000ffffffffffffL;
+	}
+	
+	/**
+	 * Get the clock sequence that is embedded in the UUID.
+	 *
+	 * @param uuid an UUID
+	 * @return long the node identifier
+	 */
+	public static long extractClockSequence(UUID uuid) {
+
+		if (!(UuidUtil.isTimeBasedVersion(uuid) || UuidUtil.isSequentialVersion(uuid))) {
+			throw new UnsupportedOperationException(
+					String.format("Not a time-based or sequential UUID: %s.", uuid.toString()));
+		}
+
+		return (uuid.getLeastSignificantBits() >>> 48) & 0x0000000000003fffL;
 	}
 
 	/**
@@ -115,6 +136,17 @@ public class UuidUtil {
 	public static Instant extractInstant(UUID uuid) {
 		long timestamp = extractTimestamp(uuid);
 		return TimestampUtil.toInstant(timestamp);
+	}
+	
+	/**
+	 * Get the epoch milliseconds that is embedded in the UUID.
+	 *
+	 * @param uuid an UUID
+	 * @return epoch milliseconds
+	 */
+	public static long extractEpochMilliseconds(UUID uuid) {
+		long timestamp = extractTimestamp(uuid);
+		return TimestampUtil.toInstant(timestamp).toEpochMilli();
 	}
 
 	/**
@@ -180,7 +212,7 @@ public class UuidUtil {
 	public static byte extractDceSecurityLocalDomain(UUID uuid) {
 
 		if (!UuidUtil.isDceSecurityVersion(uuid)) {
-			throw new UnsupportedOperationException(String.format("Not a DCE Security UUID: %s.", uuid.toString()));
+			throw new UnsupportedOperationException(String.format(NOT_DCE_SECURITY, uuid.toString()));
 		}
 
 		return (byte) ((uuid.getLeastSignificantBits() & 0x00ff000000000000L) >> 48);
@@ -196,7 +228,7 @@ public class UuidUtil {
 	public static int extractDceSecurityLocalIdentifier(UUID uuid) {
 
 		if (!UuidUtil.isDceSecurityVersion(uuid)) {
-			throw new UnsupportedOperationException(String.format("Not a DCE Security UUID: %s.", uuid.toString()));
+			throw new UnsupportedOperationException(String.format(NOT_DCE_SECURITY, uuid.toString()));
 		}
 
 		return (int) (uuid.getMostSignificantBits() >> 32);
@@ -210,7 +242,7 @@ public class UuidUtil {
 	 */
 	public static long extractDceSecurityTimestamp(UUID uuid) {
 		if (!UuidUtil.isDceSecurityVersion(uuid)) {
-			throw new UnsupportedOperationException(String.format("Not a DCE Security UUID: %s.", uuid.toString()));
+			throw new UnsupportedOperationException(String.format(NOT_DCE_SECURITY, uuid.toString()));
 		}
 
 		return extractTimeBasedTimestamp((uuid.getMostSignificantBits() & 0x00000000ffffffffL));
@@ -225,6 +257,35 @@ public class UuidUtil {
 	public static Instant extractDceSecurityInstant(UUID uuid) {
 		long timestamp = extractDceSecurityTimestamp(uuid);
 		return TimestampUtil.toInstant(timestamp);
+	}
+	
+
+	/**
+	 * Get the array of bytes from a UUID.
+	 * 
+	 * @param uuid an UUID
+	 * @return an array of bytes
+	 */
+	public static byte[] fromUuidToBytes(UUID uuid) {
+		long msb = uuid.getMostSignificantBits();
+		long lsb = uuid.getLeastSignificantBits();
+		byte[] msbBytes = ByteUtil.toBytes(msb);
+		byte[] lsbBytes = ByteUtil.toBytes(lsb);
+		return ByteUtil.concat(msbBytes, lsbBytes);
+	}
+	
+	/**
+	 * Get a UUID from an array of bytes;
+	 * 
+	 * @param bytes an array of bytes
+	 * @return a UUID
+	 */
+	public static UUID fromBytesToUuid(byte[] bytes) {
+		byte[] msbBytes = ByteUtil.copy(bytes, 0, 8);
+		byte[] lsbBytes = ByteUtil.copy(bytes, 8, 16);
+		long msb = ByteUtil.toNumber(msbBytes);
+		long lsb = ByteUtil.toNumber(lsbBytes);
+		return new UUID(msb, lsb);
 	}
 
 	/**
@@ -433,10 +494,6 @@ public class UuidUtil {
 	 * @return the LSB
 	 */
 	public static long formatRfc4122LeastSignificantBits(final long nodeIdentifier, final long clockSequence) {
-
-		long seq = clockSequence << 48;
-		long nod = nodeIdentifier & 0x0000ffffffffffffL;
-
-		return (seq | nod | 0x8000000000000000L);
+		return ((clockSequence << 48) | (nodeIdentifier & 0x0000ffffffffffffL) | 0x8000000000000000L);
 	}
 }

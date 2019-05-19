@@ -19,11 +19,11 @@ package com.github.f4b6a3.uuid.util;
 
 /**
  * Class that contains many static methods for byte handling.
- * 
- * @author fabiolimace
- *
  */
 public class ByteUtil {
+	
+	private ByteUtil() {
+	}
 
 	/**
 	 * Get a number from a given hexadecimal string.
@@ -178,8 +178,7 @@ public class ByteUtil {
 	 * @return a byte array
 	 */
 	public static byte[] copy(final byte[] bytes) {
-		byte[] result = copy(bytes, 0, bytes.length);
-		return result;
+		return copy(bytes, 0, bytes.length);
 	}
 
 	/**

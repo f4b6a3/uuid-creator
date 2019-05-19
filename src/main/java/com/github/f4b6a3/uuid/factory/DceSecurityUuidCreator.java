@@ -19,11 +19,15 @@ package com.github.f4b6a3.uuid.factory;
 
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.enums.UuidVersion;
+import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.sequence.AbstractSequence;
 
 /**
  * 
- * Factory that creates DCE Security UUIDs, version 2.
+ * Factory that creates DCE Security UUIDs.
+ * 
+ * RFC-4122 version: 2.
  * 
  * <pre>
  * Standard local domains: 
@@ -48,13 +52,13 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	 * Facoty that creates DCE Security UUIDs, version 2.
 	 */
 	public DceSecurityUuidCreator() {
-		super(VERSION_2);
+		super(UuidVersion.DCE_SECURITY);
 		timestampCounter = new DCESTimestampCounter();
 	}
 	
 	@Override
-	public UUID create() {
-		throw new RuntimeException("Not implemented.");
+	public synchronized UUID create() {
+		throw new UuidCreatorException("Not implemented.");
 	}
 
 	/**
@@ -149,7 +153,7 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 		int counter = timestampCounter.next();
 		long lsb = setLocalDomainBits(uuid.getLeastSignificantBits(), localDomain, counter);
 		
-		// (1b) set version 2;
+		// (1b) set version 2
 		return new UUID(setVersionBits(msb), lsb);
 	}
 
@@ -227,9 +231,7 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	 * Class used to keep a counter to simulate minimize repetition.
 	 */
 	protected class DCESTimestampCounter extends AbstractSequence {
-
-		private long timestamp = 0;
-
+		
 		// COUNTER_MAX: 2^6 (14 bits of the clock sequence minus 8 bytes)
 		private static final int COUNTER_MIN = 0;
 		private static final int COUNTER_MAX = 63;
@@ -237,21 +239,5 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 		protected DCESTimestampCounter() {
 			super(COUNTER_MIN, COUNTER_MAX);
 		}
-
-		/**
-		 * Returns how many times a timestamp was used.
-		 * 
-		 * @param timestamp a timestamp
-		 * @return a long value
-		 */
-		protected int getNextForTimestamp(long timestamp) {
-			if (timestamp <= this.timestamp) {
-				return this.next();
-			}
-			this.timestamp = timestamp;
-			this.reset();
-			return this.current();
-		}
-		
 	}
 }
