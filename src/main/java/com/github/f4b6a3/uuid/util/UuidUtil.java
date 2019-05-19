@@ -21,12 +21,23 @@ import java.time.Instant;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.enums.UuidVariant;
+import com.github.f4b6a3.uuid.enums.UuidVersion;
 
 public class UuidUtil {
 	
 	private static final String NOT_DCE_SECURITY = "Not a DCE Security UUID: %s.";
 
 	private UuidUtil() {
+	}
+	
+	/**
+	 * Get the UUID version.
+	 * 
+	 * @param uuid an UUID
+	 * @return a {@link UuidVersion}
+	 */
+	public UuidVersion getVersion(UUID uuid) {
+		return UuidVersion.getVersion(uuid.version());
 	}
 	
 	/**
@@ -47,7 +58,7 @@ public class UuidUtil {
 	 * @return boolean true if it is a random UUID
 	 */
 	public static boolean isRandomBasedVersion(UUID uuid) {
-		return (uuid.version() == 4);
+		return (uuid.version() == UuidVersion.RANDOM_BASED.getValue());
 	}
 
 	/**
@@ -58,7 +69,8 @@ public class UuidUtil {
 	 */
 	public static boolean isNameBasedVersion(UUID uuid) {
 		int version = uuid.version();
-		return ((version == 3) || (version == 5));
+		return ((version == UuidVersion.NAME_BASED_MD5.getValue())
+				|| (version == UuidVersion.NAMBE_BASED_SHA1.getValue()));
 	}
 
 	/**
@@ -69,7 +81,7 @@ public class UuidUtil {
 	 */
 	public static boolean isTimeBasedVersion(UUID uuid) {
 		int version = uuid.version();
-		return (version == 1);
+		return (version == UuidVersion.TIME_BASED.getValue());
 	}
 
 	/**
@@ -80,7 +92,7 @@ public class UuidUtil {
 	 */
 	public static boolean isSequentialVersion(UUID uuid) {
 		int version = uuid.version();
-		return (version == 0);
+		return (version ==  UuidVersion.SEQUENTIAL.getValue());
 	}
 
 	/**
@@ -91,7 +103,7 @@ public class UuidUtil {
 	 */
 	public static boolean isDceSecurityVersion(UUID uuid) {
 		int version = uuid.version();
-		return (version == 2);
+		return (version == UuidVersion.DCE_SECURITY.getValue());
 	}
 	
 	/**
@@ -115,16 +127,16 @@ public class UuidUtil {
 	 * Get the clock sequence that is embedded in the UUID.
 	 *
 	 * @param uuid an UUID
-	 * @return long the node identifier
+	 * @return int the clock sequence
 	 */
-	public static long extractClockSequence(UUID uuid) {
+	public static int extractClockSequence(UUID uuid) {
 
 		if (!(UuidUtil.isTimeBasedVersion(uuid) || UuidUtil.isSequentialVersion(uuid))) {
 			throw new UnsupportedOperationException(
 					String.format("Not a time-based or sequential UUID: %s.", uuid.toString()));
 		}
 
-		return (uuid.getLeastSignificantBits() >>> 48) & 0x0000000000003fffL;
+		return (int) ((uuid.getLeastSignificantBits() >>> 48) & 0x0000000000003fffL);
 	}
 
 	/**

@@ -14,4 +14,13 @@ public enum UuidVersion {
 	public int getValue() {
 		return this.value;
 	}
+
+	public static UuidVersion getVersion(int value) {
+		for (UuidVersion version : UuidVersion.values()) {
+			if (version.getValue() == value) {
+				return version;
+			}
+		}
+		return null;
+	}
 }
