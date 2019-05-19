@@ -9,8 +9,7 @@ public class DefaultTimestampStrategyTest {
 	@Test
 	public void testNextForTheCounterShouldBeIncrementedIfTheNewTimestampIsLowerThanOrEqualToTheOldTimestamp() {
 
-		// It should increment if the new timestamp is LOWER THAN the old
-		// timestamp
+		// It should increment if the new timestamp is LOWER THAN the old timestamp
 		long oldTimestamp = 1000;
 		long newTimestamp = 999;
 		DefaultTimestampStrategy timestampCounter = new DefaultTimestampStrategy();
@@ -18,8 +17,7 @@ public class DefaultTimestampStrategyTest {
 		long newCounter = timestampCounter.getNextCounter(newTimestamp);
 		assertEquals(oldCounter + 1, newCounter);
 
-		// It should increment if the new timestamp is EQUAL TO the old
-		// timestamp
+		// It should increment if the new timestamp is EQUAL TO the old timestamp
 		oldTimestamp = 1000;
 		newTimestamp = 1000;
 		timestampCounter = new DefaultTimestampStrategy();

@@ -28,35 +28,7 @@ import com.github.f4b6a3.uuid.util.SettingsUtil;
 /**
  * This class is an implementation of the 'clock sequence' of the RFC-4122. The
  * maximum value of this sequence is 16,383 or 0x3fff.
- * 
- * ### RFC-4122 - 4.1.5. Clock Sequence
- * 
- * (1) For UUID version 1, the clock sequence is used to help avoid duplicates
- * that could arise when the clock is set backwards in time or if the node ID
- * changes.
- * 
- * (2) If the clock is set backwards, or might have been set backwards (e.g.,
- * while the system was powered off), and the UUID generator can not be sure
- * that no UUIDs were generated with timestamps larger than the value to which
- * the clock was set, then the clock sequence has to be changed. If the previous
- * value of the clock sequence is known, it can just be incremented; otherwise
- * it should be set to a random or high-quality pseudo-random value.
- * 
- * (3) Similarly, if the node ID changes (e.g., because a network card has been
- * moved between machines), setting the clock sequence to a random number
- * minimizes the probability of a duplicate due to slight differences in the
- * clock settings of the machines. If the value of clock sequence associated
- * with the changed node ID were known, then the clock sequence could just be
- * incremented, but that is unlikely.
- * 
- * (4) The clock sequence MUST be originally (i.e., once in the lifetime of a
- * system) initialized to a random number to minimize the correlation across
- * systems. This provides maximum protection against node identifiers that may
- * move or switch from system to system rapidly. The initial value MUST NOT be
- * correlated to the node identifier.
- * 
  */
-
 public class DefaultClockSequenceStrategy extends AbstractSequence implements ClockSequenceStrategy {
 	private long timestamp = 0;
 	private long nodeIdentifier = 0;
@@ -98,6 +70,11 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	 * across systems. This provides maximum protection against node identifiers
 	 * that may move or switch from system to system rapidly. The initial value
 	 * MUST NOT be correlated to the node identifier.
+	 * 
+	 * ### RFC-4122 - 4.2.1. Basic Algorithm
+	 * 
+	 * (6b) If the state was available, but the saved timestamp is later than
+	 * the current timestamp, increment the clock sequence value.
 	 * 
 	 * @param timestamp
 	 *            the current timestamp
@@ -150,8 +127,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	}
 
 	/**
-	 * Get the next value for a timestamp and a node identifier.
-	 * 
+	 * Get the next value for a timestamp.
 	 * 
 	 * ### RFC-4122 - 4.1.5. Clock Sequence
 	 * 
@@ -163,11 +139,6 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	 * just be incremented; otherwise it should be set to a random or
 	 * high-quality pseudo-random value.
 	 * 
-	 * ### RFC-4122 - 4.2.1. Basic Algorithm
-	 * 
-	 * (6b) If the state was available, but the saved timestamp is later than
-	 * the current timestamp, increment the clock sequence value.
-	 * 
 	 * ### RFC-4122 - 4.2.1.2. System Clock Resolution
 	 * 
 	 * (3c) If a system overruns the generator by requesting too many UUIDs
@@ -177,7 +148,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	 * @param timestamp
 	 *            a timestamp
 	 * @param nodeIdentifier
-	 *            a node identifier
+	 *            a node identifier (ignored in this subclass)
 	 * @return a clock sequence
 	 * @throws OverrunException
 	 *             an overrun exception
@@ -203,6 +174,9 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 		this.value = DistributorLazyHolder.INSTANCE.handOut();
 	}
 
+	/**
+	 * Stores the state in a file on the file system.
+	 */
 	protected void storeState() {
 		if (SettingsUtil.isStateEnabled()) {
 			this.state.setNodeIdentifier(nodeIdentifier);
@@ -212,11 +186,16 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 		}
 	}
 
+	/**
+	 * Add a hook for when the program exits or is terminated.
+	 */
 	private void addShutdownHook() {
-		// Add a hook for when the program exits or is terminated
 		Runtime.getRuntime().addShutdownHook(new DefaultClockSequenceShutdownHook(this));
 	}
-
+	
+	/**
+	 * Thread that is run when the program exits or is terminated.
+	 */
 	protected static class DefaultClockSequenceShutdownHook extends Thread {
 		private DefaultClockSequenceStrategy strategy;
 

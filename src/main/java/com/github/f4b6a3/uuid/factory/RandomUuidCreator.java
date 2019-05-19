@@ -28,7 +28,9 @@ import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.uuid.random.XorshiftRandom;
 
 /**
- * Factory that creates random UUIDs version 4.
+ * Factory that creates random-based UUIDs.
+ * 
+ * RFC-4122 version: 4.
  * 
  * The default random generator is {@link java.security.SecureRandom}, but it
  * can be replaced by any random generator that extends
@@ -90,7 +92,8 @@ public class RandomUuidCreator extends AbstractUuidCreator {
 	 * 
 	 * {@link Random}.
 	 * 
-	 * @param random a random generator
+	 * @param random
+	 *            a random generator
 	 * @return {@link RandomUuidCreator}
 	 */
 	public RandomUuidCreator withRandomGenerator(Random random) {
@@ -103,7 +106,7 @@ public class RandomUuidCreator extends AbstractUuidCreator {
 	 * 
 	 * {@link Xorshift128PlusRandom}
 	 * 
-	 * @return  {@link RandomUuidCreator}
+	 * @return {@link RandomUuidCreator}
 	 */
 	public RandomUuidCreator withFastRandomGenerator() {
 		this.random = new Xorshift128PlusRandom();

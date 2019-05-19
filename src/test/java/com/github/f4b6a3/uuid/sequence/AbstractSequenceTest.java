@@ -89,8 +89,7 @@ public class AbstractSequenceTest {
 		assertEquals(TestSequence.maxTest, value); // Should be MAX_VALUE
 
 		value = testSequence.next();
-		assertEquals(TestSequence.minTest, value); // Should be reset to
-													// MIN_VALUE
+		assertEquals(TestSequence.minTest, value); // Should be reset to MIN_VALUE
 
 	}
 

@@ -23,7 +23,9 @@ import com.github.f4b6a3.uuid.factory.abst.AbstractNameBasedUuidCreator;
 public class NameBasedMd5UuidCreator extends AbstractNameBasedUuidCreator {
 	
 	/**
-	 * Factory that creates name based UUIDs, version 3.
+	 * Factory that creates name based UUIDs.
+	 * 
+	 * RFC-4122 version: 3.
 	 */
 	public NameBasedMd5UuidCreator() {
 		super(UuidVersion.NAME_BASED_MD5, MESSAGE_DIGEST_MD5);

@@ -10,7 +10,7 @@ import java.time.ZoneId;
  * nanosecond resolution, if available, or millisecond resolution.
  * 
  * The the {@link Clock} documentation says: "The {@code system} factory methods
- * provide clocks based on the best available system clock This may use
+ * provide clocks based on the best available system clock. This may use
  * {@link System#currentTimeMillis()}, or a higher resolution clock if one is
  * available".
  * 

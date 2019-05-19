@@ -159,9 +159,9 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	}
 
 	/**
-	 * Use an alternative {@link TimestampStrategy} to generate timestamps. The
+	 * Use an alternate {@link TimestampStrategy} to generate timestamps. The
 	 * {@link DefaultTimestampStrategy} has accuracy of milliseconds. If someone
-	 * needs a real 100-nanosecond an implementation of
+	 * needs a real 100-nanosecond resolution, another implementation of
 	 * {@link TimestampStrategy} may be provided via this method.
 	 * 
 	 * @param timestampStrategy a timestamp strategy
@@ -175,7 +175,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	}
 
 	/**
-	 * Use an alternative {@link NodeIdentifierStrategy} to generate node
+	 * Use an alternate {@link NodeIdentifierStrategy} to generate node
 	 * identifiers.
 	 * 
 	 * @param nodeIdentifierStrategy a node identifier strategy
@@ -190,7 +190,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	}
 
 	/**
-	 * Use an alternative {@link ClockSequenceStrategy} to generate clock
+	 * Use an alternate {@link ClockSequenceStrategy} to generate clock
 	 * sequences.
 	 * 
 	 * @param clockSequenceStrategy a clock sequence strategy
@@ -261,15 +261,9 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	}
 
 	/**
-	 * Set a fixed initial clock sequence value to generate UUIDs.
+	 * Set a fixed clock sequence value to generate UUIDs.
 	 * 
-	 * The sequence has a range from 0 to 16,383 (0x3fff).
-	 * 
-	 * Every time a factory is instantiated a random value is set to the
-	 * sequence by default. This method allows someone to change this value with
-	 * a desired one. It is called "initial" because during the lifetime of the
-	 * factory instance, this value may be incremented or even replaced by
-	 * another random value to avoid repetition of UUIDs.
+	 * The clock sequence has a range from 0 to 16,383 (0x3fff).
 	 * 
 	 * @param clockSequence a clock sequence
 	 * @param <T> type parameter
@@ -282,7 +276,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	}
 
 	/**
-	 * Format the MSB UUID from the current timestamp.
+	 * Formats the most significant bits of the UUID.
 	 * 
 	 * @param timestamp a timestamp
 	 * @return the MSB
@@ -290,7 +284,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
 	public abstract long formatMostSignificantBits(long timestamp);
 
 	/**
-	 * Returns the least significant bits of the UUID.
+	 * Formats the least significant bits of the UUID.
 	 * 
 	 * ### RFC-4122 - 4.2.2. Generation Details
 	 * 

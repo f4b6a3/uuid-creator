@@ -3,8 +3,8 @@ package com.github.f4b6a3.uuid.distrib;
 import com.github.f4b6a3.uuid.util.RandomUtil;
 
 /**
- * This class hands out numbers between the range ZERO and `range` so that the
- * first value is random and the rest values will not repeat.
+ * This class hands out numbers in a range of values so that the first value is
+ * random and the rest values won't repeat.
  *
  * The range is treated as the perimeter of a circle. Each value is a point in
  * this perimeter. The first point handed out is always random. The next values
@@ -19,8 +19,8 @@ import com.github.f4b6a3.uuid.util.RandomUtil;
  * out is 180 degrees away from the first point. The third is at 270 degrees far
  * from the first one. The forth 90 degrees. And so on...
  * 
- * This algorithm is very simple, but it's easier to understand watching it
- * running. There's an animation made with HTML canvas that shows the algorithm
+ * This algorithm is very simple, but it's easier to understand it watching it
+ * running. There's an animation in the `doc` directory that shows the algorithm
  * in action. Each point drawn in the circle of the animation is like a value
  * been handed out. Each value is at the same distance of the others in the same
  * iteration or cycle.

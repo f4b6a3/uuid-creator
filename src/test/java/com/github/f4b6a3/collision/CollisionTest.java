@@ -19,7 +19,7 @@ import com.github.f4b6a3.uuid.util.LogUtil;
  * and the node identifier bits are ignored because they don't change.
  * 
  * The timestamp strategy used is {@link StoppedDefaultTimestampStrategy} which
- * always returns the sime timestamp. The node identifier is fixed to
+ * always returns the same timestamp. The node identifier is fixed to
  * `0x111111111111L`.
  * 
  */

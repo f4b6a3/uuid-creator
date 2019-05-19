@@ -26,6 +26,8 @@ import com.github.f4b6a3.uuid.timestamp.RandomTimestampStrategy;
 /**
  * Factory that creates COMB UUIDs.
  * 
+ * RFC-4122 version: 4 (number borrowed from the random-based version).
+ * 
  * The Cost of GUIDs as Primary Keys
  * http://www.informit.com/articles/article.aspx?p=25862
  */

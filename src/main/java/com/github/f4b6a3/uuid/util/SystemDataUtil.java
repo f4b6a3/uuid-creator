@@ -18,17 +18,17 @@ public class SystemDataUtil {
 
 	private SystemDataUtil() {
 	}
-	
+
 	/**
 	 * Returns a system hash ID generated from all the system details
-	 * concatenated: OS + JVM + Network + SALT.
+	 * concatenated: OS + JVM + network details + system resources + SALT.
 	 * 
 	 * Get a system identifier generated from system information.
 	 * 
 	 * It uses these information to generate the node identifier: operating
-	 * system, java virtual machine and network details. These information are
-	 * concatenated and passed to a message digest. It returns the last six
-	 * bytes of the resulting hash.
+	 * system, java virtual machine, network details, system resources and an
+	 * optional salt. These information are concatenated and passed to a message
+	 * digest. It returns the last six bytes of the resulting hash.
 	 * 
 	 * ### RFC-4122 - 4.5. Node IDs that Do Not Identify the Host
 	 * 
@@ -46,8 +46,7 @@ public class SystemDataUtil {
 	 * digest such as MD5 [4] or SHA-1 [8], take an arbitrary 6 bytes from the
 	 * hash value, and set the multicast bit as described above.
 	 * 
-	 * @param salt
-	 *            an arbitrary string to change the final hash
+	 * @param salt an optional arbitrary string to change the final hash
 	 * @return a system identifier
 	 */
 	public static long getSystemId(String salt) {
@@ -57,11 +56,11 @@ public class SystemDataUtil {
 	}
 
 	/**
-	 * Returns a hash string generated from all the system data concatenated:
-	 * OS + JVM + Network + Resources + SALT.
+	 * Returns a hash string generated from all the system data: OS + JVM +
+	 * network details + system resources + SALT.
 	 * 
 	 * @param salt
-	 *            an arbitrary string to change the final hash
+	 *            an optional arbitrary string to change the final hash
 	 * @return a string
 	 */
 	public static String getSystemDataHash(String salt) {
@@ -71,7 +70,7 @@ public class SystemDataUtil {
 		String os = getOperatingSystem();
 		String jvm = getJavaVirtualMachine();
 		String net = getNetwork();
-		String res =  getResources();
+		String res = getResources();
 		String string = String.join(" ", os, jvm, net, res, salt);
 
 		byte[] bytes = string.getBytes();
@@ -112,17 +111,24 @@ public class SystemDataUtil {
 		long memory = getMaxMemory();
 		return String.join(" ", procs + " processors ", memory + " bytes");
 	}
-	
+
 	public static int getAvailableProcessors() {
 		return Runtime.getRuntime().availableProcessors();
 	}
-	
+
 	public static long getMaxMemory() {
 		return Runtime.getRuntime().maxMemory();
 	}
-	
+
 	/**
 	 * Returns a string of the network details.
+	 * 
+	 * It's done in three two steps:
+	 * 
+	 * 1. it tries to find the network data associated with the host name;
+	 * 
+	 * 2. otherwise, it iterates throw all interfaces to return the first one
+	 * that is up and running.
 	 * 
 	 * @return a string
 	 */
@@ -140,12 +146,14 @@ public class SystemDataUtil {
 		if (networkData == null) {
 			return null;
 		}
-		
+
 		return networkData.toString();
 	}
 
 	/**
-	 * Returns a {@link NetworkData}
+	 * Returns a {@link NetworkData}.
+	 * 
+	 * This method returns the network data associated to the host name.
 	 * 
 	 * @return a {@link NetworkData}
 	 */
@@ -161,11 +169,13 @@ public class SystemDataUtil {
 	}
 
 	/**
-	 * Returns a list of {@link NetworkData}
+	 * Returns a list of {@link NetworkData}.
 	 * 
-	 * This method iterates over all the network interfaces. It may be VERY
-	 * EXPENSIVE on Windows systems, because it creates a lot of virtual network
-	 * interfaces.
+	 * This method iterates over all the network interfaces to return those that
+	 * are up and running.
+	 * 
+	 * NOTE: it may be VERY EXPENSIVE on Windows systems, because it creates a
+	 * lot of virtual network interfaces.
 	 * 
 	 * @return a list of {@link NetworkData}
 	 */

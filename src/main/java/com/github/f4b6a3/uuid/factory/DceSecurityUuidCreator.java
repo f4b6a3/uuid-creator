@@ -25,7 +25,9 @@ import com.github.f4b6a3.uuid.sequence.AbstractSequence;
 
 /**
  * 
- * Factory that creates DCE Security UUIDs, version 2.
+ * Factory that creates DCE Security UUIDs.
+ * 
+ * RFC-4122 version: 2.
  * 
  * <pre>
  * Standard local domains: 

@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 
 import java.util.UUID;
 
-public class RandomTest {
+public class NaiveRandomTest {
 
 	private static final int DEFAULT_LOOP_LIMIT = 10_000;
 	

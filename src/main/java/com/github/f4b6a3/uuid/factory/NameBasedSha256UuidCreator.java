@@ -23,10 +23,11 @@ import com.github.f4b6a3.uuid.factory.abst.AbstractNameBasedUuidCreator;
 public class NameBasedSha256UuidCreator extends AbstractNameBasedUuidCreator {
 
 	/**
-	 * Factory that creates name based UUIDs with SHA-256, version 4 (number
-	 * borrowed from random version).
+	 * Factory that creates name based UUIDs with SHA-256,
+	 * 
+	 * RFC-4122 version: 4 (number borrowed from the random-based version).
 	 */
 	public NameBasedSha256UuidCreator() {
 		super(UuidVersion.RANDOM_BASED, MESSAGE_DIGEST_SHA256);
-	}	
+	}
 }

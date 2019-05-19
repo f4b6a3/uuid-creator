@@ -48,7 +48,7 @@ public abstract class AbstractUuidCreator {
 	}
 	
 	/**
-	 * Check if the {@link UUID} to been created is valid.
+	 * Check if the {@link UUID} is valid.
 	 * 
 	 * It checks whether the variant and version are correct.
 	 * 

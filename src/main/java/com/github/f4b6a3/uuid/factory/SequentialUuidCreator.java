@@ -22,7 +22,9 @@ import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 /**
- * Factory that creates sequential UUIDs, version 0.
+ * Factory that creates sequential UUIDs also known as Ordered UUIDs.
+ * 
+ * RFC-4122 version: 0 (extension).
  * 
  * This version is a 'extension' of the RFC-4122. It leaves the timestamp bits
  * in the 'natural' order, instead of rearranging them as the version 1 does.
@@ -38,7 +40,8 @@ public class SequentialUuidCreator extends AbstractTimeBasedUuidCreator {
 	 * 
 	 * {@link UuidUtil#formatSequentialMostSignificantBits(long)}
 	 * 
-	 * @param timestamp a timestamp
+	 * @param timestamp
+	 *            a timestamp
 	 * @return the MSB
 	 */
 	@Override

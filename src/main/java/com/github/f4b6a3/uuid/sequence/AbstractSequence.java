@@ -18,7 +18,7 @@
 package com.github.f4b6a3.uuid.sequence;
 
 /**
- * This abstract class may represent circular a counter or sequence.
+ * This abstract class represents a circular a counter or sequence.
  * 
  * If the maximum value is reached the value is reset to the minimum.
  */
