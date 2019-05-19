@@ -14,8 +14,8 @@ public class DefaultTimestampStrategyTest {
 		long oldTimestamp = 1000;
 		long newTimestamp = 999;
 		DefaultTimestampStrategy timestampCounter = new DefaultTimestampStrategy();
-		long oldCounter = timestampCounter.getNextForTimestamp(oldTimestamp);
-		long newCounter = timestampCounter.getNextForTimestamp(newTimestamp);
+		long oldCounter = timestampCounter.getNextCounter(oldTimestamp);
+		long newCounter = timestampCounter.getNextCounter(newTimestamp);
 		assertEquals(oldCounter + 1, newCounter);
 
 		// It should increment if the new timestamp is EQUAL TO the old
@@ -23,41 +23,9 @@ public class DefaultTimestampStrategyTest {
 		oldTimestamp = 1000;
 		newTimestamp = 1000;
 		timestampCounter = new DefaultTimestampStrategy();
-		oldCounter = timestampCounter.getNextForTimestamp(oldTimestamp);
-		newCounter = timestampCounter.getNextForTimestamp(newTimestamp);
+		oldCounter = timestampCounter.getNextCounter(oldTimestamp);
+		newCounter = timestampCounter.getNextCounter(newTimestamp);
 		assertEquals(oldCounter + 1, newCounter);
 
 	}
-
-	@Test
-	public void testNextForTheCounterShouldBeZeroIfTheNewTimestampIsGreaterThanTheOldTimestamp() {
-
-		// It should be ZERO if the new timestamp is GREATER THAN the old
-		// timestamp
-		long timestamp = 1000;
-		DefaultTimestampStrategy timestampCounter = new DefaultTimestampStrategy();
-		timestampCounter.getNextForTimestamp(timestamp);
-		long counter = timestampCounter.getNextForTimestamp(timestamp + 1);
-		assertEquals(0, counter);
-		
-	}
-
-	@Test
-	public void testNextForTheCounterShouldBeResetToZeroIfTheNewTimestampIsGreaterThanTheOldTimestamp() {
-
-		// It should be RESET to ZERO if the new timestamp is GREATER THAN the
-		// old timestamp
-		long timestamp = 1000;
-		DefaultTimestampStrategy timestampCounter = new DefaultTimestampStrategy();
-		
-		timestampCounter.getNextForTimestamp(timestamp);
-		long counter = timestampCounter.getNextForTimestamp(timestamp);
-		assertEquals(1, counter);
-		counter = timestampCounter.getNextForTimestamp(timestamp);
-		assertEquals(2, counter);
-		counter = timestampCounter.getNextForTimestamp(timestamp + 1);
-		assertEquals(0, counter);
-
-	}
-
 }

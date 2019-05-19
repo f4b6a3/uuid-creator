@@ -5,24 +5,24 @@ import java.util.Random;
 
 public class RandomUtil {
 
-	private static final Random random = new SecureRandom();
+	private static final Random RANDOM = new SecureRandom();
 	
 	private RandomUtil() {
 	}
 	
 	public static long nextLong() {
-		return random.nextLong();
+		return RANDOM.nextLong();
 	}
 	
 	public static int nextInt(int max) {
-		return random.nextInt(max);
+		return RANDOM.nextInt(max);
 	}
 	
 	public static int nextInt() {
-		return random.nextInt();
+		return RANDOM.nextInt();
 	}
 	
 	public static String nextLongHexadecimal() {
-		return ByteUtil.toHexadecimal(random.nextLong());
+		return ByteUtil.toHexadecimal(RANDOM.nextLong());
 	}
 }

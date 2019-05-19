@@ -1,6 +1,7 @@
 package com.github.f4b6a3.uuid.timestamp;
 
 import com.github.f4b6a3.uuid.sequence.AbstractSequence;
+import com.github.f4b6a3.uuid.util.RandomUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 
 /**
@@ -25,39 +26,47 @@ import com.github.f4b6a3.uuid.util.TimestampUtil;
  *
  */
 public class DefaultTimestampStrategy extends AbstractSequence implements TimestampStrategy {
-
+	
 	protected long previousTimestamp = 0;
 
 	protected static final int COUNTER_MIN = 0;
 	protected static final int COUNTER_MAX = 9_999;
+	
+	protected static final int COUNTER_OFFSET_MAX = 0xff; // 255
 
 	public DefaultTimestampStrategy() {
 		super(COUNTER_MIN, COUNTER_MAX);
+		this.value = RandomUtil.nextInt(COUNTER_OFFSET_MAX);
 	}
 
 	@Override
 	public long getTimestamp() {
 
 		long timestamp = TimestampUtil.getCurrentTimestamp();
-		long counter = getNextForTimestamp(timestamp);
+		long counter = getNextCounter(timestamp);
 
 		// (4) simulate a high resolution timestamp
 		return timestamp + counter;
 	}
 
 	/**
-	 * Get how many times a timestamp.
+	 * Get the next counter value.
 	 * 
 	 * @param timestamp a timestamp
-	 * @return the clock sequence
+	 * @return the next counter value
 	 */
-	protected int getNextForTimestamp(long timestamp) {
-		if (timestamp <= this.previousTimestamp) {
-			return this.next();
+	protected int getNextCounter(long timestamp) {
+		
+		if(timestamp > this.previousTimestamp) {
+			reset();
 		}
 
 		this.previousTimestamp = timestamp;
-		this.value = minValue;
-		return minValue;
+		return this.next();
+	}
+	
+	@Override
+	public void reset() {
+		this.value = (this.value & COUNTER_OFFSET_MAX);
 	}
 }

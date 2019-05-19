@@ -12,8 +12,7 @@ public class DefaultClockSequenceStrategyTest {
 	@Test
 	public void testNextForTheClockSequenceShouldBeIncrementedIfTheNewTimestampIsLowerOrEqualToTheOldTimestamp() {
 
-		// It should increment if the new timestamp is LOWER THAN the old
-		// timestamp
+		// It should increment if the new timestamp is LOWER THAN the old timestamp
 		long oldTimestamp = 1000;
 		long newTimestamp = 999;
 		DefaultClockSequenceStrategy clockSequence = new DefaultClockSequenceStrategy();
@@ -21,8 +20,7 @@ public class DefaultClockSequenceStrategyTest {
 		long newSequence = clockSequence.getClockSequence(newTimestamp, 0);
 		assertEquals(oldSequence + 1, newSequence);
 
-		// It should increment if the new timestamp is EQUAL TO the old
-		// timestamp
+		// It should increment if the new timestamp is EQUAL TO the old timestamp
 		oldTimestamp = 1000;
 		newTimestamp = 1000;
 		clockSequence = new DefaultClockSequenceStrategy();
@@ -34,8 +32,7 @@ public class DefaultClockSequenceStrategyTest {
 	@Test
 	public void testNextForTheClockSequenceShouldNotIncrementIfTheNewTimestampIsGreaterThanTheOldTimestamp() {
 
-		// It should NOT increment if the new timestamp is GREATER THAN the old
-		// timestamp
+		// It should NOT increment if the new timestamp is GREATER THAN the old timestamp
 		long oldTimestamp = 1000;
 		long newTimestamp = 1001;
 		DefaultClockSequenceStrategy clockSequence = new DefaultClockSequenceStrategy();
@@ -43,7 +40,7 @@ public class DefaultClockSequenceStrategyTest {
 		long newSequence = clockSequence.getClockSequence(newTimestamp, 0);
 		assertEquals(oldSequence, newSequence);
 	}
-
+	
 	@Test()
 	public void testNextForTimestampTheLastValueShouldBeEqualToTheFirstValueMinusOne() {
 

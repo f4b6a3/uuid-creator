@@ -25,9 +25,8 @@ public class TimestampUtilTest {
 	@Test
 	public void testGetCurrentTimestamp() {
 	
-		long timestamp1 = getCurrentTimestamp();
 		Instant instant1 = Instant.now();
-		Instant instant2 = TimestampUtil.toInstant(timestamp1);
+		Instant instant2 = TimestampUtil.toInstant(getCurrentTimestamp());
 		
 		assertEquals(instant1, instant2);
 	}

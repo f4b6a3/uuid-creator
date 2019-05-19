@@ -93,7 +93,7 @@ public class UuidUtil {
 		int version = uuid.version();
 		return (version == 2);
 	}
-
+	
 	/**
 	 * Get the node identifier that is embedded in the UUID.
 	 *
@@ -257,6 +257,35 @@ public class UuidUtil {
 	public static Instant extractDceSecurityInstant(UUID uuid) {
 		long timestamp = extractDceSecurityTimestamp(uuid);
 		return TimestampUtil.toInstant(timestamp);
+	}
+	
+
+	/**
+	 * Get the array of bytes from a UUID.
+	 * 
+	 * @param uuid an UUID
+	 * @return an array of bytes
+	 */
+	public static byte[] fromUuidToBytes(UUID uuid) {
+		long msb = uuid.getMostSignificantBits();
+		long lsb = uuid.getLeastSignificantBits();
+		byte[] msbBytes = ByteUtil.toBytes(msb);
+		byte[] lsbBytes = ByteUtil.toBytes(lsb);
+		return ByteUtil.concat(msbBytes, lsbBytes);
+	}
+	
+	/**
+	 * Get a UUID from an array of bytes;
+	 * 
+	 * @param bytes an array of bytes
+	 * @return a UUID
+	 */
+	public static UUID fromBytesToUuid(byte[] bytes) {
+		byte[] msbBytes = ByteUtil.copy(bytes, 0, 8);
+		byte[] lsbBytes = ByteUtil.copy(bytes, 8, 16);
+		long msb = ByteUtil.toNumber(msbBytes);
+		long lsb = ByteUtil.toNumber(lsbBytes);
+		return new UUID(msb, lsb);
 	}
 
 	/**

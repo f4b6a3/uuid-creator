@@ -1,19 +1,14 @@
 package com.github.f4b6a3.uuid.state;
 
-import java.util.UUID;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.clockseq.DefaultClockSequenceStrategy;
-import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.util.ByteUtil;
 import com.github.f4b6a3.uuid.util.SettingsUtil;
-import com.github.f4b6a3.uuid.util.UuidUtil;
 
 public class UuidStateTest {
 
@@ -50,9 +45,7 @@ public class UuidStateTest {
 		this.state.setNodeIdentifier(NODEID);
 		
 		DefaultClockSequenceStrategy clockSequenceStrategy = new DefaultClockSequenceStrategy(this.timestamp, NODEID, this.state);
-		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator().withClockSequenceStrategy(clockSequenceStrategy);
-		UUID uuid = creator.create();
-		long clockseq = UuidUtil.extractClockSequence(uuid);
+		long clockseq = clockSequenceStrategy.current();
 		assertEquals(ByteUtil.toHexadecimal(CLOCKSEQ + 1L), ByteUtil.toHexadecimal(clockseq));
 	}
 	
@@ -66,9 +59,7 @@ public class UuidStateTest {
 		this.state.setNodeIdentifier(NODEID + 1);
 		
 		DefaultClockSequenceStrategy clockSequenceStrategy = new DefaultClockSequenceStrategy(this.timestamp, NODEID, this.state);
-		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator().withClockSequenceStrategy(clockSequenceStrategy);
-		UUID uuid = creator.create();
-		long clockseq = UuidUtil.extractClockSequence(uuid);
+		long clockseq = clockSequenceStrategy.current();
 		assertEquals(ByteUtil.toHexadecimal(CLOCKSEQ + 1L), ByteUtil.toHexadecimal(clockseq));
 	}
 
@@ -78,9 +69,7 @@ public class UuidStateTest {
 		this.state.setValid(false);
 		
 		DefaultClockSequenceStrategy clockSequenceStrategy = new DefaultClockSequenceStrategy(this.timestamp, NODEID, this.state);
-		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator().withClockSequenceStrategy(clockSequenceStrategy);
-		UUID uuid = creator.create();
-		long clockseq = UuidUtil.extractClockSequence(uuid);
+		long clockseq = clockSequenceStrategy.current();
 		
 		assertNotEquals(ByteUtil.toHexadecimal(0), ByteUtil.toHexadecimal(clockseq));
 	}
@@ -89,9 +78,7 @@ public class UuidStateTest {
 	public void clockSequenceShouldNotBeIqualToZeroIfStateFileIsDesabled() {
 		
 		DefaultClockSequenceStrategy clockSequenceStrategy = new DefaultClockSequenceStrategy(this.timestamp, NODEID, this.state);
-		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator().withClockSequenceStrategy(clockSequenceStrategy);
-		UUID uuid = creator.create();
-		long clockseq = UuidUtil.extractClockSequence(uuid);
+		long clockseq = clockSequenceStrategy.current();
 		
 		assertNotEquals(ByteUtil.toHexadecimal(0), ByteUtil.toHexadecimal(clockseq));
 	}
@@ -106,9 +93,7 @@ public class UuidStateTest {
 		this.state.setNodeIdentifier(NODEID);
 		
 		DefaultClockSequenceStrategy clockSequenceStrategy = new DefaultClockSequenceStrategy(this.timestamp, NODEID, this.state);
-		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator().withClockSequenceStrategy(clockSequenceStrategy);
-		UUID uuid = creator.create();
-		long clockseq = UuidUtil.extractClockSequence(uuid);
+		long clockseq = clockSequenceStrategy.current();
 		
 		assertEquals(ByteUtil.toHexadecimal(CLOCKSEQ), ByteUtil.toHexadecimal(clockseq));
 	}

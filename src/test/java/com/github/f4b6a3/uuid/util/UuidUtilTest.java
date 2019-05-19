@@ -92,6 +92,25 @@ public class UuidUtilTest {
 	}
 
 	@Test
+	public void testFromUuidToBytes() {
+		UUID uuid1 = UuidCreator.getTimeBased();
+		byte[] bytes = UuidUtil.fromUuidToBytes(uuid1);
+		long msb = ByteUtil.toNumber(ByteUtil.copy(bytes, 0, 8));
+		long lsb = ByteUtil.toNumber(ByteUtil.copy(bytes, 8, 16));
+		UUID uuid2 = new UUID(msb, lsb);
+		assertEquals(uuid1, uuid2);
+	}
+
+	@Test
+	public void testFromBytesToUuid() {
+		UUID uuid1 = UuidCreator.getTimeBased();
+		byte[] bytes = UuidUtil.fromUuidToBytes(uuid1);
+		UUID uuid2 = UuidUtil.fromBytesToUuid(bytes);
+		assertEquals(uuid1, uuid2);
+	}
+
+	
+	@Test
 	public void testExtractDceSecurityTimestamp() {
 
 		byte localDomain = (byte) 42;

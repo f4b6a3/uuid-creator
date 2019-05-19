@@ -24,7 +24,7 @@ public class StoppedDefaultTimestampStrategy extends DefaultTimestampStrategy {
 	public long getTimestamp() {
 
 		long timestamp = TimestampUtil.toTimestamp(Instant.now(stoppedClock));
-		long counter = getNextForTimestamp(timestamp);
+		long counter = getNextCounter(timestamp);
 
 		return timestamp + counter;
 	}
