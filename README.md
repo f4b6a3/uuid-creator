@@ -16,7 +16,7 @@ Standard UUIDs:
 Non-standard UUIDs:
 
 * __Fast Random__: a pseudo-randomly generated version that uses a fast RNG;
-* __Sequential:__ a modified time-based version that doesn't change the timestamp byte order;
+* __Sequential:__ a modified time-based version that is also known as Ordered UUID;
 * __Sequential with MAC:__ a sequential version with hardware address;
 * __Name-based SHA-256:__ a base-named version that uses SHA-256;
 * __MSSQL Guid:__ a modified time-based version that changes the timestamp byte order for MSSQL Server database;
@@ -57,14 +57,14 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>1.2.4</version>
+  <version>1.2.5</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/uuid-creator).
 
 ### Sequential (version 0, non-standard)
 
-The sequential UUID is a modified time-based UUID. The timestamp bits in this version are not rearranged as in the time-based version 1. It is an extension of the [RFC-4122](https://tools.ietf.org/html/rfc4122).
+The sequential UUID is a modified time-based UUID that is also known as Ordered UUID <sup>[4]</sup> <sup>[5]</sup>. The timestamp bits in this version are not rearranged as in the time-based version 1. It is an extension of the [RFC-4122](https://tools.ietf.org/html/rfc4122). 
 
 ```java
 // Sequential
@@ -443,7 +443,7 @@ The clock sequence helps to avoid duplicates. It comes in when the system clock 
 
 The first bits of the clock sequence are multiplexed with the variant number of the RFC-4122. Because of that, it has a range from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards. 
 
-With the incrementing clock sequence, the limit of UUIDs created at the same second rises to 163,840,000,000 at a single host machine, since the clock sequence range is 16,384 and the timestamp resolution is 10,000,000. So the fastest generation rate is 163 billion UUIDs per second per node identifier.
+With the incrementing clock sequence, the _theoretical limit_ of UUIDs created per second rises to 163,840,000,000 at a single host machine, since the clock sequence range is 16,384 and the timestamp resolution is 10,000,000. So the theoretical fastest generation rate is 163 billion UUIDs per second per node identifier.
 
 This implementation generates _well distributed clock sequences_ in the case that there are many instances of the `AbstractTimeBasedUuidCreator` running in parallel. This is done to avoid more than one instance using the same clock sequence. To assure that the clock sequence values won't be repeated and will be distant enough from the other values, it uses an algorithm created for this purpose: the `CyclicDistributor`. We could just use a random clock sequence every time a generator is instantiated, but there's a small risk of the same clock sequence being given to more than one generator. The cyclic distributor reduces this risk to ZERO with up to 16 thousand parallel generators. Besides, there's a risk of an incremented clock sequence conflicting with the clock sequence of another generator. The cyclic distributor hands out a value as distant as possible from the other values to minimize the risk related to incrementing.
 
@@ -680,27 +680,26 @@ Here is a table showing the results of a simple benchmark using JMH. This implem
 ---------------------------------------------------------------------------------
 Benchmark                                       Mode  Cnt   Score   Error  Units
 ---------------------------------------------------------------------------------
-Benchmark                                       Mode  Cnt   Score   Error  Units
-BenchmarkRunner.EAIO_TimeBasedWithMac             ss  100   6,960 ± 0,599  ms/op
-BenchmarkRunner.JUG_NameBased                     ss  100  40,234 ± 3,409  ms/op
-BenchmarkRunner.JUG_Random                        ss  100  54,829 ± 4,449  ms/op
-BenchmarkRunner.JUG_TimeBased                     ss  100   7,719 ± 0,916  ms/op
-BenchmarkRunner.JUG_TimeBasedWithMAC              ss  100   7,658 ± 0,947  ms/op
-BenchmarkRunner.Java_NameBased                    ss  100  51,298 ± 8,535  ms/op
-BenchmarkRunner.Java_Random                       ss  100  54,596 ± 4,349  ms/op
-BenchmarkRunner.UuidCreator_CombGuid              ss  100  49,012 ± 4,834  ms/op
-BenchmarkRunner.UuidCreator_DceSecurity           ss  100   7,955 ± 1,212  ms/op
-BenchmarkRunner.UuidCreator_DceSecurityWithMac    ss  100   7,960 ± 1,134  ms/op
-BenchmarkRunner.UuidCreator_FastRandom            ss  100   3,184 ± 0,591  ms/op
-BenchmarkRunner.UuidCreator_MssqlGuid             ss  100   7,653 ± 0,935  ms/op
-BenchmarkRunner.UuidCreator_NameBasedMd5          ss  100  43,577 ± 4,424  ms/op
-BenchmarkRunner.UuidCreator_NameBasedSha1         ss  100  52,338 ± 4,488  ms/op
-BenchmarkRunner.UuidCreator_NameBasedSha256       ss  100  71,916 ± 4,108  ms/op
-BenchmarkRunner.UuidCreator_Random                ss  100  46,137 ± 2,364  ms/op
-BenchmarkRunner.UuidCreator_Sequential            ss  100   6,988 ± 0,943  ms/op
-BenchmarkRunner.UuidCreator_SequentialWithMac     ss  100   6,995 ± 0,928  ms/op
-BenchmarkRunner.UuidCreator_TimeBased             ss  100   7,254 ± 0,925  ms/op
-BenchmarkRunner.UuidCreator_TimeBasedWithMac      ss  100   7,235 ± 0,921  ms/op
+BenchmarkRunner.EaioTimeBasedWithMac             ss  100   6,960 ±  0,568  ms/op
+BenchmarkRunner.JavaNameBased                    ss  100  52,877 ± 10,332  ms/op
+BenchmarkRunner.JavaRandom                       ss  100  55,815 ±  5,307  ms/op
+BenchmarkRunner.JugNameBased                     ss  100  40,511 ±  3,015  ms/op
+BenchmarkRunner.JugRandom                        ss  100  54,573 ±  4,134  ms/op
+BenchmarkRunner.JugTimeBased                     ss  100   7,544 ±  0,912  ms/op
+BenchmarkRunner.JugTimeBasedWithMAC              ss  100   7,751 ±  0,924  ms/op
+BenchmarkRunner.UuidCreatorCombGuid              ss  100  47,449 ±  4,698  ms/op
+BenchmarkRunner.UuidCreatorDceSecurity           ss  100   7,775 ±  1,212  ms/op
+BenchmarkRunner.UuidCreatorDceSecurityWithMac    ss  100   7,917 ±  1,129  ms/op
+BenchmarkRunner.UuidCreatorFastRandom            ss  100   3,092 ±  0,548  ms/op
+BenchmarkRunner.UuidCreatorMssqlGuid             ss  100   8,042 ±  0,913  ms/op
+BenchmarkRunner.UuidCreatorNameBasedMd5          ss  100  41,888 ±  3,921  ms/op
+BenchmarkRunner.UuidCreatorNameBasedSha1         ss  100  52,463 ±  4,950  ms/op
+BenchmarkRunner.UuidCreatorNameBasedSha256       ss  100  71,601 ±  4,045  ms/op
+BenchmarkRunner.UuidCreatorRandom                ss  100  47,413 ±  3,164  ms/op
+BenchmarkRunner.UuidCreatorSequential            ss  100   7,123 ±  0,913  ms/op
+BenchmarkRunner.UuidCreatorSequentialWithMac     ss  100   7,280 ±  0,938  ms/op
+BenchmarkRunner.UuidCreatorTimeBased             ss  100   7,378 ±  0,956  ms/op
+BenchmarkRunner.UuidCreatorTimeBasedWithMac      ss  100   7,433 ±  0,965  ms/op
 ---------------------------------------------------------------------------------
 Total time: 00:02:02
 ---------------------------------------------------------------------------------
