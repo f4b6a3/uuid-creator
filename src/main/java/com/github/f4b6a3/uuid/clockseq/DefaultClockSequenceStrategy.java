@@ -185,9 +185,9 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	@Override
 	public int getClockSequence(long timestamp, long nodeIdentifier) {
 		if (timestamp <= this.timestamp) {
-			// (3c) return an error if the clock sequence overruns.
+			// (3c) the system overruns the generator
 			if (this.counter >= SEQUENCE_MAX) {
-				throw new UuidCreatorException("Too many requests.");
+				throw new UuidCreatorException("The system overran the generator by requesting too many UUIDs.");
 			}
 			this.counter++;
 			this.timestamp = timestamp;
@@ -202,7 +202,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	public void reset() {
 		this.value = DistributorLazyHolder.INSTANCE.handOut();
 	}
-	
+
 	protected void storeState() {
 		if (SettingsUtil.isStateEnabled()) {
 			this.state.setNodeIdentifier(nodeIdentifier);
@@ -211,7 +211,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 			this.state.store();
 		}
 	}
-	
+
 	private void addShutdownHook() {
 		// Add a hook for when the program exits or is terminated
 		Runtime.getRuntime().addShutdownHook(new DefaultClockSequenceShutdownHook(this));
@@ -230,7 +230,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 		}
 	}
 
-    private static class DistributorLazyHolder {
-        static final Distributor INSTANCE = new CyclicDistributor(SEQUENCE_MAX + 1);
-    }
+	private static class DistributorLazyHolder {
+		static final Distributor INSTANCE = new CyclicDistributor(SEQUENCE_MAX + 1);
+	}
 }
