@@ -709,6 +709,13 @@ This benchmark was executed in a machine Intel i5-3330 with 8GB RAM.
 
 You can find the benchmark source code at [uuid-creator-benchmark](https://github.com/fabiolimace/uuid-creator-benchmark).
 
+Related projects
+------------------------------------------------------
+
+* [uuid-creator-benchmark](https://github.com/fabiolimace/uuid-creator-benchmark).
+
+* [uuid-creator-database](https://github.com/fabiolimace/uuid-creator-database).
+
 References
 ------------------------------------------------------
 
