@@ -24,6 +24,7 @@ import java.util.UUID;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
+import com.github.f4b6a3.uuid.factory.abst.NoArgumentsUuidCreator;
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.uuid.random.XorshiftRandom;
 
@@ -41,7 +42,7 @@ import com.github.f4b6a3.uuid.random.XorshiftRandom;
  * browsers.
  * 
  */
-public class RandomUuidCreator extends AbstractUuidCreator {
+public class RandomUuidCreator extends AbstractUuidCreator implements NoArgumentsUuidCreator {
 
 	private Random random;
 

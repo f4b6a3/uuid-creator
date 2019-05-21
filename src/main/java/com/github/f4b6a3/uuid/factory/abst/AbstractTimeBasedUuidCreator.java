@@ -35,7 +35,7 @@ import com.github.f4b6a3.uuid.util.SettingsUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
-public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator {
+public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator implements NoArgumentsUuidCreator {
 	
 	protected TimestampStrategy timestampStrategy;
 	protected ClockSequenceStrategy clockSequenceStrategy;
