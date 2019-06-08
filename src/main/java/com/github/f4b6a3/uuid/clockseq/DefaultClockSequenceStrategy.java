@@ -145,7 +145,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	 *             an overrun exception
 	 */
 	@Override
-	public int getClockSequence(long timestamp, long nodeIdentifier) {
+	public int getClockSequence(final long timestamp, final long nodeIdentifier) {
 		if (timestamp <= this.timestamp) {
 			this.timestamp = timestamp;
 			return this.next();

@@ -23,8 +23,8 @@ public class StoppedDefaultTimestampStrategy extends DefaultTimestampStrategy {
 	@Override
 	public long getTimestamp() {
 
-		long timestamp = TimestampUtil.toTimestamp(Instant.now(stoppedClock));
-		long counter = getNextCounter(timestamp);
+		final long timestamp = TimestampUtil.toTimestamp(Instant.now(stoppedClock));
+		final long counter = getNextCounter(timestamp);
 
 		return timestamp + counter;
 	}

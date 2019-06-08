@@ -370,7 +370,7 @@ public class UuidUtil {
 	 * @param timestamp a timestamp
 	 * @return the MSB
 	 */
-	public static long formatSequentialMostSignificantBits(long timestamp) {
+	public static long formatSequentialMostSignificantBits(final long timestamp) {
 
 		long ts = 0x0000000000000000L;
 
@@ -411,7 +411,7 @@ public class UuidUtil {
 	 * @param timestamp a timestamp
 	 * @return the MSB
 	 */
-	public static long formatTimeBasedMostSignificantBits(long timestamp) {
+	public static long formatTimeBasedMostSignificantBits(final long timestamp) {
 
 		long ts = 0x0000000000000000L;
 
@@ -459,7 +459,7 @@ public class UuidUtil {
 	 * @param timestamp a timestamp
 	 * @return the MSB
 	 */
-	public static long formatMssqlMostSignificantBits(long timestamp) {
+	public static long formatMssqlMostSignificantBits(final long timestamp) {
 
 		long ts1 = 0x0000000000000000L;
 		long ts2 = 0x0000000000000000L;

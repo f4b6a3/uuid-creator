@@ -69,7 +69,7 @@ public class TimestampUtil {
 	 * @param instant an instant
 	 * @return a timestamp
 	 */
-	public static long toTimestamp(Instant instant) {
+	public static long toTimestamp(final Instant instant) {
 		return (instant.toEpochMilli() - GREGORIAN_MILLISECONDS) * TIMESTAMP_RESOLUTION;
 	}
 
@@ -79,7 +79,7 @@ public class TimestampUtil {
 	 * @param timestamp a timestamp
 	 * @return an instant
 	 */
-	public static Instant toInstant(long timestamp) {
+	public static Instant toInstant(final long timestamp) {
 		return Instant.ofEpochMilli((timestamp / TIMESTAMP_RESOLUTION) + GREGORIAN_MILLISECONDS);
 	}
 

@@ -21,11 +21,11 @@ public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 */
 	public DefaultNodeIdentifierStrategy() {
 
-		long preferedNodeIdentifier = SettingsUtil.getNodeIdentifier();
+		final long preferedNodeIdentifier = SettingsUtil.getNodeIdentifier();
 		if (preferedNodeIdentifier != 0) {
 			this.nodeIdentifier = preferedNodeIdentifier;
 		} else {
-			String salt = SettingsUtil.getNodeIdentifierSalt();
+			final String salt = SettingsUtil.getNodeIdentifierSalt();
 			this.nodeIdentifier = SystemDataUtil.getSystemId(salt);
 		}
 	}

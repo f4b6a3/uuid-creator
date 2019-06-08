@@ -52,8 +52,8 @@ public class DefaultTimestampStrategy extends AbstractSequence implements Timest
 	@Override
 	public long getTimestamp() {
 
-		long timestamp = TimestampUtil.getCurrentTimestamp();
-		long counter = getNextCounter(timestamp);
+		final long timestamp = TimestampUtil.getCurrentTimestamp();
+		final long counter = getNextCounter(timestamp);
 
 		// (4) simulate a high resolution timestamp
 		return timestamp + counter;
@@ -66,7 +66,7 @@ public class DefaultTimestampStrategy extends AbstractSequence implements Timest
 	 *            a timestamp
 	 * @return the next counter value
 	 */
-	protected int getNextCounter(long timestamp) {
+	protected int getNextCounter(final long timestamp) {
 		if (timestamp > this.previousTimestamp) {
 			reset();
 		}

@@ -143,19 +143,19 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	public synchronized UUID create() {
 
 		// (3a) get the timestamp
-		long timestamp = this.timestampStrategy.getTimestamp();
+		final long timestamp = this.timestampStrategy.getTimestamp();
 
 		// (4a)(5a) get the node identifier
-		long nodeIdentifier = this.nodeIdentifierStrategy.getNodeIdentifier();
+		final long nodeIdentifier = this.nodeIdentifierStrategy.getNodeIdentifier();
 
 		// (5a)(6a) get the sequence value
-		long clockSequence = this.clockSequenceStrategy.getClockSequence(timestamp, nodeIdentifier);
+		final long clockSequence = this.clockSequenceStrategy.getClockSequence(timestamp, nodeIdentifier);
 
 		// (9a) format the most significant bits
-		long msb = this.formatMostSignificantBits(timestamp);
+		final long msb = this.formatMostSignificantBits(timestamp);
 
 		// (9a) format the least significant bits
-		long lsb = this.formatLeastSignificantBits(nodeIdentifier, clockSequence);
+		final long lsb = this.formatLeastSignificantBits(nodeIdentifier, clockSequence);
 
 		// (9a) format a UUID from the MSB and LSB
 		return new UUID(msb, lsb);

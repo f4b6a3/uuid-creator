@@ -16,7 +16,7 @@ public class CombClockSequenceStrategy extends AbstractSequence implements Clock
 	}
 
 	@Override
-	public int getClockSequence(long timestamp, long nodeIdentifier) {
+	public int getClockSequence(final long timestamp, final long nodeIdentifier) {
 		if (nodeIdentifier != this.nodeIdentifier) {
 			this.nodeIdentifier = nodeIdentifier;
 			this.reset();

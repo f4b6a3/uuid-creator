@@ -43,7 +43,7 @@ public class TimeBasedUuidCreator extends AbstractTimeBasedUuidCreator {
 	 * @param timestamp a timestamp
 	 */
 	@Override
-	public long formatMostSignificantBits(long timestamp) {
+	public long formatMostSignificantBits(final long timestamp) {
 		return UuidUtil.formatTimeBasedMostSignificantBits(timestamp);
 	}
 }

@@ -31,7 +31,7 @@ public class ByteUtil {
 	 * @param hexadecimal a string
 	 * @return a long
 	 */
-	public static long toNumber(String hexadecimal) {
+	public static long toNumber(final String hexadecimal) {
 		return toNumber(toBytes(hexadecimal));
 	}
 
@@ -41,7 +41,7 @@ public class ByteUtil {
 	 * @param bytes a byte array
 	 * @return a long
 	 */
-	public static long toNumber(byte[] bytes) {
+	public static long toNumber(final byte[] bytes) {
 		long result = 0;
 		for (int i = 0; i < bytes.length; i++) {
 			result = (result << 8) | (bytes[i] & 0xff);
@@ -55,7 +55,7 @@ public class ByteUtil {
 	 * @param number a long value
 	 * @return a byte array
 	 */
-	public static byte[] toBytes(long number) {
+	public static byte[] toBytes(final long number) {
 		return toBytes(number, 8);
 	}
 
@@ -66,7 +66,7 @@ public class ByteUtil {
 	 * @param size the array size
 	 * @return a byte array
 	 */
-	public static byte[] toBytes(long number, int size) {
+	public static byte[] toBytes(final long number, final int size) {
 		byte[] bytes = new byte[size];
 		for (int i = 0; i < bytes.length; i++) {
 			bytes[i] = (byte) (number >>> (8 * ((bytes.length - 1) - i)));
@@ -80,7 +80,7 @@ public class ByteUtil {
 	 * @param hexadecimal a string
 	 * @return a byte array
 	 */
-	public static byte[] toBytes(String hexadecimal) {
+	public static byte[] toBytes(final String hexadecimal) {
 		int len = hexadecimal.length();
 		byte[] bytes = new byte[len / 2];
 		for (int i = 0; i < len; i += 2) {
@@ -95,7 +95,7 @@ public class ByteUtil {
 	 * @param bytes byte array
 	 * @return a string
 	 */
-	public static String toHexadecimal(byte[] bytes) {
+	public static String toHexadecimal(final byte[] bytes) {
 		char[] hexadecimal = new char[bytes.length * 2];
 		for (int i = 0; i < bytes.length; i++) {
 			int v = bytes[i] & 0xFF;
@@ -111,7 +111,7 @@ public class ByteUtil {
 	 * @param number an integer
 	 * @return a string
 	 */
-	public static String toHexadecimal(long number) {
+	public static String toHexadecimal(final long number) {
 		return toHexadecimal(toBytes(number));
 	}
 
@@ -121,7 +121,7 @@ public class ByteUtil {
 	 * @param chr a character
 	 * @return an integer
 	 */
-	public static int fromHexChar(char chr) {
+	public static int fromHexChar(final char chr) {
 
 		if (chr >= 0x61 && chr <= 0x66) {
 			// ASCII codes from 'a' to 'f'
@@ -143,7 +143,7 @@ public class ByteUtil {
 	 * @param number an integer
 	 * @return a char
 	 */
-	public static char toHexChar(int number) {
+	public static char toHexChar(final int number) {
 
 		if (number >= 0x0a && number <= 0x0f) {
 			// ASCII codes from 'a' to 'f'
@@ -163,7 +163,7 @@ public class ByteUtil {
 	 * @param value byte value
 	 * @return a byte array
 	 */
-	public static byte[] array(int length, byte value) {
+	public static byte[] array(final int length, final byte value) {
 		byte[] result = new byte[length];
 		for (int i = 0; i < length; i++) {
 			result[i] = value;
@@ -189,7 +189,7 @@ public class ByteUtil {
 	 * @param end end position
 	 * @return a byte array
 	 */
-	public static byte[] copy(byte[] bytes, int start, int end) {
+	public static byte[] copy(final byte[] bytes, final int start, final int end) {
 
 		byte[] result = new byte[end - start];
 		for (int i = 0; i < result.length; i++) {
@@ -205,7 +205,7 @@ public class ByteUtil {
 	 * @param bytes2 byte array 2
 	 * @return a byte array
 	 */
-	public static byte[] concat(byte[] bytes1, byte[] bytes2) {
+	public static byte[] concat(final byte[] bytes1, final byte[] bytes2) {
 
 		int length = bytes1.length + bytes2.length;
 		byte[] result = new byte[length];
@@ -228,7 +228,7 @@ public class ByteUtil {
 	 * @param index start position
 	 * @return a byte array
 	 */
-	public static byte[] replace(final byte[] bytes, final byte[] replacement, int index) {
+	public static byte[] replace(final byte[] bytes, final byte[] replacement, final int index) {
 
 		byte[] result = new byte[bytes.length];
 
@@ -249,7 +249,7 @@ public class ByteUtil {
 	 * @param bytes2 byte array 2
 	 * @return a boolean
 	 */
-	public static boolean equalArrays(byte[] bytes1, byte[] bytes2) {
+	public static boolean equalArrays(final byte[] bytes1, final byte[] bytes2) {
 		if (bytes1.length != bytes2.length) {
 			return false;
 		}

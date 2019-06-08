@@ -45,7 +45,7 @@ public class SequentialUuidCreator extends AbstractTimeBasedUuidCreator {
 	 * @return the MSB
 	 */
 	@Override
-	public long formatMostSignificantBits(long timestamp) {
+	public long formatMostSignificantBits(final long timestamp) {
 		return UuidUtil.formatSequentialMostSignificantBits(timestamp);
 	}
 }

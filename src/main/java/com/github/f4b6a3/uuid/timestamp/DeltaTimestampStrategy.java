@@ -33,9 +33,9 @@ public class DeltaTimestampStrategy implements TimestampStrategy {
 
 		Instant instant = Instant.now(clock);
 
-		long seconds = ((instant.getEpochSecond() - GREGORIAN_SECONDS)
+		final long seconds = ((instant.getEpochSecond() - GREGORIAN_SECONDS)
 				* (NANOSECONDS_PER_SECOND / TIMESTAMP_RESOLUTION));
-		long milliseconds = instant.getNano() / TIMESTAMP_RESOLUTION;
+		final long milliseconds = instant.getNano() / TIMESTAMP_RESOLUTION;
 
 		return (seconds + milliseconds);
 	}
@@ -78,7 +78,7 @@ public class DeltaTimestampStrategy implements TimestampStrategy {
 
 		protected synchronized long getSystemNanos() {
 
-			long currentNanoseconds = System.nanoTime();
+			final long currentNanoseconds = System.nanoTime();
 
 			if (Math.abs(currentNanoseconds - this.initialNanoseconds) > SYNC_THRESHOLD) {
 				this.sync();

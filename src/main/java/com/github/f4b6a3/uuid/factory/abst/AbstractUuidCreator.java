@@ -56,7 +56,7 @@ public abstract class AbstractUuidCreator {
 	 * @param lsb the LSB
 	 * @return boolean true if valid
 	 */
-	public boolean valid(long msb, long lsb) {
+	public boolean valid(final long msb, final long lsb) {
 		long variantBits = getVariantBits(lsb);
 		long versionBits = getVersionBits(msb);
 		return variantBits == RFC4122_VARIANT_BITS && versionBits == RFC4122_VERSION_BITS[version.getValue()];
@@ -68,7 +68,7 @@ public abstract class AbstractUuidCreator {
 	 * @param lsb the LSB
 	 * @return long the variant number bits
 	 */
-	protected long getVariantBits(long lsb) {
+	protected long getVariantBits(final long lsb) {
 		return (lsb & 0xc000000000000000L);
 	}
 	
@@ -78,7 +78,7 @@ public abstract class AbstractUuidCreator {
 	 * @param lsb the LSB
 	 * @return the LSB with the correct variant bits
 	 */
-	protected long setVariantBits(long lsb) {
+	protected long setVariantBits(final long lsb) {
 		return (lsb & 0x3fffffffffffffffL) | RFC4122_VARIANT_BITS;
 	}
 	
@@ -88,7 +88,7 @@ public abstract class AbstractUuidCreator {
 	 * @param msb the MSB
 	 * @return long version number bits
 	 */
-	protected long getVersionBits(long msb) {
+	protected long getVersionBits(final long msb) {
 		return (msb & 0x000000000000f000L);
 	}
 	
@@ -98,7 +98,7 @@ public abstract class AbstractUuidCreator {
 	 * @param msb the MSB
 	 * @return the MSB
 	 */
-	protected long setVersionBits(long msb) {
+	protected long setVersionBits(final long msb) {
 		return (msb & 0xffffffffffff0fffL) | RFC4122_VERSION_BITS[this.version.getValue()];
 	}
 }
