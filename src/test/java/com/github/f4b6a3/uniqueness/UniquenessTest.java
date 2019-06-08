@@ -83,7 +83,7 @@ public class UniquenessTest {
 			try {
 				thread.join();
 			} catch (InterruptedException e) {
-				// Do nothing 
+				Thread.currentThread().interrupt();
 			}
 		}
 	}
@@ -136,7 +136,7 @@ public class UniquenessTest {
 				}
 
 				// Insert the value in cache, if it does not exist in it.
-				if (!hashSet.add((Long)value)) {
+				if (!hashSet.add((Long) value)) {
 					throw new UuidCreatorException(
 							String.format("[DUPLICATE][Thread %s] %s %s %s%%", id, uuid, i, (int) progress));
 				}

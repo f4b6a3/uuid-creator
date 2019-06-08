@@ -427,7 +427,7 @@ Standard timestamp arrangement
 
 In the standard the bytes of the timestamp are rearranged so that the highest bits are put in the end of the array of bits and the lowest ones in the beginning. The standard _timestamp resolution_ is 1 second divided by 10,000,000. The timestamp is the amount of 100 nanoseconds intervals since 1582-10-15. Since the timestamp has 60 bits, the greatest date and time that can be represented is 5236-03-31T21:21:00.684Z.
 
-In this implementation, the timestamp has milliseconds accuracy, that is, it uses `System.currentTimeMillis()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis()) to get the current milliseconds. An internal counter is used to _simulate_ the standard timestamp resolution of 10 million intervals per second. The counter range is from 0 to 9,999. Every time a request is made at the same millisecond, the counter is increased by 1. Each counter value corresponds to a 100 nanosecond interval. The timestamp is calculated with this formula: MILLISECONDS * 10,000 + COUNTER. The reason this strategy is used is that the JVM may not guarantee[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#nanoTime()) a resolution higher than milliseconds.
+In this implementation, the timestamp has milliseconds accuracy, that is, it uses `System.currentTimeMillis()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis()) to get the current milliseconds. An internal counter is used to _simulate_ the standard timestamp resolution of 10 million intervals per second. The counter range is from 0 to 9,999. Every time a request is made at the same millisecond, the counter is increased by 1. Each counter value corresponds to a 100 nanosecond interval. The timestamp is calculated with this formula: MILLISECONDS * 10,000 + COUNTER. The reason this strategy is used is that the JVM may not guarantee[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#nanoTime()) a resolution higher than milliseconds. 
 
 Two alternate strategies are provided in the case that the default timestamp strategy is not desired: nanoseconds strategy and delta strategy. 
 
@@ -680,26 +680,26 @@ Here is a table showing the results of a simple benchmark using JMH. This implem
 ---------------------------------------------------------------------------------
 Benchmark                                       Mode  Cnt   Score   Error  Units
 ---------------------------------------------------------------------------------
-BenchmarkRunner.EaioTimeBasedWithMac             ss  100   6,960 ±  0,568  ms/op
-BenchmarkRunner.JavaNameBased                    ss  100  52,877 ± 10,332  ms/op
-BenchmarkRunner.JavaRandom                       ss  100  55,815 ±  5,307  ms/op
-BenchmarkRunner.JugNameBased                     ss  100  40,511 ±  3,015  ms/op
-BenchmarkRunner.JugRandom                        ss  100  54,573 ±  4,134  ms/op
-BenchmarkRunner.JugTimeBased                     ss  100   7,544 ±  0,912  ms/op
-BenchmarkRunner.JugTimeBasedWithMAC              ss  100   7,751 ±  0,924  ms/op
-BenchmarkRunner.UuidCreatorCombGuid              ss  100  47,449 ±  4,698  ms/op
-BenchmarkRunner.UuidCreatorDceSecurity           ss  100   7,775 ±  1,212  ms/op
-BenchmarkRunner.UuidCreatorDceSecurityWithMac    ss  100   7,917 ±  1,129  ms/op
-BenchmarkRunner.UuidCreatorFastRandom            ss  100   3,092 ±  0,548  ms/op
-BenchmarkRunner.UuidCreatorMssqlGuid             ss  100   8,042 ±  0,913  ms/op
-BenchmarkRunner.UuidCreatorNameBasedMd5          ss  100  41,888 ±  3,921  ms/op
-BenchmarkRunner.UuidCreatorNameBasedSha1         ss  100  52,463 ±  4,950  ms/op
-BenchmarkRunner.UuidCreatorNameBasedSha256       ss  100  71,601 ±  4,045  ms/op
-BenchmarkRunner.UuidCreatorRandom                ss  100  47,413 ±  3,164  ms/op
-BenchmarkRunner.UuidCreatorSequential            ss  100   7,123 ±  0,913  ms/op
-BenchmarkRunner.UuidCreatorSequentialWithMac     ss  100   7,280 ±  0,938  ms/op
-BenchmarkRunner.UuidCreatorTimeBased             ss  100   7,378 ±  0,956  ms/op
-BenchmarkRunner.UuidCreatorTimeBasedWithMac      ss  100   7,433 ±  0,965  ms/op
+BenchmarkRunner.EaioTimeBasedWithMac             ss  100   6,946 ± 0,533  ms/op
+BenchmarkRunner.JavaNameBased                    ss  100  52,486 ± 9,778  ms/op
+BenchmarkRunner.JavaRandom                       ss  100  54,846 ± 4,672  ms/op
+BenchmarkRunner.JugNameBased                     ss  100  39,635 ± 3,455  ms/op
+BenchmarkRunner.JugRandom                        ss  100  55,042 ± 4,761  ms/op
+BenchmarkRunner.JugTimeBased                     ss  100   7,815 ± 0,970  ms/op
+BenchmarkRunner.JugTimeBasedWithMAC              ss  100   7,827 ± 0,951  ms/op
+BenchmarkRunner.UuidCreatorCombGuid              ss  100  48,273 ± 4,948  ms/op
+BenchmarkRunner.UuidCreatorDceSecurity           ss  100   8,101 ± 1,327  ms/op
+BenchmarkRunner.UuidCreatorDceSecurityWithMac    ss  100   8,358 ± 1,333  ms/op
+BenchmarkRunner.UuidCreatorFastRandom            ss  100   2,973 ± 0,540  ms/op
+BenchmarkRunner.UuidCreatorMssqlGuid             ss  100   8,111 ± 0,967  ms/op
+BenchmarkRunner.UuidCreatorNameBasedMd5          ss  100  42,855 ± 3,826  ms/op
+BenchmarkRunner.UuidCreatorNameBasedSha1         ss  100  52,575 ± 4,795  ms/op
+BenchmarkRunner.UuidCreatorNameBasedSha256       ss  100  71,507 ± 3,846  ms/op
+BenchmarkRunner.UuidCreatorRandom                ss  100  45,711 ± 2,752  ms/op
+BenchmarkRunner.UuidCreatorSequential            ss  100   7,406 ± 0,995  ms/op
+BenchmarkRunner.UuidCreatorSequentialWithMac     ss  100   7,526 ± 1,056  ms/op
+BenchmarkRunner.UuidCreatorTimeBased             ss  100   7,568 ± 1,026  ms/op
+BenchmarkRunner.UuidCreatorTimeBasedWithMac      ss  100   7,591 ± 0,995  ms/op
 ---------------------------------------------------------------------------------
 Total time: 00:02:02
 ---------------------------------------------------------------------------------
