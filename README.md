@@ -441,9 +441,7 @@ You can create any strategy that implements the `TimestampStrategy` in the case 
 
 The clock sequence helps to avoid duplicates. It comes in when the system clock is backwards or when the node identifier changes. It also expands the amount of UUIDs that can be created at the same second. 
 
-The first bits of the clock sequence are multiplexed with the variant number of the RFC-4122. Because of that, it has a range from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards. 
-
-With the incrementing clock sequence, the _theoretical limit_ of UUIDs created per second rises to 163,840,000,000 at a single host machine, since the clock sequence range is 16,384 and the timestamp resolution is 10,000,000. So the theoretical fastest generation rate is 163 billion UUIDs per second per node identifier.
+The first bits of the clock sequence are multiplexed with the variant number of the RFC-4122. Because of that, it has a range from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards.
 
 This implementation generates _well distributed clock sequences_ in the case that there are many instances of the `AbstractTimeBasedUuidCreator` running in parallel. This is done to avoid more than one instance using the same clock sequence. To assure that the clock sequence values won't be repeated and will be distant enough from the other values, it uses an algorithm created for this purpose: the `CyclicDistributor`. We could just use a random clock sequence every time a generator is instantiated, but there's a small risk of the same clock sequence being given to more than one generator. The cyclic distributor reduces this risk to ZERO with up to 16 thousand parallel generators. Besides, there's a risk of an incremented clock sequence conflicting with the clock sequence of another generator. The cyclic distributor hands out a value as distant as possible from the other values to minimize the risk related to incrementing.
 
@@ -474,7 +472,7 @@ Don't enable the state file if you want to use multiple instances of UUID genera
 
 #### Node identifier
 
-The node identifier is an IEEE 802 MAC address, usually the host machine address. But the standard allows the usage of a random generated value or a system data hash if no address is available, or if the usage of MAC address is not desired. 
+The node identifier is an IEEE 802 MAC address, usually the host machine address. But if no address is available or if the usage of MAC address is not desired, the standard allows the usage of a random generated value or a system data hash . 
 
 In this implementation, the default behavior is to use a _system data hash_ (SHA-256). The data used are: operating system, java virtual machine, network and resources available. It's like a device identifier based on its hardware and software configurations. The specification recommends to accumulate _as many sources as possible_ into a buffer to generate the hash value. Note that if one of these data changes, the node identifier also changes. So _the resulting node identifier is as unique and mutable as the host machine settings_.
 
