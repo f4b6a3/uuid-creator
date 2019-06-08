@@ -427,7 +427,7 @@ Standard timestamp arrangement
 
 In the standard the bytes of the timestamp are rearranged so that the highest bits are put in the end of the array of bits and the lowest ones in the beginning. The standard _timestamp resolution_ is 1 second divided by 10,000,000. The timestamp is the amount of 100 nanoseconds intervals since 1582-10-15. Since the timestamp has 60 bits, the greatest date and time that can be represented is 5236-03-31T21:21:00.684Z.
 
-In this implementation, the timestamp has milliseconds accuracy, that is, it uses `System.currentTimeMillis()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis()) to get the current milliseconds. An internal counter is used to _simulate_ the standard timestamp resolution of 10 million intervals per second. The counter range is from 0 to 9,999. Every time a request is made at the same millisecond, the counter is increased by 1. Each counter value corresponds to a 100 nanosecond interval. The timestamp is calculated with this formula: MILLISECONDS * 10,000 + COUNTER. The reason this strategy is used is that the JVM may not guarantee[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#nanoTime()) a resolution higher than milliseconds. 
+In this implementation, the timestamp has milliseconds accuracy, that is, it uses `System.currentTimeMillis()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis()) to get the current milliseconds. An internal _counter_ is used to _simulate_ the standard timestamp resolution of 10 million intervals per second. The reason this strategy is used is that the JVM may not guarantee[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#nanoTime()) a resolution higher than milliseconds.
 
 Two alternate strategies are provided in the case that the default timestamp strategy is not desired: nanoseconds strategy and delta strategy. 
 
@@ -436,6 +436,35 @@ The nanoseconds strategy uses `Instant.getNano()`[<sup>&#x2197;</sup>](https://d
 The delta strategy uses `System.nanoTime()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#nanoTime()). The `DeltaTimestampStrategy` calculates the difference in nanoseconds between two calls to the `getTimestamp()` method. This difference is used to figure out the current timestamp in nanoseconds. As you can see, it is not precise, but it's an alternate option if you really need nanoseconds resolution.
 
 You can create any strategy that implements the `TimestampStrategy` in the case that none of the strategies provided suffices.
+
+##### Counter
+
+The counter range is from 0 to 9,999. Every time a request is made at the same millisecond, the counter is increased by 1. Each counter value corresponds to a 100 nanosecond interval. The timestamp is calculated with this formula: MILLISECONDS * 10,000 + COUNTER. 
+
+The timestamp counter is not instantiated with ZERO, but with a random number between 0 and 255. The 8 least significant bits of the counter are random. Every time a new counter value is required, this number is incremented by 1. When the limit of 9,999 is reached within the same interval, the counter is restarted to ZERO and an exception is raised. The first counter value for the next interval is the least 8 significant bits of the previous counter value.
+
+The random trailing 8 bits are to avoid two generators to create UUIDs with the same timestamp bits. The clock sequence helps a lot avoiding duplicates, but these random bits reduce a little more the probability of duplicates.
+
+For example, instead of having a timestamp like 137793212122770000, the UUIDs will have a something like 137793212122770042. Note that the trailing 4 digits 0000 are initiated with 0042. These 4 digits are filled with the counter. The next timestamp will not be 137793212122770001, but 137793212122770043. And it continues until the timestamp reaches 137793212122779999. The next time, the timestamp will be back to 137793212122770000 and an exception will be thrown to the programmer decide what to do with it. 
+
+##### Overrun exception
+
+The overrun exception is thrown when too many requests are made within the same millisecond interval. If the timestamp counter reaches the maximum of 10,000 (0 to 9,999), it is restarted to ZERO and an exception is thrown to the developer decide how to handle it.
+
+The exception is raised to comply the RFC-4122, that requires:
+
+```text
+   If a system overruns the generator by requesting too many UUIDs
+   within a single system time interval, the UUID service MUST either
+   return an error, or stall the UUID generator until the system clock
+   catches up.
+```
+
+The approach that stalls the generator until the system clock catches up seems to be a bottleneck. So the error approach was chosen. And an error is an `Exception` in the Java world.
+
+The `UuidCreator` class already deal with the overrun exception in the methods that return UUID values. The exception is just _ignored_. For example, if the programmer uses the method `UuidCreator.getSequential()` more than 9,999 times within the same interval of 1 millisecond, the exception won't be raised to him. Instead the method will return the next UUID value as if nothing had happened. This choice was made because the clock sequence helps a lot to avoid duplicates. In my opinion it's more pragmatic to trust in the clock sequence, since the application won't request more than 163 million UUIDs per millisecond interval. The theoretical limit of UUIDs created per millisecond interval is 163,840,000, since the clock sequence range is 16,384 and the counter range is 10,000.
+
+If you prefer to use the factory classes directly, for example, getting the factory `SequentialUuidCreator` by calling the method `UuidCreator.getSequentialCreator()`, you can choose the best way to treat the overrun exception. This project was conceived with _freedom of choice_ in mind.
 
 #### Clock sequence
 
