@@ -24,6 +24,7 @@ import com.github.f4b6a3.uuid.clockseq.ClockSequenceStrategy;
 import com.github.f4b6a3.uuid.clockseq.DefaultClockSequenceStrategy;
 import com.github.f4b6a3.uuid.clockseq.FixedClockSequenceStrategy;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
+import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.nodeid.DefaultNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.FixedNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.MacNodeIdentifierStrategy;
@@ -135,7 +136,9 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * (9a) Format a UUID from the current timestamp, clock sequence, and node
 	 * ID values according to the steps in Section 4.2.2.
 	 * 
-	 * @return {@link UUID}
+	 * @return {@link UUID} a UUID value
+	 * @throws UuidCreatorException
+	 *             if the system overruns the generator by requesting too many UUIDs.
 	 */
 	public synchronized UUID create() {
 

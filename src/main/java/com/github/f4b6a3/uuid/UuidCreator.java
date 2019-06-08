@@ -33,6 +33,10 @@ import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 
 /**
  * Facade to the UUID factories.
+ * 
+ * The methods that return time-based, sequential, DCE security and MSSQL UUIDs
+ * handle the overrun exceptions stalling the generator for 1 millisecond, if
+ * the system overruns the generator by requesting too many UUIDs.
  */
 public class UuidCreator {
 
