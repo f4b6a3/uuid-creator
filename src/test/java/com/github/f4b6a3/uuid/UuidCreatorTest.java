@@ -10,9 +10,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import com.github.f4b6a3.uniqueness.UniquenessTest;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
-import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.factory.CombGuidCreator;
 import com.github.f4b6a3.uuid.factory.MssqlGuidCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedMd5UuidCreator;
@@ -40,7 +40,9 @@ public class UuidCreatorTest {
 	private static final int COUNTER_OFFSET_MAX = 0xff; // 255
 
 	private static final String UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
-	private static final String DUPLICATE_UUID = "A duplicate UUID was created";
+
+	private static final String DUPLICATE_UUID_MSG = "A duplicate UUID was created";
+	private static final String CLOCK_SEQUENCE_MSG = "The last clock sequence should be equal to the first clock sequence minus 1";
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -58,7 +60,7 @@ public class UuidCreatorTest {
 
 		UUID[] list = new UUID[loopLimit];
 		SequentialUuidCreator creator = UuidCreator.getSequentialCreator();
-		
+
 		long startTime = System.currentTimeMillis();
 
 		for (int i = 0; i < loopLimit; i++) {
@@ -161,7 +163,7 @@ public class UuidCreatorTest {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
 		NameBasedSha256UuidCreator creator = UuidCreator.getNameBasedSha256Creator();
-		
+
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = creator.create(UuidNamespace.NAMESPACE_URL.getValue(), "url" + i);
 		}
@@ -412,11 +414,19 @@ public class UuidCreatorTest {
 		UUID uuid4 = UuidCreator.getNameBasedSha256(name);
 		assertEquals(uuid3, uuid4);
 	}
-
+	
+	@Test
+	public void testUniquenesWithParallelThreadsMakingRequestingToASingleGenerator() {
+		boolean verbose = false;
+		int threadCount = 16; // Number of threads to run
+		int requestCount = 100_000; // Number of requests for thread
+		UniquenessTest.execute(verbose, threadCount, requestCount);
+	}
+	
 	@Test
 	public void testGetTimeBasedShouldCreateAboutSixteenThousandUniqueUuidsWithTheTimeStopped() {
 
-		int clockSequenceRange = 0x3fff + 1; // 16,384
+		int max = 0x3fff + 1; // 16,384
 		Instant stoppedTime = Instant.now();
 		HashSet<UUID> set = new HashSet<>();
 
@@ -424,28 +434,31 @@ public class UuidCreatorTest {
 		// rate greater than 16,384 per 100-nanosecond interval.
 		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator().withInstant(stoppedTime);
 
+		int firstClockSeq = 0;
+		int lastClockSeq = 0;
+
 		// Try to create 16,384 unique UUIDs
-		for (int i = 0; i < clockSequenceRange; i++) {
+		for (int i = 0; i < max; i++) {
+			UUID uuid = creator.create();
+			if (i == 0) {
+				firstClockSeq = UuidUtil.extractClockSequence(uuid);
+			} else if (i == max - 1) {
+				lastClockSeq = UuidUtil.extractClockSequence(uuid);
+			}
 			// Fail if the insertion into the hash set returns false, indicating
 			// that there's a duplicate UUID.
-			assertTrue(DUPLICATE_UUID, set.add(creator.create()));
+			assertTrue(DUPLICATE_UUID_MSG, set.add(uuid));
 		}
 
-		assertTrue(DUPLICATE_UUID, set.size() == clockSequenceRange);
+		assertTrue(DUPLICATE_UUID_MSG, set.size() == max);
 
-		try {
-			creator.create();
-			fail("The overrun exception must be thrown");
-		} catch (UuidCreatorException e) {
-			// The factory must throw an exception if the maximum clock sequence
-			// is reached.
-		}
+		assertTrue(CLOCK_SEQUENCE_MSG, (firstClockSeq - 1) % max == lastClockSeq % max);
 	}
 
 	@Test
 	public void testGetSequentialShouldCreateAboutSixteenThousandUniqueUuidsWithTheTimeStopped() {
 
-		int clockSequenceRange = 0x3fff + 1; // 16,384
+		int max = 0x3fff + 1; // 16,384
 		Instant stoppedTime = Instant.now();
 		HashSet<UUID> set = new HashSet<>();
 
@@ -453,22 +466,25 @@ public class UuidCreatorTest {
 		// rate greater than 16,384 per 100-nanosecond interval.
 		SequentialUuidCreator creator = UuidCreator.getSequentialCreator().withInstant(stoppedTime);
 
+		int firstClockSeq = 0;
+		int lastClockSeq = 0;
+
 		// Try to create 16,384 unique UUIDs
-		for (int i = 0; i < clockSequenceRange; i++) {
+		for (int i = 0; i < max; i++) {
+			UUID uuid = creator.create();
+			if (i == 0) {
+				firstClockSeq = UuidUtil.extractClockSequence(uuid);
+			} else if (i == max - 1) {
+				lastClockSeq = UuidUtil.extractClockSequence(uuid);
+			}
 			// Fail if the insertion into the hash set returns false, indicating
 			// that there's a duplicate UUID.
-			assertTrue(DUPLICATE_UUID, set.add(creator.create()));
+			assertTrue(DUPLICATE_UUID_MSG, set.add(uuid));
 		}
 
-		assertTrue(DUPLICATE_UUID, set.size() == clockSequenceRange);
+		assertTrue(DUPLICATE_UUID_MSG, set.size() == max);
 
-		try {
-			creator.create();
-			fail("The overrun exception must be thrown");
-		} catch (UuidCreatorException e) {
-			// The factory must throw an exception if the maximum clock sequence
-			// is reached.
-		}
+		assertTrue(CLOCK_SEQUENCE_MSG, (firstClockSeq - 1) % max == lastClockSeq % max);
 	}
 
 	@Test
@@ -489,7 +505,7 @@ public class UuidCreatorTest {
 		}
 
 		// Check if the quantity of unique UUIDs is correct
-		assertTrue(DUPLICATE_UUID, TestThread.hashSet.size() == (DEFAULT_LOOP_MAX * processors));
+		assertTrue(DUPLICATE_UUID_MSG, TestThread.hashSet.size() == (DEFAULT_LOOP_MAX * processors));
 	}
 
 	@Test
@@ -510,13 +526,14 @@ public class UuidCreatorTest {
 		}
 
 		// Check if the quantity of unique UUIDs is correct
-		assertTrue(DUPLICATE_UUID, TestThread.hashSet.size() == (DEFAULT_LOOP_MAX * processors));
+		assertTrue(DUPLICATE_UUID_MSG, TestThread.hashSet.size() == (DEFAULT_LOOP_MAX * processors));
 	}
 
 	@Test
 	public void testCreateTimeBasedUuidTheGreatestDateAndTimeShouldBeAtYear5236() {
-		
-		// Check if the greatest 60 bit timestamp corresponds to the date and time
+
+		// Check if the greatest 60 bit timestamp corresponds to the date and
+		// time
 		long timestamp0 = 0x0fffffffffffffffL;
 		Instant instant0 = Instant.parse("5236-03-31T21:21:00.684Z");
 		assertEquals(TimestampUtil.toInstant(timestamp0), instant0);

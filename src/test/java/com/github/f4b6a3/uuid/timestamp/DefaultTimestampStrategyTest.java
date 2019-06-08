@@ -2,6 +2,9 @@ package com.github.f4b6a3.uuid.timestamp;
 
 import org.junit.Test;
 
+import com.github.f4b6a3.uuid.exception.UuidCreatorException;
+import com.github.f4b6a3.uuid.util.TimestampUtil;
+
 import static org.junit.Assert.*;
 
 public class DefaultTimestampStrategyTest {
@@ -25,5 +28,28 @@ public class DefaultTimestampStrategyTest {
 		newCounter = timestampCounter.getNextCounter(newTimestamp);
 		assertEquals(oldCounter + 1, newCounter);
 
+	}
+	
+	@Test(expected = UuidCreatorException.class)
+	public void testNextCounterAnOverrunExceptionShouldBeThrown() {
+
+		long timestamp = TimestampUtil.getCurrentTimestamp();
+		DefaultTimestampStrategy timestampStrategy = new DefaultTimestampStrategy();
+		
+		int offset = timestampStrategy.getNextCounter(timestamp);
+		int max = DefaultTimestampStrategy.COUNTER_MAX - offset;
+		
+		try {
+			// Generate MAX values
+			for (int i = 0; i < max; i++) {
+				timestampStrategy.getNextCounter(timestamp);
+			}
+		} catch (UuidCreatorException e) {
+			// fail if the exception is thrown before the maximum value
+			fail("Overrun exception thrown before the maximum value is reached.");
+		}
+		
+		// It should throw an exception now
+		timestampStrategy.getNextCounter(timestamp);
 	}
 }

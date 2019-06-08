@@ -33,9 +33,6 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	private long timestamp = 0;
 	private long nodeIdentifier = 0;
 
-	// keeps count of values returned
-	private int counter = 0;
-
 	protected AbstractUuidState state;
 
 	protected static final int SEQUENCE_MIN = 0x0000;
@@ -139,12 +136,6 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	 * just be incremented; otherwise it should be set to a random or
 	 * high-quality pseudo-random value.
 	 * 
-	 * ### RFC-4122 - 4.2.1.2. System Clock Resolution
-	 * 
-	 * (3c) If a system overruns the generator by requesting too many UUIDs
-	 * within a single system time interval, the UUID service MUST either return
-	 * an error, or stall the UUID generator until the system clock catches up.
-	 * 
 	 * @param timestamp
 	 *            a timestamp
 	 * @param nodeIdentifier
@@ -156,15 +147,9 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	@Override
 	public int getClockSequence(long timestamp, long nodeIdentifier) {
 		if (timestamp <= this.timestamp) {
-			// (3c) the system overruns the generator
-			if (this.counter >= SEQUENCE_MAX) {
-				throw new UuidCreatorException("The system overran the generator by requesting too many UUIDs.");
-			}
-			this.counter++;
 			this.timestamp = timestamp;
 			return this.next();
 		}
-		counter = 0;
 		this.timestamp = timestamp;
 		return this.current();
 	}

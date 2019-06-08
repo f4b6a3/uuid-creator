@@ -2,7 +2,6 @@ package com.github.f4b6a3.uuid.clockseq;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 
 import static org.junit.Assert.*;
@@ -55,27 +54,5 @@ public class DefaultClockSequenceStrategyTest {
 		}
 
 		assertEquals(first - 1L, last);
-	}
-
-	@Test(expected = UuidCreatorException.class)
-	public void testNextForTimestampAnOverrunExceptionShouldBeThrown() {
-
-		long timestamp = TimestampUtil.getCurrentTimestamp();
-		DefaultClockSequenceStrategy clockSequence = new DefaultClockSequenceStrategy();
-
-		int i = 0;
-		try {
-			// Generate MAX values
-			for (i = 0; i <= DefaultClockSequenceStrategy.SEQUENCE_MAX; i++) {
-				clockSequence.getClockSequence(timestamp, 0);
-			}
-		} catch (UuidCreatorException e) {
-			// fail if the exception is thrown before the maximum value
-			fail("Overrun exception thrown before the maximum value is reached.");
-		}
-
-		// It should throw an exception now
-		clockSequence.getClockSequence(timestamp, 0);
-
 	}
 }

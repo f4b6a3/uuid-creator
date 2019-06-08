@@ -1,5 +1,6 @@
 package com.github.f4b6a3.uuid.timestamp;
 
+import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.sequence.AbstractSequence;
 import com.github.f4b6a3.uuid.util.RandomUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
@@ -25,6 +26,12 @@ import com.github.f4b6a3.uuid.util.TimestampUtil;
  * count will range between zero and the number of 100-nanosecond intervals per
  * system time interval.
  *
+ * ### RFC-4122 - 4.2.1.2. System Clock Resolution
+ * 
+ * (3c) If a system overruns the generator by requesting too many UUIDs within a
+ * single system time interval, the UUID service MUST either return an error, or
+ * stall the UUID generator until the system clock catches up.
+ * 
  */
 public class DefaultTimestampStrategy extends AbstractSequence implements TimestampStrategy {
 
@@ -34,6 +41,8 @@ public class DefaultTimestampStrategy extends AbstractSequence implements Timest
 	protected static final int COUNTER_MAX = 9_999;
 
 	protected static final int COUNTER_OFFSET_MAX = 0xff; // 255
+	
+	protected static final String OVERRUN_MESSAGE = "The system overran the generator by requesting too many UUIDs.";
 
 	public DefaultTimestampStrategy() {
 		super(COUNTER_MIN, COUNTER_MAX);
@@ -58,13 +67,21 @@ public class DefaultTimestampStrategy extends AbstractSequence implements Timest
 	 * @return the next counter value
 	 */
 	protected int getNextCounter(long timestamp) {
-
 		if (timestamp > this.previousTimestamp) {
 			reset();
 		}
-
 		this.previousTimestamp = timestamp;
 		return this.next();
+	}
+
+	@Override
+	public int next() {
+		if (this.value > maxValue) {
+			this.value = minValue;
+			// (3c) Too many requests
+			throw new UuidCreatorException(OVERRUN_MESSAGE);
+		}
+		return this.value++;
 	}
 
 	@Override
