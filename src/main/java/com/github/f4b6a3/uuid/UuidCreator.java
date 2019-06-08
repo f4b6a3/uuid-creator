@@ -33,10 +33,6 @@ import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 
 /**
  * Facade to the UUID factories.
- * 
- * The methods that return time-based, sequential, DCE security and MSSQL UUIDs
- * handle the overrun exceptions stalling the generator for 1 millisecond, if
- * the system overruns the generator by requesting too many UUIDs.
  */
 public class UuidCreator {
 
@@ -103,7 +99,7 @@ public class UuidCreator {
 		try {
 			return SequentialCreatorLazyHolder.INSTANCE.create();
 		} catch (UuidCreatorException e) {
-			stall();
+			// Ignore the overrun exception and trust the clock sequence
 			return SequentialCreatorLazyHolder.INSTANCE.create();
 		}
 	}
@@ -127,7 +123,7 @@ public class UuidCreator {
 		try {
 			return SequentialWithMacCreatorLazyHolder.INSTANCE.create();
 		} catch (UuidCreatorException e) {
-			stall();
+			// Ignore the overrun exception and trust the clock sequence
 			return SequentialWithMacCreatorLazyHolder.INSTANCE.create();
 		}
 	}
@@ -150,7 +146,7 @@ public class UuidCreator {
 		try {
 			return TimeBasedCreatorLazyHolder.INSTANCE.create();
 		} catch (UuidCreatorException e) {
-			stall();
+			// Ignore the overrun exception and trust the clock sequence
 			return TimeBasedCreatorLazyHolder.INSTANCE.create();
 		}
 	}
@@ -173,7 +169,7 @@ public class UuidCreator {
 		try {
 			return TimeBasedWithMacCreatorLazyHolder.INSTANCE.create();
 		} catch (UuidCreatorException e) {
-			stall();
+			// Ignore the overrun exception and trust the clock sequence
 			return TimeBasedWithMacCreatorLazyHolder.INSTANCE.create();
 		}
 	}
@@ -206,7 +202,7 @@ public class UuidCreator {
 		try {
 			return DceSecurityCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
 		} catch (UuidCreatorException e) {
-			stall();
+			// Ignore the overrun exception and trust the clock sequence
 			return DceSecurityCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
 		}
 	}
@@ -239,7 +235,7 @@ public class UuidCreator {
 		try {
 			return DceSecurityWithMacCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
 		} catch (UuidCreatorException e) {
-			stall();
+			// Ignore the overrun exception and trust the clock sequence
 			return DceSecurityWithMacCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
 		}
 	}
@@ -373,7 +369,7 @@ public class UuidCreator {
 		try {
 			return MssqlGuidCreatorLazyHolder.INSTANCE.create();
 		} catch (UuidCreatorException e) {
-			stall();
+			// Ignore the overrun exception and trust the clock sequence
 			return MssqlGuidCreatorLazyHolder.INSTANCE.create();
 		}
 	}
@@ -482,31 +478,7 @@ public class UuidCreator {
 	public static CombGuidCreator getCombGuidCreator() {
 		return new CombGuidCreator();
 	}
-
-	/**
-	 * ### RFC-4122 - 4.2.1.2. System Clock Resolution
-	 * 
-	 * If a system overruns the generator by requesting too many UUIDs within a
-	 * single system time interval, the UUID service MUST either return an
-	 * error, or stall the UUID generator until the system clock catches up.
-	 */
-	private static void stall() {
-		long startTime = System.currentTimeMillis();
-		long millisecond = 1L;
-		try {
-			int counter = 0;
-			int maxCounter = 100;
-			do {
-				Thread.sleep(millisecond);
-				if (++counter > maxCounter) {
-					break;
-				}
-			} while (System.currentTimeMillis() <= startTime);
-		} catch (InterruptedException ie) {
-			Thread.currentThread().interrupt();
-		}
-	}
-
+	
 	/*
 	 * Private classes for lazy holders
 	 */
