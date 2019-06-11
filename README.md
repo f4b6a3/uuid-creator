@@ -57,7 +57,7 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>1.3.0</version>
+  <version>1.3.1</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/uuid-creator).
