@@ -4,25 +4,33 @@ import java.security.SecureRandom;
 import java.util.Random;
 
 public class RandomUtil {
-
-	private static final Random RANDOM = new SecureRandom();
 	
 	private RandomUtil() {
 	}
 	
+	public static void nextBytes(byte[] bytes) {
+		SecureRandomLazyHolder.INSTANCE.nextBytes(bytes);
+	}
+	
 	public static long nextLong() {
-		return RANDOM.nextLong();
+		byte[] bytes = new byte[8];
+		SecureRandomLazyHolder.INSTANCE.nextBytes(bytes);
+		return ByteUtil.toNumber(bytes);
 	}
 	
 	public static int nextInt(int max) {
-		return RANDOM.nextInt(max);
+		return SecureRandomLazyHolder.INSTANCE.nextInt(max);
 	}
 	
 	public static int nextInt() {
-		return RANDOM.nextInt();
+		return SecureRandomLazyHolder.INSTANCE.nextInt();
 	}
 	
 	public static String nextLongHexadecimal() {
-		return ByteUtil.toHexadecimal(RANDOM.nextLong());
+		return ByteUtil.toHexadecimal(SecureRandomLazyHolder.INSTANCE.nextLong());
+	}
+	
+	private static class SecureRandomLazyHolder {
+		static final Random INSTANCE = new SecureRandom();
 	}
 }

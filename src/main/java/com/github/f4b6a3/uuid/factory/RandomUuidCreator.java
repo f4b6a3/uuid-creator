@@ -17,7 +17,6 @@
 
 package com.github.f4b6a3.uuid.factory;
 
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
@@ -27,6 +26,7 @@ import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
 import com.github.f4b6a3.uuid.factory.abst.NoArgumentsUuidCreator;
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.uuid.random.XorshiftRandom;
+import com.github.f4b6a3.uuid.util.ByteUtil;
 
 /**
  * Factory that creates random-based UUIDs.
@@ -48,7 +48,6 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 
 	public RandomUuidCreator() {
 		super(UuidVersion.RANDOM_BASED);
-		random = getSecureRandom();
 	}
 
 	/**
@@ -70,10 +69,23 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 	 */
 	public UUID create() {
 
+		long msb = 0;
+		long lsb = 0;
+		
 		// (3) set all bit randomly
-		long msb = this.random.nextLong();
-		long lsb = this.random.nextLong();
-
+		if (this.random == null) {
+			
+			final byte[] bytes = new byte[16];
+			SecureRandomLazyHolder.INSTANCE.nextBytes(bytes);
+			
+			msb = ByteUtil.toNumber(bytes, 0, 8);
+			lsb = ByteUtil.toNumber(bytes, 8, 16);
+			
+		} else {
+			msb = this.random.nextLong();
+			lsb = this.random.nextLong();
+		}
+		
 		// (1)(2) Set the version and variant bits
 		msb = setVersionBits(msb);
 		lsb = setVariantBits(lsb);
@@ -113,20 +125,8 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 		this.random = new Xorshift128PlusRandom();
 		return this;
 	}
-
-	/**
-	 * Create a secure random instance with SHA1PRNG algorithm.
-	 *
-	 * If this algorithm is not present, it uses JVM's default.
-	 * 
-	 * {@link java.security.SecureRandom}
-	 * 
-	 */
-	private static SecureRandom getSecureRandom() {
-		try {
-			return SecureRandom.getInstance("SHA1PRNG");
-		} catch (NoSuchAlgorithmException e) {
-			return new SecureRandom();
-		}
+	
+	private static class SecureRandomLazyHolder {
+		static final Random INSTANCE = new SecureRandom();
 	}
 }

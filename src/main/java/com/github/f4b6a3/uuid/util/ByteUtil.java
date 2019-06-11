@@ -42,13 +42,18 @@ public class ByteUtil {
 	 * @return a long
 	 */
 	public static long toNumber(final byte[] bytes) {
+		return toNumber(bytes, 0, bytes.length);
+	}
+	
+	public static long toNumber(final byte[] bytes, final int start, final int end) {
 		long result = 0;
-		for (int i = 0; i < bytes.length; i++) {
+		
+		for (int i = start; i < end; i++) {
 			result = (result << 8) | (bytes[i] & 0xff);
 		}
 		return result;
 	}
-
+	
 	/**
 	 * Get an array of bytes from a given number.
 	 *

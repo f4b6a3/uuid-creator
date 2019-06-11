@@ -1,7 +1,6 @@
 package com.github.f4b6a3.uuid.nodeid;
 
 import java.security.SecureRandom;
-import java.util.Random;
 
 import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 import com.github.f4b6a3.uuid.util.RandomUtil;
@@ -9,14 +8,9 @@ import com.github.f4b6a3.uuid.util.RandomUtil;
 public class RandomNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 	protected long nodeIdentifier;
-	protected Random random;
 
 	public RandomNodeIdentifierStrategy() {
 		this.nodeIdentifier = getRandomNodeIdentifier();
-	}
-
-	public RandomNodeIdentifierStrategy(Random random) {
-		this.random = random;
 	}
 	
 	/**
@@ -61,9 +55,6 @@ public class RandomNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * @return a random multicast node identifier
 	 */
 	protected long getRandomNodeIdentifier() {
-		if (this.random == null) {
-			return NodeIdentifierUtil.setMulticastNodeIdentifier(RandomUtil.nextLong());
-		}
-		return NodeIdentifierUtil.setMulticastNodeIdentifier(this.random.nextLong());
+		return NodeIdentifierUtil.setMulticastNodeIdentifier(RandomUtil.nextLong());
 	}
 }
