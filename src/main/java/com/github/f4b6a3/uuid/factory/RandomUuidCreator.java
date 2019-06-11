@@ -97,8 +97,7 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 	 * Replace the default random generator, in a fluent way, to another that
 	 * extends {@link Random}.
 	 * 
-	 * The default random generator is {@link java.security.SecureRandom} with
-	 * SHA1PRNG algorithm.
+	 * The default random generator is {@link java.security.SecureRandom}.
 	 * 
 	 * For other faster pseudo-random generators, see {@link XorshiftRandom} and
 	 * its variations.
