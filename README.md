@@ -11,7 +11,7 @@ Standard UUIDs:
 * __Time-based with MAC:__ the time-based version with hardware address;
 * __Name-based MD5:__ the base-named version that uses MD5;
 * __Name-based SHA-1:__ the base-named version that uses SHA-1;
-* __DCE Security:__ the time-based version that embeds local domains and identifiers.
+* __DCE security:__ the time-based version that embeds local domains and identifiers.
 
 Non-standard UUIDs:
 
@@ -57,7 +57,7 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>1.2.8</version>
+  <version>1.2.9</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/uuid-creator).
@@ -536,13 +536,15 @@ The difference is that it also contains information of local domain and local id
 
 ### Name-based
 
-There are two types of name-based UUIDs: MD5 and SHA-1. The MD5 is registered as version 3. And the SHA-1 is version 5.
+There are two types of name-based UUIDs: MD5 and SHA-1. The MD5 is registered as version 3. And the SHA-1 is registered as version 5.
 
 Two parameters are needed to generate a name-based UUID: a name space and a name.
 
 The name space is a UUID object. But a string may be passed as argument. The factory converts it to UUID. The name space is optional.
 
 The name in the standard is an array of bytes. But a string may also be passed as argument.
+
+This implementation also provides a name-based UUID generator that uses SHA-256.
 
 ### Random
 
@@ -829,3 +831,5 @@ External links
 * [Probability of GUID collisions with different versions](https://news.ycombinator.com/item?id=10924343)
 
 * [Are UUIDs really unique?](https://towardsdatascience.com/are-uuids-really-unique-57eb80fc2a87)
+
+* [How good is Java's UUID.randomUUID?](https://stackoverflow.com/questions/2513573/how-good-is-javas-uuid-randomuuid)
