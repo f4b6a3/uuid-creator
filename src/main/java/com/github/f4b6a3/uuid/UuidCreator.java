@@ -361,7 +361,7 @@ public class UuidCreator {
 	}
 
 	/**
-	 * Returns a time-based GUID for MS SQL Server.
+	 * Returns a time-based GUID for MSSQL Server.
 	 * 
 	 * @return a MSSQL GUID
 	 */

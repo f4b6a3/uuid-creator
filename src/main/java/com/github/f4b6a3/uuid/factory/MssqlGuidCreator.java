@@ -42,6 +42,7 @@ public class MssqlGuidCreator extends AbstractTimeBasedUuidCreator {
 	 */
 	@Override
 	public long formatMostSignificantBits(final long timestamp) {
-		return UuidUtil.formatMssqlMostSignificantBits(timestamp);
+		long ts = timestamp | 0x1000000000000000L; // set version bits
+		return UuidUtil.formatMssqlMostSignificantBits(ts);
 	}
 }

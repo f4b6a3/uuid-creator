@@ -214,7 +214,35 @@ public class UuidUtil {
 
 		return (hii | mid | low);
 	}
+	
+	/**
+	 * Get the timestamp that is embedded in the MSSQL Guid.
+	 * 
+	 * @param msb a long value that has the "Most Significant Bits" of the UUID.
+	 * @return the timestamp
+	 */
+	private static long extractMssqlGuidTimestamp(long msb) {
+		
+		long ts = 0x0000000000000000L;
+		// high bits
+		ts |= (msb & 0xff000000_0000_0000L) >>> 24;
+		ts |= (msb & 0x00ff0000_0000_0000L) >>> 8;
+		ts |= (msb & 0x0000ff00_0000_0000L) << 8;
+		ts |= (msb & 0x000000ff_0000_0000L) << 24;
+		// mid bits
+		ts |= (msb & 0x00000000_ff00_0000L) >>> 8;
+		ts |= (msb & 0x00000000_00ff_0000L) << 8;
+		// low bits
+		ts |= (msb & 0x00000000_0000_ff00L) >>> 8;
+		ts |= (msb & 0x00000000_0000_00ffL) << 8;
+		
+		long hii = (ts & 0xffffffff00000000L) >>> 32;
+		long mid = (ts & 0x00000000ffff0000L) << 16;
+		long low = (ts & 0x000000000000ffffL) << 48;
 
+		return (hii | mid | low);
+	}
+	
 	/**
 	 * Get the local domain number that is embedded in the DCE Security UUID.
 	 *
@@ -301,12 +329,12 @@ public class UuidUtil {
 	}
 
 	/**
-	 * Convert a sequential to a time-based UUID.
+	 * Convert a sequential UUID to a time-based UUID.
 	 * 
 	 * @param uuid an UUID
 	 * @return another UUID
 	 */
-	public static UUID fromSequentialToTimeBasedUuid(UUID uuid) {
+	public static UUID fromSequentialUuidToTimeBasedUuid(UUID uuid) {
 
 		if (!(UuidUtil.isSequentialVersion(uuid))) {
 			throw new UnsupportedOperationException(String.format("Not a sequential UUID: %s.", uuid.toString()));
@@ -321,12 +349,12 @@ public class UuidUtil {
 	}
 
 	/**
-	 * Convert a time-based to a sequential UUID.
+	 * Convert a time-based UUID to a sequential UUID.
 	 * 
 	 * @param uuid an UUID
 	 * @return another UUID
 	 */
-	public static UUID fromTimeBasedToSequentialUuid(UUID uuid) {
+	public static UUID fromTimeBasedUuidToSequentialUuid(UUID uuid) {
 
 		if (!(UuidUtil.isTimeBasedVersion(uuid))) {
 			throw new UnsupportedOperationException(String.format("Not a time-based UUID: %s.", uuid.toString()));
@@ -341,20 +369,20 @@ public class UuidUtil {
 	}
 
 	/**
-	 * Convert a time-based to a MS SQL Server 'friendly' UUID.
+	 * Convert a UUID to a MSSQL Server 'friendly' GUID.
 	 * 
 	 * {@link UuidUtil#formatMssqlMostSignificantBits(long)}
 	 * 
 	 * @param uuid an UUID
 	 * @return another UUID
 	 */
-	public static UUID fromTimeBasedToMssqlUuid(UUID uuid) {
-
-		if (!(UuidUtil.isTimeBasedVersion(uuid))) {
-			throw new UnsupportedOperationException(String.format("Not a time-based UUID: %s.", uuid.toString()));
-		}
-
-		long timestamp = extractTimestamp(uuid);
+	public static UUID fromUuidToMssqlGuid(UUID uuid) {
+		
+		long temp = uuid.getMostSignificantBits();
+		long hii = (temp & 0xffffffff00000000L) >>> 32;
+		long mid = (temp & 0x00000000ffff0000L) << 16;
+		long low = (temp & 0x000000000000ffffL) << 48;
+		long timestamp = (hii | mid | low);
 
 		long msb = formatMssqlMostSignificantBits(timestamp);
 		long lsb = uuid.getLeastSignificantBits();
@@ -362,6 +390,28 @@ public class UuidUtil {
 		return new UUID(msb, lsb);
 	}
 
+	/**
+	 * Convert a MSSQL Server 'friendly' GUID to a UUID.
+	 * 
+	 * {@link UuidUtil#formatMssqlMostSignificantBits(long)}
+	 * 
+	 * @param uuid an UUID
+	 * @return another UUID
+	 */
+	public static UUID fromMssqlGuidToUuid(UUID uuid) {
+
+		long timestamp = extractMssqlGuidTimestamp(uuid.getMostSignificantBits());
+
+		long msb = 0x0000000000000000L;
+		msb |= (timestamp & 0xffff_0000_00000000L) >>> 48;
+		msb |= (timestamp & 0x0000_ffff_00000000L) >>> 16;
+		msb |= (timestamp & 0x0000_0000_ffffffffL) << 32;
+		
+		long lsb = uuid.getLeastSignificantBits();
+
+		return new UUID(msb, lsb);
+	}
+	
 	/**
 	 * Returns the timestamp bits of the UUID in the 'natural' order of bytes.
 	 * 
@@ -424,7 +474,7 @@ public class UuidUtil {
 	}
 
 	/**
-	 * Format most significant bits for MS SQL Server.
+	 * Format most significant bits for MSSQL Server.
 	 * 
 	 * ### References
 	 * 
@@ -462,27 +512,26 @@ public class UuidUtil {
 	public static long formatMssqlMostSignificantBits(final long timestamp) {
 
 		long ts1 = 0x0000000000000000L;
-		long ts2 = 0x0000000000000000L;
-
-		ts1 |= (timestamp & 0x0fff_0000_00000000L) >>> 48;
+		ts1 |= (timestamp & 0xffff_0000_00000000L) >>> 48;
 		ts1 |= (timestamp & 0x0000_ffff_00000000L) >>> 16;
 		ts1 |= (timestamp & 0x0000_0000_ffffffffL) << 32;
-		ts1 |= 0x00000000_0000_1000L;
-
+		
+		long ts2 = 0x0000000000000000L;
+		// high bits
 		ts2 |= (ts1 & 0xff000000_0000_0000L) >>> 24;
 		ts2 |= (ts1 & 0x00ff0000_0000_0000L) >>> 8;
 		ts2 |= (ts1 & 0x0000ff00_0000_0000L) << 8;
 		ts2 |= (ts1 & 0x000000ff_0000_0000L) << 24;
-
+		// mid bits
 		ts2 |= (ts1 & 0x00000000_ff00_0000L) >>> 8;
 		ts2 |= (ts1 & 0x00000000_00ff_0000L) << 8;
-
+		// low bits
 		ts2 |= (ts1 & 0x00000000_0000_ff00L) >>> 8;
 		ts2 |= (ts1 & 0x00000000_0000_00ffL) << 8;
 
 		return ts2;
 	}
-
+	
 	/**
 	 * Returns the least significant bits of the UUID.
 	 * 

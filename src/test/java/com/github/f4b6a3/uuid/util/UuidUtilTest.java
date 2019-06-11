@@ -143,19 +143,61 @@ public class UuidUtilTest {
 	}
 
 	@Test
-	public void testFromTimeBasedToSequentialUuid(){
+	public void testFromTimeBasedUuidToSequentialUuid(){
 		UUID uuid1 = UuidCreator.getTimeBased();
-		UUID uuid2 = fromTimeBasedToSequentialUuid(uuid1);
+		UUID uuid2 = fromTimeBasedUuidToSequentialUuid(uuid1);
 		
 		assertTrue(isSequentialVersion(uuid2));
 	}
 	
 	@Test
-	public void testFromSequentialToTimeBasedUuid(){
+	public void testFromSequentialUuidToTimeBasedUuid(){
 		UUID uuid1 = UuidCreator.getSequential();
-		UUID uuid2 = fromSequentialToTimeBasedUuid(uuid1);
+		UUID uuid2 = fromSequentialUuidToTimeBasedUuid(uuid1);
 		
 		assertTrue(isTimeBasedVersion(uuid2));
+	}
+	
+	@Test
+	public void testFromTimeBasedUuidToMssqlGuidIsCorrect() {
+
+		// Test with a fixed value
+		UUID uuid1 = new UUID(0x0011223344551677L,0x8888888888888888L);
+		UUID uuid2 = UuidUtil.fromUuidToMssqlGuid(uuid1);
+		long timestamp = uuid2.getMostSignificantBits();
+		assertEquals(0x3322110055447716L, timestamp);
+		
+		// Test with a generated value
+		UUID uuid3 = UuidCreator.getTimeBased();
+		UUID uuid4 = UuidUtil.fromUuidToMssqlGuid(uuid3);
+		UUID uuid5 = UuidUtil.fromMssqlGuidToUuid(uuid4);
+		assertEquals(uuid3, uuid5);
+		
+	}
+	
+	@Test
+	public void testFromMssqlGuidToTimeBasedUuidIsCorrect() {
+		
+		// Test with a fixed value
+		UUID uuid1 = new UUID(0x3322110055447716L,0x8888888888888888L);
+		UUID uuid2 = UuidUtil.fromMssqlGuidToUuid(uuid1);
+		long timestamp = uuid2.getMostSignificantBits();
+		assertEquals(0x0011223344551677L, timestamp);
+
+		// Test with a generated value
+		UUID uuid3 = UuidCreator.getMssqlGuid();
+		UUID uuid4 = UuidUtil.fromMssqlGuidToUuid(uuid3);
+		UUID uuid5 = UuidUtil.fromUuidToMssqlGuid(uuid4);
+		assertEquals(uuid3, uuid5);
+	}
+	
+	@Test
+	public void testFromRandomBasedUuidToMssqlGuidIsCorrect() {
+		// Test with a generated value
+		UUID uuid1 = UuidCreator.getRandom();
+		UUID uuid2 = UuidUtil.fromUuidToMssqlGuid(uuid1);
+		UUID uuid3 = UuidUtil.fromMssqlGuidToUuid(uuid2);
+		assertEquals(uuid1, uuid3);
 	}
 	
 	@Test
@@ -211,13 +253,4 @@ public class UuidUtilTest {
 			// Success
 		}
 	}
-	
-	@Test
-	public void testFromTimeBasedToMssqlUuidIsCorrect() {
-		UUID uuid1 = new UUID(0x0011223344551677L,0x8888888888888888L);
-		UUID uuid2 = UuidUtil.fromTimeBasedToMssqlUuid(uuid1);
-		long timestamp = uuid2.getMostSignificantBits();
-		assertEquals(0x3322110055447716L, timestamp);
-	}
-
 }
