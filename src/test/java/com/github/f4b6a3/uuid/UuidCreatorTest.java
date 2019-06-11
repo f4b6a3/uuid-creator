@@ -36,8 +36,8 @@ public class UuidCreatorTest {
 	private static final String GITHUB_URL = "www.github.com";
 	private static int processors;
 
-	private static final int DEFAULT_LOOP_MAX = 10_000;
-	private static final int COUNTER_OFFSET_MAX = 0xff; // 255
+	private static final int COUNTER_OFFSET_MAX = 256;
+	private static final int DEFAULT_LOOP_MAX = 10_000 - COUNTER_OFFSET_MAX;
 
 	private static final String UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
 
@@ -56,14 +56,12 @@ public class UuidCreatorTest {
 	@Test
 	public void testSequentialUuid() {
 
-		int loopLimit = DEFAULT_LOOP_MAX - COUNTER_OFFSET_MAX;
-
-		UUID[] list = new UUID[loopLimit];
+		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
 		SequentialUuidCreator creator = UuidCreator.getSequentialCreator();
 
 		long startTime = System.currentTimeMillis();
 
-		for (int i = 0; i < loopLimit; i++) {
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = creator.create();
 		}
 
@@ -80,15 +78,13 @@ public class UuidCreatorTest {
 
 	@Test
 	public void testCreateTimeBasedUuid() {
-
-		int loopLimit = DEFAULT_LOOP_MAX - COUNTER_OFFSET_MAX;
-
-		UUID[] list = new UUID[loopLimit];
+		
+		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
 		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator();
 
 		long startTime = System.currentTimeMillis();
 
-		for (int i = 0; i < loopLimit; i++) {
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = creator.create();
 		}
 
