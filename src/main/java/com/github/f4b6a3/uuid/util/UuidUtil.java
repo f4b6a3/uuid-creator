@@ -421,13 +421,7 @@ public class UuidUtil {
 	 * @return the MSB
 	 */
 	public static long formatSequentialMostSignificantBits(final long timestamp) {
-
-		long ts = 0x0000000000000000L;
-
-		ts |= (timestamp & 0x0ffffffffffff000L) << 4;
-		ts |= (timestamp & 0x0000000000000fffL);
-
-		return ts;
+		return ((timestamp & 0x0ffffffffffff000L) << 4) | (timestamp & 0x0000000000000fffL);
 	}
 
 	/**
@@ -462,15 +456,10 @@ public class UuidUtil {
 	 * @return the MSB
 	 */
 	public static long formatTimeBasedMostSignificantBits(final long timestamp) {
-
-		long ts = 0x0000000000000000L;
-
-		ts |= (timestamp & 0x0fff_0000_00000000L) >>> 48;
-		ts |= (timestamp & 0x0000_ffff_00000000L) >>> 16;
-		ts |= (timestamp & 0x0000_0000_ffffffffL) << 32;
-		ts |= 0x00000000_0000_1000L;
-
-		return ts;
+		return ((timestamp & 0x0fff_0000_00000000L) >>> 48)
+		| ((timestamp & 0x0000_ffff_00000000L) >>> 16)
+		| ((timestamp & 0x0000_0000_ffffffffL) << 32)
+		| 0x00000000_0000_1000L;
 	}
 
 	/**

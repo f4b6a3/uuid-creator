@@ -86,6 +86,6 @@ public class DefaultTimestampStrategy extends AbstractSequence implements Timest
 
 	@Override
 	public void reset() {
-		this.value = (this.value & COUNTER_OFFSET_MAX);
+		this.value &= COUNTER_OFFSET_MAX;
 	}
 }
