@@ -176,27 +176,20 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 *            a name string
 	 * @return a name-based UUID
 	 */
-	public synchronized UUID create(UUID namespace, String name) {
-
-		byte[] namespaceBytes = null;
-		final byte[] nameBytes = name.getBytes();
+	public synchronized UUID create(final UUID namespace, final String name) {
 
 		if (namespace != null) {
-			namespaceBytes = toBytes(namespace.getMostSignificantBits());
-			namespaceBytes = concat(namespaceBytes, toBytes(namespace.getLeastSignificantBits()));
+			md.update(toBytes(namespace.getMostSignificantBits()));
+			md.update(toBytes(namespace.getLeastSignificantBits()));
 		} else if (this.namespace != null) {
-			namespaceBytes = toBytes(this.namespace.getMostSignificantBits());
-			namespaceBytes = concat(namespaceBytes, toBytes(this.namespace.getLeastSignificantBits()));
-		} else {
-			namespaceBytes = new byte[0];
+			md.update(toBytes(this.namespace.getMostSignificantBits()));
+			md.update(toBytes(this.namespace.getLeastSignificantBits()));
 		}
+		
+		final byte[] hash = md.digest(name.getBytes());
 
-		final byte[] bytes = concat(namespaceBytes, nameBytes);
-
-		final byte[] hash = md.digest(bytes);
-
-		long msb = toNumber(copy(hash, 0, 8));
-		long lsb = toNumber(copy(hash, 8, 16));
+		long msb = toNumber(hash, 0, 8);
+		long lsb = toNumber(hash, 8, 16);
 
 		msb = setVersionBits(msb);
 		lsb = setVariantBits(lsb);
