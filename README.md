@@ -709,28 +709,28 @@ Here is a table showing the results of a simple benchmark using JMH. This implem
 ---------------------------------------------------------------------------------
 Benchmark                                       Mode  Cnt   Score   Error  Units
 ---------------------------------------------------------------------------------
-BenchmarkRunner.EaioTimeBasedWithMac             ss  100   7,290 ±  0,629  ms/op
-BenchmarkRunner.JavaNameBased                    ss  100  53,376 ± 11,041  ms/op
-BenchmarkRunner.JavaRandom                       ss  100  54,703 ±  4,599  ms/op
-BenchmarkRunner.JugNameBased                     ss  100  40,752 ±  3,942  ms/op
-BenchmarkRunner.JugRandom                        ss  100  55,178 ±  4,482  ms/op
-BenchmarkRunner.JugTimeBased                     ss  100   7,737 ±  0,962  ms/op
-BenchmarkRunner.JugTimeBasedWithMAC              ss  100   7,721 ±  0,929  ms/op
-BenchmarkRunner.UuidCreatorCombGuid              ss  100  40,490 ±  5,018  ms/op
-BenchmarkRunner.UuidCreatorDceSecurity           ss  100   8,125 ±  1,228  ms/op
-BenchmarkRunner.UuidCreatorDceSecurityWithMac    ss  100   8,118 ±  1,274  ms/op
-BenchmarkRunner.UuidCreatorFastRandom            ss  100   3,141 ±  0,564  ms/op
-BenchmarkRunner.UuidCreatorMssqlGuid             ss  100   8,440 ±  0,867  ms/op
-BenchmarkRunner.UuidCreatorNameBasedMd5          ss  100  42,324 ±  3,922  ms/op
-BenchmarkRunner.UuidCreatorNameBasedSha1         ss  100  52,383 ±  4,625  ms/op
-BenchmarkRunner.UuidCreatorNameBasedSha256       ss  100  72,042 ±  3,842  ms/op
-BenchmarkRunner.UuidCreatorRandom                ss  100  55,661 ±  4,837  ms/op
-BenchmarkRunner.UuidCreatorSequential            ss  100   7,372 ±  0,889  ms/op
-BenchmarkRunner.UuidCreatorSequentialWithMac     ss  100   7,344 ±  0,940  ms/op
-BenchmarkRunner.UuidCreatorTimeBased             ss  100   7,452 ±  0,933  ms/op
-BenchmarkRunner.UuidCreatorTimeBasedWithMac      ss  100   7,512 ±  0,981  ms/op
+BenchmarkRunner.EaioTimeBasedWithMac             ss  100   6,902 ±  0,578  ms/op
+BenchmarkRunner.JavaNameBased                    ss  100  51,875 ± 10,180  ms/op
+BenchmarkRunner.JavaRandom                       ss  100  55,228 ±  4,730  ms/op
+BenchmarkRunner.JugNameBased                     ss  100  39,883 ±  3,505  ms/op
+BenchmarkRunner.JugRandom                        ss  100  55,103 ±  4,758  ms/op
+BenchmarkRunner.JugTimeBased                     ss  100   7,556 ±  0,940  ms/op
+BenchmarkRunner.JugTimeBasedWithMAC              ss  100   7,666 ±  0,950  ms/op
+BenchmarkRunner.UuidCreatorCombGuid              ss  100  40,414 ±  5,099  ms/op
+BenchmarkRunner.UuidCreatorDceSecurity           ss  100   8,211 ±  1,271  ms/op
+BenchmarkRunner.UuidCreatorDceSecurityWithMac    ss  100   8,033 ±  1,273  ms/op
+BenchmarkRunner.UuidCreatorFastRandom            ss  100   3,043 ±  0,532  ms/op
+BenchmarkRunner.UuidCreatorMssqlGuid             ss  100   7,925 ±  0,942  ms/op
+BenchmarkRunner.UuidCreatorNameBasedMd5          ss  100  38,702 ±  2,837  ms/op
+BenchmarkRunner.UuidCreatorNameBasedSha1         ss  100  48,695 ±  3,733  ms/op
+BenchmarkRunner.UuidCreatorNameBasedSha256       ss  100  67,438 ±  2,971  ms/op
+BenchmarkRunner.UuidCreatorRandom                ss  100  55,469 ±  5,094  ms/op
+BenchmarkRunner.UuidCreatorSequential            ss  100   7,430 ±  0,900  ms/op
+BenchmarkRunner.UuidCreatorSequentialWithMac     ss  100   7,379 ±  0,986  ms/op
+BenchmarkRunner.UuidCreatorTimeBased             ss  100   7,466 ±  0,930  ms/op
+BenchmarkRunner.UuidCreatorTimeBasedWithMac      ss  100   7,401 ±  0,957  ms/op
 ---------------------------------------------------------------------------------
-Total time: 00:02:02
+Total time: 00:02:00
 ---------------------------------------------------------------------------------
 ```
 
