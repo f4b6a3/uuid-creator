@@ -47,7 +47,6 @@ public class ByteUtil {
 	
 	public static long toNumber(final byte[] bytes, final int start, final int end) {
 		long result = 0;
-		
 		for (int i = start; i < end; i++) {
 			result = (result << 8) | (bytes[i] & 0xff);
 		}
@@ -61,20 +60,10 @@ public class ByteUtil {
 	 * @return a byte array
 	 */
 	public static byte[] toBytes(final long number) {
-		return toBytes(number, 8);
-	}
-
-	/**
-	 * Get an array of bytes from a given number.
-	 *
-	 * @param number an integer
-	 * @param size the array size
-	 * @return a byte array
-	 */
-	public static byte[] toBytes(final long number, final int size) {
-		byte[] bytes = new byte[size];
-		for (int i = 0; i < bytes.length; i++) {
-			bytes[i] = (byte) (number >>> (8 * ((bytes.length - 1) - i)));
+		final int length = 8;
+		byte[] bytes = new byte[length];
+		for (int i = 0; i < length; i++) {
+			bytes[i] = (byte) (number >>> (8 * ((length - 1) - i)));
 		}
 		return bytes;
 	}
@@ -86,9 +75,9 @@ public class ByteUtil {
 	 * @return a byte array
 	 */
 	public static byte[] toBytes(final String hexadecimal) {
-		int len = hexadecimal.length();
-		byte[] bytes = new byte[len / 2];
-		for (int i = 0; i < len; i += 2) {
+		final int length = hexadecimal.length();
+		byte[] bytes = new byte[length / 2];
+		for (int i = 0; i < length; i += 2) {
 			bytes[i / 2] = (byte) ((fromHexChar(hexadecimal.charAt(i)) << 4) | fromHexChar(hexadecimal.charAt(i + 1)));
 		}
 		return bytes;
@@ -101,9 +90,10 @@ public class ByteUtil {
 	 * @return a string
 	 */
 	public static String toHexadecimal(final byte[] bytes) {
-		char[] hexadecimal = new char[bytes.length * 2];
-		for (int i = 0; i < bytes.length; i++) {
-			int v = bytes[i] & 0xFF;
+		final int length = bytes.length;
+		final char[] hexadecimal = new char[length * 2];
+		for (int i = 0; i < length; i++) {
+			final int v = bytes[i] & 0xFF;
 			hexadecimal[i * 2] = toHexChar(v >>> 4);
 			hexadecimal[(i * 2) + 1] = toHexChar(v & 0x0F);
 		}
@@ -149,7 +139,6 @@ public class ByteUtil {
 	 * @return a char
 	 */
 	public static char toHexChar(final int number) {
-
 		if (number >= 0x0a && number <= 0x0f) {
 			// ASCII codes from 'a' to 'f'
 			return (char) (0x57 + number);
@@ -157,7 +146,6 @@ public class ByteUtil {
 			// ASCII codes from 0 to 9
 			return (char) (0x30 + number);
 		}
-
 		return 0;
 	}
 
@@ -169,7 +157,7 @@ public class ByteUtil {
 	 * @return a byte array
 	 */
 	public static byte[] array(final int length, final byte value) {
-		byte[] result = new byte[length];
+		final byte[] result = new byte[length];
 		for (int i = 0; i < length; i++) {
 			result[i] = value;
 		}
@@ -195,9 +183,9 @@ public class ByteUtil {
 	 * @return a byte array
 	 */
 	public static byte[] copy(final byte[] bytes, final int start, final int end) {
-
-		byte[] result = new byte[end - start];
-		for (int i = 0; i < result.length; i++) {
+		final int length = end - start;
+		final byte[] result = new byte[length];
+		for (int i = 0; i < length; i++) {
 			result[i] = bytes[start + i];
 		}
 		return result;
@@ -211,15 +199,14 @@ public class ByteUtil {
 	 * @return a byte array
 	 */
 	public static byte[] concat(final byte[] bytes1, final byte[] bytes2) {
-
-		int length = bytes1.length + bytes2.length;
-		byte[] result = new byte[length];
-
-		for (int i = 0; i < bytes1.length; i++) {
+		final int length1 = bytes1.length;
+		final int length2 = bytes2.length;
+		final byte[] result = new byte[length1 + length2];
+		for (int i = 0; i < length1; i++) {
 			result[i] = bytes1[i];
 		}
-		for (int j = 0; j < bytes2.length; j++) {
-			result[bytes1.length + j] = bytes2[j];
+		for (int j = 0; j < length2; j++) {
+			result[length1 + j] = bytes2[j];
 		}
 		return result;
 	}
