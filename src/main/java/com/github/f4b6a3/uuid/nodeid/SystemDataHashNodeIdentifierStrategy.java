@@ -23,7 +23,7 @@ public class SystemDataHashNodeIdentifierStrategy implements NodeIdentifierStrat
 	 * The node identifier is calculated using system data. The resulting node
 	 * identifier is as unique and mutable as the host machine.
 	 * 
-	 * See {@link SystemDataUtil#getSystemId(String)}.
+	 * See {@link SystemDataUtil#getSystemId()}.
 	 */
 	@Override
 	public long getNodeIdentifier() {
