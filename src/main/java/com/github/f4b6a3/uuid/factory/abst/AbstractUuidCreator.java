@@ -39,6 +39,10 @@ public abstract class AbstractUuidCreator {
 			0x0000000000002000L, 0x0000000000003000L, 
 			0x0000000000004000L, 0x0000000000005000L };
 	
+	public AbstractUuidCreator() {
+		this.version = null;
+	}
+	
 	public AbstractUuidCreator(UuidVersion version) {
 		this.version = version;
 	}

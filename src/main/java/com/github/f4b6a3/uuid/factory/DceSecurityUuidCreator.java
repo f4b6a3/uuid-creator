@@ -150,7 +150,7 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 		long msb = setLocalIdentifierBits(uuid.getMostSignificantBits(), localIdentifier);
 
 		// (3a) Insert the local domain bits
-		int counter = timestampCounter.next();
+		long counter = timestampCounter.next();
 		long lsb = setLocalDomainBits(uuid.getLeastSignificantBits(), localDomain, counter);
 		
 		// (1b) set version 2
@@ -212,8 +212,8 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	 * @param counter a counter value
 	 * @return the updated LSB
 	 */
-	protected static long setLocalDomainBits(long lsb, byte localDomain, int counter) {
-		return ((lsb & 0xff00ffffffffffffL) | (long) localDomain << 48) | ((long) counter << 56);
+	protected static long setLocalDomainBits(long lsb, byte localDomain, long counter) {
+		return ((lsb & 0xff00ffffffffffffL) | (long) localDomain << 48) | (counter << 56);
 	}
 
 	/**
@@ -233,8 +233,8 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	protected class DCESTimestampCounter extends AbstractSequence {
 		
 		// COUNTER_MAX: 2^6 (14 bits of the clock sequence minus 8 bytes)
-		private static final int COUNTER_MIN = 0;
-		private static final int COUNTER_MAX = 63;
+		private static final long COUNTER_MIN = 0;
+		private static final long COUNTER_MAX = 63;
 
 		protected DCESTimestampCounter() {
 			super(COUNTER_MIN, COUNTER_MAX);

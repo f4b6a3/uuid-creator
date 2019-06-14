@@ -36,8 +36,8 @@ public class DefaultTimestampStrategyTest {
 		long timestamp = TimestampUtil.getCurrentTimestamp();
 		DefaultTimestampStrategy timestampStrategy = new DefaultTimestampStrategy();
 		
-		int offset = timestampStrategy.getNextCounter(timestamp);
-		int max = DefaultTimestampStrategy.COUNTER_MAX - offset;
+		long offset = timestampStrategy.getNextCounter(timestamp);
+		long max = DefaultTimestampStrategy.COUNTER_MAX - offset;
 		
 		try {
 			// Generate MAX values

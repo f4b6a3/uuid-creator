@@ -20,7 +20,8 @@ Non-standard UUIDs:
 * __Sequential with MAC:__ a sequential version with hardware address;
 * __Name-based SHA-256:__ a base-named version that uses SHA-256;
 * __MSSQL Guid:__ a modified time-based version that changes the timestamp byte order for MS SQL Server database;
-* __COMB Guid:__ a modified random version that replaces the last 6 bytes with Unix epoch milliseconds for MS SQL Server database.
+* __COMB Guid:__ a modified random version that replaces the last 6 bytes with Unix epoch milliseconds for MS SQL Server database;
+* __Lexical Order Guid:__ a lexicographically sortable GUID based on the ULID specification <sup>[9]</sup>.
 
 How to Use
 ------------------------------------------------------
@@ -57,7 +58,7 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>1.3.3</version>
+  <version>1.3.4</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/uuid-creator).
@@ -230,7 +231,31 @@ UUID uuid = UuidCreator.getNameBasedSha1(name);
 
 The SHA-256 Name-based UUID is like the versions 3 and 5, but with a better hash algorithm.
 
-### MSSQL GUID (version 4, non-standard)
+### COMB GUID (non-standard)
+
+The COMB GUID is a modified random UUID that replaces the last 6 bytes with Unix epoch milliseconds for MS SQL Server database.
+
+```java
+// COMB GUID
+// Result: 990676e9-5bb8-1a3d-b17c-0167a0739235
+UUID uuid = UuidCreator.getCombGuid();
+```
+
+Examples of COMB GUID:
+
+```text
+cc6347bb-bd7a-5904-945e-016a75228e8e
+967426cb-89c4-fcb5-945f-016a75228e8e
+28e86a61-085b-1385-9460-016a75228e8e
+ab831b05-8ff0-fc80-9461-016a75228e8e
+e260f564-3ae0-8396-efa6-016a75228e8f
+1cc5a7cc-4016-f39c-efa7-016a75228e8f
+bc84674c-406c-e2de-efa8-016a75228e8f
+109c9408-9ff0-34b3-efa9-016a75228e8f
+a9c86b5f-4d97-c767-efaa-016a75228e8f
+1777eb4e-20f7-09e7-efab-016a75228e8f
+```
+### MSSQL GUID (non-standard)
 
 The MSSQL GUID is a modified time-based UUID that changes the timestamp byte order for MS SQL Server database.
 
@@ -255,30 +280,31 @@ b05561a9-516c-e911-9bd6-4546d757de20
 b15561a9-516c-e911-9bd6-4546d757de20
 ```
 
-### COMB GUID (version 4, non-standard)
+### Lexical Order GUID (non-standard)
 
-The COMB GUID is a modified random UUID that replaces the last 6 bytes with Unix epoch milliseconds for MS SQL Server database.
+The Lexical Order GUID is is based on the ULID specification <sup>[9]</sup> - _Universally Unique Lexicographically Sortable Identifier_. The first 48 bits the count of milliseconds since Unix Epoch, 1 January 1970. The remaining 60 bits are random. If the new timestamp is not greater than the previous one, the random bits are incremented by 1.
 
 ```java
-// COMB GUID
-// Result: 990676e9-5bb8-1a3d-b17c-0167a0739235
-UUID uuid = UuidCreator.getCombGuid();
+// Lexical order GUID
+// Result: 016b54c8-53c9-2212-13c7-c6a0d75f4750
+UUID uuid = UuidCreator.getLexicalOrderGuid();
 ```
 
-Examples of COMB GUID:
+Examples of Lexical Order GUID:
 
 ```text
-cc6347bb-bd7a-5904-945e-016a75228e8e
-967426cb-89c4-fcb5-945f-016a75228e8e
-28e86a61-085b-1385-9460-016a75228e8e
-ab831b05-8ff0-fc80-9461-016a75228e8e
-e260f564-3ae0-8396-efa6-016a75228e8f
-1cc5a7cc-4016-f39c-efa7-016a75228e8f
-bc84674c-406c-e2de-efa8-016a75228e8f
-109c9408-9ff0-34b3-efa9-016a75228e8f
-a9c86b5f-4d97-c767-efaa-016a75228e8f
-1777eb4e-20f7-09e7-efab-016a75228e8f
+016b54d3-5d5b-7fc0-0c99-c0d7a29b17da
+016b54d3-5d5b-7fc0-0c99-c0d7a29b17db
+016b54d3-5d5b-7fc0-0c99-c0d7a29b17dc
+016b54d3-5d5b-7fc0-0c99-c0d7a29b17dd
+016b54d3-5d5b-7fc0-0c99-c0d7a29b17de
+016b54d3-5d5b-7fc0-0c99-c0d7a29b17df
+016b54d3-5d5b-7fc0-0c99-c0d7a29b17e0
+016b54d3-5d5b-7fc0-0c99-c0d7a29b17e1
+016b54d3-5d5b-7fc0-0c99-c0d7a29b17e2
+016b54d3-5d5b-7fc0-0c99-c0d7a29b17e3
 ```
+
 
 System properties and environment variables
 ------------------------------------------------------
@@ -702,6 +728,7 @@ BenchmarkRunner.UuidCreatorCombGuid              ss  100  40,372 ± 5,029  ms/op
 BenchmarkRunner.UuidCreatorDceSecurity           ss  100   8,099 ± 1,311  ms/op
 BenchmarkRunner.UuidCreatorDceSecurityWithMac    ss  100   8,194 ± 1,313  ms/op
 BenchmarkRunner.UuidCreatorFastRandom            ss  100   3,015 ± 0,553  ms/op
+BenchmarkRunner.UuidCreatorLexicalOrderGuid      ss  100   7,147 ± 0,628  ms/op
 BenchmarkRunner.UuidCreatorMssqlGuid             ss  100   7,943 ± 0,936  ms/op
 BenchmarkRunner.UuidCreatorNameBasedMd5          ss  100  38,925 ± 2,894  ms/op
 BenchmarkRunner.UuidCreatorNameBasedSha1         ss  100  48,709 ± 3,597  ms/op
@@ -712,7 +739,7 @@ BenchmarkRunner.UuidCreatorSequentialWithMac     ss  100   7,229 ± 1,016  ms/op
 BenchmarkRunner.UuidCreatorTimeBased             ss  100   7,420 ± 0,913  ms/op
 BenchmarkRunner.UuidCreatorTimeBasedWithMac      ss  100   7,424 ± 0,982  ms/op
 ---------------------------------------------------------------------------------
-Total time: 00:02:01
+Total time: 00:02:05
 ---------------------------------------------------------------------------------
 ```
 
@@ -746,6 +773,8 @@ References
 
 [8]. How to Generate Sequential GUIDs for SQL Server in .NET
 
+[9]. ULID Specification - Universally Unique Lexicographically Sortable Identifier
+
 [1]: https://en.wikipedia.org/wiki/Universally_unique_identifier
 [2]: https://tools.ietf.org/html/rfc4122
 [3]: https://www.percona.com/blog/2007/03/13/to-uuid-or-not-to-uuid
@@ -754,6 +783,7 @@ References
 [6]: http://pubs.opengroup.org/onlinepubs/9696989899/chap5.htm#tagcjh_08_02_01_01
 [7]: http://www.informit.com/articles/printerfriendly/25862
 [8]: https://blogs.msdn.microsoft.com/dbrowne/2012/07/03/how-to-generate-sequential-guids-for-sql-server-in-net
+[9]: https://github.com/ulid/spec
 
 External links
 ------------------------------------------------------

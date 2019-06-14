@@ -22,6 +22,7 @@ import java.util.UUID;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.factory.CombGuidCreator;
 import com.github.f4b6a3.uuid.factory.DceSecurityUuidCreator;
+import com.github.f4b6a3.uuid.factory.LexicalOrderGuidCreator;
 import com.github.f4b6a3.uuid.factory.MssqlGuidCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedMd5UuidCreator;
 import com.github.f4b6a3.uuid.factory.RandomUuidCreator;
@@ -383,6 +384,20 @@ public class UuidCreator {
 		return CombGuidCreatorLazyHolder.INSTANCE.create();
 	}
 
+	/**
+	 * Returns a Lexical Order GUID based on the ULID specification.
+	 * 
+	 * @return a Lexical Order GUID
+	 */
+	public static UUID getLexicalOrderGuid() {
+		try {
+			return LexicalOrderCreatorLazyHolder.INSTANCE.create();
+		} catch (UuidCreatorException e) {
+			// Ignore the overflow exception
+			return LexicalOrderCreatorLazyHolder.INSTANCE.create();
+		}
+	}
+
 	/*
 	 * Public static methods for creating FACTORIES of UUIDs
 	 */
@@ -478,7 +493,16 @@ public class UuidCreator {
 	public static CombGuidCreator getCombGuidCreator() {
 		return new CombGuidCreator();
 	}
-	
+
+	/**
+	 * Returns a {@link LexicalOrderGuidCreator}.
+	 * 
+	 * @return {@link LexicalOrderGuidCreator}
+	 */
+	public static LexicalOrderGuidCreator getLexicalOrderCreator() {
+		return new LexicalOrderGuidCreator();
+	}
+
 	/*
 	 * Private classes for lazy holders
 	 */
@@ -533,5 +557,9 @@ public class UuidCreator {
 
 	private static class CombGuidCreatorLazyHolder {
 		static final CombGuidCreator INSTANCE = getCombGuidCreator();
+	}
+
+	private static class LexicalOrderCreatorLazyHolder {
+		static final LexicalOrderGuidCreator INSTANCE = getLexicalOrderCreator();
 	}
 }

@@ -43,8 +43,8 @@ public class DefaultClockSequenceStrategyTest {
 	@Test()
 	public void testNextForTimestampTheLastValueShouldBeEqualToTheFirstValueMinusOne() {
 
-		int first = 0;
-		int last = 0;
+		long first = 0;
+		long last = 0;
 		long timestamp = TimestampUtil.getCurrentTimestamp();
 		DefaultClockSequenceStrategy clockSequence = new DefaultClockSequenceStrategy();
 

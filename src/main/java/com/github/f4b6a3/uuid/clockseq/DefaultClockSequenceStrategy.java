@@ -103,7 +103,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 
 			long lastTimestamp = this.state.getTimestamp();
 			long lastNodeIdentifier = this.state.getNodeIdentifier();
-			int lastClockSequence = this.state.getClockSequence();
+			long lastClockSequence = this.state.getClockSequence();
 
 			this.set(lastClockSequence);
 			if ((this.timestamp <= lastTimestamp) || (this.nodeIdentifier != lastNodeIdentifier)) {
@@ -145,7 +145,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	 *             an overrun exception
 	 */
 	@Override
-	public int getClockSequence(final long timestamp, final long nodeIdentifier) {
+	public long getClockSequence(final long timestamp, final long nodeIdentifier) {
 		if (timestamp <= this.timestamp) {
 			this.timestamp = timestamp;
 			return this.next();
@@ -166,7 +166,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 		if (SettingsUtil.isStateEnabled()) {
 			this.state.setNodeIdentifier(nodeIdentifier);
 			this.state.setTimestamp(timestamp);
-			this.state.setClockSequence((int) this.value);
+			this.state.setClockSequence(this.value);
 			this.state.store();
 		}
 	}

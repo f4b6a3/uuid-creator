@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.junit.Ignore;
+import org.junit.Test;
 
 import com.github.f4b6a3.other.RandomImage;
 import com.github.f4b6a3.other.SimpleBenchmark;
@@ -23,7 +24,6 @@ import com.github.f4b6a3.uuid.random.XorshiftStarRandom;
 import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.DeltaTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.NanosecondTimestampStrategy;
-import com.github.f4b6a3.uuid.util.LogUtil;
 import com.github.f4b6a3.uuid.util.SystemDataUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
@@ -36,47 +36,54 @@ public class DemoTest {
 	public void testPrintList() {
 		int max = 100;
 		
-		LogUtil.log();
-		LogUtil.log(HORIZONTAL_LINE);
-		LogUtil.log("Print list of UUIDs");
-		LogUtil.log(HORIZONTAL_LINE);
+		System.out.println();
+		System.out.println(HORIZONTAL_LINE);
+		System.out.println("Print list of UUIDs");
+		System.out.println(HORIZONTAL_LINE);
 
-		LogUtil.log();
-		LogUtil.log("### Random UUID");
-
-		for (int i = 0; i < max; i++) {
-			LogUtil.log(UuidCreator.getFastRandom());
-		}
-
-		LogUtil.log(HORIZONTAL_LINE);
-		LogUtil.log("### Time-based UUID");
+		System.out.println();
+		System.out.println("### Random UUID");
 
 		for (int i = 0; i < max; i++) {
-			LogUtil.log(UuidCreator.getTimeBased());
+			System.out.println(UuidCreator.getFastRandom());
 		}
 
-		LogUtil.log(HORIZONTAL_LINE);
-		LogUtil.log("### Sequential UUID");
+		System.out.println(HORIZONTAL_LINE);
+		System.out.println("### Time-based UUID");
 
 		for (int i = 0; i < max; i++) {
-			LogUtil.log(UuidCreator.getSequential());
+			System.out.println(UuidCreator.getTimeBased());
 		}
 
-		LogUtil.log(HORIZONTAL_LINE);
-		LogUtil.log("### MSSQL GUID");
+		System.out.println(HORIZONTAL_LINE);
+		System.out.println("### Sequential UUID");
 
 		for (int i = 0; i < max; i++) {
-			LogUtil.log(UuidCreator.getMssqlGuid());
+			System.out.println(UuidCreator.getSequential());
 		}
 
-		LogUtil.log(HORIZONTAL_LINE);
-		LogUtil.log("### COMB GUID");
+		System.out.println(HORIZONTAL_LINE);
+		System.out.println("### MSSQL GUID");
 
 		for (int i = 0; i < max; i++) {
-			LogUtil.log(UuidCreator.getCombGuid());
+			System.out.println(UuidCreator.getMssqlGuid());
 		}
 
-		LogUtil.log(HORIZONTAL_LINE);
+		System.out.println(HORIZONTAL_LINE);
+		System.out.println("### COMB GUID");
+
+		for (int i = 0; i < max; i++) {
+			System.out.println(UuidCreator.getCombGuid());
+		}
+		
+		System.out.println(HORIZONTAL_LINE);
+		System.out.println("### Lexical Order Guid");
+
+		for (int i = 0; i < max; i++) {
+			System.out.println(UuidCreator.getLexicalOrderGuid());
+		}
+
+		System.out.println(HORIZONTAL_LINE);
 	}
 
 	/**
@@ -95,17 +102,17 @@ public class DemoTest {
 		long javaNextLong = (SimpleBenchmark.run(new Random(), null, "nextLong", loopMax) * loopMax) / nano;
 		long xorshiftNextLong = (SimpleBenchmark.run(new XorshiftRandom(), null, "nextLong", loopMax) * loopMax) / nano;
 
-		LogUtil.log();
-		LogUtil.log(HORIZONTAL_LINE);
-		LogUtil.log(String.format("Average generation times for %,d UUIDs", loopMax));
-		LogUtil.log(HORIZONTAL_LINE);
-		LogUtil.log(String.format("* java.util.UUID.randomUUID():       %s ms", randomUUID));
-		LogUtil.log(String.format("* UUIDGenerator.getRandomUUID():     %s ms", getRandomUUID));
-		LogUtil.log(String.format("* UUIDGenerator.getTimeBasedUUID():  %s ms", getTimeBasedUUID));
-		LogUtil.log(String.format("* UUIDGenerator.getSequentialUUID(): %s ms", getSequentialUUID));
-		LogUtil.log(String.format("* java.util.Random.nextLong(): %s ms", javaNextLong));
-		LogUtil.log(String.format("* XorshiftRandom.nextLong(): %s ms", xorshiftNextLong));
-		LogUtil.log(HORIZONTAL_LINE);
+		System.out.println();
+		System.out.println(HORIZONTAL_LINE);
+		System.out.println(String.format("Average generation times for %,d UUIDs", loopMax));
+		System.out.println(HORIZONTAL_LINE);
+		System.out.println(String.format("* java.util.UUID.randomUUID():       %s ms", randomUUID));
+		System.out.println(String.format("* UUIDGenerator.getRandomUUID():     %s ms", getRandomUUID));
+		System.out.println(String.format("* UUIDGenerator.getTimeBasedUUID():  %s ms", getTimeBasedUUID));
+		System.out.println(String.format("* UUIDGenerator.getSequentialUUID(): %s ms", getSequentialUUID));
+		System.out.println(String.format("* java.util.Random.nextLong(): %s ms", javaNextLong));
+		System.out.println(String.format("* XorshiftRandom.nextLong(): %s ms", xorshiftNextLong));
+		System.out.println(HORIZONTAL_LINE);
 	}
 
 	/**
@@ -119,16 +126,16 @@ public class DemoTest {
 		String sequentialUUID = UuidCreator.getSequentialCreator().withInstant(instant).create().toString();
 
 		Logger.getAnonymousLogger().info("");
-		LogUtil.log();
-		LogUtil.log(HORIZONTAL_LINE);
-		LogUtil.log("Demonstration of time-baed UUIDs");
-		LogUtil.log(HORIZONTAL_LINE);
-		LogUtil.log("- TimeBased UUID:          " + timeBasedUUID);
-		LogUtil.log("- Sequential UUID:         " + sequentialUUID);
-		LogUtil.log("- Original instant:        " + instant.toString());
-		LogUtil.log("- TimeBased UUID instant:  " + UuidUtil.extractInstant(UUID.fromString(timeBasedUUID)));
-		LogUtil.log("- Sequential UUID instant: " + UuidUtil.extractInstant(UUID.fromString(sequentialUUID)));
-		LogUtil.log(HORIZONTAL_LINE);
+		System.out.println();
+		System.out.println(HORIZONTAL_LINE);
+		System.out.println("Demonstration of time-baed UUIDs");
+		System.out.println(HORIZONTAL_LINE);
+		System.out.println("- TimeBased UUID:          " + timeBasedUUID);
+		System.out.println("- Sequential UUID:         " + sequentialUUID);
+		System.out.println("- Original instant:        " + instant.toString());
+		System.out.println("- TimeBased UUID instant:  " + UuidUtil.extractInstant(UUID.fromString(timeBasedUUID)));
+		System.out.println("- Sequential UUID instant: " + UuidUtil.extractInstant(UUID.fromString(sequentialUUID)));
+		System.out.println(HORIZONTAL_LINE);
 	}
 
 	/**
@@ -137,10 +144,10 @@ public class DemoTest {
 	@Ignore
 	public void testCreateRandomImage() {
 
-		LogUtil.log();
-		LogUtil.log(HORIZONTAL_LINE);
-		LogUtil.log("Creating images from random numbers...");
-		LogUtil.log(HORIZONTAL_LINE);
+		System.out.println();
+		System.out.println(HORIZONTAL_LINE);
+		System.out.println("Creating images from random numbers...");
+		System.out.println(HORIZONTAL_LINE);
 
 		RandomImage.createRandomImageFile("/tmp/java.util.Random.png", new Random(), 0, 0);
 		RandomImage.createRandomImageFile("/tmp/java.security.SecureRandom.png", new SecureRandom(), 0, 0);
@@ -149,7 +156,7 @@ public class DemoTest {
 		RandomImage.createRandomImageFile("/tmp/Xorshift128PlusRandom.png", new Xorshift128PlusRandom(), 0, 0);
 		RandomImage.createRandomImageFile("/tmp/Xoroshiro128PlusRandom.png", new Xoroshiro128PlusRandom(), 0, 0);
 
-		LogUtil.log(HORIZONTAL_LINE);
+		System.out.println(HORIZONTAL_LINE);
 	}
 
 	@Ignore
@@ -157,68 +164,68 @@ public class DemoTest {
 
 		UUID uuid = null;
 
-		LogUtil.log("\n#### Time-based");
+		System.out.println("\n#### Time-based");
 
-		LogUtil.log("\n##### Fixed values");
+		System.out.println("\n##### Fixed values");
 
 		// @formatter:off
 		uuid = UuidCreator.getTimeBasedCreator().withInstant(Instant.now()).create();
-		LogUtil.log(String.format("%s // with fixed instant (now)", uuid));
+		System.out.println(String.format("%s // with fixed instant (now)", uuid));
 
 		uuid = UuidCreator.getTimeBasedCreator().withTimestamp(TimestampUtil.toTimestamp(Instant.now())).create();
-		LogUtil.log(String.format("%s // with fixed timestamp (now as timestamp)", uuid));
+		System.out.println(String.format("%s // with fixed timestamp (now as timestamp)", uuid));
 
 		uuid = UuidCreator.getTimeBasedCreator().withClockSequence(0x8888).create();
-		LogUtil.log(String.format("%s // with fixed clock sequence (0x8888)", uuid));
+		System.out.println(String.format("%s // with fixed clock sequence (0x8888)", uuid));
 
 		uuid = UuidCreator.getTimeBasedCreator().withNodeIdentifier(0x111111111111L).create();
-		LogUtil.log(String.format("%s // with fixed node identifier (0x111111111111L)", uuid));
+		System.out.println(String.format("%s // with fixed node identifier (0x111111111111L)", uuid));
 
 		uuid = UuidCreator.getTimeBasedCreator().withHardwareAddress().create();
-		LogUtil.log(String.format("%s // with hardware address (first MAC found)", uuid));
+		System.out.println(String.format("%s // with hardware address (first MAC found)", uuid));
 
-		LogUtil.log("\n##### Timestamp strategy");
+		System.out.println("\n##### Timestamp strategy");
 
 		uuid = UuidCreator.getTimeBasedCreator().withTimestampStrategy(new DefaultTimestampStrategy()).create();
-		LogUtil.log(String.format("%s // with default timestamp strategy (System.currentTimeMillis() + counter)", uuid));
+		System.out.println(String.format("%s // with default timestamp strategy (System.currentTimeMillis() + counter)", uuid));
 
 		uuid = UuidCreator.getTimeBasedCreator().withTimestampStrategy(new NanosecondTimestampStrategy()).create();
-		LogUtil.log(String.format("%s // with nanoseconds timestamp strategy (Instant.getNano())", uuid));
+		System.out.println(String.format("%s // with nanoseconds timestamp strategy (Instant.getNano())", uuid));
 
 		uuid = UuidCreator.getTimeBasedCreator().withTimestampStrategy(new DeltaTimestampStrategy()).create();
-		LogUtil.log(String.format("%s // with delta timestamp strategy (diff of subsequent System.nanoTime())", uuid));
+		System.out.println(String.format("%s // with delta timestamp strategy (diff of subsequent System.nanoTime())", uuid));
 
-		LogUtil.log("\n##### Node identifier strategy");
+		System.out.println("\n##### Node identifier strategy");
 
 		uuid = UuidCreator.getTimeBasedCreator().withNodeIdentifierStrategy(new DefaultNodeIdentifierStrategy()).create();
-		LogUtil.log(String.format("%s // with default node identifier strategy (host name, IP, MAC, OS and JVM)", uuid));
+		System.out.println(String.format("%s // with default node identifier strategy (host name, IP, MAC, OS and JVM)", uuid));
 
 		uuid = UuidCreator.getTimeBasedCreator().withNodeIdentifierStrategy(new RandomNodeIdentifierStrategy()).create();
-		LogUtil.log(String.format("%s // with random node identifier strategy (random number generated once)", uuid));
+		System.out.println(String.format("%s // with random node identifier strategy (random number generated once)", uuid));
 
 		uuid = UuidCreator.getTimeBasedCreator().withNodeIdentifierStrategy(new MacNodeIdentifierStrategy()).create();
-		LogUtil.log(String.format("%s // with hardware address node identifier strategy (first MAC found)", uuid));
+		System.out.println(String.format("%s // with hardware address node identifier strategy (first MAC found)", uuid));
 
-		LogUtil.log("\n#### Name-based");
+		System.out.println("\n#### Name-based");
 
 		uuid = UuidCreator.getNameBasedMd5Creator().withNamespace("USERS").create("Paul");
-		LogUtil.log(String.format("%s // with fixed namespace as string (USERS)", uuid));
+		System.out.println(String.format("%s // with fixed namespace as string (USERS)", uuid));
 
 		uuid = UuidCreator.getNameBasedMd5Creator().withNamespace(UuidNamespace.NAMESPACE_DNS.getValue()).create("www.github.com");
-		LogUtil.log(String.format("%s // with fixed namespace as UUID (standard DNS namespace)", uuid));
+		System.out.println(String.format("%s // with fixed namespace as UUID (standard DNS namespace)", uuid));
 
-		LogUtil.log("\n#### Random");
+		System.out.println("\n#### Random");
 
 		uuid = UuidCreator.getRandomCreator().withRandomGenerator(new Random()).create();
-		LogUtil.log(String.format("%s // with java random generator (java.util.Random)", uuid));
+		System.out.println(String.format("%s // with java random generator (java.util.Random)", uuid));
 
 		uuid = UuidCreator.getRandomCreator().withFastRandomGenerator().create();
-		LogUtil.log(String.format("%s // with fast random generator (Xorshift128Plus)", uuid));
+		System.out.println(String.format("%s // with fast random generator (Xorshift128Plus)", uuid));
 
-		LogUtil.log("\n#### DCE Security");
+		System.out.println("\n#### DCE Security");
 
 		uuid = UuidCreator.getDceSecurityCreator().withLocalDomain(DceSecurityUuidCreator.LOCAL_DOMAIN_PERSON).create(1701);
-		LogUtil.log(String.format("%s // with fixed local domain (standard POSIX User ID)", uuid));
+		System.out.println(String.format("%s // with fixed local domain (standard POSIX User ID)", uuid));
 		// @formatter:on
 	}
 	
@@ -236,7 +243,7 @@ public class DemoTest {
 		
 		endTime = System.currentTimeMillis();
 		
-		LogUtil.log("get network data: " + (endTime - startTime) + " ms");
+		System.out.println("get network data: " + (endTime - startTime) + " ms");
 		
 		startTime = System.currentTimeMillis();
 		
@@ -246,7 +253,7 @@ public class DemoTest {
 		
 		endTime = System.currentTimeMillis();
 		
-		LogUtil.log("get network data list: " + (endTime - startTime) + " ms");
+		System.out.println("get network data list: " + (endTime - startTime) + " ms");
 	}
 	
 

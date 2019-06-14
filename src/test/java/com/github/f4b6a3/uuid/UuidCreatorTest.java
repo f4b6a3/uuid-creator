@@ -14,6 +14,7 @@ import com.github.f4b6a3.uniqueness.UniquenessTest;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.CombGuidCreator;
+import com.github.f4b6a3.uuid.factory.LexicalOrderGuidCreator;
 import com.github.f4b6a3.uuid.factory.MssqlGuidCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedMd5UuidCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedSha1UuidCreator;
@@ -21,7 +22,8 @@ import com.github.f4b6a3.uuid.factory.NameBasedSha256UuidCreator;
 import com.github.f4b6a3.uuid.factory.RandomUuidCreator;
 import com.github.f4b6a3.uuid.factory.SequentialUuidCreator;
 import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
-import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
+import com.github.f4b6a3.uuid.factory.abst.NoArgumentsUuidCreator;
+import com.github.f4b6a3.uuid.timestamp.FixedTimestampStretegy;
 import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 import com.github.f4b6a3.uuid.util.SystemDataUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
@@ -78,7 +80,7 @@ public class UuidCreatorTest {
 
 	@Test
 	public void testCreateTimeBasedUuid() {
-		
+
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
 		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator();
 
@@ -212,6 +214,20 @@ public class UuidCreatorTest {
 		}
 
 		checkNullOrInvalid(list);
+		checkUniqueness(list);
+	}
+	
+	@Test
+	public void testCreateLexicalOrderGuid() {
+
+		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+		LexicalOrderGuidCreator creator = UuidCreator.getLexicalOrderCreator();
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			list[i] = creator.create();
+		}
+		
+		checkOrdering(list);
 		checkUniqueness(list);
 	}
 
@@ -410,7 +426,7 @@ public class UuidCreatorTest {
 		UUID uuid4 = UuidCreator.getNameBasedSha256(name);
 		assertEquals(uuid3, uuid4);
 	}
-	
+
 	@Test
 	public void testUniquenesWithParallelThreadsMakingRequestingToASingleGenerator() {
 		boolean verbose = false;
@@ -418,7 +434,7 @@ public class UuidCreatorTest {
 		int requestCount = 100_000; // Number of requests for thread
 		UniquenessTest.execute(verbose, threadCount, requestCount);
 	}
-	
+
 	@Test
 	public void testGetTimeBasedShouldCreateAboutSixteenThousandUniqueUuidsWithTheTimeStopped() {
 
@@ -447,8 +463,7 @@ public class UuidCreatorTest {
 		}
 
 		assertTrue(DUPLICATE_UUID_MSG, set.size() == max);
-
-		assertTrue(CLOCK_SEQUENCE_MSG, (firstClockSeq - 1) % max == lastClockSeq % max);
+		assertTrue(CLOCK_SEQUENCE_MSG, (lastClockSeq % max) == ((firstClockSeq % max) - 1));
 	}
 
 	@Test
@@ -479,8 +494,7 @@ public class UuidCreatorTest {
 		}
 
 		assertTrue(DUPLICATE_UUID_MSG, set.size() == max);
-
-		assertTrue(CLOCK_SEQUENCE_MSG, (firstClockSeq - 1) % max == lastClockSeq % max);
+		assertTrue(CLOCK_SEQUENCE_MSG, (lastClockSeq % max) == ((firstClockSeq % max) - 1));
 	}
 
 	@Test
@@ -524,6 +538,27 @@ public class UuidCreatorTest {
 		// Check if the quantity of unique UUIDs is correct
 		assertTrue(DUPLICATE_UUID_MSG, TestThread.hashSet.size() == (DEFAULT_LOOP_MAX * processors));
 	}
+	
+	@Test
+	public void testGetLexicalOrderGuidParallelGeneratorsShouldCreateUniqueUuids() throws InterruptedException {
+
+		Thread[] threads = new Thread[processors];
+		TestThread.clearHashSet();
+
+		// Instantiate and start many threads
+		for (int i = 0; i < processors; i++) {
+			threads[i] = new TestThread(UuidCreator.getLexicalOrderCreator(), DEFAULT_LOOP_MAX);
+			threads[i].start();
+		}
+
+		// Wait all the threads to finish
+		for (Thread thread : threads) {
+			thread.join();
+		}
+
+		// Check if the quantity of unique UUIDs is correct
+		assertTrue(DUPLICATE_UUID_MSG, TestThread.hashSet.size() == (DEFAULT_LOOP_MAX * processors));
+	}
 
 	@Test
 	public void testCreateTimeBasedUuidTheGreatestDateAndTimeShouldBeAtYear5236() {
@@ -547,6 +582,25 @@ public class UuidCreatorTest {
 		UUID uuid2 = creator2.create();
 		Instant instant2 = UuidUtil.extractInstant(uuid2);
 		assertEquals(instant1, instant2);
+	}
+
+	@Test
+	public void testGetLexicalOrderGuidShouldIncrementWhenTheTimeIsStopped() {
+
+		long timestamp = System.currentTimeMillis();
+
+		LexicalOrderGuidCreator creator = UuidCreator.getLexicalOrderCreator()
+				.withTimestampStrategy(new FixedTimestampStretegy(timestamp));
+
+		long firstLsb = 0;
+		for(int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			if(i == 0) {
+				firstLsb = creator.create().getLeastSignificantBits();
+			}
+			creator.create();
+		}
+		long lastLsb = creator.create().getLeastSignificantBits();
+		assertEquals((lastLsb % DEFAULT_LOOP_MAX) - 1, (firstLsb % DEFAULT_LOOP_MAX));
 	}
 
 	private void checkIfStringIsValid(UUID uuid) {
@@ -611,10 +665,10 @@ public class UuidCreatorTest {
 	private static class TestThread extends Thread {
 
 		private static Set<UUID> hashSet = new HashSet<>();
-		private AbstractTimeBasedUuidCreator creator;
+		private NoArgumentsUuidCreator creator;
 		private int loopLimit;
 
-		public TestThread(AbstractTimeBasedUuidCreator creator, int loopLimit) {
+		public TestThread(NoArgumentsUuidCreator creator, int loopLimit) {
 			this.creator = creator;
 			this.loopLimit = loopLimit;
 		}

@@ -66,7 +66,7 @@ public class DefaultTimestampStrategy extends AbstractSequence implements Timest
 	 *            a timestamp
 	 * @return the next counter value
 	 */
-	protected int getNextCounter(final long timestamp) {
+	protected long getNextCounter(final long timestamp) {
 		if (timestamp > this.previousTimestamp) {
 			reset();
 		}
@@ -75,7 +75,7 @@ public class DefaultTimestampStrategy extends AbstractSequence implements Timest
 	}
 
 	@Override
-	public int next() {
+	public long next() {
 		if (this.value > maxValue) {
 			this.value = minValue;
 			// (3c) Too many requests

@@ -24,23 +24,23 @@ package com.github.f4b6a3.uuid.sequence;
  */
 public abstract class AbstractSequence implements Sequence {
 
-	protected int value;
-	public final int minValue;
-	public final int maxValue;
+	protected long value;
+	public final long minValue;
+	public final long maxValue;
 
-	protected AbstractSequence(int min, int max) {
+	protected AbstractSequence(long min, long max) {
 		this.minValue = min;
 		this.maxValue = max;
 		this.value = minValue;
 	}
 
 	@Override
-	public int current() {
+	public long current() {
 		return this.value;
 	}
 
 	@Override
-	public int next() {
+	public long next() {
 		if (this.value >= maxValue) {
 			this.value = minValue;
 			return this.value;
@@ -49,12 +49,12 @@ public abstract class AbstractSequence implements Sequence {
 	}
 
 	@Override
-	public int min() {
+	public long min() {
 		return minValue;
 	}
 
 	@Override
-	public int max() {
+	public long max() {
 		return maxValue;
 	}
 
@@ -64,7 +64,7 @@ public abstract class AbstractSequence implements Sequence {
 	}
 	
 	@Override
-	public void set(int value) {
+	public void set(final long value) {
 		if (value < minValue || value > maxValue) {
 			this.reset();
 		}

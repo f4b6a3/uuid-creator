@@ -15,7 +15,7 @@ public class RandomClockSequenceStrategy implements ClockSequenceStrategy {
 	}
 	
 	@Override
-	public int getClockSequence(long timestamp, long nodeIdentifier) {
+	public long getClockSequence(long timestamp, long nodeIdentifier) {
 		if(this.random == null) {
 			return RandomUtil.nextInt();
 		}

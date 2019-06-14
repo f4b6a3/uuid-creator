@@ -284,7 +284,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * @param timestamp a timestamp
 	 * @return the MSB
 	 */
-	public abstract long formatMostSignificantBits(long timestamp);
+	protected abstract long formatMostSignificantBits(long timestamp);
 
 	/**
 	 * Formats the least significant bits of the UUID.
@@ -308,7 +308,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * @param clockSequence a clock sequence
 	 * @return the LSB
 	 */
-	public long formatLeastSignificantBits(final long nodeIdentifier, final long clockSequence) {
+	protected long formatLeastSignificantBits(final long nodeIdentifier, final long clockSequence) {
 		return UuidUtil.formatRfc4122LeastSignificantBits(nodeIdentifier, clockSequence);
 	}
 }

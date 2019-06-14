@@ -9,7 +9,7 @@ public class FixedClockSequenceStrategy implements ClockSequenceStrategy {
 	}
 
 	@Override
-	public int getClockSequence(long timestamp, long nodeIdentifier) {
+	public long getClockSequence(long timestamp, long nodeIdentifier) {
 		return this.clockSequence;
 	}
 }

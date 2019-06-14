@@ -41,7 +41,7 @@ public class CombGuidCreator extends AbstractTimeBasedUuidCreator {
 	}
 
 	@Override
-	public long formatMostSignificantBits(long timestamp) {
+	protected long formatMostSignificantBits(final long timestamp) {
 		return setVersionBits(timestamp);
 	}
 }
