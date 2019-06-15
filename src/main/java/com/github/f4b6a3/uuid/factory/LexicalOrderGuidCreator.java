@@ -20,7 +20,6 @@ package com.github.f4b6a3.uuid.factory;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
-import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
 import com.github.f4b6a3.uuid.factory.abst.NoArgumentsUuidCreator;
 import com.github.f4b6a3.uuid.timestamp.EpochMilliTimestampStretegy;
@@ -42,7 +41,7 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 	private long random2;
 	private long random3;
 
-	protected static final String OVERFLOW_MESSAGE = "The system caused an overflow in the generator by requesting too many GUIDs.";
+	protected static final String OVERFLOW_MESSAGE = "The system caused an overflow in the generator by requesting too many Lexical Order GUIDs.";
 
 	protected TimestampStrategy timestampStrategy;
 

@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>1.3.5</version>
+  <version>1.3.6</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/uuid-creator).
@@ -299,6 +299,8 @@ Examples of MSSQL GUID:
 
 The COMB GUID is a modified random UUID that replaces the last 6 bytes with Unix epoch milliseconds for MS SQL Server database.
 
+This implementation is derived from the ULID specification. The only difference is that the millisecond bits are moved to the end of the GUID. See the section of Lexical Order GUIDs.
+
 ```java
 // COMB GUID
 // Result: 990676e9-5bb8-1a3d-b17c-0167a0739235
@@ -308,26 +310,26 @@ UUID uuid = UuidCreator.getCombGuid();
 Examples of COMB GUID:
 
 ```text
-cfd143ca-63c9-4f5a-e536-016b5865764f
-1a89b383-f1f2-4693-e537-016b5865764f
-aa85ddf3-ad68-41c9-e538-016b5865764f
-b8a57db0-dab3-4036-e539-016b5865764f
-16b52a08-bba7-46eb-e53a-016b5865764f
-01b86151-1262-4336-e53b-016b5865764f
-1390b56e-737c-4123-e53c-016b5865764f
-e5ada0c7-541e-4991-e53d-016b5865764f
-185cda90-6e2c-4fec-8232-016b58657650 < millisecond changed
-21cbdf25-5318-4b6e-8233-016b58657650
-81423968-1d49-497a-8234-016b58657650
-bd9a6096-d4d0-4ed4-8235-016b58657650
-0acf87ef-9c94-4553-8236-016b58657650
-21aca9d2-5594-4cbc-8237-016b58657650
-dbdbd21a-b854-49fd-8238-016b58657650
-c4b8abce-1a2d-45f5-8239-016b58657650
+0caeecf6-2bc1-528f-444c-016b59214d42
+0caeecf6-2bc1-528f-444d-016b59214d42
+0caeecf6-2bc1-528f-444e-016b59214d42
+0caeecf6-2bc1-528f-444f-016b59214d42
+0caeecf6-2bc1-528f-4450-016b59214d42
+0caeecf6-2bc1-528f-4451-016b59214d42
+0caeecf6-2bc1-528f-4452-016b59214d42
+0caeecf6-2bc1-528f-4453-016b59214d42
+21d28f00-ea5d-3af3-e3ab-016b59214d43 < millisecond changed
+21d28f00-ea5d-3af3-e3ac-016b59214d43
+21d28f00-ea5d-3af3-e3ad-016b59214d43
+21d28f00-ea5d-3af3-e3ae-016b59214d43
+21d28f00-ea5d-3af3-e3af-016b59214d43
+21d28f00-ea5d-3af3-e3b0-016b59214d43
+21d28f00-ea5d-3af3-e3b1-016b59214d43
+21d28f00-ea5d-3af3-e3b2-016b59214d43
                       ^ look       ^ look
 
-|-----------------|----|------------|
-    randomness    clkseq  millisecs
+|----------------------|-----------|
+       randomness        millisecs
 ```
 
 ### Lexical Order GUID (non-standard)
@@ -362,7 +364,7 @@ Examples of Lexical Order GUID:
 016b5865-7658-8b58-05b8-9a9958805938
             ^ look                 ^ look
                                    
-|------------|----------------------|
+|------------|---------------------|
   millisecs        randomness
 ```
 
@@ -778,29 +780,29 @@ Here is a table showing the results of a simple benchmark using JMH. This implem
 ---------------------------------------------------------------------------------
 Benchmark                                       Mode  Cnt   Score   Error  Units
 ---------------------------------------------------------------------------------
-BenchmarkRunner.EaioTimeBasedWithMac_ _ _ _ _ _  ss  100   6,451 ± 0,401  ms/op
-BenchmarkRunner.JavaNameBased                    ss  100  41,219 ± 2,226  ms/op
-BenchmarkRunner.JavaRandom_ _ _ _ _ _ _ _ _ _ _  ss  100  50,673 ± 1,050  ms/op
-BenchmarkRunner.JugNameBased                     ss  100  37,119 ± 0,977  ms/op
-BenchmarkRunner.JugRandom                        ss  100  51,056 ± 0,989  ms/op
-BenchmarkRunner.JugTimeBased                     ss  100   6,922 ± 0,484  ms/op
-BenchmarkRunner.JugTimeBasedWithMAC_ _ _ _ _ _ _ ss  100   6,871 ± 0,453  ms/op
-BenchmarkRunner.UuidCreatorCombGuid              ss  100  35,288 ± 1,078  ms/op
-BenchmarkRunner.UuidCreatorDceSecurity           ss  100   7,005 ± 0,464  ms/op
-BenchmarkRunner.UuidCreatorDceSecurityWithMac    ss  100   6,849 ± 0,458  ms/op
-BenchmarkRunner.UuidCreatorFastRandom            ss  100   2,402 ± 0,375  ms/op
-BenchmarkRunner.UuidCreatorLexicalOrderGuid      ss  100   6,708 ± 0,447  ms/op
-BenchmarkRunner.UuidCreatorMssqlGuid             ss  100   7,112 ± 0,442  ms/op
-BenchmarkRunner.UuidCreatorNameBasedMd5          ss  100  36,083 ± 1,251  ms/op
-BenchmarkRunner.UuidCreatorNameBasedSha1         ss  100  44,977 ± 1,343  ms/op
-BenchmarkRunner.UuidCreatorNameBasedSha256       ss  100  63,744 ± 0,998  ms/op
-BenchmarkRunner.UuidCreatorRandom                ss  100  50,518 ± 0,864  ms/op
-BenchmarkRunner.UuidCreatorSequential            ss  100   6,447 ± 0,425  ms/op
-BenchmarkRunner.UuidCreatorSequentialWithMac     ss  100   6,439 ± 0,462  ms/op
-BenchmarkRunner.UuidCreatorTimeBased             ss  100   6,526 ± 0,432  ms/op
-BenchmarkRunner.UuidCreatorTimeBasedWithMac      ss  100   6,471 ± 0,426  ms/op
+BenchmarkRunner.EaioTimeBasedWithMac _ _ _ _ _ _ ss  100   6,744 ± 0,420  ms/op
+BenchmarkRunner.JavaNameBased                    ss  100  41,785 ± 2,062  ms/op
+BenchmarkRunner.JavaRandom _ _ _ _ _ _ _ _ _ _ _ ss  100  49,404 ± 0,946  ms/op
+BenchmarkRunner.JugNameBased                     ss  100  36,921 ± 0,970  ms/op
+BenchmarkRunner.JugRandom                        ss  100  49,867 ± 0,928  ms/op
+BenchmarkRunner.JugTimeBased                     ss  100   6,943 ± 0,485  ms/op
+BenchmarkRunner.JugTimeBasedWithMAC_ _ _ _ _ _ _ ss  100   6,861 ± 0,472  ms/op
+BenchmarkRunner.UuidCreatorCombGuid              ss  100   5,683 ± 0,430  ms/op
+BenchmarkRunner.UuidCreatorDceSecurity           ss  100   6,852 ± 0,437  ms/op
+BenchmarkRunner.UuidCreatorDceSecurityWithMac    ss  100   6,857 ± 0,425  ms/op
+BenchmarkRunner.UuidCreatorFastRandom            ss  100   2,293 ± 0,391  ms/op
+BenchmarkRunner.UuidCreatorLexicalOrderGuid      ss  100   6,702 ± 0,426  ms/op
+BenchmarkRunner.UuidCreatorMssqlGuid             ss  100   6,805 ± 0,431  ms/op
+BenchmarkRunner.UuidCreatorNameBasedMd5          ss  100  36,315 ± 1,340  ms/op
+BenchmarkRunner.UuidCreatorNameBasedSha1         ss  100  44,729 ± 1,355  ms/op
+BenchmarkRunner.UuidCreatorNameBasedSha256       ss  100  64,010 ± 1,274  ms/op
+BenchmarkRunner.UuidCreatorRandom                ss  100  50,076 ± 0,953  ms/op
+BenchmarkRunner.UuidCreatorSequential            ss  100   6,150 ± 0,414  ms/op
+BenchmarkRunner.UuidCreatorSequentialWithMac     ss  100   6,311 ± 0,427  ms/op
+BenchmarkRunner.UuidCreatorTimeBased             ss  100   6,352 ± 0,411  ms/op
+BenchmarkRunner.UuidCreatorTimeBasedWithMac      ss  100   6,336 ± 0,422  ms/op
 ---------------------------------------------------------------------------------
-Total time: 00:02:15
+Total time: 00:02:10
 ---------------------------------------------------------------------------------
 ```
 

@@ -378,10 +378,18 @@ public class UuidCreator {
 	/**
 	 * Returns a COMB GUID for MS SQL Server.
 	 * 
+	 * This implementation is derived from the ULID specification.
+	 * 
 	 * @return a COMB GUID
 	 */
 	public static UUID getCombGuid() {
-		return CombGuidCreatorLazyHolder.INSTANCE.create();
+		try {
+			return CombGuidCreatorLazyHolder.INSTANCE.create();
+		} catch (UuidCreatorException e) {
+			// Ignore the overflow exception and trust that there's a lot of
+			// room to increment after reset o zero
+			return CombGuidCreatorLazyHolder.INSTANCE.create();
+		}
 	}
 
 	/**
@@ -393,7 +401,8 @@ public class UuidCreator {
 		try {
 			return LexicalOrderCreatorLazyHolder.INSTANCE.create();
 		} catch (UuidCreatorException e) {
-			// Ignore the overflow exception
+			// Ignore the overflow exception and trust that there's a lot of
+			// room to increment after reset o zero
 			return LexicalOrderCreatorLazyHolder.INSTANCE.create();
 		}
 	}

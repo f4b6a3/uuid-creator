@@ -175,6 +175,20 @@ public class UuidCreatorTest {
 			assertTrue("Two different SHA256 UUIDs for the same input", list[i].equals(other));
 		}
 	}
+	
+	@Test
+	public void testCreateMssqlGuid() {
+
+		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+		MssqlGuidCreator creator = UuidCreator.getMssqlGuidCreator();
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			list[i] = creator.create();
+		}
+
+		checkNullOrInvalid(list);
+		checkUniqueness(list);
+	}
 
 	@Test
 	public void testCompGuid() {
@@ -191,7 +205,6 @@ public class UuidCreatorTest {
 		long endTime = System.currentTimeMillis();
 
 		checkUniqueness(list);
-		checkVersion(list, UuidVersion.RANDOM_BASED);
 
 		long previous = 0;
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
@@ -202,20 +215,6 @@ public class UuidCreatorTest {
 			previous = creationTime;
 		}
 	}
-
-	@Test
-	public void testCreateMssqlGuid() {
-
-		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		MssqlGuidCreator creator = UuidCreator.getMssqlGuidCreator();
-
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = creator.create();
-		}
-
-		checkNullOrInvalid(list);
-		checkUniqueness(list);
-	}
 	
 	@Test
 	public void testCreateLexicalOrderGuid() {
@@ -223,12 +222,25 @@ public class UuidCreatorTest {
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
 		LexicalOrderGuidCreator creator = UuidCreator.getLexicalOrderCreator();
 
+		long startTime = System.currentTimeMillis();
+		
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = creator.create();
 		}
 		
+		long endTime = System.currentTimeMillis();
+		
 		checkOrdering(list);
 		checkUniqueness(list);
+		
+		long previous = 0;
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			long creationTime = list[i].getMostSignificantBits() >> 16;
+			assertTrue("Lexical Order Guid creation time before start time", startTime <= creationTime);
+			assertTrue("Lexical Order Guid creation time after end time", creationTime <= endTime);
+			assertTrue("Lexical Order Guid sequence is not sorted " + previous + " " + creationTime, previous <= creationTime);
+			previous = creationTime;
+		}
 	}
 
 	@Test
