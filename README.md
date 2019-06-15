@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>1.3.4</version>
+  <version>1.3.5</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/uuid-creator).
@@ -82,16 +82,26 @@ UUID uuid = UuidCreator.getSequentialWithMac();
 Examples of sequential UUID:
 
 ```text
-1e96c51a-960b-0970-a083-4546d757de20
-1e96c51a-960b-0971-a083-4546d757de20
-1e96c51a-960b-0972-a083-4546d757de20
-1e96c51a-960b-0973-a083-4546d757de20
-1e96c51a-960b-0974-a083-4546d757de20
-1e96c51a-960b-0975-a083-4546d757de20
-1e96c51a-960b-0976-a083-4546d757de20
-1e96c51a-960b-0977-a083-4546d757de20
-1e96c51a-960b-0978-a083-4546d757de20
-1e96c51a-960b-0979-a083-4546d757de20
+1e98eff0-eddc-0470-a649-ad1cde652e10
+1e98eff0-eddc-0471-a649-ad1cde652e10
+1e98eff0-eddc-0472-a649-ad1cde652e10
+1e98eff0-eddc-0473-a649-ad1cde652e10
+1e98eff0-eddc-0474-a649-ad1cde652e10
+1e98eff0-eddc-0475-a649-ad1cde652e10
+1e98eff0-eddc-0476-a649-ad1cde652e10
+1e98eff0-eddc-0477-a649-ad1cde652e10
+1e98eff0-eddc-0478-a649-ad1cde652e10
+1e98eff0-eddc-0479-a649-ad1cde652e10
+1e98eff0-eddc-047a-a649-ad1cde652e10
+1e98eff0-eddc-047b-a649-ad1cde652e10
+1e98eff0-eddc-047c-a649-ad1cde652e10
+1e98eff0-eddc-047d-a649-ad1cde652e10
+1e98eff0-eddc-047e-a649-ad1cde652e10
+1e98eff0-eddc-047f-a649-ad1cde652e10
+                 ^ look
+
+|-----------------|----|-----------|
+     timestamp    clkseq  node id
 ```
 
 ### Time-based (version 1)
@@ -113,16 +123,26 @@ UUID uuid = UuidCreator.getTimeBasedWithMac();
 Examples of time-based UUID:
 
 ```text
-a9601d3a-6c51-11e9-9711-4546d757de20
-a9601d3b-6c51-11e9-9711-4546d757de20
-a9601d3c-6c51-11e9-9711-4546d757de20
-a9601d3d-6c51-11e9-9711-4546d757de20
-a9601d3e-6c51-11e9-9711-4546d757de20
-a9601d3f-6c51-11e9-9711-4546d757de20
-a9601d40-6c51-11e9-9711-4546d757de20
-a9601d41-6c51-11e9-9711-4546d757de20
-a9601d42-6c51-11e9-9711-4546d757de20
-a9601d43-6c51-11e9-9711-4546d757de20
+0edd7640-8eff-11e9-8649-972f32b091a1
+0edd7641-8eff-11e9-8649-972f32b091a1
+0edd7642-8eff-11e9-8649-972f32b091a1
+0edd7643-8eff-11e9-8649-972f32b091a1
+0edd7644-8eff-11e9-8649-972f32b091a1
+0edd7645-8eff-11e9-8649-972f32b091a1
+0edd7646-8eff-11e9-8649-972f32b091a1
+0edd7647-8eff-11e9-8649-972f32b091a1
+0edd7648-8eff-11e9-8649-972f32b091a1
+0edd7649-8eff-11e9-8649-972f32b091a1
+0edd764a-8eff-11e9-8649-972f32b091a1
+0edd764b-8eff-11e9-8649-972f32b091a1
+0edd764c-8eff-11e9-8649-972f32b091a1
+0edd764d-8eff-11e9-8649-972f32b091a1
+0edd764e-8eff-11e9-8649-972f32b091a1
+0edd764f-8eff-11e9-8649-972f32b091a1
+       ^ look
+
+|-----------------|----|-----------|
+     timestamp    clkseq  node id
 ```
 
 ### DCE security (version 2)
@@ -192,16 +212,25 @@ UUID uuid = UuidCreator.getFastRandom();
 Examples of random-based UUID:
 
 ```text
-ba1059e8-42ce-4a17-8c43-53c83353e23e
-6658b049-44f2-4db6-862a-7e8a3d45a41d
-4b6c87c3-dfba-40b3-8865-69a4432721e9
-9b0872a9-2f84-4b4d-8480-c81741e6b730
-bbe05770-3ed8-4064-a400-287ea1869585
-dfff7f23-2ba4-4ad1-bcae-0e17b2c261de
-d2b42ff7-2c79-4a8e-aa23-e0af1f1fb4e2
-9c498979-39f8-4f8f-8ab7-312e51ff0c38
-4b4a8b3b-9371-4a2a-b7de-55d070de8604
-ca4de6d2-63b8-4a49-8ab6-bfccd32a27e8
+38b37e02-d978-42cc-b39f-699d41ad6b13
+4241488c-c17a-48c9-bf82-aa0afe675c2f
+03e26434-323c-411c-bedf-34f8b99889e8
+625b9fa3-21d1-4ddc-a5d7-97d277fbe268
+b60a97a3-c1f9-48e9-8afe-d8505fd3fe58
+071105f2-6c78-4fbb-a5c1-c8f48afd1a76
+5bf70214-67e4-4f31-b3fb-cb8a8366d158
+1dd86663-2263-443a-a49c-29d6d877b3f4
+1172b75d-d55d-436c-9832-63b4c64e1813
+279a12eb-d411-45b9-85cc-98ff692fb0e2
+3c18b7e9-75a3-4f58-b608-9bdadff6ecd9
+c136ac3c-b25e-414d-9d9e-0821b90bfe14
+3f020533-fec9-4a94-9287-b8be5b2dda77
+9d887b20-3394-4350-aba4-621ef6ea837a
+9e71dd3d-c839-46ee-a249-d375f3460583
+246bd1c9-cc6d-48b7-bd88-a5035d597842
+
+|----------------------------------|
+            randomness
 ```
 
 ### Name-based using SHA-1 (version 5)
@@ -231,30 +260,6 @@ UUID uuid = UuidCreator.getNameBasedSha1(name);
 
 The SHA-256 Name-based UUID is like the versions 3 and 5, but with a better hash algorithm.
 
-### COMB GUID (non-standard)
-
-The COMB GUID is a modified random UUID that replaces the last 6 bytes with Unix epoch milliseconds for MS SQL Server database.
-
-```java
-// COMB GUID
-// Result: 990676e9-5bb8-1a3d-b17c-0167a0739235
-UUID uuid = UuidCreator.getCombGuid();
-```
-
-Examples of COMB GUID:
-
-```text
-cc6347bb-bd7a-5904-945e-016a75228e8e
-967426cb-89c4-fcb5-945f-016a75228e8e
-28e86a61-085b-1385-9460-016a75228e8e
-ab831b05-8ff0-fc80-9461-016a75228e8e
-e260f564-3ae0-8396-efa6-016a75228e8f
-1cc5a7cc-4016-f39c-efa7-016a75228e8f
-bc84674c-406c-e2de-efa8-016a75228e8f
-109c9408-9ff0-34b3-efa9-016a75228e8f
-a9c86b5f-4d97-c767-efaa-016a75228e8f
-1777eb4e-20f7-09e7-efab-016a75228e8f
-```
 ### MSSQL GUID (non-standard)
 
 The MSSQL GUID is a modified time-based UUID that changes the timestamp byte order for MS SQL Server database.
@@ -268,21 +273,68 @@ UUID uuid = UuidCreator.getMssqlGuid();
 Examples of MSSQL GUID:
 
 ```text
-a02e61a9-516c-e911-9bd6-4546d757de20
-a12e61a9-516c-e911-9bd6-4546d757de20
-a22e61a9-516c-e911-9bd6-4546d757de20
-a32e61a9-516c-e911-9bd6-4546d757de20
-a42e61a9-516c-e911-9bd6-4546d757de20
-a52e61a9-516c-e911-9bd6-4546d757de20
-a62e61a9-516c-e911-9bd6-4546d757de20
-a72e61a9-516c-e911-9bd6-4546d757de20
-b05561a9-516c-e911-9bd6-4546d757de20
-b15561a9-516c-e911-9bd6-4546d757de20
+5039de0e-ff8e-e911-b649-e381f64b2e76
+5139de0e-ff8e-e911-b649-e381f64b2e76
+5239de0e-ff8e-e911-b649-e381f64b2e76
+5339de0e-ff8e-e911-b649-e381f64b2e76
+5439de0e-ff8e-e911-b649-e381f64b2e76
+5539de0e-ff8e-e911-b649-e381f64b2e76
+5639de0e-ff8e-e911-b649-e381f64b2e76
+5739de0e-ff8e-e911-b649-e381f64b2e76
+5839de0e-ff8e-e911-b649-e381f64b2e76
+5939de0e-ff8e-e911-b649-e381f64b2e76
+5a39de0e-ff8e-e911-b649-e381f64b2e76
+5b39de0e-ff8e-e911-b649-e381f64b2e76
+5c39de0e-ff8e-e911-b649-e381f64b2e76
+5d39de0e-ff8e-e911-b649-e381f64b2e76
+5e39de0e-ff8e-e911-b649-e381f64b2e76
+5f39de0e-ff8e-e911-b649-e381f64b2e76
+ ^ look
+ 
+|-----------------|----|-----------|
+     timestamp    clkseq  node id
+```
+
+### COMB GUID (non-standard)
+
+The COMB GUID is a modified random UUID that replaces the last 6 bytes with Unix epoch milliseconds for MS SQL Server database.
+
+```java
+// COMB GUID
+// Result: 990676e9-5bb8-1a3d-b17c-0167a0739235
+UUID uuid = UuidCreator.getCombGuid();
+```
+
+Examples of COMB GUID:
+
+```text
+cfd143ca-63c9-4f5a-e536-016b5865764f
+1a89b383-f1f2-4693-e537-016b5865764f
+aa85ddf3-ad68-41c9-e538-016b5865764f
+b8a57db0-dab3-4036-e539-016b5865764f
+16b52a08-bba7-46eb-e53a-016b5865764f
+01b86151-1262-4336-e53b-016b5865764f
+1390b56e-737c-4123-e53c-016b5865764f
+e5ada0c7-541e-4991-e53d-016b5865764f
+185cda90-6e2c-4fec-8232-016b58657650 < millisecond changed
+21cbdf25-5318-4b6e-8233-016b58657650
+81423968-1d49-497a-8234-016b58657650
+bd9a6096-d4d0-4ed4-8235-016b58657650
+0acf87ef-9c94-4553-8236-016b58657650
+21aca9d2-5594-4cbc-8237-016b58657650
+dbdbd21a-b854-49fd-8238-016b58657650
+c4b8abce-1a2d-45f5-8239-016b58657650
+                      ^ look       ^ look
+
+|-----------------|----|------------|
+    randomness    clkseq  millisecs
 ```
 
 ### Lexical Order GUID (non-standard)
 
-The Lexical Order GUID is is based on the ULID specification <sup>[9]</sup> - _Universally Unique Lexicographically Sortable Identifier_. The first 48 bits the count of milliseconds since Unix Epoch, 1 January 1970. The remaining 60 bits are random. If the new timestamp is not greater than the previous one, the random bits are incremented by 1.
+The Lexical Order GUID is based on the ULID specification <sup>[9]</sup> - _Universally Unique Lexicographically Sortable Identifier_. The first 48 bits represent the count of milliseconds since Unix Epoch, 1 January 1970. The remaining 60 bits are generated by a secure random number generator. 
+
+Every time the timestamp changes the random part is reset to a new random value. If the current timestamp is equal to the previous one, the random bits are incremented by 1.
 
 ```java
 // Lexical order GUID
@@ -293,16 +345,25 @@ UUID uuid = UuidCreator.getLexicalOrderGuid();
 Examples of Lexical Order GUID:
 
 ```text
-016b54d3-5d5b-7fc0-0c99-c0d7a29b17da
-016b54d3-5d5b-7fc0-0c99-c0d7a29b17db
-016b54d3-5d5b-7fc0-0c99-c0d7a29b17dc
-016b54d3-5d5b-7fc0-0c99-c0d7a29b17dd
-016b54d3-5d5b-7fc0-0c99-c0d7a29b17de
-016b54d3-5d5b-7fc0-0c99-c0d7a29b17df
-016b54d3-5d5b-7fc0-0c99-c0d7a29b17e0
-016b54d3-5d5b-7fc0-0c99-c0d7a29b17e1
-016b54d3-5d5b-7fc0-0c99-c0d7a29b17e2
-016b54d3-5d5b-7fc0-0c99-c0d7a29b17e3
+016b5865-7657-ff6d-c6f4-77fe215b2684
+016b5865-7657-ff6d-c6f4-77fe215b2685
+016b5865-7657-ff6d-c6f4-77fe215b2686
+016b5865-7657-ff6d-c6f4-77fe215b2687
+016b5865-7657-ff6d-c6f4-77fe215b2688
+016b5865-7657-ff6d-c6f4-77fe215b2689
+016b5865-7657-ff6d-c6f4-77fe215b268a
+016b5865-7658-8b58-05b8-9a9958805931 < millisecond changed
+016b5865-7658-8b58-05b8-9a9958805932
+016b5865-7658-8b58-05b8-9a9958805933
+016b5865-7658-8b58-05b8-9a9958805934
+016b5865-7658-8b58-05b8-9a9958805935
+016b5865-7658-8b58-05b8-9a9958805936
+016b5865-7658-8b58-05b8-9a9958805937
+016b5865-7658-8b58-05b8-9a9958805938
+            ^ look                 ^ look
+                                   
+|------------|----------------------|
+  millisecs        randomness
 ```
 
 
@@ -717,33 +778,47 @@ Here is a table showing the results of a simple benchmark using JMH. This implem
 ---------------------------------------------------------------------------------
 Benchmark                                       Mode  Cnt   Score   Error  Units
 ---------------------------------------------------------------------------------
-BenchmarkRunner.EaioTimeBasedWithMac             ss  100   7,101 ± 0,636  ms/op
-BenchmarkRunner.JavaNameBased                    ss  100  53,149 ± 9,722  ms/op
-BenchmarkRunner.JavaRandom                       ss  100  55,076 ± 4,471  ms/op
-BenchmarkRunner.JugNameBased                     ss  100  39,520 ± 3,210  ms/op
-BenchmarkRunner.JugRandom                        ss  100  55,030 ± 4,146  ms/op
-BenchmarkRunner.JugTimeBased                     ss  100   7,736 ± 0,924  ms/op
-BenchmarkRunner.JugTimeBasedWithMAC              ss  100   7,624 ± 0,910  ms/op
-BenchmarkRunner.UuidCreatorCombGuid              ss  100  40,372 ± 5,029  ms/op
-BenchmarkRunner.UuidCreatorDceSecurity           ss  100   8,099 ± 1,311  ms/op
-BenchmarkRunner.UuidCreatorDceSecurityWithMac    ss  100   8,194 ± 1,313  ms/op
-BenchmarkRunner.UuidCreatorFastRandom            ss  100   3,015 ± 0,553  ms/op
-BenchmarkRunner.UuidCreatorLexicalOrderGuid      ss  100   7,147 ± 0,628  ms/op
-BenchmarkRunner.UuidCreatorMssqlGuid             ss  100   7,943 ± 0,936  ms/op
-BenchmarkRunner.UuidCreatorNameBasedMd5          ss  100  38,925 ± 2,894  ms/op
-BenchmarkRunner.UuidCreatorNameBasedSha1         ss  100  48,709 ± 3,597  ms/op
-BenchmarkRunner.UuidCreatorNameBasedSha256       ss  100  67,722 ± 3,162  ms/op
-BenchmarkRunner.UuidCreatorRandom                ss  100  55,013 ± 4,355  ms/op
-BenchmarkRunner.UuidCreatorSequential            ss  100   7,398 ± 1,027  ms/op
-BenchmarkRunner.UuidCreatorSequentialWithMac     ss  100   7,229 ± 1,016  ms/op
-BenchmarkRunner.UuidCreatorTimeBased             ss  100   7,420 ± 0,913  ms/op
-BenchmarkRunner.UuidCreatorTimeBasedWithMac      ss  100   7,424 ± 0,982  ms/op
+BenchmarkRunner.EaioTimeBasedWithMac_ _ _ _ _ _  ss  100   6,451 ± 0,401  ms/op
+BenchmarkRunner.JavaNameBased                    ss  100  41,219 ± 2,226  ms/op
+BenchmarkRunner.JavaRandom_ _ _ _ _ _ _ _ _ _ _  ss  100  50,673 ± 1,050  ms/op
+BenchmarkRunner.JugNameBased                     ss  100  37,119 ± 0,977  ms/op
+BenchmarkRunner.JugRandom                        ss  100  51,056 ± 0,989  ms/op
+BenchmarkRunner.JugTimeBased                     ss  100   6,922 ± 0,484  ms/op
+BenchmarkRunner.JugTimeBasedWithMAC_ _ _ _ _ _ _ ss  100   6,871 ± 0,453  ms/op
+BenchmarkRunner.UuidCreatorCombGuid              ss  100  35,288 ± 1,078  ms/op
+BenchmarkRunner.UuidCreatorDceSecurity           ss  100   7,005 ± 0,464  ms/op
+BenchmarkRunner.UuidCreatorDceSecurityWithMac    ss  100   6,849 ± 0,458  ms/op
+BenchmarkRunner.UuidCreatorFastRandom            ss  100   2,402 ± 0,375  ms/op
+BenchmarkRunner.UuidCreatorLexicalOrderGuid      ss  100   6,708 ± 0,447  ms/op
+BenchmarkRunner.UuidCreatorMssqlGuid             ss  100   7,112 ± 0,442  ms/op
+BenchmarkRunner.UuidCreatorNameBasedMd5          ss  100  36,083 ± 1,251  ms/op
+BenchmarkRunner.UuidCreatorNameBasedSha1         ss  100  44,977 ± 1,343  ms/op
+BenchmarkRunner.UuidCreatorNameBasedSha256       ss  100  63,744 ± 0,998  ms/op
+BenchmarkRunner.UuidCreatorRandom                ss  100  50,518 ± 0,864  ms/op
+BenchmarkRunner.UuidCreatorSequential            ss  100   6,447 ± 0,425  ms/op
+BenchmarkRunner.UuidCreatorSequentialWithMac     ss  100   6,439 ± 0,462  ms/op
+BenchmarkRunner.UuidCreatorTimeBased             ss  100   6,526 ± 0,432  ms/op
+BenchmarkRunner.UuidCreatorTimeBasedWithMac      ss  100   6,471 ± 0,426  ms/op
 ---------------------------------------------------------------------------------
-Total time: 00:02:05
+Total time: 00:02:15
 ---------------------------------------------------------------------------------
 ```
 
-This benchmark was executed in a machine Intel i5-3330 with 8GB RAM.
+This benchmark was executed in a machine Ubuntu 18.04, processor Intel i5-3330 and 8GB RAM.
+
+### Benchmark options
+
+The benchmark executes 10 iterations of 100 thousand operations. Before these iterations it executes 2 warm-up iterations of 100 thousand operations. These are the options used:
+
+```java
+@State(Scope.Thread)
+@Warmup(iterations = 2, batchSize = 100_000)
+@Measurement(iterations = 10, batchSize = 100_000)
+@BenchmarkMode(Mode.SingleShotTime)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
+```
+
+**Note:** the benchmark options was wrong before the uuid-creator v1.3.5. Before this version the benchmark used 1 warm-up iteration of 1 thousand operations. Now it uses 2 warm-up iterations of 100 thousand operations. The results changed a lot after this correction.
 
 You can find the benchmark source code at [uuid-creator-benchmark](https://github.com/fabiolimace/uuid-creator-benchmark).
 

@@ -602,7 +602,7 @@ public class UuidCreatorTest {
 		long lastLsb = creator.create().getLeastSignificantBits();
 		assertEquals((lastLsb % DEFAULT_LOOP_MAX) - 1, (firstLsb % DEFAULT_LOOP_MAX));
 	}
-
+	
 	private void checkIfStringIsValid(UUID uuid) {
 		assertTrue(uuid.toString().matches(UuidCreatorTest.UUID_PATTERN));
 	}

@@ -19,7 +19,6 @@ package com.github.f4b6a3.uuid.clockseq;
 
 import com.github.f4b6a3.uuid.distrib.CyclicDistributor;
 import com.github.f4b6a3.uuid.distrib.Distributor;
-import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.sequence.AbstractSequence;
 import com.github.f4b6a3.uuid.state.AbstractUuidState;
 import com.github.f4b6a3.uuid.state.FileUuidState;
@@ -30,8 +29,9 @@ import com.github.f4b6a3.uuid.util.SettingsUtil;
  * maximum value of this sequence is 16,383 or 0x3fff.
  */
 public class DefaultClockSequenceStrategy extends AbstractSequence implements ClockSequenceStrategy {
-	private long timestamp = 0;
-	private long nodeIdentifier = 0;
+
+	private long previousTimestamp = 0;
+	private long previousNodeIdentifier = 0;
 
 	protected AbstractUuidState state;
 
@@ -83,8 +83,8 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	public DefaultClockSequenceStrategy(long timestamp, long nodeIdentifier, AbstractUuidState state) {
 		super(SEQUENCE_MIN, SEQUENCE_MAX);
 
-		this.timestamp = timestamp;
-		this.nodeIdentifier = nodeIdentifier;
+		this.previousTimestamp = timestamp;
+		this.previousNodeIdentifier = nodeIdentifier;
 
 		if (SettingsUtil.isStateEnabled()) {
 
@@ -106,7 +106,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 			long lastClockSequence = this.state.getClockSequence();
 
 			this.set(lastClockSequence);
-			if ((this.timestamp <= lastTimestamp) || (this.nodeIdentifier != lastNodeIdentifier)) {
+			if ((this.previousTimestamp <= lastTimestamp) || (this.previousNodeIdentifier != lastNodeIdentifier)) {
 				this.next();
 			}
 
@@ -141,17 +141,17 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	 * @param nodeIdentifier
 	 *            a node identifier (ignored in this subclass)
 	 * @return a clock sequence
-	 * @throws UuidCreatorException
-	 *             an overrun exception
 	 */
 	@Override
 	public long getClockSequence(final long timestamp, final long nodeIdentifier) {
-		if (timestamp <= this.timestamp) {
-			this.timestamp = timestamp;
-			return this.next();
+
+		if (timestamp > this.previousTimestamp) {
+			this.previousTimestamp = timestamp;
+			return this.current();
 		}
-		this.timestamp = timestamp;
-		return this.current();
+
+		this.previousTimestamp = timestamp;
+		return this.next();
 	}
 
 	@Override
@@ -164,8 +164,8 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	 */
 	protected void storeState() {
 		if (SettingsUtil.isStateEnabled()) {
-			this.state.setNodeIdentifier(nodeIdentifier);
-			this.state.setTimestamp(timestamp);
+			this.state.setNodeIdentifier(previousNodeIdentifier);
+			this.state.setTimestamp(previousTimestamp);
 			this.state.setClockSequence(this.value);
 			this.state.store();
 		}
@@ -177,7 +177,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	private void addShutdownHook() {
 		Runtime.getRuntime().addShutdownHook(new DefaultClockSequenceShutdownHook(this));
 	}
-	
+
 	/**
 	 * Thread that is run when the program exits or is terminated.
 	 */
