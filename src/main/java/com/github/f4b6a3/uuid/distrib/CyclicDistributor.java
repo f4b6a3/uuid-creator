@@ -39,20 +39,20 @@ public class CyclicDistributor implements Distributor {
 		this.reset();
 	}
 
-	private void reset() {
+	protected synchronized void reset() {
 		this.iteration = 0;
 		this.remaining = 0;
 		this.arc = 0;
 	}
 
-	private int first() {
+	protected synchronized long first() {
 		this.reset();
 		this.offset = RandomUtil.nextInt((int) this.perimeter);
-		return (int) this.offset;
+		return (long) this.offset;
 	}
 
 	@Override
-	public synchronized int handOut() {
+	public synchronized long handOut() {
 
 		if (this.offset == -1) {
 			return this.first();

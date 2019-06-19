@@ -22,7 +22,7 @@ import java.util.UUID;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
 import com.github.f4b6a3.uuid.factory.abst.NoArgumentsUuidCreator;
-import com.github.f4b6a3.uuid.timestamp.EpochMilliTimestampStretegy;
+import com.github.f4b6a3.uuid.timestamp.UnixEpochMilliTimestampStretegy;
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
 import com.github.f4b6a3.uuid.util.ByteUtil;
 import com.github.f4b6a3.uuid.util.RandomUtil;
@@ -54,7 +54,7 @@ public class CombGuidCreator extends AbstractUuidCreator implements NoArgumentsU
 
 	public CombGuidCreator() {
 		this.reset();
-		this.timestampStrategy = new EpochMilliTimestampStretegy();
+		this.timestampStrategy = new UnixEpochMilliTimestampStretegy();
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class CombGuidCreator extends AbstractUuidCreator implements NoArgumentsU
 	/**
 	 * Reset the random part of the GUID.
 	 */
-	protected void reset() {
+	protected synchronized void reset() {
 		final byte[] bytes = new byte[10];
 		RandomUtil.nextBytes(bytes);
 		this.random3 = ByteUtil.toNumber(bytes, 0, 4);
@@ -97,7 +97,7 @@ public class CombGuidCreator extends AbstractUuidCreator implements NoArgumentsU
 	 * @throws UuidCreatorException
 	 *             if an overflow happens.
 	 */
-	protected void increment() {
+	protected synchronized void increment() {
 		this.random1++;
 		if (this.random1 > 0x000000000000ffffL) {
 			this.random1 = 0;
@@ -122,7 +122,7 @@ public class CombGuidCreator extends AbstractUuidCreator implements NoArgumentsU
 	 * @return {@link CombGuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends CombGuidCreator> T withTimestampStrategy(TimestampStrategy timestampStrategy) {
+	public synchronized <T extends CombGuidCreator> T withTimestampStrategy(TimestampStrategy timestampStrategy) {
 		this.timestampStrategy = timestampStrategy;
 		return (T) this;
 	}

@@ -222,7 +222,7 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	 * @param localDomain a local domain
 	 * @return {@link DceSecurityUuidCreator}
 	 */
-	public DceSecurityUuidCreator withLocalDomain(byte localDomain) {
+	public synchronized DceSecurityUuidCreator withLocalDomain(byte localDomain) {
 		this.localDomain = localDomain;
 		return this;
 	}

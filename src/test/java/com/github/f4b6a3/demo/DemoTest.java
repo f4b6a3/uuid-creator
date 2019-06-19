@@ -7,7 +7,6 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.junit.Ignore;
-import org.junit.Test;
 
 import com.github.f4b6a3.other.RandomImage;
 import com.github.f4b6a3.other.SimpleBenchmark;
@@ -22,7 +21,6 @@ import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.uuid.random.XorshiftRandom;
 import com.github.f4b6a3.uuid.random.XorshiftStarRandom;
 import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
-import com.github.f4b6a3.uuid.timestamp.DeltaTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.NanosecondTimestampStrategy;
 import com.github.f4b6a3.uuid.util.SystemDataUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
@@ -191,9 +189,6 @@ public class DemoTest {
 
 		uuid = UuidCreator.getTimeBasedCreator().withTimestampStrategy(new NanosecondTimestampStrategy()).create();
 		System.out.println(String.format("%s // with nanoseconds timestamp strategy (Instant.getNano())", uuid));
-
-		uuid = UuidCreator.getTimeBasedCreator().withTimestampStrategy(new DeltaTimestampStrategy()).create();
-		System.out.println(String.format("%s // with delta timestamp strategy (diff of subsequent System.nanoTime())", uuid));
 
 		System.out.println("\n##### Node identifier strategy");
 

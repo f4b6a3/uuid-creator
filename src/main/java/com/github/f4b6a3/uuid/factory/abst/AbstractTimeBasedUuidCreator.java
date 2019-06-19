@@ -177,7 +177,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUuidCreator> T withTimestampStrategy(TimestampStrategy timestampStrategy) {
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withTimestampStrategy(TimestampStrategy timestampStrategy) {
 		this.timestampStrategy = timestampStrategy;
 		return (T) this;
 	}
@@ -193,7 +193,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUuidCreator> T withNodeIdentifierStrategy(
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withNodeIdentifierStrategy(
 			NodeIdentifierStrategy nodeIdentifierStrategy) {
 		this.nodeIdentifierStrategy = nodeIdentifierStrategy;
 		return (T) this;
@@ -210,7 +210,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUuidCreator> T withClockSequenceStrategy(
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withClockSequenceStrategy(
 			ClockSequenceStrategy clockSequenceStrategy) {
 		this.clockSequenceStrategy = clockSequenceStrategy;
 		return (T) this;
@@ -228,7 +228,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUuidCreator> T withInstant(Instant instant) {
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withInstant(Instant instant) {
 		this.timestampStrategy = new FixedTimestampStretegy(TimestampUtil.toTimestamp(instant));
 		return (T) this;
 	}
@@ -245,7 +245,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUuidCreator> T withTimestamp(long timestamp) {
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withTimestamp(long timestamp) {
 		this.timestampStrategy = new FixedTimestampStretegy(timestamp);
 		return (T) this;
 	}
@@ -260,7 +260,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUuidCreator> T withNodeIdentifier(long nodeIdentifier) {
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withNodeIdentifier(long nodeIdentifier) {
 		this.nodeIdentifierStrategy = new FixedNodeIdentifierStrategy(nodeIdentifier);
 		return (T) this;
 	}
@@ -274,7 +274,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUuidCreator> T withHardwareAddress() {
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withHardwareAddress() {
 		this.nodeIdentifierStrategy = new MacNodeIdentifierStrategy();
 		return (T) this;
 	}
@@ -291,7 +291,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractTimeBasedUuidCreator> T withClockSequence(int clockSequence) {
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withClockSequence(int clockSequence) {
 		this.clockSequenceStrategy = new FixedClockSequenceStrategy(clockSequence);
 		return (T) this;
 	}

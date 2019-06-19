@@ -151,12 +151,12 @@ public class UuidUtil {
 	}
 	
 	/**
-	 * Get the epoch milliseconds that is embedded in the UUID.
+	 * Get the Unix epoch milliseconds that is embedded in the UUID.
 	 *
 	 * @param uuid an UUID
 	 * @return epoch milliseconds
 	 */
-	public static long extractEpochMilliseconds(UUID uuid) {
+	public static long extractUnixEpochMilliseconds(UUID uuid) {
 		long timestamp = extractTimestamp(uuid);
 		return TimestampUtil.toInstant(timestamp).toEpochMilli();
 	}

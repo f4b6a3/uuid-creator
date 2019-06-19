@@ -71,21 +71,27 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 
 		long msb = 0;
 		long lsb = 0;
-		
+
 		// (3) set all bit randomly
 		if (this.random == null) {
-			
+
 			final byte[] bytes = new byte[16];
 			SecureRandomLazyHolder.INSTANCE.nextBytes(bytes);
-			
 			msb = ByteUtil.toNumber(bytes, 0, 8);
 			lsb = ByteUtil.toNumber(bytes, 8, 16);
-			
+
+		} else if (this.random instanceof SecureRandom) {
+
+			final byte[] bytes = new byte[16];
+			this.random.nextBytes(bytes);
+			msb = ByteUtil.toNumber(bytes, 0, 8);
+			lsb = ByteUtil.toNumber(bytes, 8, 16);
+
 		} else {
 			msb = this.random.nextLong();
 			lsb = this.random.nextLong();
 		}
-		
+
 		// (1)(2) Set the version and variant bits
 		msb = setVersionBits(msb);
 		lsb = setVariantBits(lsb);
@@ -108,7 +114,7 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 	 *            a random generator
 	 * @return {@link RandomUuidCreator}
 	 */
-	public RandomUuidCreator withRandomGenerator(Random random) {
+	public synchronized RandomUuidCreator withRandomGenerator(Random random) {
 		this.random = random;
 		return this;
 	}
@@ -120,11 +126,11 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 	 * 
 	 * @return {@link RandomUuidCreator}
 	 */
-	public RandomUuidCreator withFastRandomGenerator() {
+	public synchronized RandomUuidCreator withFastRandomGenerator() {
 		this.random = new Xorshift128PlusRandom();
 		return this;
 	}
-	
+
 	private static class SecureRandomLazyHolder {
 		static final Random INSTANCE = new SecureRandom();
 	}

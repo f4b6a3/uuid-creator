@@ -22,7 +22,7 @@ import java.util.UUID;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
 import com.github.f4b6a3.uuid.factory.abst.NoArgumentsUuidCreator;
-import com.github.f4b6a3.uuid.timestamp.EpochMilliTimestampStretegy;
+import com.github.f4b6a3.uuid.timestamp.UnixEpochMilliTimestampStretegy;
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
 import com.github.f4b6a3.uuid.util.ByteUtil;
 import com.github.f4b6a3.uuid.util.RandomUtil;
@@ -47,7 +47,7 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 
 	public LexicalOrderGuidCreator() {
 		this.reset();
-		this.timestampStrategy = new EpochMilliTimestampStretegy();
+		this.timestampStrategy = new UnixEpochMilliTimestampStretegy();
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 	/**
 	 * Reset the random part of the GUID.
 	 */
-	protected void reset() {
+	protected synchronized void reset() {
 		final byte[] bytes = new byte[10];
 		RandomUtil.nextBytes(bytes);
 		this.random3 = ByteUtil.toNumber(bytes, 0, 2);
@@ -141,7 +141,7 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 	 * @throws UuidCreatorException
 	 *             if an overflow happens.
 	 */
-	protected void increment() {
+	protected synchronized void increment() {
 		this.random1++;
 		if (this.random1 > 0x00000000ffffffffL) {
 			this.random1 = 0;
@@ -166,7 +166,7 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 	 * @return {@link LexicalOrderGuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends LexicalOrderGuidCreator> T withTimestampStrategy(TimestampStrategy timestampStrategy) {
+	public synchronized  <T extends LexicalOrderGuidCreator> T withTimestampStrategy(TimestampStrategy timestampStrategy) {
 		this.timestampStrategy = timestampStrategy;
 		return (T) this;
 	}

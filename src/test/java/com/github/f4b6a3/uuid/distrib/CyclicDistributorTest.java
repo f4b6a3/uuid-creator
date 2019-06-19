@@ -27,7 +27,7 @@ public class CyclicDistributorTest {
 		int degrees = 360;
 		Distributor distributor = new CyclicDistributor(degrees);
 
-		int first = distributor.handOut();
+		long first = distributor.handOut();
 		for (int i = 1; i < list.length; i++) {
 			assertEquals((list[i] + first) % degrees, distributor.handOut());
 		}
@@ -37,7 +37,7 @@ public class CyclicDistributorTest {
 	public void testCyclicDistributorTheValuesHandedOutShouldNotRepeat() {
 
 		int loopMax = 0x3fff; // 16383
-		HashSet<Integer> set = new HashSet<>();
+		HashSet<Long> set = new HashSet<>();
 		Distributor distributor = new CyclicDistributor(loopMax + 1);
 
 		for (int i = 0; i < loopMax; i++) {
