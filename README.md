@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>1.3.6</version>
+  <version>1.3.7</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/uuid-creator).
@@ -504,11 +504,7 @@ In the standard the bytes of the timestamp are rearranged so that the highest bi
 
 In this implementation, the timestamp has milliseconds accuracy, that is, it uses `System.currentTimeMillis()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis()) to get the current milliseconds. An internal _counter_ is used to _simulate_ the standard timestamp resolution of 10 million intervals per second. The reason this strategy is used is that the JVM may not guarantee[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#nanoTime()) a resolution higher than milliseconds.
 
-Two alternate strategies are provided in the case that the default timestamp strategy is not desired: nanoseconds strategy and delta strategy. 
-
-The nanoseconds strategy uses `Instant.getNano()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html#getNano--). You can use the `NanosecondTimestampStrategy` if your machine provides high time resolution. My personal development PC doesn't.
-
-The delta strategy uses `System.nanoTime()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#nanoTime()). The `DeltaTimestampStrategy` calculates the difference in nanoseconds between two calls to the `getTimestamp()` method. This difference is used to figure out the current timestamp in nanoseconds. As you can see, it is not precise, but it's an alternate option if you really need nanoseconds resolution.
+Another alternate strategies is provided in the case that the default timestamp strategy is not desired. The nanoseconds strategy uses `Instant.getNano()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html#getNano--). You can use the `NanosecondTimestampStrategy` if your machine provides high time resolution. My personal development PC doesn't.
 
 You can create any strategy that implements the `TimestampStrategy` in the case that none of the strategies provided suffices.
 
@@ -689,12 +685,6 @@ UUID uuid = UuidCreator.getTimeBasedCreator()
     .withTimestampStrategy(new NanosecondTimestampStrategy())
     .create();
 
-// with delta timestamp strategy (diff of subsequent System.nanoTime())
-// Result: b9c86aa6-fa7f-11e8-a299-27ce0b9c1a91
-UUID uuid = UuidCreator.getTimeBasedCreator()
-    .withTimestampStrategy(new DeltaTimestampStrategy())
-    .create();
-
 ```
 
 ##### Node identifier strategy
@@ -774,53 +764,40 @@ UUID uuid = UuidCreator.getDceSecurityCreator()
 Benchmark
 ------------------------------------------------------
 
-Here is a table showing the results of a simple benchmark using JMH. This implementation is compared to other implementations.
+This table shows the results of a simple benchmark using JMH.
 
 ```text
 ---------------------------------------------------------------------------------
 Benchmark                                       Mode  Cnt   Score   Error  Units
 ---------------------------------------------------------------------------------
-BenchmarkRunner.EaioTimeBasedWithMac _ _ _ _ _ _ ss  100   6,744 ± 0,420  ms/op
-BenchmarkRunner.JavaNameBased                    ss  100  41,785 ± 2,062  ms/op
-BenchmarkRunner.JavaRandom _ _ _ _ _ _ _ _ _ _ _ ss  100  49,404 ± 0,946  ms/op
-BenchmarkRunner.JugNameBased                     ss  100  36,921 ± 0,970  ms/op
-BenchmarkRunner.JugRandom                        ss  100  49,867 ± 0,928  ms/op
-BenchmarkRunner.JugTimeBased                     ss  100   6,943 ± 0,485  ms/op
-BenchmarkRunner.JugTimeBasedWithMAC_ _ _ _ _ _ _ ss  100   6,861 ± 0,472  ms/op
-BenchmarkRunner.UuidCreatorCombGuid              ss  100   5,683 ± 0,430  ms/op
-BenchmarkRunner.UuidCreatorDceSecurity           ss  100   6,852 ± 0,437  ms/op
-BenchmarkRunner.UuidCreatorDceSecurityWithMac    ss  100   6,857 ± 0,425  ms/op
-BenchmarkRunner.UuidCreatorFastRandom            ss  100   2,293 ± 0,391  ms/op
-BenchmarkRunner.UuidCreatorLexicalOrderGuid      ss  100   6,702 ± 0,426  ms/op
-BenchmarkRunner.UuidCreatorMssqlGuid             ss  100   6,805 ± 0,431  ms/op
-BenchmarkRunner.UuidCreatorNameBasedMd5          ss  100  36,315 ± 1,340  ms/op
-BenchmarkRunner.UuidCreatorNameBasedSha1         ss  100  44,729 ± 1,355  ms/op
-BenchmarkRunner.UuidCreatorNameBasedSha256       ss  100  64,010 ± 1,274  ms/op
-BenchmarkRunner.UuidCreatorRandom                ss  100  50,076 ± 0,953  ms/op
-BenchmarkRunner.UuidCreatorSequential            ss  100   6,150 ± 0,414  ms/op
-BenchmarkRunner.UuidCreatorSequentialWithMac     ss  100   6,311 ± 0,427  ms/op
-BenchmarkRunner.UuidCreatorTimeBased             ss  100   6,352 ± 0,411  ms/op
-BenchmarkRunner.UuidCreatorTimeBasedWithMac      ss  100   6,336 ± 0,422  ms/op
+MyBenchmark.EAIO_TimeBasedWithMac             ss  200   5,653 ± 0,224  ms/op
+MyBenchmark.JUG_NameBasedMd5                  ss  200  37,970 ± 1,380  ms/op
+MyBenchmark.JUG_NameBasedSha1                 ss  200  46,836 ± 1,378  ms/op
+MyBenchmark.JUG_Random                        ss  200  49,320 ± 0,697  ms/op
+MyBenchmark.JUG_TimeBased                     ss  200   6,145 ± 0,303  ms/op
+MyBenchmark.JUG_TimeBasedWithMAC              ss  200   5,915 ± 0,244  ms/op
+MyBenchmark.Java_NameBased                    ss  200  47,809 ± 2,225  ms/op
+MyBenchmark.Java_Random                       ss  200  49,110 ± 0,691  ms/op
+MyBenchmark.UuidCreator_CombGuid              ss  200   5,444 ± 0,299  ms/op
+MyBenchmark.UuidCreator_DceSecurity           ss  200   5,943 ± 0,256  ms/op
+MyBenchmark.UuidCreator_DceSecurityWithMac    ss  200   6,125 ± 0,306  ms/op
+MyBenchmark.UuidCreator_FastRandom            ss  200   1,979 ± 0,159  ms/op
+MyBenchmark.UuidCreator_LexicalOrderGuid      ss  200   6,459 ± 0,315  ms/op
+MyBenchmark.UuidCreator_MssqlGuid             ss  200   6,220 ± 0,273  ms/op
+MyBenchmark.UuidCreator_NameBasedMd5          ss  200  37,952 ± 1,320  ms/op
+MyBenchmark.UuidCreator_NameBasedSha1         ss  200  46,963 ± 1,473  ms/op
+MyBenchmark.UuidCreator_NameBasedSha256       ss  200  64,943 ± 1,161  ms/op
+MyBenchmark.UuidCreator_Random                ss  200  49,174 ± 0,667  ms/op
+MyBenchmark.UuidCreator_Sequential            ss  200   5,709 ± 0,293  ms/op
+MyBenchmark.UuidCreator_SequentialWithMac     ss  200   5,841 ± 0,320  ms/op
+MyBenchmark.UuidCreator_TimeBased             ss  200   5,710 ± 0,287  ms/op
+MyBenchmark.UuidCreator_TimeBasedWithMac      ss  200   5,746 ± 0,283  ms/op
 ---------------------------------------------------------------------------------
-Total time: 00:02:10
+Total time: 00:03:55
 ---------------------------------------------------------------------------------
 ```
 
 This benchmark was executed in a machine Ubuntu 18.04, processor Intel i5-3330 and 8GB RAM.
-
-### Benchmark options
-
-The benchmark executes 10 iterations of 100 thousand operations. Before these iterations it executes 2 warm-up iterations of 100 thousand operations. These are the options used:
-
-```java
-@State(Scope.Thread)
-@Warmup(iterations = 2, batchSize = 100_000)
-@Measurement(iterations = 10, batchSize = 100_000)
-@BenchmarkMode(Mode.SingleShotTime)
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
-```
-
-**Note:** the benchmark options was wrong before the uuid-creator v1.3.5. Before this version the benchmark used 1 warm-up iteration of 1 thousand operations. Now it uses 2 warm-up iterations of 100 thousand operations. The results changed a lot after this correction.
 
 You can find the benchmark source code at [uuid-creator-benchmark](https://github.com/fabiolimace/uuid-creator-benchmark).
 
