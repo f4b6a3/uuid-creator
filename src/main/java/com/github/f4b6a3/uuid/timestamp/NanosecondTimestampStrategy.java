@@ -14,9 +14,6 @@ import java.time.ZoneId;
  * {@link System#currentTimeMillis()}, or a higher resolution clock if one is
  * available".
  * 
- * The class {@link DeltaTimestampStrategy} may be used in systems that
- * nanosecond resolution is not available.
- * 
  * It's slower than {@link DefaultTimestampStrategy}.
  * 
  */
