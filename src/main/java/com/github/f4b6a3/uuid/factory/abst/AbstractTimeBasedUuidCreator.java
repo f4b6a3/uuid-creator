@@ -18,6 +18,7 @@
 package com.github.f4b6a3.uuid.factory.abst;
 
 import java.time.Instant;
+import java.util.Random;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.clockseq.ClockSequenceStrategy;
@@ -29,6 +30,8 @@ import com.github.f4b6a3.uuid.nodeid.DefaultNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.FixedNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.MacNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.NodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.nodeid.RandomNodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.nodeid.SystemDataHashNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.FixedTimestampStretegy;
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
@@ -177,7 +180,8 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized <T extends AbstractTimeBasedUuidCreator> T withTimestampStrategy(TimestampStrategy timestampStrategy) {
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withTimestampStrategy(
+			TimestampStrategy timestampStrategy) {
 		this.timestampStrategy = timestampStrategy;
 		return (T) this;
 	}
@@ -251,6 +255,24 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	}
 
 	/**
+	 * Set a fixed Unix Epoch milliseconds value to generate UUIDs.
+	 * 
+	 * This method is useful for unit tests.
+	 * 
+	 * @param unixEpochMillis
+	 *            a Unix Epoch milliseconds value
+	 * @param <T>
+	 *            type parameter
+	 * @return {@link AbstractTimeBasedUuidCreator}
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withUnixEpochMilliseconds(long unixEpochMillis) {
+		long timestamp = TimestampUtil.toTimestamp(unixEpochMillis);
+		this.timestampStrategy = new FixedTimestampStretegy(timestamp);
+		return (T) this;
+	}
+
+	/**
 	 * Set a fixed node identifier to generate UUIDs.
 	 * 
 	 * @param nodeIdentifier
@@ -276,6 +298,55 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends AbstractTimeBasedUuidCreator> T withHardwareAddress() {
 		this.nodeIdentifierStrategy = new MacNodeIdentifierStrategy();
+		return (T) this;
+	}
+
+	/**
+	 * Set the node identifier to be a system data hash.
+	 * 
+	 * The node identifier is calculated using these system data: OS + JVM +
+	 * network details + system resources. The resulting node identifier is as
+	 * unique and mutable as the host machine.
+	 * 
+	 * @param <T>
+	 *            type parameter
+	 * @return {@link AbstractTimeBasedUuidCreator}
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withSystemDataHashNodeIdentifier() {
+		this.nodeIdentifierStrategy = new SystemDataHashNodeIdentifierStrategy();
+		return (T) this;
+	}
+
+	/**
+	 * Set the node identifier to be a random identifier.
+	 * 
+	 * Each UUID generated will have a different random node identifier.
+	 * 
+	 * @param <T>
+	 *            type parameter
+	 * @return {@link AbstractTimeBasedUuidCreator}
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withRandomNodeIdentifier() {
+		this.nodeIdentifierStrategy = new RandomNodeIdentifierStrategy();
+		return (T) this;
+	}
+
+	/**
+	 * Set the node identifier to be a random identifier.
+	 * 
+	 * Each UUID generated will have a different random node identifier.
+	 * 
+	 * @param random
+	 *            a random number generator
+	 * @param <T>
+	 *            type parameter
+	 * @return {@link AbstractTimeBasedUuidCreator}
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withRandomNodeIdentifier(Random random) {
+		this.nodeIdentifierStrategy = new RandomNodeIdentifierStrategy(random);
 		return (T) this;
 	}
 
