@@ -24,7 +24,7 @@ import java.time.ZoneId;
 /**
  * Class that provides methods related to timestamps.
  * 
- * All its public methods have milliseconds precision. 
+ * All its public methods have milliseconds precision.
  *
  */
 public class TimestampUtil {
@@ -34,9 +34,9 @@ public class TimestampUtil {
 	public static final long MILLISECONDS_PER_SECOND = 1_000L;
 	public static final long TIMESTAMP_RESOLUTION = 10_000L;
 
-	private TimestampUtil(){
+	private TimestampUtil() {
 	}
-	
+
 	/**
 	 * Get the current timestamp with milliseconds precision.
 	 * 
@@ -60,31 +60,55 @@ public class TimestampUtil {
 	 * @return the current timestamp
 	 */
 	public static long getCurrentTimestamp() {
-		return (System.currentTimeMillis() - GREGORIAN_MILLISECONDS) * TIMESTAMP_RESOLUTION;
+		return toTimestamp(System.currentTimeMillis());
+	}
+
+	/**
+	 * Get the timestamp of a given Unix Epoch milliseconds.
+	 * 
+	 * @param unixEpochMilliseconds
+	 *            the Unix Epoch milliseconds
+	 * @return a timestamp
+	 */
+	public static long toTimestamp(final long unixEpochMilliseconds) {
+		return (unixEpochMilliseconds - GREGORIAN_MILLISECONDS) * TIMESTAMP_RESOLUTION;
+	}
+
+	/**
+	 * Get the Unix Epoch milliseconds of a given timestmap
+	 * 
+	 * @param timestamp
+	 *            a timestamp
+	 * @return the Unix Epoch milliseconds
+	 */
+	public static long toUnixEpochMilliseconds(final long timestamp) {
+		return (timestamp / TIMESTAMP_RESOLUTION) + GREGORIAN_MILLISECONDS;
 	}
 
 	/**
 	 * Get the timestamp of a given instant with milliseconds precision.
 	 *
-	 * @param instant an instant
+	 * @param instant
+	 *            an instant
 	 * @return a timestamp
 	 */
 	public static long toTimestamp(final Instant instant) {
-		return (instant.toEpochMilli() - GREGORIAN_MILLISECONDS) * TIMESTAMP_RESOLUTION;
+		return toTimestamp(instant.toEpochMilli());
 	}
 
 	/**
 	 * Get the instant of the given timestamp with milliseconds precision.
 	 *
-	 * @param timestamp a timestamp
+	 * @param timestamp
+	 *            a timestamp
 	 * @return an instant
 	 */
 	public static Instant toInstant(final long timestamp) {
-		return Instant.ofEpochMilli((timestamp / TIMESTAMP_RESOLUTION) + GREGORIAN_MILLISECONDS);
+		return Instant.ofEpochMilli(toUnixEpochMilliseconds(timestamp));
 	}
 
 	/**
-	 * Get the beggining of the Gregorian Calendar in milliseconds: 1582-10-15
+	 * Get the beginning of the Gregorian Calendar in milliseconds: 1582-10-15
 	 * 00:00:00Z.
 	 * 
 	 * The expression "Gregorian Epoch" means the date and time the Gregorian
