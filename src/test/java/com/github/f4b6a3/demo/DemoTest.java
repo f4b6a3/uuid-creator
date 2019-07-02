@@ -14,7 +14,7 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.factory.DceSecurityUuidCreator;
 import com.github.f4b6a3.uuid.nodeid.RandomNodeIdentifierStrategy;
-import com.github.f4b6a3.uuid.nodeid.MacNodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.nodeid.HardwareAddressNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.DefaultNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.random.Xoroshiro128PlusRandom;
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
@@ -179,7 +179,7 @@ public class DemoTest {
 		uuid = UuidCreator.getTimeBasedCreator().withNodeIdentifier(0x111111111111L).create();
 		System.out.println(String.format("%s // with fixed node identifier (0x111111111111L)", uuid));
 
-		uuid = UuidCreator.getTimeBasedCreator().withHardwareAddress().create();
+		uuid = UuidCreator.getTimeBasedCreator().withHardwareAddressNodeIdentifier().create();
 		System.out.println(String.format("%s // with hardware address (first MAC found)", uuid));
 
 		System.out.println("\n##### Timestamp strategy");
@@ -198,7 +198,7 @@ public class DemoTest {
 		uuid = UuidCreator.getTimeBasedCreator().withNodeIdentifierStrategy(new RandomNodeIdentifierStrategy()).create();
 		System.out.println(String.format("%s // with random node identifier strategy (random number generated once)", uuid));
 
-		uuid = UuidCreator.getTimeBasedCreator().withNodeIdentifierStrategy(new MacNodeIdentifierStrategy()).create();
+		uuid = UuidCreator.getTimeBasedCreator().withNodeIdentifierStrategy(new HardwareAddressNodeIdentifierStrategy()).create();
 		System.out.println(String.format("%s // with hardware address node identifier strategy (first MAC found)", uuid));
 
 		System.out.println("\n#### Name-based");
