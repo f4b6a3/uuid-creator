@@ -8,11 +8,11 @@ import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 import com.github.f4b6a3.uuid.util.RandomUtil;
 import com.github.f4b6a3.uuid.util.SystemDataUtil;
 
-public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
+public class HardwareAddressNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 	protected long nodeIdentifier;
 
-	public MacNodeIdentifierStrategy() {
+	public HardwareAddressNodeIdentifierStrategy() {
 		this.nodeIdentifier = getHardwareAddress();
 	}
 
@@ -49,7 +49,7 @@ public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 	/**
 	 * 
-	 * {@link MacNodeIdentifierStrategy#getNodeIdentifier()}
+	 * {@link HardwareAddressNodeIdentifierStrategy#getNodeIdentifier()}
 	 * 
 	 * @return a hardware address
 	 */
@@ -81,7 +81,7 @@ public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	/**
 	 * Return a random generated node identifier.
 	 * 
-	 * {@link MacNodeIdentifierStrategy#getNodeIdentifier()}
+	 * {@link HardwareAddressNodeIdentifierStrategy#getNodeIdentifier()}
 	 * 
 	 * @return a random multicast node identifier
 	 */

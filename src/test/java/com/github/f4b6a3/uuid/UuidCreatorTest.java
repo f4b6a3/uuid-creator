@@ -75,7 +75,7 @@ public class UuidCreatorTest {
 	@Test
 	public void testSequentialUuidWithMac() {
 		boolean multicast = false;
-		testCreateAbstractTimeBasedUuid(UuidCreator.getSequentialCreator().withHardwareAddress(), multicast);
+		testCreateAbstractTimeBasedUuid(UuidCreator.getSequentialCreator().withHardwareAddressNodeIdentifier(), multicast);
 	}
 
 	@Test
@@ -87,7 +87,7 @@ public class UuidCreatorTest {
 	@Test
 	public void testCreateTimeBasedUuidWithMac() {
 		boolean multicast = false;
-		testCreateAbstractTimeBasedUuid(UuidCreator.getTimeBasedCreator().withHardwareAddress(), multicast);
+		testCreateAbstractTimeBasedUuid(UuidCreator.getTimeBasedCreator().withHardwareAddressNodeIdentifier(), multicast);
 	}
 
 	@Test
