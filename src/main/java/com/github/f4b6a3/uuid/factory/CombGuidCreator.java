@@ -19,14 +19,6 @@ package com.github.f4b6a3.uuid.factory;
 
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.exception.UuidCreatorException;
-import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
-import com.github.f4b6a3.uuid.factory.abst.NoArgumentsUuidCreator;
-import com.github.f4b6a3.uuid.timestamp.UnixEpochMilliTimestampStretegy;
-import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
-import com.github.f4b6a3.uuid.util.ByteUtil;
-import com.github.f4b6a3.uuid.util.RandomUtil;
-
 /**
  * Factory that creates COMB UUIDs.
  * 
@@ -40,22 +32,7 @@ import com.github.f4b6a3.uuid.util.RandomUtil;
  * ULID specification: https://github.com/ulid/spec
  * 
  */
-public class CombGuidCreator extends AbstractUuidCreator implements NoArgumentsUuidCreator {
-
-	private long previousTimestamp;
-
-	private long random1;
-	private long random2;
-	private long random3;
-
-	protected static final String OVERFLOW_MESSAGE = "The system caused an overflow in the generator by requesting too many COMB GUIDs.";
-
-	protected TimestampStrategy timestampStrategy;
-
-	public CombGuidCreator() {
-		this.reset();
-		this.timestampStrategy = new UnixEpochMilliTimestampStretegy();
-	}
+public class CombGuidCreator extends LexicalOrderGuidCreator {
 
 	/**
 	 * Return a COMB GUID.
@@ -65,65 +42,11 @@ public class CombGuidCreator extends AbstractUuidCreator implements NoArgumentsU
 	@Override
 	public synchronized UUID create() {
 
-		final long timestamp = this.timestampStrategy.getTimestamp();
+		final long timestamp = this.getTimestamp();
 
-		if (timestamp == this.previousTimestamp) {
-			this.increment();
-		} else {
-			this.reset();
-		}
-
-		this.previousTimestamp = timestamp;
-		final long msb = (random3 << 32) | random2;
-		final long lsb = (random1 << 48) | timestamp;
+		final long msb = (high << 48) | (low >> 16);
+		final long lsb = (low << 48) | timestamp;
 
 		return new UUID(msb, lsb);
-	}
-
-	/**
-	 * Reset the random part of the GUID.
-	 */
-	protected synchronized void reset() {
-		final byte[] bytes = new byte[10];
-		RandomUtil.nextBytes(bytes);
-		this.random3 = ByteUtil.toNumber(bytes, 0, 4);
-		this.random2 = ByteUtil.toNumber(bytes, 4, 8);
-		this.random1 = ByteUtil.toNumber(bytes, 8, 10);
-	}
-
-	/**
-	 * Increment the random part of the GUID.
-	 * 
-	 * @throws UuidCreatorException
-	 *             if an overflow happens.
-	 */
-	protected synchronized void increment() {
-		this.random1++;
-		if (this.random1 > 0x000000000000ffffL) {
-			this.random1 = 0;
-			this.random2++;
-			if (this.random2 > 0x00000000ffffffffL) {
-				this.random2 = 0;
-				this.random3++;
-				if (this.random3 > 0x00000000ffffffffL) {
-					this.random3 = 0;
-					// Too many requests
-					throw new UuidCreatorException(OVERFLOW_MESSAGE);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Used for changing the timestamp strategy.
-	 * 
-	 * @param timestampStrategy
-	 *            a timestamp strategy
-	 * @return {@link CombGuidCreator}
-	 */
-	@SuppressWarnings("unchecked")
-	public synchronized <T extends CombGuidCreator> T withTimestampStrategy(TimestampStrategy timestampStrategy) {
-		this.timestampStrategy = timestampStrategy;
-		return (T) this;
 	}
 }

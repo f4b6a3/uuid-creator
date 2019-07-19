@@ -12,7 +12,7 @@ import com.github.f4b6a3.uuid.util.SettingsUtil;
 
 public class UuidStateTest {
 
-	private MockUuidState state;
+	private UuidStateMock state;
 
 	private static final int CLOCKSEQ = 0x1111;
 	private static final long NODEID = 0x111111111111L;
@@ -26,7 +26,7 @@ public class UuidStateTest {
 		this.timestamp = timestampStrategy.getTimestamp();
 		
 		SettingsUtil.setStateEnabled(true);
-		this.state = new MockUuidState();
+		this.state = new UuidStateMock();
 		this.state.setValid(true);
 	}
 	

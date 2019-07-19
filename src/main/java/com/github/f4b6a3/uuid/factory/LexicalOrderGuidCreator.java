@@ -24,7 +24,6 @@ import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
 import com.github.f4b6a3.uuid.factory.abst.NoArgumentsUuidCreator;
 import com.github.f4b6a3.uuid.timestamp.UnixEpochMilliTimestampStretegy;
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
-import com.github.f4b6a3.uuid.util.ByteUtil;
 import com.github.f4b6a3.uuid.util.RandomUtil;
 
 /**
@@ -35,13 +34,15 @@ import com.github.f4b6a3.uuid.util.RandomUtil;
  */
 public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoArgumentsUuidCreator {
 
-	private long previousTimestamp;
+	protected static final long MAX_LOW = 0xffffffffffffffffL; // ignore signal
+	protected static final long MAX_HIGH = 0x000000000000ffffL;
 
-	private long random1;
-	private long random2;
-	private long random3;
+	protected long previousTimestamp;
 
-	protected static final String OVERFLOW_MESSAGE = "The system caused an overflow in the generator by requesting too many Lexical Order GUIDs.";
+	protected long low;
+	protected long high;
+
+	protected static final String OVERFLOW_MESSAGE = "The system caused an overflow in the generator by requesting too many GUIDs.";
 
 	protected TimestampStrategy timestampStrategy;
 
@@ -109,6 +110,21 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 	@Override
 	public synchronized UUID create() {
 
+		final long timestamp = this.getTimestamp();
+
+		final long msb = (timestamp << 16) | high;
+		final long lsb = low;
+
+		return new UUID(msb, lsb);
+	}
+
+	/**
+	 * Return the current timestamp and resets or increments the random part.
+	 * 
+	 * @return timestamp
+	 */
+	protected synchronized long getTimestamp() {
+
 		final long timestamp = this.timestampStrategy.getTimestamp();
 
 		if (timestamp == this.previousTimestamp) {
@@ -118,21 +134,15 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 		}
 
 		this.previousTimestamp = timestamp;
-		final long msb = (timestamp << 16) | random3;
-		final long lsb = (random2 << 32) | random1;
-
-		return new UUID(msb, lsb);
+		return timestamp;
 	}
 
 	/**
 	 * Reset the random part of the GUID.
 	 */
 	protected synchronized void reset() {
-		final byte[] bytes = new byte[10];
-		RandomUtil.nextBytes(bytes);
-		this.random3 = ByteUtil.toNumber(bytes, 0, 2);
-		this.random2 = ByteUtil.toNumber(bytes, 2, 6);
-		this.random1 = ByteUtil.toNumber(bytes, 6, 10);
+		this.low = RandomUtil.nextLong();
+		this.high = RandomUtil.nextLong() & MAX_HIGH;
 	}
 
 	/**
@@ -142,18 +152,12 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 	 *             if an overflow happens.
 	 */
 	protected synchronized void increment() {
-		this.random1++;
-		if (this.random1 > 0x00000000ffffffffL) {
-			this.random1 = 0;
-			this.random2++;
-			if (this.random2 > 0x00000000ffffffffL) {
-				this.random2 = 0;
-				this.random3++;
-				if (this.random3 > 0x000000000000ffffL) {
-					this.random3 = 0;
-					// Too many requests
-					throw new UuidCreatorException(OVERFLOW_MESSAGE);
-				}
+		if (this.low++ == MAX_LOW) {
+			this.low = 0;
+			if (this.high++ == MAX_HIGH) {
+				this.high = 0;
+				// Too many requests
+				throw new UuidCreatorException(OVERFLOW_MESSAGE);
 			}
 		}
 	}
@@ -166,7 +170,8 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 	 * @return {@link LexicalOrderGuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized  <T extends LexicalOrderGuidCreator> T withTimestampStrategy(TimestampStrategy timestampStrategy) {
+	public synchronized <T extends LexicalOrderGuidCreator> T withTimestampStrategy(
+			TimestampStrategy timestampStrategy) {
 		this.timestampStrategy = timestampStrategy;
 		return (T) this;
 	}

@@ -1,6 +1,6 @@
 package com.github.f4b6a3.uuid.state;
 
-public class MockUuidState extends AbstractUuidState {
+public class UuidStateMock extends AbstractUuidState {
 
 	private boolean valid;
 	
