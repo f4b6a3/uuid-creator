@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>1.3.8</version>
+  <version>1.3.9</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/uuid-creator).
@@ -775,28 +775,28 @@ This table shows the results of a simple benchmark using JMH.
 -----------------------------------------------------------------------------
 Benchmark                                   Mode  Cnt   Score   Error  Units
 -----------------------------------------------------------------------------
-MyBenchmark.EAIO_TimeBasedWithMac             ss  200   5,653 ± 0,224  ms/op
-MyBenchmark.JUG_NameBasedMd5                  ss  200  37,970 ± 1,380  ms/op
-MyBenchmark.JUG_NameBasedSha1                 ss  200  46,836 ± 1,378  ms/op
-MyBenchmark.JUG_Random                        ss  200  49,320 ± 0,697  ms/op
-MyBenchmark.JUG_TimeBased                     ss  200   6,145 ± 0,303  ms/op
-MyBenchmark.JUG_TimeBasedWithMAC              ss  200   5,915 ± 0,244  ms/op
-MyBenchmark.Java_NameBased                    ss  200  47,809 ± 2,225  ms/op
-MyBenchmark.Java_Random                       ss  200  49,110 ± 0,691  ms/op
-MyBenchmark.UuidCreator_CombGuid              ss  200   5,444 ± 0,299  ms/op
-MyBenchmark.UuidCreator_DceSecurity           ss  200   5,943 ± 0,256  ms/op
-MyBenchmark.UuidCreator_DceSecurityWithMac    ss  200   6,125 ± 0,306  ms/op
-MyBenchmark.UuidCreator_FastRandom            ss  200   1,979 ± 0,159  ms/op
-MyBenchmark.UuidCreator_LexicalOrderGuid      ss  200   6,459 ± 0,315  ms/op
-MyBenchmark.UuidCreator_MssqlGuid             ss  200   6,220 ± 0,273  ms/op
-MyBenchmark.UuidCreator_NameBasedMd5          ss  200  37,952 ± 1,320  ms/op
-MyBenchmark.UuidCreator_NameBasedSha1         ss  200  46,963 ± 1,473  ms/op
-MyBenchmark.UuidCreator_NameBasedSha256       ss  200  64,943 ± 1,161  ms/op
-MyBenchmark.UuidCreator_Random                ss  200  49,174 ± 0,667  ms/op
-MyBenchmark.UuidCreator_Sequential            ss  200   5,709 ± 0,293  ms/op
-MyBenchmark.UuidCreator_SequentialWithMac     ss  200   5,841 ± 0,320  ms/op
-MyBenchmark.UuidCreator_TimeBased             ss  200   5,710 ± 0,287  ms/op
-MyBenchmark.UuidCreator_TimeBasedWithMac      ss  200   5,746 ± 0,283  ms/op
+MyBenchmark.EAIO_TimeBasedWithMac             ss  200   5,872 ± 0,227  ms/op
+MyBenchmark.JUG_NameBasedMd5                  ss  200  39,731 ± 1,336  ms/op
+MyBenchmark.JUG_NameBasedSha1                 ss  200  50,031 ± 1,414  ms/op
+MyBenchmark.JUG_Random                        ss  200  51,263 ± 0,665  ms/op
+MyBenchmark.JUG_TimeBased                     ss  200   6,007 ± 0,256  ms/op
+MyBenchmark.JUG_TimeBasedWithMAC              ss  200   6,047 ± 0,249  ms/op
+MyBenchmark.Java_NameBased                    ss  200  48,017 ± 2,391  ms/op
+MyBenchmark.Java_Random                       ss  200  51,499 ± 0,694  ms/op
+MyBenchmark.UuidCreator_CombGuid              ss  200   6,256 ± 0,282  ms/op
+MyBenchmark.UuidCreator_DceSecurity           ss  200   6,153 ± 0,277  ms/op
+MyBenchmark.UuidCreator_DceSecurityWithMac    ss  200   6,127 ± 0,281  ms/op
+MyBenchmark.UuidCreator_FastRandom            ss  200   1,885 ± 0,165  ms/op
+MyBenchmark.UuidCreator_LexicalOrderGuid      ss  200   6,183 ± 0,295  ms/op
+MyBenchmark.UuidCreator_MssqlGuid             ss  200   6,536 ± 0,310  ms/op
+MyBenchmark.UuidCreator_NameBasedMd5          ss  200  39,252 ± 1,411  ms/op
+MyBenchmark.UuidCreator_NameBasedSha1         ss  200  48,998 ± 1,434  ms/op
+MyBenchmark.UuidCreator_NameBasedSha256       ss  200  67,362 ± 1,222  ms/op
+MyBenchmark.UuidCreator_Random                ss  200  51,429 ± 0,668  ms/op
+MyBenchmark.UuidCreator_Sequential            ss  200   5,714 ± 0,294  ms/op
+MyBenchmark.UuidCreator_SequentialWithMac     ss  200   5,794 ± 0,287  ms/op
+MyBenchmark.UuidCreator_TimeBased             ss  200   5,788 ± 0,267  ms/op
+MyBenchmark.UuidCreator_TimeBasedWithMac      ss  200   5,904 ± 0,283  ms/op
 -----------------------------------------------------------------------------
 Total time: 00:03:55
 -----------------------------------------------------------------------------
