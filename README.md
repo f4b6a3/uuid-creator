@@ -21,8 +21,8 @@ UUID Creator is a library that generates [RFC-4122](https://tools.ietf.org/html/
 * __Sequential with MAC:__ a sequential version with hardware address;
 * __Sequential with fingerprint:__ a sequential version with a host fingerprint <sup>[10]</sup>;
 * __Name-based SHA-256:__ a base-named version that uses SHA-256;
-* __COMB Guid:__ a modified random version that replaces the last 6 bytes with Unix epoch milliseconds for MS SQL Server database <sup>[7]</sup>;
-* __MSSQL Guid:__ a modified time-based version that changes the timestamp byte order for MS SQL Server database <sup>[8]</sup>;
+* __MSSQL Guid:__ a modified time-based version that changes the timestamp byte order for MS SQL Server <sup>[8]</sup>;
+* __COMB Guid:__ a modified random version that replaces the last 6 bytes with milliseconds for MS SQL Server <sup>[7]</sup>;
 * __Lexical Order Guid:__ a lexicographically sortable GUID based on the ULID specification <sup>[9]</sup>.
 
 How to Use
@@ -60,7 +60,7 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>1.3.9</version>
+  <version>1.4.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/uuid-creator).
