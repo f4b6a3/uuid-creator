@@ -1,8 +1,8 @@
 package com.github.f4b6a3.uuid.nodeid;
 
-import com.github.f4b6a3.uuid.util.SystemDataUtil;
+import com.github.f4b6a3.uuid.util.FingerprintUtil;
 
-public class SystemDataHashNodeIdentifierStrategy implements NodeIdentifierStrategy {
+public class FingerprintNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 	protected long nodeIdentifier;
 
@@ -11,10 +11,13 @@ public class SystemDataHashNodeIdentifierStrategy implements NodeIdentifierStrat
 	 * operating system, java virtual machine, network details and system
 	 * resources.
 	 * 
-	 * See {@link SystemDataUtil#getSystemId()}.
+	 * 
+	 * Read: https://en.wikipedia.org/wiki/Device_fingerprint
+	 * 
+	 * See {@link FingerprintUtil#getFingerprint()}.
 	 */
-	public SystemDataHashNodeIdentifierStrategy() {
-		this.nodeIdentifier = SystemDataUtil.getSystemId();
+	public FingerprintNodeIdentifierStrategy() {
+		this.nodeIdentifier = FingerprintUtil.getFingerprint();
 	}
 
 	/**
@@ -23,7 +26,7 @@ public class SystemDataHashNodeIdentifierStrategy implements NodeIdentifierStrat
 	 * The node identifier is calculated using system data. The resulting node
 	 * identifier is as unique and mutable as the host machine.
 	 * 
-	 * See {@link SystemDataUtil#getSystemId()}.
+	 * See {@link FingerprintUtil#getFingerprint()}.
 	 */
 	@Override
 	public long getNodeIdentifier() {

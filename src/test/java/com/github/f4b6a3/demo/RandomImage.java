@@ -1,4 +1,4 @@
-package com.github.f4b6a3.other;
+package com.github.f4b6a3.demo;
 
 import java.io.File;
 import java.io.IOException;

@@ -8,8 +8,6 @@ import java.util.logging.Logger;
 
 import org.junit.Ignore;
 
-import com.github.f4b6a3.other.RandomImage;
-import com.github.f4b6a3.other.SimpleBenchmark;
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.factory.DceSecurityUuidCreator;
@@ -22,7 +20,7 @@ import com.github.f4b6a3.uuid.random.XorshiftRandom;
 import com.github.f4b6a3.uuid.random.XorshiftStarRandom;
 import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.NanosecondTimestampStrategy;
-import com.github.f4b6a3.uuid.util.SystemDataUtil;
+import com.github.f4b6a3.uuid.util.NetworkData;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
@@ -233,7 +231,7 @@ public class DemoTest {
 		startTime = System.currentTimeMillis();
 		
 		for(int i = 0; i < 100; i++) {
-			SystemDataUtil.getNetworkData();
+			NetworkData.getNetworkData();
 		}
 		
 		endTime = System.currentTimeMillis();
@@ -243,7 +241,7 @@ public class DemoTest {
 		startTime = System.currentTimeMillis();
 		
 		for(int i = 0; i < 100; i++) {
-			SystemDataUtil.getNetworkDataList();
+			NetworkData.getNetworkDataList();
 		}
 		
 		endTime = System.currentTimeMillis();

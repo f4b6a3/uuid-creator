@@ -28,7 +28,7 @@ import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.factory.abst.NoArgumentsUuidCreator;
 import com.github.f4b6a3.uuid.nodeid.NodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.RandomNodeIdentifierStrategy;
-import com.github.f4b6a3.uuid.nodeid.SystemDataHashNodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.nodeid.FingerprintNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.random.Xoroshiro128PlusRandom;
 import com.github.f4b6a3.uuid.timestamp.UnixEpochMilliTimestampStretegy;
 import com.github.f4b6a3.uuid.timestamp.FixedTimestampStretegy;
@@ -36,7 +36,7 @@ import com.github.f4b6a3.uuid.timestamp.NanosecondTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.RandomTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
 import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
-import com.github.f4b6a3.uuid.util.SystemDataUtil;
+import com.github.f4b6a3.uuid.util.FingerprintUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 import static com.github.f4b6a3.uuid.util.ByteUtil.*;
@@ -60,7 +60,7 @@ public class UuidCreatorTest {
 	@BeforeClass
 	public static void beforeClass() {
 
-		processors = SystemDataUtil.getAvailableProcessors();
+		processors = Runtime.getRuntime().availableProcessors();
 		if (processors < 4) {
 			processors = 4;
 		}
@@ -93,7 +93,7 @@ public class UuidCreatorTest {
 	@Test
 	public void testCreateTimeBasedUuidWithSystemDataHashNodeIdentifier() {
 		boolean multicast = true;
-		NodeIdentifierStrategy strategy = new SystemDataHashNodeIdentifierStrategy();
+		NodeIdentifierStrategy strategy = new FingerprintNodeIdentifierStrategy();
 		testCreateAbstractTimeBasedUuid(UuidCreator.getTimeBasedCreator().withNodeIdentifierStrategy(strategy), multicast);
 	}
 

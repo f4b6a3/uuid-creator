@@ -6,7 +6,6 @@ import com.github.f4b6a3.uuid.util.ByteUtil;
 import com.github.f4b6a3.uuid.util.NetworkData;
 import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 import com.github.f4b6a3.uuid.util.RandomUtil;
-import com.github.f4b6a3.uuid.util.SystemDataUtil;
 
 public class HardwareAddressNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
@@ -56,11 +55,11 @@ public class HardwareAddressNodeIdentifierStrategy implements NodeIdentifierStra
 	protected long getHardwareAddress() {
 
 		// first try
-		NetworkData networkData = SystemDataUtil.getNetworkData();
+		NetworkData networkData = NetworkData.getNetworkData();
 
 		// second try, if the first one failed
 		if (networkData == null) {
-			List<NetworkData> networkDataList = SystemDataUtil.getNetworkDataList();
+			List<NetworkData> networkDataList = NetworkData.getNetworkDataList();
 			if (networkDataList != null && !networkDataList.isEmpty()) {
 				networkData = networkDataList.get(0);
 			}

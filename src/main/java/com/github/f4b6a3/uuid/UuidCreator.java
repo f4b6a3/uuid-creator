@@ -40,10 +40,6 @@ public class UuidCreator {
 	private UuidCreator() {
 	}
 
-	/*
-	 * Public static methods for creating UUIDs
-	 */
-
 	/**
 	 * Returns a random UUID.
 	 * 
@@ -130,6 +126,30 @@ public class UuidCreator {
 	}
 
 	/**
+	 * Returns a UUID with timestamp and fingerprint, but the bytes
+	 * corresponding to timestamp are arranged in the "natural" order.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 0 (non-standard)
+	 * - Variant number: 1 
+	 * - Has timestamp?: YES 
+	 * - Has hardware address (MAC)?: NO 
+	 * - Timestamp bytes are in the RFC-4122 order?: NO
+	 * </pre>
+	 * 
+	 * @return a sequential UUID with fingerprint
+	 */
+	public static UUID getSequentialWithFingerprint() {
+		try {
+			return SequentialWithFingerprintCreatorLazyHolder.INSTANCE.create();
+		} catch (UuidCreatorException e) {
+			// Ignore the overrun exception and trust the clock sequence
+			return SequentialWithFingerprintCreatorLazyHolder.INSTANCE.create();
+		}
+	}
+
+	/**
 	 * Returns a UUID with timestamp and without machine address.
 	 *
 	 * <pre>
@@ -164,7 +184,7 @@ public class UuidCreator {
 	 * - Timestamp bytes are in the RFC-4122 order?: YES
 	 * </pre>
 	 * 
-	 * @return a time-based UUID
+	 * @return a time-based UUID with a MAC
 	 */
 	public static UUID getTimeBasedWithMac() {
 		try {
@@ -175,6 +195,29 @@ public class UuidCreator {
 		}
 	}
 
+	/**
+	 * Returns a UUID with timestamp and fingerprint.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 1 
+	 * - Variant number: 1 
+	 * - Has timestamp?: YES 
+	 * - Has hardware address (MAC)?: NO 
+	 * - Timestamp bytes are in the RFC-4122 order?: YES
+	 * </pre>
+	 * 
+	 * @return a time-based UUID with a fingerprint
+	 */
+	public static UUID getTimeBasedWithFingerprint() {
+		try {
+			return TimeBasedWithFingerprintCreatorLazyHolder.INSTANCE.create();
+		} catch (UuidCreatorException e) {
+			// Ignore the overrun exception and trust the clock sequence
+			return TimeBasedWithFingerprintCreatorLazyHolder.INSTANCE.create();
+		}
+	}
+	
 	/**
 	 * Returns a DCE Security UUID based on a local domain and a local
 	 * identifier.
@@ -238,6 +281,39 @@ public class UuidCreator {
 		} catch (UuidCreatorException e) {
 			// Ignore the overrun exception and trust the clock sequence
 			return DceSecurityWithMacCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
+		}
+	}
+	
+	/**
+	 * Returns a DCE Security UUID with fingerprint based on a local domain
+	 * and a local identifier.
+	 *
+	 * <pre>
+	 * Domain identifiers listed in the RFC-4122: 
+	 * - Local Domain Person (POSIX UserID) = 0;
+	 * - Local Domain Group (POSIX GroupID) = 1;
+	 * - Local Domain Org = 2.
+	 *
+	 * Details: 
+	 * - Version number: 2 
+	 * - Variant number: 1 
+	 * - Local domain: informed by user 
+	 * - Has hardware address (MAC)?: NO 
+	 * - Timestamp bytes are in the RFC-4122 order?: YES
+	 * </pre>
+	 * 
+	 * @param localDomain
+	 *            a local domain
+	 * @param localIdentifier
+	 *            a local identifier
+	 * @return a DCE Security UUID
+	 */
+	public static UUID getDceSecurityWithFingerprint(byte localDomain, int localIdentifier) {
+		try {
+			return DceSecurityWithFingerprintCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
+		} catch (UuidCreatorException e) {
+			// Ignore the overrun exception and trust the clock sequence
+			return DceSecurityWithFingerprintCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
 		}
 	}
 
@@ -532,12 +608,20 @@ public class UuidCreator {
 		static final SequentialUuidCreator INSTANCE = getSequentialCreator().withHardwareAddressNodeIdentifier();
 	}
 
+	private static class SequentialWithFingerprintCreatorLazyHolder {
+		static final SequentialUuidCreator INSTANCE = getSequentialCreator().withFingerprintNodeIdentifier();
+	}
+
 	private static class TimeBasedCreatorLazyHolder {
 		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator();
 	}
 
 	private static class TimeBasedWithMacCreatorLazyHolder {
 		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withHardwareAddressNodeIdentifier();
+	}
+
+	private static class TimeBasedWithFingerprintCreatorLazyHolder {
+		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withFingerprintNodeIdentifier();
 	}
 
 	private static class NameBasedMd5CreatorLazyHolder {
@@ -558,6 +642,10 @@ public class UuidCreator {
 
 	private static class DceSecurityWithMacCreatorLazyHolder {
 		static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator().withHardwareAddressNodeIdentifier();
+	}
+	
+	private static class DceSecurityWithFingerprintCreatorLazyHolder {
+		static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator().withFingerprintNodeIdentifier();
 	}
 
 	private static class MssqlGuidCreatorLazyHolder {

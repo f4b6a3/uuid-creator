@@ -31,7 +31,7 @@ import com.github.f4b6a3.uuid.nodeid.FixedNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.HardwareAddressNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.NodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.RandomNodeIdentifierStrategy;
-import com.github.f4b6a3.uuid.nodeid.SystemDataHashNodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.nodeid.FingerprintNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.FixedTimestampStretegy;
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
@@ -308,13 +308,15 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * network details + system resources. The resulting node identifier is as
 	 * unique and mutable as the host machine.
 	 * 
+	 * Read: https://en.wikipedia.org/wiki/Device_fingerprint
+	 * 
 	 * @param <T>
 	 *            type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized <T extends AbstractTimeBasedUuidCreator> T withSystemDataHashNodeIdentifier() {
-		this.nodeIdentifierStrategy = new SystemDataHashNodeIdentifierStrategy();
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withFingerprintNodeIdentifier() {
+		this.nodeIdentifierStrategy = new FingerprintNodeIdentifierStrategy();
 		return (T) this;
 	}
 
