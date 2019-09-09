@@ -1,8 +1,11 @@
 package com.github.f4b6a3.uuid.util;
 
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class FingerprintUtil {
 
@@ -57,9 +60,10 @@ public class FingerprintUtil {
 		String os = getOperatingSystem();
 		String jvm = getJavaVirtualMachine();
 		String net = getNetwork();
+		String loc = getLocalization();
 		String res = getResources();
-		String string = String.join(" ", os, jvm, net, res);
-
+		String string = String.join(" ", os, jvm, net, loc, res);
+		
 		byte[] bytes = string.getBytes();
 		byte[] hash = messageDigest.digest(bytes);
 
@@ -92,6 +96,19 @@ public class FingerprintUtil {
 		String vmVersion = System.getProperty("java.vm.version");
 		return String.join(" ", vendor, version, rtName, rtVersion, vmName, vmVersion);
 	}
+	
+	/**
+	 * Return a string with locale, charset, encoding and timezone. 
+	 * 
+	 * @return a string
+	 */
+	protected static String getLocalization() {
+		String locale = Locale.getDefault().toString();
+		String charset = Charset.defaultCharset().toString();
+		String encoding = System.getProperty("file.encoding");
+		String timezone = TimeZone.getDefault().getID();
+		return String.join(" ", locale, charset, encoding, timezone);
+	}
 
 	/**
 	 * Returns a string of CPU cores and maximum memory available.
@@ -101,7 +118,7 @@ public class FingerprintUtil {
 	protected static String getResources() {
 		int procs = Runtime.getRuntime().availableProcessors();
 		long memory = Runtime.getRuntime().maxMemory();
-		return String.join(" ", procs + " processors ", memory + " bytes");
+		return String.join(" ", procs + " processors", memory + " bytes");
 	}
 
 	/**
