@@ -79,6 +79,11 @@ UUID uuid = UuidCreator.getSequential();
 UUID uuid = UuidCreator.getSequentialWithMac();
 ```
 
+```java
+// Sequential with host fingerprint (hash of system properties)
+UUID uuid = UuidCreator.getSequentialWithFingerprint();
+```
+
 Examples of sequential UUID:
 
 ```text
@@ -116,6 +121,11 @@ UUID uuid = UuidCreator.getTimeBased();
 ```java
 // Time-based with hardware address
 UUID uuid = UuidCreator.getTimeBasedWithMac();
+```
+
+```java
+// Time-based with host fingerprint (hash of system properties)
+UUID uuid = UuidCreator.getTimeBasedWithFingerprint();
 ```
 
 Examples of time-based UUID:
@@ -159,6 +169,13 @@ UUID uuid = UuidCreator.getDceSecurity(localDomain, localIdentifier);
 byte localDomain = DceSecurityCreator.LOCAL_DOMAIN_GROUP;
 int localIdentifier = 1701;
 UUID uuid = UuidCreator.getDceSecurityWithMac(localDomain, localIdentifier);
+```
+
+```java
+// DCE Security with fingerprint (hash of system properties)
+byte localDomain = DceSecurityCreator.LOCAL_DOMAIN_GROUP;
+int localIdentifier = 1701;
+UUID uuid = UuidCreator.getDceSecurityWithFingerprint(localDomain, localIdentifier);
 ```
 
 ### Name-based using MD5 (version 3)
@@ -577,6 +594,63 @@ Sequential timestamp arrangement
 3: timestamp low      *
 ```
 
+#### Time-based vs Sequential
+
+RFC-4122 splits the timestamp bits into three parts: high, middle, and low. Then it reverses the order of these three parts to create a UUID. The sequential does not do this. The timestamp bits are kept in the original layout. See this example:
+
+
+Instant:
+
+```
+ 2019-09-22T17:52:55.033Z
+```
+
+Instant's timestamp in hexadecimal:
+
+```
+ 01e9dd61ce117e90
+```
+
+Timestamp split into high, middle and low bits:
+
+```
+ _1e9 dd61 ce117e90
+ _hhh mmmm llllllll
+
+h: high bits
+m: middle bits
+l: low bit
+_: ignored bits
+```
+
+Timestamp in time-based layout (RFC-4122):
+
+```
+ ce117e90-dd61-11e9-8080-39d701ba2e7c
+ llllllll-mmmm-vhhh-ssss-nnnnnnnnnnnn
+
+l: low bits
+m: middle bits
+h: high bits
+v: version
+s: clock sequence bits
+n: node id bits
+```
+
+Timestamp in sequential layout (this library):
+```
+ 1e9dd61c-e117-0e90-8080-39d701ba2e7c
+ hhhmmmml-llll-vlll-ssss-nnnnnnnnnnnn
+
+l: low bits
+m: middle bits
+h: high bits
+v: version
+s: clock sequence bits
+n: node id bits
+```
+
+
 ###  DCE Security
 
 The DCE Security UUID inherits the same characteristics of the time-based UUID. The standard doesn't describe the algorithm for generating this kind of UUID. These instructions are in the document "DCE 1.1: Authentication and Security Services", available in the Internet. <sup>[6]</sup>
@@ -921,5 +995,7 @@ External links
 * [How good is Java's UUID.randomUUID?](https://stackoverflow.com/questions/2513573/how-good-is-javas-uuid-randomuuid)
 
 * [ITU-T - ASN.1 PROJECT - Universally Unique Identifiers (UUIDs)](https://www.itu.int/en/ITU-T/asn1/Pages/UUID/uuids.aspx)
+
+* [GUID/UUID Performance - MariaDB](https://mariadb.com/kb/en/library/guiduuid-performance/)
 
 
