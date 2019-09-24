@@ -36,7 +36,7 @@ import java.time.ZoneId;
  */
 public class TimestampUtil {
 
-	public static final long GREGORIAN_MILLISECONDS = getGregorianEpochMilliseconds();
+	public static final long GREGORIAN_MILLISECONDS = getGregorianMilliseconds();
 
 	public static final long MILLISECONDS_PER_SECOND = 1_000L;
 	public static final long TIMESTAMP_RESOLUTION = 10_000L;
@@ -47,7 +47,8 @@ public class TimestampUtil {
 	/**
 	 * Get the current timestamp with milliseconds precision.
 	 * 
-	 * The UUID timestamp is a number of 100-nanos since gregorian epoch.
+	 * The UUID timestamp is the number of 100-nanos since 1582-10-15 (Gregorian
+	 * epoch).
 	 * 
 	 * ### RFC-4122 - 4.2.1.2. System Clock Resolution
 	 * 
@@ -73,31 +74,40 @@ public class TimestampUtil {
 	/**
 	 * Get the timestamp of a given Unix Epoch milliseconds.
 	 * 
-	 * @param unixEpochMilliseconds
+	 * The value returned by this method is the number of 100-nanos since
+	 * 1582-10-15 (Gregorian epoch).
+	 * 
+	 * @param unixMilliseconds
 	 *            the Unix Epoch milliseconds
-	 * @return a timestamp
+	 * @return the timestamp
 	 */
-	public static long toTimestamp(final long unixEpochMilliseconds) {
-		return (unixEpochMilliseconds - GREGORIAN_MILLISECONDS) * TIMESTAMP_RESOLUTION;
+	public static long toTimestamp(final long unixMilliseconds) {
+		return (unixMilliseconds - GREGORIAN_MILLISECONDS) * TIMESTAMP_RESOLUTION;
 	}
 
 	/**
-	 * Get the Unix Epoch milliseconds of a given timestmap
+	 * Get the Unix Epoch milliseconds of a given timestmap.
+	 * 
+	 * The value returned by this method is the number of milliseconds since
+	 * 1970-01-01 (Unix epoch).
 	 * 
 	 * @param timestamp
 	 *            a timestamp
-	 * @return the Unix Epoch milliseconds
+	 * @return the Unix milliseconds
 	 */
-	public static long toUnixEpochMilliseconds(final long timestamp) {
+	public static long toUnixMilliseconds(final long timestamp) {
 		return (timestamp / TIMESTAMP_RESOLUTION) + GREGORIAN_MILLISECONDS;
 	}
 
 	/**
 	 * Get the timestamp of a given instant with milliseconds precision.
 	 *
+	 * The value returned by this method is the number of 100-nanos since
+	 * 1582-10-15 (Gregorian epoch).
+	 * 
 	 * @param instant
 	 *            an instant
-	 * @return a timestamp
+	 * @return the timestamp
 	 */
 	public static long toTimestamp(final Instant instant) {
 		return toTimestamp(instant.toEpochMilli());
@@ -108,10 +118,10 @@ public class TimestampUtil {
 	 *
 	 * @param timestamp
 	 *            a timestamp
-	 * @return an instant
+	 * @return the instant
 	 */
 	public static Instant toInstant(final long timestamp) {
-		return Instant.ofEpochMilli(toUnixEpochMilliseconds(timestamp));
+		return Instant.ofEpochMilli(toUnixMilliseconds(timestamp));
 	}
 
 	/**
@@ -124,7 +134,7 @@ public class TimestampUtil {
 	 *
 	 * @return the milliseconds since gregorian epoch
 	 */
-	private static long getGregorianEpochMilliseconds() {
+	private static long getGregorianMilliseconds() {
 		return LocalDate.parse("1582-10-15").atStartOfDay(ZoneId.of("UTC")).toInstant().getEpochSecond()
 				* MILLISECONDS_PER_SECOND;
 	}

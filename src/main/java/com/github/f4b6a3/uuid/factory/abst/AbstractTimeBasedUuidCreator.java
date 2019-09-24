@@ -266,15 +266,15 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * 
 	 * This method is useful for unit tests.
 	 * 
-	 * @param unixEpochMillis
+	 * @param unixMilliseconds
 	 *            a Unix Epoch milliseconds value
 	 * @param <T>
 	 *            type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized <T extends AbstractTimeBasedUuidCreator> T withUnixEpochMilliseconds(long unixEpochMillis) {
-		long timestamp = TimestampUtil.toTimestamp(unixEpochMillis);
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withUnixMilliseconds(long unixMilliseconds) {
+		long timestamp = TimestampUtil.toTimestamp(unixMilliseconds);
 		this.timestampStrategy = new FixedTimestampStretegy(timestamp);
 		return (T) this;
 	}

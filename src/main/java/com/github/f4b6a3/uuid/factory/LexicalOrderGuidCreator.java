@@ -29,7 +29,7 @@ import java.util.UUID;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
 import com.github.f4b6a3.uuid.factory.abst.NoArgumentsUuidCreator;
-import com.github.f4b6a3.uuid.timestamp.UnixEpochMilliTimestampStretegy;
+import com.github.f4b6a3.uuid.timestamp.UnixMillisecondsTimestampStretegy;
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
 import com.github.f4b6a3.uuid.util.RandomUtil;
 
@@ -55,7 +55,7 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 
 	public LexicalOrderGuidCreator() {
 		this.reset();
-		this.timestampStrategy = new UnixEpochMilliTimestampStretegy();
+		this.timestampStrategy = new UnixMillisecondsTimestampStretegy();
 	}
 
 	/**

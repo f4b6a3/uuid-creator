@@ -24,7 +24,7 @@
 
 package com.github.f4b6a3.uuid.timestamp;
 
-public class UnixEpochMilliTimestampStretegy implements TimestampStrategy {
+public class UnixMillisecondsTimestampStretegy implements TimestampStrategy {
 
 	/**
 	 * Returns the count of milliseconds since 01-01-1970.

@@ -17,7 +17,7 @@ public class TimestampUtilTest {
 	}
 
 	@Test
-	public void testFromUnixEpochMillisecondsToTimestamp() {
+	public void testFromUnixMillisecondsToTimestamp() {
 		long milliseconds = System.currentTimeMillis();
 		long timestamp = TimestampUtil.toTimestamp(milliseconds);
 		Instant instant = TimestampUtil.toInstant(timestamp);
@@ -25,18 +25,18 @@ public class TimestampUtilTest {
 	}
 	
 	@Test
-	public void testFromCurrentTimestampToUnixEpochMilliseconds() {
+	public void testFromCurrentTimestampToUnixMilliseconds() {
 		long timestamp = TimestampUtil.getCurrentTimestamp();
-		long milliseconds = TimestampUtil.toUnixEpochMilliseconds(timestamp);
+		long milliseconds = TimestampUtil.toUnixMilliseconds(timestamp);
 		Instant instant = TimestampUtil.toInstant(timestamp);
 		assertEquals(milliseconds, instant.toEpochMilli());
 	}
 	
 	@Test
-	public void testFromTimestampToUnixEpochMilliseconds() {
+	public void testFromTimestampToUnixMilliseconds() {
 		long milliseconds1 = System.currentTimeMillis();
 		long timestamp = TimestampUtil.toTimestamp(milliseconds1);
-		long milliseconds2 = TimestampUtil.toUnixEpochMilliseconds(timestamp);
+		long milliseconds2 = TimestampUtil.toUnixMilliseconds(timestamp);
 		assertEquals(milliseconds1, milliseconds2);
 	}
 }

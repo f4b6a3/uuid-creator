@@ -29,7 +29,7 @@ import com.github.f4b6a3.uuid.nodeid.NodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.RandomNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.FingerprintNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.random.Xoroshiro128PlusRandom;
-import com.github.f4b6a3.uuid.timestamp.UnixEpochMilliTimestampStretegy;
+import com.github.f4b6a3.uuid.timestamp.UnixMillisecondsTimestampStretegy;
 import com.github.f4b6a3.uuid.timestamp.FixedTimestampStretegy;
 import com.github.f4b6a3.uuid.timestamp.NanosecondTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.RandomTimestampStrategy;
@@ -116,8 +116,8 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testCreateTimeBasedUuidWithEpochMilliTimestampStrategy() {
-		TimestampStrategy strategy = new UnixEpochMilliTimestampStretegy();
+	public void testCreateTimeBasedUuidWithUnixMilliTimestampStrategy() {
+		TimestampStrategy strategy = new UnixMillisecondsTimestampStretegy();
 		testCreateGenericUuid(UuidCreator.getTimeBasedCreator().withTimestampStrategy(strategy));
 	}
 	
@@ -748,7 +748,7 @@ public class UuidCreatorTest {
 		assertTrue("Start time was after end time", startTime <= endTime);
 
 		for (UUID uuid : list) {
-			long creationTime = UuidUtil.extractUnixEpochMilliseconds(uuid);
+			long creationTime = UuidUtil.extractUnixMilliseconds(uuid);
 			assertTrue("Creation time was before start time " + creationTime + " " + startTime,
 					creationTime >= startTime);
 			assertTrue("Creation time was after end time", creationTime <= endTime);
