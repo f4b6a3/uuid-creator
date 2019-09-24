@@ -1,17 +1,25 @@
-/**
- * Copyright 2018 Fabio Lima <br/>
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); <br/>
- * you may not use this file except in compliance with the License. <br/>
- * You may obtain a copy of the License at <br/>
- *
- * http://www.apache.org/licenses/LICENSE-2.0 <br/>
- *
- * Unless required by applicable law or agreed to in writing, software <br/>
- * distributed under the License is distributed on an "AS IS" BASIS, <br/>
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. <br/>
- * See the License for the specific language governing permissions and <br/>
- * limitations under the License. <br/>
+/*
+ * MIT License
+ * 
+ * Copyright (c) 2018-2019 Fabio Lima
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 package com.github.f4b6a3.uuid;
@@ -19,6 +27,7 @@ package com.github.f4b6a3.uuid;
 import java.security.SecureRandom;
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.factory.CombGuidCreator;
 import com.github.f4b6a3.uuid.factory.DceSecurityUuidCreator;
@@ -217,7 +226,7 @@ public class UuidCreator {
 			return TimeBasedWithFingerprintCreatorLazyHolder.INSTANCE.create();
 		}
 	}
-	
+
 	/**
 	 * Returns a DCE Security UUID based on a local domain and a local
 	 * identifier.
@@ -283,7 +292,7 @@ public class UuidCreator {
 			return DceSecurityWithMacCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
 		}
 	}
-	
+
 	/**
 	 * Returns a DCE Security UUID with fingerprint based on a local domain
 	 * and a local identifier.
@@ -358,6 +367,29 @@ public class UuidCreator {
 	}
 
 	/**
+	 * Returns a UUID based on a name space and a name, using MD5.
+	 *
+	 * See {@link UuidNamespace}.
+	 * 
+	 * <pre>
+	 * Details: 
+	 * - Version number: 3 
+	 * - Variant number: 1 
+	 * - Hash Algorithm: MD5 
+	 * - Name Space: informed by user
+	 * </pre>
+	 * 
+	 * @param namespace
+	 *            a name space enumeration
+	 * @param name
+	 *            a name string
+	 * @return a name-based UUID
+	 */
+	public static UUID getNameBasedMd5(UuidNamespace namespace, String name) {
+		return NameBasedMd5CreatorLazyHolder.INSTANCE.create(namespace, name);
+	}
+
+	/**
 	 * Returns a UUID based on a name, using SHA1.
 	 *
 	 * <pre>
@@ -398,6 +430,29 @@ public class UuidCreator {
 	}
 
 	/**
+	 * Returns a UUID based on a name space and a name, using SHA1.
+	 *
+	 * See {@link UuidNamespace}.
+	 * 
+	 * <pre>
+	 * Details: 
+	 * - Version number: 5 
+	 * - Variant number: 1 
+	 * - Hash Algorithm: SHA1 
+	 * - Name Space: informed by user
+	 * </pre>
+	 * 
+	 * @param namespace
+	 *            a name space enumeration
+	 * @param name
+	 *            a name string
+	 * @return a name-based UUID
+	 */
+	public static UUID getNameBasedSha1(UuidNamespace namespace, String name) {
+		return NameBasedSha1CreatorLazyHolder.INSTANCE.create(namespace, name);
+	}
+	
+	/**
 	 * Returns a UUID based on a name, using SHA256.
 	 *
 	 * <pre>
@@ -437,6 +492,29 @@ public class UuidCreator {
 		return NameBasedSha256CreatorLazyHolder.INSTANCE.create(namespace, name);
 	}
 
+	/**
+	 * Returns a UUID based on a name space and a name, using SHA256.
+	 *
+	 * See {@link UuidNamespace}.
+	 * 
+	 * <pre>
+	 * Details: 
+	 * - Version number: 4 
+	 * - Variant number: 1 
+	 * - Hash Algorithm: SHA256 
+	 * - Name Space: informed by user
+	 * </pre>
+	 * 
+	 * @param namespace
+	 *            a name space enumeration
+	 * @param name
+	 *            a name string
+	 * @return a name-based UUID
+	 */
+	public static UUID getNameBasedSha256(UuidNamespace namespace, String name) {
+		return NameBasedSha256CreatorLazyHolder.INSTANCE.create(namespace, name);
+	}
+	
 	/**
 	 * Returns a time-based GUID for MSSQL Server.
 	 * 

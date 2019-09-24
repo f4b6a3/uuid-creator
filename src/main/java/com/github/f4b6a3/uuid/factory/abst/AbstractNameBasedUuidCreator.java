@@ -1,18 +1,25 @@
-/**
- * Copyright 2018 Fabio Lima <br/>
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); <br/>
- * you may not use this file except in compliance with the License. <br/>
- * You may obtain a copy of the License at <br/>
- *
- * http://www.apache.org/licenses/LICENSE-2.0 <br/>
- *
- * Unless required by applicable law or agreed to in writing, software <br/>
- * distributed under the License is distributed on an "AS IS" BASIS, <br/>
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. <br/>
- * See the License for the specific language governing permissions and <br/>
- * limitations under the License. <br/>
- *
+/*
+ * MIT License
+ * 
+ * Copyright (c) 2018-2019 Fabio Lima
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 package com.github.f4b6a3.uuid.factory.abst;
@@ -22,6 +29,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 
 import static com.github.f4b6a3.uuid.util.ByteUtil.*;
@@ -63,6 +71,21 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 			throw new InternalError("Message digest algorithm not supported.", e);
 		}
 	}
+	
+	/**
+	 * Sets a fixed name space with in a fluent way.
+	 * 
+	 * @param namespace
+	 *            a namespace enum
+	 * @param <T>
+	 *            the type parameter
+	 * @return {@link AbstractNameBasedUuidCreator}
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized <T extends AbstractNameBasedUuidCreator> T withNamespace(UuidNamespace namespace) {
+		this.namespace = namespace.getValue();
+		return (T) this;
+	}
 
 	/**
 	 * Sets a fixed name space with in a fluent way.
@@ -92,8 +115,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends AbstractNameBasedUuidCreator> T withNamespace(String namespace) {
-		UUID namespaceUUID = create(namespace);
-		this.namespace = namespaceUUID;
+		this.namespace = create(namespace);
 		return (T) this;
 	}
 
@@ -162,8 +184,6 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	/**
 	 * Returns a name-based UUID with a name space and a name.
 	 * 
-	 * The name space string is converted to name space UUID.
-	 * 
 	 * {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
 	 * 
 	 * @param namespace
@@ -176,6 +196,23 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 		return create(namespace, name.getBytes(StandardCharsets.UTF_8));
 	}
 
+	/**
+	 * Returns a name-based UUID with a name space and a name.
+	 * 
+	 * {@link UuidNamespace}.
+	 * 
+	 * {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
+	 * 
+	 * @param namespace
+	 *            a name space enumeration
+	 * @param name
+	 *            a byte array of the name in UTF8
+	 * @return a name-based UUID
+	 */
+	public UUID create(UuidNamespace namespace, String name) {
+		return create(namespace.getValue(), name.getBytes(StandardCharsets.UTF_8));
+	}
+	
 	/**
 	 * Returns a name-based UUID with a name space and a name.
 	 * 

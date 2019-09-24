@@ -13,7 +13,6 @@ import static org.junit.Assert.*;
 
 import com.github.f4b6a3.uniqueness.UniquenessTest;
 import com.github.f4b6a3.uuid.clockseq.ClockSequenceStrategy;
-import com.github.f4b6a3.uuid.clockseq.CombClockSequenceStrategy;
 import com.github.f4b6a3.uuid.clockseq.RandomClockSequenceStrategy;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
@@ -36,7 +35,6 @@ import com.github.f4b6a3.uuid.timestamp.NanosecondTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.RandomTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
 import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
-import com.github.f4b6a3.uuid.util.FingerprintUtil;
 import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 import static com.github.f4b6a3.uuid.util.ByteUtil.*;
@@ -138,12 +136,6 @@ public class UuidCreatorTest {
 	@Test
 	public void testCreateTimeBasedUuidWithFastRandomClockSequenceStrategy() {
 		ClockSequenceStrategy strategy = new RandomClockSequenceStrategy(new Xoroshiro128PlusRandom());
-		testCreateGenericUuid(UuidCreator.getTimeBasedCreator().withClockSequenceStrategy(strategy));
-	}
-
-	@Test
-	public void testCreateTimeBasedUuidWithCombClockSequenceStrategy() {
-		ClockSequenceStrategy strategy = new CombClockSequenceStrategy();
 		testCreateGenericUuid(UuidCreator.getTimeBasedCreator().withClockSequenceStrategy(strategy));
 	}
 	

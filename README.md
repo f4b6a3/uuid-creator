@@ -159,21 +159,21 @@ The DCE Security is a time-based UUID that also has a local domain and a local i
 
 ```java
 // DCE Security
-byte localDomain = DceSecurityCreator.LOCAL_DOMAIN_GROUP;
+byte localDomain = DceSecurityUuidCreator.LOCAL_DOMAIN_GROUP;
 int localIdentifier = 1701;
 UUID uuid = UuidCreator.getDceSecurity(localDomain, localIdentifier);
 ```
 
 ```java
 // DCE Security with hardware address
-byte localDomain = DceSecurityCreator.LOCAL_DOMAIN_GROUP;
+byte localDomain = DceSecurityUuidCreator.LOCAL_DOMAIN_GROUP;
 int localIdentifier = 1701;
 UUID uuid = UuidCreator.getDceSecurityWithMac(localDomain, localIdentifier);
 ```
 
 ```java
 // DCE Security with fingerprint (hash of system properties)
-byte localDomain = DceSecurityCreator.LOCAL_DOMAIN_GROUP;
+byte localDomain = DceSecurityUuidCreator.LOCAL_DOMAIN_GROUP;
 int localIdentifier = 1701;
 UUID uuid = UuidCreator.getDceSecurityWithFingerprint(localDomain, localIdentifier);
 ```
@@ -184,7 +184,7 @@ The Name-based UUID version 3 is a MD5 hash of a name space and a name.
 
 ```java
 // Name-based using MD5
-UUID namespace = UuidNamespace.NAMESPACE_URL;
+UUID namespace = UuidNamespace.NAMESPACE_URL.getValue();
 String name = "https://github.com/";
 UUID uuid = UuidCreator.getNameBasedMd5(namespace, name);
 ```
@@ -239,7 +239,7 @@ The Name-based UUID version 5 is a SHA-1 hash of a name space and a name.
 
 ```java
 // Name-based using SHA-1
-UUID namespace = UuidNamespace.NAMESPACE_URL;
+UUID namespace = UuidNamespace.NAMESPACE_URL.getValue();
 String name = "https://github.com/";
 UUID uuid = UuidCreator.getNameBasedSha1(namespace, name);
 ```
@@ -816,7 +816,7 @@ UUID uuid = UuidCreator.getNameBasedMd5Creator()
     .create("Paul");
 
 // with fixed and standard namespace as UUID (standard URL namespace)
-UUID namespace = UuidNamespace.NAMESPACE_URL;
+UUID namespace = UuidNamespace.NAMESPACE_URL.getValue();
 UUID uuid = UuidCreator.getNameBasedMd5Creator()
     .withNamespace(namespace)
     .create("www.github.com");
@@ -936,6 +936,8 @@ External links
 
 * [A brief history of the UUID](https://segment.com/blog/a-brief-history-of-the-uuid)
 
+* [Syntax and semantics of the DCE variant of Universal Unique Identifiers (The OpenGroup)](https://pubs.opengroup.org/onlinepubs/9629399/apdxa.htm)
+
 * [How is a Time-based UUID / GUID made](https://www.famkruithof.net/guid-uuid-timebased.html)
 
 * [Sequential UUID Generators](https://blog.2ndquadrant.com/sequential-uuid-generators/)
@@ -997,5 +999,9 @@ External links
 * [ITU-T - ASN.1 PROJECT - Universally Unique Identifiers (UUIDs)](https://www.itu.int/en/ITU-T/asn1/Pages/UUID/uuids.aspx)
 
 * [GUID/UUID Performance - MariaDB](https://mariadb.com/kb/en/library/guiduuid-performance/)
+
+* [Difference between CLOCK_REALTIME and CLOCK_MONOTONIC? (StackOverflow)](https://stackoverflow.com/questions/3523442/difference-between-clock-realtime-and-clock-monotonic)
+
+* [Is System.currentTimeMillis() monotonically increasing? (StackOverflow)](https://stackoverflow.com/questions/2978598/will-system-currenttimemillis-always-return-a-value-previous-calls)
 
 
