@@ -32,11 +32,9 @@ import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.factory.CombGuidCreator;
 import com.github.f4b6a3.uuid.factory.DceSecurityUuidCreator;
 import com.github.f4b6a3.uuid.factory.LexicalOrderGuidCreator;
-import com.github.f4b6a3.uuid.factory.MssqlGuidCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedMd5UuidCreator;
 import com.github.f4b6a3.uuid.factory.RandomUuidCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedSha1UuidCreator;
-import com.github.f4b6a3.uuid.factory.NameBasedSha256UuidCreator;
 import com.github.f4b6a3.uuid.factory.SequentialUuidCreator;
 import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
@@ -47,6 +45,17 @@ import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 public class UuidCreator {
 
 	private UuidCreator() {
+	}
+
+	/**
+	 * Returns a Nil UUID
+	 * 
+	 * The nil UUID is special UUID that has all 128 bits set to zero.
+	 * 
+	 * @return
+	 */
+	public static UUID getNil() {
+		return new UUID(0L, 0L);
 	}
 
 	/**
@@ -294,8 +303,8 @@ public class UuidCreator {
 	}
 
 	/**
-	 * Returns a DCE Security UUID with fingerprint based on a local domain
-	 * and a local identifier.
+	 * Returns a DCE Security UUID with fingerprint based on a local domain and
+	 * a local identifier.
 	 *
 	 * <pre>
 	 * Domain identifiers listed in the RFC-4122: 
@@ -453,83 +462,6 @@ public class UuidCreator {
 	}
 	
 	/**
-	 * Returns a UUID based on a name, using SHA256.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 4 
-	 * - Variant number: 1 
-	 * - Hash Algorithm: SHA256 
-	 * - Name Space: none
-	 * </pre>
-	 * 
-	 * @param name
-	 *            a name string
-	 * @return a name-based UUID
-	 */
-	public static UUID getNameBasedSha256(String name) {
-		return NameBasedSha256CreatorLazyHolder.INSTANCE.create(name);
-	}
-
-	/**
-	 * Returns a UUID based on a name space and a name, using SHA256.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 4 
-	 * - Variant number: 1 
-	 * - Hash Algorithm: SHA256 
-	 * - Name Space: informed by user
-	 * </pre>
-	 * 
-	 * @param namespace
-	 *            a name space UUID
-	 * @param name
-	 *            a name string
-	 * @return a name-based UUID
-	 */
-	public static UUID getNameBasedSha256(UUID namespace, String name) {
-		return NameBasedSha256CreatorLazyHolder.INSTANCE.create(namespace, name);
-	}
-
-	/**
-	 * Returns a UUID based on a name space and a name, using SHA256.
-	 *
-	 * See {@link UuidNamespace}.
-	 * 
-	 * <pre>
-	 * Details: 
-	 * - Version number: 4 
-	 * - Variant number: 1 
-	 * - Hash Algorithm: SHA256 
-	 * - Name Space: informed by user
-	 * </pre>
-	 * 
-	 * @param namespace
-	 *            a name space enumeration
-	 * @param name
-	 *            a name string
-	 * @return a name-based UUID
-	 */
-	public static UUID getNameBasedSha256(UuidNamespace namespace, String name) {
-		return NameBasedSha256CreatorLazyHolder.INSTANCE.create(namespace, name);
-	}
-	
-	/**
-	 * Returns a time-based GUID for MSSQL Server.
-	 * 
-	 * @return a MSSQL GUID
-	 */
-	public static UUID getMssqlGuid() {
-		try {
-			return MssqlGuidCreatorLazyHolder.INSTANCE.create();
-		} catch (UuidCreatorException e) {
-			// Ignore the overrun exception and trust the clock sequence
-			return MssqlGuidCreatorLazyHolder.INSTANCE.create();
-		}
-	}
-
-	/**
 	 * Returns a COMB GUID for MS SQL Server.
 	 * 
 	 * This implementation is derived from the ULID specification.
@@ -629,25 +561,7 @@ public class UuidCreator {
 	public static NameBasedSha1UuidCreator getNameBasedSha1Creator() {
 		return new NameBasedSha1UuidCreator();
 	}
-
-	/**
-	 * Returns a {@link NameBasedSha256UuidCreator} that creates UUID version 4.
-	 * 
-	 * @return {@link NameBasedSha256UuidCreator}
-	 */
-	public static NameBasedSha256UuidCreator getNameBasedSha256Creator() {
-		return new NameBasedSha256UuidCreator();
-	}
-
-	/**
-	 * Returns a {@link MssqlGuidCreator}.
-	 * 
-	 * @return {@link MssqlGuidCreator}
-	 */
-	public static MssqlGuidCreator getMssqlGuidCreator() {
-		return new MssqlGuidCreator();
-	}
-
+	
 	/**
 	 * Returns a {@link CombGuidCreator}.
 	 * 
@@ -709,11 +623,7 @@ public class UuidCreator {
 	private static class NameBasedSha1CreatorLazyHolder {
 		static final NameBasedSha1UuidCreator INSTANCE = getNameBasedSha1Creator();
 	}
-
-	private static class NameBasedSha256CreatorLazyHolder {
-		static final NameBasedSha256UuidCreator INSTANCE = getNameBasedSha256Creator();
-	}
-
+	
 	private static class DceSecurityCreatorLazyHolder {
 		static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator();
 	}
@@ -721,15 +631,11 @@ public class UuidCreator {
 	private static class DceSecurityWithMacCreatorLazyHolder {
 		static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator().withHardwareAddressNodeIdentifier();
 	}
-	
+
 	private static class DceSecurityWithFingerprintCreatorLazyHolder {
 		static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator().withFingerprintNodeIdentifier();
 	}
-
-	private static class MssqlGuidCreatorLazyHolder {
-		static final MssqlGuidCreator INSTANCE = getMssqlGuidCreator();
-	}
-
+	
 	private static class CombGuidCreatorLazyHolder {
 		static final CombGuidCreator INSTANCE = getCombGuidCreator();
 	}

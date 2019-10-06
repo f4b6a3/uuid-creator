@@ -49,6 +49,19 @@ public class UuidUtil {
 	}
 
 	/**
+	 * Checks whether the UUID is equal to the Nil UUID.
+	 * 
+	 * The nil UUID is special UUID that has all 128 bits set to zero.
+	 * 
+	 * @param uuid
+	 *            a UUID
+	 * @return boolean true if it is an RFC4122 variant
+	 */
+	public static boolean isNil(UUID uuid) {
+		return uuid.getMostSignificantBits() == 0L && uuid.getLeastSignificantBits() == 0L;
+	}
+
+	/**
 	 * Checks whether the UUID variant is the one defined by the RFC-4122.
 	 * 
 	 * @param uuid
@@ -493,9 +506,9 @@ public class UuidUtil {
 	 */
 	public static long formatTimeBasedMostSignificantBits(final long timestamp) {
 		return ((timestamp & 0x0fff_0000_00000000L) >>> 48)
-			| ((timestamp & 0x0000_ffff_00000000L) >>> 16)
-			| ((timestamp & 0x0000_0000_ffffffffL) << 32)
-			| 0x00000000_0000_1000L;
+				| ((timestamp & 0x0000_ffff_00000000L) >>> 16)
+				| ((timestamp & 0x0000_0000_ffffffffL) << 32)
+				| 0x00000000_0000_1000L;
 	}
 
 	/**

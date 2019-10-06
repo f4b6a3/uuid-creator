@@ -32,13 +32,11 @@ public class FingerprintNodeIdentifierStrategy implements NodeIdentifierStrategy
 
 	/**
 	 * This constructor calculates a node identifier based on system data like:
-	 * operating system, java virtual machine, network details and system
-	 * resources.
-	 * 
+	 * operating system, java virtual machine, network details, system
+	 * resources, locale and timezone.
 	 * 
 	 * Read: https://en.wikipedia.org/wiki/Device_fingerprint
 	 * 
-	 * See {@link FingerprintUtil#getFingerprint()}.
 	 */
 	public FingerprintNodeIdentifierStrategy() {
 		this.nodeIdentifier = FingerprintUtil.getFingerprint();

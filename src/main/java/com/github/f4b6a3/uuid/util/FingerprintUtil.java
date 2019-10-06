@@ -40,28 +40,12 @@ public class FingerprintUtil {
 
 	/**
 	 * Returns a host fingerprint calculated from a list of system properties:
-	 * OS + JVM + network details + system resources.
+	 * OS + JVM + network details + system resources + locale + timezone.
 	 * 
 	 * It uses these information to generate the node identifier: operating
-	 * system, java virtual machine, network details and system resources. These
-	 * information are concatenated and passed to a message digest. It returns
-	 * the last six bytes of the resulting hash.
-	 * 
-	 * ### RFC-4122 - 4.5. Node IDs that Do Not Identify the Host
-	 * 
-	 * This section describes how to generate a version 1 UUID if an IEEE 802
-	 * address is not available, or its use is not desired.
-	 * 
-	 * In addition, items such as the computer's name and the name of the
-	 * operating system, while not strictly speaking random, will help
-	 * differentiate the results from those obtained by other systems.
-	 * 
-	 * The exact algorithm to generate a node ID using these data is system
-	 * specific, because both the data available and the functions to obtain
-	 * them are often very system specific. A generic approach, however, is to
-	 * accumulate as many sources as possible into a buffer, use a message
-	 * digest such as MD5 [4] or SHA-1 [8], take an arbitrary 6 bytes from the
-	 * hash value, and set the multicast bit as described above.
+	 * system, java virtual machine, network details, system resources, locale
+	 * and timezone. These information are concatenated and passed to a message
+	 * digest. It returns the last six bytes of the resulting hash.
 	 * 
 	 * Read: https://en.wikipedia.org/wiki/Device_fingerprint
 	 * 
@@ -87,7 +71,7 @@ public class FingerprintUtil {
 		String loc = getLocalization();
 		String res = getResources();
 		String string = String.join(" ", os, jvm, net, loc, res);
-		
+
 		byte[] bytes = string.getBytes();
 		byte[] hash = messageDigest.digest(bytes);
 
@@ -120,9 +104,9 @@ public class FingerprintUtil {
 		String vmVersion = System.getProperty("java.vm.version");
 		return String.join(" ", vendor, version, rtName, rtVersion, vmName, vmVersion);
 	}
-	
+
 	/**
-	 * Return a string with locale, charset, encoding and timezone. 
+	 * Return a string with locale, charset, encoding and timezone.
 	 * 
 	 * @return a string
 	 */
@@ -152,7 +136,7 @@ public class FingerprintUtil {
 	 * 
 	 * 1. it tries to find the network data associated with the host name;
 	 * 
-	 * 2. otherwise, it iterates throw all interfaces to return the first one
+	 * 2. otherwise, it iterates through all interfaces to return the first one
 	 * that is up and running.
 	 * 
 	 * @return a string

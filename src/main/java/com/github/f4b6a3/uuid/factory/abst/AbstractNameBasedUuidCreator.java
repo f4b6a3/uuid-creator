@@ -44,7 +44,6 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 
 	protected static final String MESSAGE_DIGEST_MD5 = "MD5";
 	protected static final String MESSAGE_DIGEST_SHA1 = "SHA-1";
-	protected static final String MESSAGE_DIGEST_SHA256 = "SHA-256";
 	
 	/**
 	 * This constructor receives the name of a message digest.

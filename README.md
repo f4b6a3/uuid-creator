@@ -20,8 +20,6 @@ UUID Creator is a library that generates [RFC-4122](https://tools.ietf.org/html/
 * __Sequential:__ a modified time-based version that is also known as Ordered UUID <sup>[4]</sup>;
 * __Sequential with MAC:__ a sequential version with hardware address;
 * __Sequential with fingerprint:__ a sequential version with a host fingerprint <sup>[10]</sup>;
-* __Name-based SHA-256:__ a base-named version that uses SHA-256;
-* __MSSQL Guid:__ a modified time-based version that changes the timestamp byte order for MS SQL Server <sup>[8]</sup>;
 * __COMB Guid:__ a modified random version that replaces the last 6 bytes with milliseconds for MS SQL Server <sup>[7]</sup>;
 * __Lexical Order Guid:__ a lexicographically sortable GUID based on the ULID specification <sup>[9]</sup>.
 
@@ -248,44 +246,6 @@ UUID uuid = UuidCreator.getNameBasedSha1(namespace, name);
 // Name-based using SHA-1 without name space
 String name = "https://github.com/";
 UUID uuid = UuidCreator.getNameBasedSha1(name);
-```
-
-### Name-based using SHA-256 (version 4, non-standard)
-
-The SHA-256 Name-based UUID is like the versions 3 and 5, but with a better hash algorithm.
-
-### MSSQL GUID (non-standard)
-
-The MSSQL GUID is a modified time-based UUID that changes the timestamp byte order for MS SQL Server database.
-
-```java
-// MSSQL GUID
-UUID uuid = UuidCreator.getMssqlGuid();
-```
-
-Examples of MSSQL GUID:
-
-```text
-5039de0e-ff8e-e911-b649-e381f64b2e76
-5139de0e-ff8e-e911-b649-e381f64b2e76
-5239de0e-ff8e-e911-b649-e381f64b2e76
-5339de0e-ff8e-e911-b649-e381f64b2e76
-5439de0e-ff8e-e911-b649-e381f64b2e76
-5539de0e-ff8e-e911-b649-e381f64b2e76
-5639de0e-ff8e-e911-b649-e381f64b2e76
-5739de0e-ff8e-e911-b649-e381f64b2e76
-5839de0e-ff8e-e911-b649-e381f64b2e76
-5939de0e-ff8e-e911-b649-e381f64b2e76
-5a39de0e-ff8e-e911-b649-e381f64b2e76
-5b39de0e-ff8e-e911-b649-e381f64b2e76
-5c39de0e-ff8e-e911-b649-e381f64b2e76
-5d39de0e-ff8e-e911-b649-e381f64b2e76
-5e39de0e-ff8e-e911-b649-e381f64b2e76
-5f39de0e-ff8e-e911-b649-e381f64b2e76
- ^ look
- 
-|-----------------|----|-----------|
-     timestamp    clkseq  node id
 ```
 
 ### COMB GUID (non-standard)
@@ -556,7 +516,7 @@ The directory in which the file `uuidcreator.state` lies is configured by the sy
 
 Since the state file is disabled by default, it can be enabled by the system property `uuidcreator.state.enabled` or the environment variable `UUIDCREATOR_STATE_ENABLED`.
 
-The key-value pairs of the state file has effect in these factories: `TimeBasedUuidCreator`, `SequentialUuidCreator`, `DceSecurityUuidCreator` and `MssqlGuidCreator`. The the other factories ignore the state file.
+The key-value pairs of the state file has effect in these factories: `TimeBasedUuidCreator`, `SequentialUuidCreator` and `DceSecurityUuidCreator`. The the other factories ignore the state file.
 
 Don't enable the state file if you want to use multiple instances of UUID generators in parallel. If you do it, all instances of UUID generators will use the same clock sequence. Just let the algorithm generate different clock sequences for each generator in a well distributed way.
 
@@ -577,7 +537,7 @@ The hardware address node identifier is the MAC address associated with the host
 
 ##### Fingerprint
 
-The host fingerprint is a number that is calculated based on the host configurations. A big list of system properties is collected and then processed using the SHA-256 hash algorithm. The host fingerprint is extracted from the last six bytes of that system data hash. The system properties used to calculate the host fingerprint are: operating system, java virtual machine, network settings (IP, MAC, host name) and system resources (CPU, memory).
+The host fingerprint is a number that is calculated based on the host configurations. A big list of system properties is collected and then processed using the SHA-256 hash algorithm. The host fingerprint is extracted from the last six bytes of that system data hash. The system properties used to calculate the host fingerprint are: operating system, java virtual machine, network settings (IP, MAC, host name) and system resources (CPU, memory), locale and timezone.
 
 ###  Sequential
 
@@ -667,8 +627,6 @@ The name space is a UUID object. But a string may be passed as argument. The fac
 
 The name in the standard is an array of bytes. But a string may also be passed as argument.
 
-This library also provides a name-based UUID generator that uses SHA-256.
-
 ### Random
 
 The random-based factory uses `java.security.SecureRandom`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/security/SecureRandom.html) to get 'cryptographic quality random' numbers as the standard requires.
@@ -742,7 +700,7 @@ UUID uuid = UuidCreator.getTimeBasedCreator()
     .withHardwareAddressNodeIdentifier()
     .create();
 
-// with host fingerprint (SHA-256 hash of OS + JVM + Network + Resources)
+// with host fingerprint (SHA-256 hash of OS + JVM + Network + Resources + locale + timezone)
 UUID uuid = UuidCreator.getTimeBasedCreator()
     .withFingerprintNodeIdentifier()
     .create();
@@ -805,7 +763,7 @@ UUID uuid = UuidCreator.getTimeBasedCreator()
 
 #### Name-based
 
-All the examples in this subsection are also valid for SHA-1 and SHA-256 UUIDs.
+All the examples in this subsection are also valid for SHA-1 UUIDs.
 
 ```java
 
@@ -872,10 +830,8 @@ MyBenchmark.UuidCreator_DceSecurity           ss  200   6,153 ± 0,277  ms/op
 MyBenchmark.UuidCreator_DceSecurityWithMac    ss  200   6,127 ± 0,281  ms/op
 MyBenchmark.UuidCreator_FastRandom            ss  200   1,885 ± 0,165  ms/op
 MyBenchmark.UuidCreator_LexicalOrderGuid      ss  200   6,183 ± 0,295  ms/op
-MyBenchmark.UuidCreator_MssqlGuid             ss  200   6,536 ± 0,310  ms/op
 MyBenchmark.UuidCreator_NameBasedMd5          ss  200  39,252 ± 1,411  ms/op
 MyBenchmark.UuidCreator_NameBasedSha1         ss  200  48,998 ± 1,434  ms/op
-MyBenchmark.UuidCreator_NameBasedSha256       ss  200  67,362 ± 1,222  ms/op
 MyBenchmark.UuidCreator_Random                ss  200  51,429 ± 0,668  ms/op
 MyBenchmark.UuidCreator_Sequential            ss  200   5,714 ± 0,294  ms/op
 MyBenchmark.UuidCreator_SequentialWithMac     ss  200   5,794 ± 0,287  ms/op
@@ -942,6 +898,8 @@ External links
 
 * [Sequential UUID Generators](https://blog.2ndquadrant.com/sequential-uuid-generators/)
 
+* [Sequential UUID Generators on SSD ](https://www.2ndquadrant.com/en/blog/sequential-uuid-generators-ssd/)
+
 * [Be Careful with UUID or GUID as Primary Keys](https://news.ycombinator.com/item?id=14523523)
 
 * [Ordered-uuid - npmjs package](https://www.npmjs.com/package/ordered-uuid)
@@ -1004,4 +962,11 @@ External links
 
 * [Is System.currentTimeMillis() monotonically increasing? (StackOverflow)](https://stackoverflow.com/questions/2978598/will-system-currenttimemillis-always-return-a-value-previous-calls)
 
+* [GUID structure (Microsoft)](https://docs.microsoft.com/en-us/windows/win32/api/guiddef/ns-guiddef-guid)
+
+* [UUID structure (Microsoft)](https://docs.microsoft.com/en-us/windows/win32/rpc/rpcdce/ns-rpcdce-uuid)
+
+* [UuidCreate function (Microsoft)](https://docs.microsoft.com/pt-br/windows/win32/api/rpcdce/nf-rpcdce-uuidcreate)
+
+* [UuidCreateSequential function (Microsoft)](https://docs.microsoft.com/pt-br/windows/win32/api/rpcdce/nf-rpcdce-uuidcreatesequential)
 

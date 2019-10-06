@@ -176,22 +176,6 @@ public class UuidUtilTest {
 	}
 	
 	@Test
-	public void testFromMssqlGuidToTimeBasedUuidIsCorrect() {
-		
-		// Test with a fixed value
-		UUID uuid1 = new UUID(0x3322110055447716L,0x8888888888888888L);
-		UUID uuid2 = UuidUtil.fromMssqlGuidToUuid(uuid1);
-		long timestamp = uuid2.getMostSignificantBits();
-		assertEquals(0x0011223344551677L, timestamp);
-
-		// Test with a generated value
-		UUID uuid3 = UuidCreator.getMssqlGuid();
-		UUID uuid4 = UuidUtil.fromMssqlGuidToUuid(uuid3);
-		UUID uuid5 = UuidUtil.fromUuidToMssqlGuid(uuid4);
-		assertEquals(uuid3, uuid5);
-	}
-	
-	@Test
 	public void testFromRandomBasedUuidToMssqlGuidIsCorrect() {
 		// Test with a generated value
 		UUID uuid1 = UuidCreator.getRandom();

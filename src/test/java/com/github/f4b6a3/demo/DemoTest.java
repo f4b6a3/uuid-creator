@@ -59,13 +59,6 @@ public class DemoTest {
 		}
 
 		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### MSSQL GUID");
-
-		for (int i = 0; i < max; i++) {
-			System.out.println(UuidCreator.getMssqlGuid());
-		}
-
-		System.out.println(HORIZONTAL_LINE);
 		System.out.println("### COMB GUID");
 
 		for (int i = 0; i < max; i++) {
