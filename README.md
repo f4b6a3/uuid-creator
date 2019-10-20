@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>1.4.1</version>
+  <version>1.4.2</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/uuid-creator).
@@ -813,38 +813,38 @@ UUID uuid = UuidCreator.getDceSecurityCreator()
 Benchmark
 ------------------------------------------------------
 
-This table shows the results of a simple benchmark using JMH.
+This table shows the results of a simple benchmark using JMH v1.21.
 
 ```text
 -----------------------------------------------------------------------------
 Benchmark                                   Mode  Cnt   Score   Error  Units
 -----------------------------------------------------------------------------
-MyBenchmark.EAIO_TimeBasedWithMac             ss  200   5,872 ± 0,227  ms/op
-MyBenchmark.JUG_NameBasedMd5                  ss  200  39,731 ± 1,336  ms/op
-MyBenchmark.JUG_NameBasedSha1                 ss  200  50,031 ± 1,414  ms/op
-MyBenchmark.JUG_Random                        ss  200  51,263 ± 0,665  ms/op
-MyBenchmark.JUG_TimeBased                     ss  200   6,007 ± 0,256  ms/op
-MyBenchmark.JUG_TimeBasedWithMAC              ss  200   6,047 ± 0,249  ms/op
-MyBenchmark.Java_NameBased                    ss  200  48,017 ± 2,391  ms/op
-MyBenchmark.Java_Random                       ss  200  51,499 ± 0,694  ms/op
-MyBenchmark.UuidCreator_CombGuid              ss  200   6,256 ± 0,282  ms/op
-MyBenchmark.UuidCreator_DceSecurity           ss  200   6,153 ± 0,277  ms/op
-MyBenchmark.UuidCreator_DceSecurityWithMac    ss  200   6,127 ± 0,281  ms/op
-MyBenchmark.UuidCreator_FastRandom            ss  200   1,885 ± 0,165  ms/op
-MyBenchmark.UuidCreator_LexicalOrderGuid      ss  200   6,183 ± 0,295  ms/op
-MyBenchmark.UuidCreator_NameBasedMd5          ss  200  39,252 ± 1,411  ms/op
-MyBenchmark.UuidCreator_NameBasedSha1         ss  200  48,998 ± 1,434  ms/op
-MyBenchmark.UuidCreator_Random                ss  200  51,429 ± 0,668  ms/op
-MyBenchmark.UuidCreator_Sequential            ss  200   5,714 ± 0,294  ms/op
-MyBenchmark.UuidCreator_SequentialWithMac     ss  200   5,794 ± 0,287  ms/op
-MyBenchmark.UuidCreator_TimeBased             ss  200   5,788 ± 0,267  ms/op
-MyBenchmark.UuidCreator_TimeBasedWithMac      ss  200   5,904 ± 0,283  ms/op
+MyBenchmark.EAIO_TimeBasedWithMac             ss  100   6,058 ± 0,352  ms/op
+MyBenchmark.JUG_NameBasedMd5                  ss  100  28,850 ± 0,755  ms/op
+MyBenchmark.JUG_NameBasedSha1                 ss  100  38,534 ± 0,872  ms/op
+MyBenchmark.JUG_Random                        ss  100  51,553 ± 1,052  ms/op
+MyBenchmark.JUG_TimeBased                     ss  100   6,030 ± 0,326  ms/op
+MyBenchmark.JUG_TimeBasedWithMAC              ss  100   6,119 ± 0,452  ms/op
+MyBenchmark.Java_NameBased                    ss  100  38,353 ± 1,839  ms/op
+MyBenchmark.Java_Random                       ss  100  51,130 ± 0,899  ms/op
+MyBenchmark.UuidCreator_CombGuid              ss  100   6,311 ± 0,409  ms/op
+MyBenchmark.UuidCreator_DceSecurity           ss  100   6,223 ± 0,357  ms/op
+MyBenchmark.UuidCreator_DceSecurityWithMac    ss  100   6,208 ± 0,359  ms/op
+MyBenchmark.UuidCreator_FastRandom            ss  100   1,757 ± 0,216  ms/op
+MyBenchmark.UuidCreator_LexicalOrderGuid      ss  100   6,271 ± 0,405  ms/op
+MyBenchmark.UuidCreator_NameBasedMd5          ss  100  27,769 ± 0,654  ms/op
+MyBenchmark.UuidCreator_NameBasedSha1         ss  100  38,242 ± 0,854  ms/op
+MyBenchmark.UuidCreator_Random                ss  100  50,743 ± 0,961  ms/op
+MyBenchmark.UuidCreator_Sequential            ss  100   5,641 ± 0,367  ms/op
+MyBenchmark.UuidCreator_SequentialWithMac     ss  100   5,806 ± 0,383  ms/op
+MyBenchmark.UuidCreator_TimeBased             ss  100   5,773 ± 0,381  ms/op
+MyBenchmark.UuidCreator_TimeBasedWithMac      ss  100   5,613 ± 0,338  ms/op
 -----------------------------------------------------------------------------
-Total time: 00:03:55
+Total time: 00:01:35
 -----------------------------------------------------------------------------
 ```
 
-This benchmark was executed in a machine Ubuntu 18.04, processor Intel i5-3330 and 8GB RAM.
+This benchmark was executed in a machine Ubuntu 19.04, processor Intel i5-3330 and 8GB RAM.
 
 You can find the benchmark source code at [uuid-creator-benchmark](https://github.com/fabiolimace/uuid-creator-benchmark).
 
