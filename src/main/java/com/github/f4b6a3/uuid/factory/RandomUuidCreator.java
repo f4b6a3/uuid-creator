@@ -34,6 +34,7 @@ import com.github.f4b6a3.uuid.factory.abst.NoArgumentsUuidCreator;
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.uuid.random.XorshiftRandom;
 import com.github.f4b6a3.uuid.util.ByteUtil;
+import com.github.f4b6a3.uuid.util.FingerprintUtil;
 
 /**
  * Factory that creates random-based UUIDs.
@@ -134,7 +135,8 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 	 * @return {@link RandomUuidCreator}
 	 */
 	public synchronized RandomUuidCreator withFastRandomGenerator() {
-		this.random = new Xorshift128PlusRandom();
+		final int salt = (int) FingerprintUtil.getFingerprint();
+		this.random = new Xorshift128PlusRandom(salt);
 		return this;
 	}
 

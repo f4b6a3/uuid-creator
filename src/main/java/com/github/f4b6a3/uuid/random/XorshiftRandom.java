@@ -42,17 +42,22 @@ public class XorshiftRandom extends Random {
 
 	private static final long serialVersionUID = 5084310156945573858L;
 
-	private long seed = System.nanoTime();
+	private long seed;
+	private static int count;
 
 	public XorshiftRandom() {
-		long nanotime = System.nanoTime();
-		this.seed = (nanotime << 32) ^ (nanotime);
+		this((int) System.nanoTime());
 	}
-	
+
+	public XorshiftRandom(int salt) {
+		long time = System.currentTimeMillis() + count++;
+		this.seed = (((long) salt) << 32) ^ (time & 0x00000000ffffffffL);
+	}
+
 	public XorshiftRandom(long seed) {
 		this.seed = seed;
 	}
-	
+
 	@Override
 	protected int next(int bits) {
 		return (int) (nextLong() >>> (64 - bits));

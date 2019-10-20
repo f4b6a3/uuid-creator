@@ -38,12 +38,17 @@ public class XorshiftStarRandom extends Random {
 	private static final long serialVersionUID = -55477194093772899L;
 	
 	private long seed;
+	private static int count;
 
 	public XorshiftStarRandom() {
-		long nanotime = System.nanoTime();
-		this.seed = (nanotime << 32) ^ (nanotime);
+		this((int) System.nanoTime());
 	}
 	
+	public XorshiftStarRandom(int salt) {
+		long time = System.currentTimeMillis() + count++;
+		this.seed = (((long) salt) << 32) ^ (time & 0x00000000ffffffffL);
+	}
+
 	public XorshiftStarRandom(long seed) {
 		this.seed = seed;
 	}

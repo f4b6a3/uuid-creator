@@ -27,25 +27,30 @@ package com.github.f4b6a3.uuid.random;
 import java.util.Random;
 
 /**
- * A subclass of {@link java.util.Random} that implements the Xorshift 128 Plus random
- * number generator.
+ * A subclass of {@link java.util.Random} that implements the Xorshift 128 Plus
+ * random number generator.
  * 
  * https://en.wikipedia.org/wiki/Xorshift
  * 
  */
 public class Xorshift128PlusRandom extends Random {
-	
+
 	private static final long serialVersionUID = -7271232011767476928L;
-	
+
 	long[] seed = new long[2];
+	private static int count;
 
 	public Xorshift128PlusRandom() {
-		long nanotime = System.nanoTime();
-		long hashcode = (long) this.hashCode();
-		this.seed[0] = (nanotime << 32) ^ (nanotime);
-		this.seed[1] = (hashcode << 32) ^ (hashcode);
+		this((int) System.nanoTime());
 	}
 	
+	public Xorshift128PlusRandom(int salt) {
+		long time = System.currentTimeMillis() + count++;
+		long hash = (long) this.hashCode();
+		this.seed[0] = (((long) salt) << 32) ^ (time & 0x00000000ffffffffL);
+		this.seed[1] = (((long) salt) << 32) ^ (hash & 0x00000000ffffffffL);
+	}
+
 	public Xorshift128PlusRandom(long[] seed) {
 		this.seed = seed;
 	}
@@ -54,7 +59,7 @@ public class Xorshift128PlusRandom extends Random {
 	protected int next(int bits) {
 		return (int) (nextLong() >>> (64 - bits));
 	}
-	
+
 	@Override
 	public long nextLong() {
 		long x = seed[0];
