@@ -31,7 +31,7 @@ import com.github.f4b6a3.uuid.enums.UuidVariant;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 
 public class UuidUtil {
-
+	
 	private static final String NOT_DCE_SECURITY = "Not a DCE Security UUID: %s.";
 
 	private UuidUtil() {
@@ -62,6 +62,20 @@ public class UuidUtil {
 	}
 
 	/**
+	 * Checks if the UUID variant and version are those defined by the RFC-4122.
+	 * 
+	 * @param uuid
+	 *            a UUID
+	 * @return boolean true if valid
+	 */
+	public static boolean isRfc4122(UUID uuid) {
+		long variant = uuid.variant();
+		long version = uuid.version();
+
+		return variant == UuidVariant.VARIANT_RFC4122.getValue() && version >= 1 && version <= 5;
+	}
+	
+	/**
 	 * Checks whether the UUID variant is the one defined by the RFC-4122.
 	 * 
 	 * @param uuid
@@ -81,7 +95,7 @@ public class UuidUtil {
 	 * @return boolean true if it is a random UUID
 	 */
 	public static boolean isRandomBasedVersion(UUID uuid) {
-		return (uuid.version() == UuidVersion.RANDOM_BASED.getValue());
+		return isRfc4122Variant(uuid) && (uuid.version() == UuidVersion.RANDOM_BASED.getValue());
 	}
 
 	/**
@@ -93,7 +107,7 @@ public class UuidUtil {
 	 */
 	public static boolean isNameBasedVersion(UUID uuid) {
 		int version = uuid.version();
-		return ((version == UuidVersion.NAME_BASED_MD5.getValue())
+		return isRfc4122Variant(uuid) && ((version == UuidVersion.NAME_BASED_MD5.getValue())
 				|| (version == UuidVersion.NAMBE_BASED_SHA1.getValue()));
 	}
 
@@ -106,7 +120,7 @@ public class UuidUtil {
 	 */
 	public static boolean isTimeBasedVersion(UUID uuid) {
 		int version = uuid.version();
-		return (version == UuidVersion.TIME_BASED.getValue());
+		return isRfc4122Variant(uuid) && (version == UuidVersion.TIME_BASED.getValue());
 	}
 
 	/**
@@ -118,7 +132,7 @@ public class UuidUtil {
 	 */
 	public static boolean isSequentialVersion(UUID uuid) {
 		int version = uuid.version();
-		return (version == UuidVersion.SEQUENTIAL.getValue());
+		return isRfc4122Variant(uuid) && (version == UuidVersion.SEQUENTIAL.getValue());
 	}
 
 	/**
@@ -130,7 +144,7 @@ public class UuidUtil {
 	 */
 	public static boolean isDceSecurityVersion(UUID uuid) {
 		int version = uuid.version();
-		return (version == UuidVersion.DCE_SECURITY.getValue());
+		return isRfc4122Variant(uuid) && (version == UuidVersion.DCE_SECURITY.getValue());
 	}
 
 	/**

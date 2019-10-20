@@ -150,7 +150,7 @@ public class UuidCreatorTest {
 
 		checkNullOrInvalid(list);
 		checkUniqueness(list);
-		checkVersion(list, UuidVersion.RANDOM_BASED);
+		checkVersion(list, UuidVersion.RANDOM_BASED.getValue());
 	}
 	
 	@Test
@@ -165,7 +165,7 @@ public class UuidCreatorTest {
 
 		checkNullOrInvalid(list);
 		checkUniqueness(list);
-		checkVersion(list, UuidVersion.RANDOM_BASED);
+		checkVersion(list, UuidVersion.RANDOM_BASED.getValue());
 	}
 
 	@Test
@@ -183,7 +183,7 @@ public class UuidCreatorTest {
 
 		checkNullOrInvalid(list);
 		checkUniqueness(list);
-		checkVersion(list, UuidVersion.NAME_BASED_MD5);
+		checkVersion(list, UuidVersion.NAME_BASED_MD5.getValue());
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			name = ("url" + i).getBytes(StandardCharsets.UTF_8);
@@ -207,7 +207,7 @@ public class UuidCreatorTest {
 
 		checkNullOrInvalid(list);
 		checkUniqueness(list);
-		checkVersion(list, UuidVersion.NAMBE_BASED_SHA1);
+		checkVersion(list, UuidVersion.NAMBE_BASED_SHA1.getValue());
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			name = ("url" + i).getBytes(StandardCharsets.UTF_8);
@@ -309,10 +309,16 @@ public class UuidCreatorTest {
 	@Test
 	public void testGetSequentialTimestampBitsAreSequential() {
 
+		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+		SequentialUuidCreator creator = UuidCreator.getSequentialCreator();
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			list[i] = creator.create();
+		}
+
 		long oldTimestemp = 0;
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			UUID uuid = UuidCreator.getSequential();
-			long newTimestamp = UuidUtil.extractTimestamp(uuid);
+			long newTimestamp = UuidUtil.extractTimestamp(list[i]);
 
 			if (i > 0) {
 				assertTrue(newTimestamp >= oldTimestemp);
@@ -324,11 +330,17 @@ public class UuidCreatorTest {
 	@Test
 	public void testGetSequentialMostSignificantBitsAreSequential() {
 
+		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+		SequentialUuidCreator creator = UuidCreator.getSequentialCreator();
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			list[i] = creator.create();
+		}
+
 		long oldMsb = 0;
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			UUID uuid = UuidCreator.getSequential();
-			long newMsb = uuid.getMostSignificantBits();
+			long newMsb = list[i].getMostSignificantBits();
 
 			if (i > 0) {
 				assertTrue(newMsb >= oldMsb);
@@ -641,10 +653,10 @@ public class UuidCreatorTest {
 		}
 	}
 
-	private void checkVersion(UUID[] list, UuidVersion version) {
+	private void checkVersion(UUID[] list, int version) {
 		for (UUID uuid : list) {
-			assertTrue(String.format("UUID is not %s (version %s)", version.name(), version.getValue()),
-					uuid.version() == version.getValue());
+			assertTrue(String.format("UUID is not version %s", version),
+					uuid.version() == version);
 		}
 	}
 	

@@ -4,42 +4,16 @@ import org.junit.Test;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 
-import static com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator.*;
-
 import static org.junit.Assert.*;
 
 public class AbstractUuidCreatorTest {
 
+	// Values to be used in bitwise operations
+	protected static final long RFC4122_VARIANT_BITS = 0x8000000000000000L;
 	
-	@Test
-	public void testValid() {
-		
-		long lsb = 0x0000000000000000L | RFC4122_VARIANT_BITS;
-		
-		AbstractUuidCreator creator = new AbstractUuidCreator(UuidVersion.SEQUENTIAL) { };
-		long msb = 0x0000000000000000L | RFC4122_VERSION_BITS[UuidVersion.SEQUENTIAL.getValue()];
-		assertTrue(creator.valid(msb, lsb));
-		
-		creator = new AbstractUuidCreator(UuidVersion.TIME_BASED) { };
-		msb = 0x0000000000000000L | RFC4122_VERSION_BITS[UuidVersion.TIME_BASED.getValue()];
-		assertTrue(creator.valid(msb, lsb));
-		
-		creator = new AbstractUuidCreator(UuidVersion.DCE_SECURITY) { };
-		msb = 0x0000000000000000L | RFC4122_VERSION_BITS[UuidVersion.DCE_SECURITY.getValue()];
-		assertTrue(creator.valid(msb, lsb));
-		
-		creator = new AbstractUuidCreator(UuidVersion.NAME_BASED_MD5) { };
-		msb = 0x0000000000000000L | RFC4122_VERSION_BITS[UuidVersion.NAME_BASED_MD5.getValue()];
-		assertTrue(creator.valid(msb, lsb));
-		
-		creator = new AbstractUuidCreator(UuidVersion.RANDOM_BASED) { };
-		msb = 0x0000000000000000L | RFC4122_VERSION_BITS[UuidVersion.RANDOM_BASED.getValue()];
-		
-		assertTrue(creator.valid(msb, lsb));
-		creator = new AbstractUuidCreator(UuidVersion.NAMBE_BASED_SHA1) { };
-		msb = 0x0000000000000000L | RFC4122_VERSION_BITS[UuidVersion.NAMBE_BASED_SHA1.getValue()];
-		assertTrue(creator.valid(msb, lsb));
-	}
+	protected static final long[] RFC4122_VERSION_BITS = {
+			0x0000000000000000L, 0x0000000000001000L, 0x0000000000002000L,
+			0x0000000000003000L, 0x0000000000004000L, 0x0000000000005000L };
 	
 	@Test
 	public void testSetVersionBits() {

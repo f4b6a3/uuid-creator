@@ -43,9 +43,11 @@ public class FingerprintUtil {
 	 * OS + JVM + network details + system resources + locale + timezone.
 	 * 
 	 * It uses these information to generate the node identifier: operating
-	 * system, java virtual machine, network details, system resources, locale
-	 * and timezone. These information are concatenated and passed to a message
-	 * digest. It returns the last six bytes of the resulting hash.
+	 * system (name, version, arch), java virtual machine (vendor, version,
+	 * runtime, VM), network settings (IP, MAC, host name, domain name), system
+	 * resources (CPU cores, memory), locale (language, charset) and timezone.
+	 * These information are concatenated and passed to a message digest.
+	 * It returns the last six bytes of the resulting hash.
 	 * 
 	 * Read: https://en.wikipedia.org/wiki/Device_fingerprint
 	 * 

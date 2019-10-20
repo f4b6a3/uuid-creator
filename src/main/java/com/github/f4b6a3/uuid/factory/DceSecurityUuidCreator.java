@@ -161,7 +161,7 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 		long lsb = setLocalDomainBits(uuid.getLeastSignificantBits(), localDomain, counter);
 		
 		// (1b) set version 2
-		return new UUID(setVersionBits(msb), lsb);
+		return new UUID(setVersionBits(msb), setVariantBits(lsb));
 	}
 
 	/**
@@ -174,7 +174,7 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	 * @param localIdentifier a local identifier
 	 * @return a UUID
 	 */
-	public UUID create(int localIdentifier) {
+	public synchronized UUID create(int localIdentifier) {
 		return create(LOCAL_DOMAIN_PERSON, localIdentifier);
 	}
 

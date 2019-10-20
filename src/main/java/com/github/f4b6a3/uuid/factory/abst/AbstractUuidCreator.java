@@ -33,43 +33,30 @@ import com.github.f4b6a3.uuid.enums.UuidVersion;
  */
 public abstract class AbstractUuidCreator {
 	
-	protected final UuidVersion version;
+	protected final int version;
+	protected final long versionBits;
 	
-	// UUIDs objects defined by RFC-4122
-	public static final UUID NIL_UUID = new UUID(0x0000000000000000L, 0x0000000000000000L);
+	protected AbstractUuidCreator() {
+		this.version = 0;
+		this.versionBits = 0;
+	}
 	
-	// Values to be used in bitwise operations
-	protected static final long RFC4122_VARIANT_BITS = 0x8000000000000000L;
-	protected static final long[] RFC4122_VERSION_BITS = {
-			0x0000000000000000L, 0x0000000000001000L, 
-			0x0000000000002000L, 0x0000000000003000L, 
-			0x0000000000004000L, 0x0000000000005000L };
-	
-	public AbstractUuidCreator() {
-		this.version = null;
+	public AbstractUuidCreator(int version) {
+		this.version = version & 0x0000000F;
+		this.versionBits = version << 12;
 	}
 	
 	public AbstractUuidCreator(UuidVersion version) {
-		this.version = version;
+		this(version.getValue());
 	}
 
-	public UuidVersion getVersion() {
-		return this.version;
-	}
-	
 	/**
-	 * Check if the {@link UUID} is valid.
+	 * Returns the version number for this creator.
 	 * 
-	 * It checks whether the variant and version are correct.
-	 * 
-	 * @param msb the MSB
-	 * @param lsb the LSB
-	 * @return boolean true if valid
+	 * @return the version number
 	 */
-	public boolean valid(final long msb, final long lsb) {
-		long variantBits = getVariantBits(lsb);
-		long versionBits = getVersionBits(msb);
-		return variantBits == RFC4122_VARIANT_BITS && versionBits == RFC4122_VERSION_BITS[version.getValue()];
+	public int getVersion() {
+		return this.version;
 	}
 
 	/**
@@ -89,7 +76,7 @@ public abstract class AbstractUuidCreator {
 	 * @return the LSB with the correct variant bits
 	 */
 	protected long setVariantBits(final long lsb) {
-		return (lsb & 0x3fffffffffffffffL) | RFC4122_VARIANT_BITS;
+		return (lsb & 0x3fffffffffffffffL) | 0x8000000000000000L;
 	}
 	
 	/**
@@ -109,6 +96,6 @@ public abstract class AbstractUuidCreator {
 	 * @return the MSB
 	 */
 	protected long setVersionBits(final long msb) {
-		return (msb & 0xffffffffffff0fffL) | RFC4122_VERSION_BITS[this.version.getValue()];
+		return (msb & 0xffffffffffff0fffL) | this.versionBits;
 	}
 }

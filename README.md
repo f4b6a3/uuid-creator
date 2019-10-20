@@ -455,7 +455,7 @@ In the standard the bytes of the timestamp are rearranged so that the highest bi
 
 In this implementation, the timestamp has milliseconds accuracy, that is, it uses `System.currentTimeMillis()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis()) to get the current milliseconds. An internal _counter_ is used to _simulate_ the standard timestamp resolution of 10 million intervals per second. The reason this strategy is used is that the JVM may not guarantee[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#nanoTime()) a resolution higher than milliseconds.
 
-Another alternate strategies is provided in the case that the default timestamp strategy is not desired. The nanoseconds strategy uses `Instant.getNano()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html#getNano--). You can use the `NanosecondTimestampStrategy` if your machine provides high time resolution. My personal development PC doesn't.
+Another alternate strategy is provided in the case that the default timestamp strategy is not desired. The nanoseconds strategy uses `Instant.getNano()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html#getNano--). You can use the `NanosecondTimestampStrategy` if your machine provides high time resolution. My PC doesn't.
 
 You can create any strategy that implements the `TimestampStrategy` in the case that none of the strategies provided suffices.
 
@@ -482,17 +482,17 @@ The exception is raised to comply the RFC-4122, that requires:
    catches up.
 ```
 
-The approach that stalls the generator until the system clock catches up seems to be a bottleneck. So the error approach was chosen. And an error is an `Exception` in the Java world.
+The approach that stalls the generator until the system clock catches up seems to be a bottleneck. So the error approach was chosen. And an error in the Java world is an `Exception`.
 
-The `UuidCreator` class already deal with the overrun exception in the methods that return UUID values. The exception is just _ignored_. For example, if the programmer uses the method `UuidCreator.getSequential()` more than 9,999 times within the same interval of 1 millisecond, the exception won't be raised to him. Instead the method will return the next UUID value as if nothing had happened. This choice was made because the clock sequence helps a lot to avoid duplicates. In my opinion it's more pragmatic to trust in the clock sequence, since the application won't request more than 163 million UUIDs per millisecond interval. The theoretical limit of UUIDs created per millisecond interval is 163,840,000, since the clock sequence range is 16,384 and the counter range is 10,000.
+The `UuidCreator` class already deals with the overrun exception in the methods that return UUID values. The exception is just _ignored_. For example, if the application calls `UuidCreator.getSequential()` more than 9,999 times within the same interval of 1 millisecond, the exception won't be raised. Instead the method will return the next UUID value as if nothing had happened. This choice was made because the clock sequence helps a lot to avoid duplicates. In my opinion it's more pragmatic to trust in the clock sequence, unless the application requests more than 163 million UUIDs per millisecond. The theoretical limit of UUIDs created per millisecond is 163,840,000, since the clock sequence range is 16,384 and the counter range is 10,000.
 
 If you prefer to use the factory classes directly, for example, getting the factory `SequentialUuidCreator` by calling the method `UuidCreator.getSequentialCreator()`, you can choose the best way to treat the overrun exception. This project was conceived with _freedom of choice_ in mind.
 
 #### Clock sequence
 
-The clock sequence helps to avoid duplicates. It comes in when the system clock is backwards or when the node identifier changes. It also expands the amount of UUIDs that can be created at the same second. 
+The clock sequence helps to avoid duplicates. It comes in when the system clock is backwards or when the node identifier changes. It also expands the amount of UUIDs that can be created at the same millisecond.
 
-The first bits of the clock sequence are multiplexed with the variant number of the RFC-4122. Because of that, it has a range from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards.
+The first bits of the clock sequence are multiplexed with the variant number of the RFC-4122. Because of that, it has a range from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards. In other words, it acts like a counter that is incremented whenever the timestamp repeats or may be repeated.
 
 This implementation generates _well distributed clock sequences_ in the case that there are many instances of the `AbstractTimeBasedUuidCreator` running in parallel. This is done to avoid more than one instance using the same clock sequence. To assure that the clock sequence values won't be repeated and will be distant enough from the other values, it uses an algorithm created for this purpose: the `CyclicDistributor`. We could just use a random clock sequence every time a generator is instantiated, but there's a small risk of the same clock sequence being given to more than one generator. The cyclic distributor reduces this risk to ZERO with up to 16 thousand parallel generators. Besides, there's a risk of an incremented clock sequence conflicting with the clock sequence of another generator. The cyclic distributor hands out a value as distant as possible from the other values to minimize the risk related to incrementing.
 
@@ -504,7 +504,7 @@ The cyclic distributor is just a simple algorithm that hands out values. It's li
 
 The class `CyclicDistributor` hands out numbers in a range of values, so that the first value is always random and the rest of values won't repeat. The range is treated as the perimeter of a circle. Each value is a point in this perimeter. The first point handed out is random. The next values are calculated in iterations or cycles. Each cycle has a 2^n number of values to hand out. All the values are at the same distance from the other values of the same iteration.
 
-For example, say a range is 360, similar to the 360 degrees of a circle. The first number handed out is random, and for coincidence it is ZERO. The second value handed out is 180 degrees away from the first point. The third is at 270 degrees far from the first one. The fourth is at 90 degrees far. And so on...
+For example, say a range is 360, similar to the 360 degrees of a circle. The first number handed out is random, and for this exemple it is ZERO. The second value handed out is 180 degrees away from the first point. The third is at 270 degrees far from the first one. The fourth is at 90 degrees far. And so on...
 
 This algorithm is very simple, but it's easier to understand it watching it running. There's an animation in the `doc` directory that shows the algorithm in action. Each point drawn in the circle of the animation is like a value being handed out. Each value is at the same distance of the others in the same iteration or cycle.
 
@@ -537,7 +537,7 @@ The hardware address node identifier is the MAC address associated with the host
 
 ##### Fingerprint
 
-The host fingerprint is a number that is calculated based on the host configurations. A big list of system properties is collected and then processed using the SHA-256 hash algorithm. The host fingerprint is extracted from the last six bytes of that system data hash. The system properties used to calculate the host fingerprint are: operating system, java virtual machine, network settings (IP, MAC, host name) and system resources (CPU, memory), locale and timezone.
+The host fingerprint is a number that is calculated based on the host configurations. A big list of system properties is collected and then processed using the SHA-256 hash algorithm. The host fingerprint is extracted from the last six bytes of that system data hash. The system properties used to calculate the host fingerprint are: operating system (name, version, arch), java virtual machine (vendor, version, runtime, VM), network settings (IP, MAC, host name, domain name), system resources (CPU cores, memory), locale (language, charset) and timezone.
 
 ###  Sequential
 
@@ -769,15 +769,17 @@ All the examples in this subsection are also valid for SHA-1 UUIDs.
 
 // with fixed and custom namespace as string (USERS)
 String namespace = "USERS";
+String name = "Paul Smith";
 UUID uuid = UuidCreator.getNameBasedMd5Creator()
     .withNamespace(namespace)
-    .create("Paul");
+    .create(name);
 
-// with fixed and standard namespace as UUID (standard URL namespace)
+// with fixed and standard namespace as UUID (the standard URL namespace)
 UUID namespace = UuidNamespace.NAMESPACE_URL.getValue();
+String name = "www.github.com";
 UUID uuid = UuidCreator.getNameBasedMd5Creator()
     .withNamespace(namespace)
-    .create("www.github.com");
+    .create(name);
 
 ```
 

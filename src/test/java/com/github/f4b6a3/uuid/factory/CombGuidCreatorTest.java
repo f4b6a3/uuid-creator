@@ -25,13 +25,20 @@ public class CombGuidCreatorTest {
 
 		UUID uuid = creator.create();
 		long firstMsb = uuid.getMostSignificantBits();
+		long firstLsb = uuid.getLeastSignificantBits() >>> 48;
 		long lastMsb = 0;
-		for (int i = 0; i <= DEFAULT_LOOP; i++) {
+		for (int i = 0; i < DEFAULT_LOOP; i++) {
 			uuid = creator.create();
 			lastMsb = uuid.getMostSignificantBits();
 		}
 
-		assertEquals(String.format("The last MSB should be iqual to the first %s.", firstMsb), firstMsb, lastMsb);
+		boolean overflow = (firstLsb + DEFAULT_LOOP) > ((long) Math.pow(2, 16));
+		
+		if (overflow) {
+			assertEquals(String.format("The last MSB should be iqual to the first %s plus 1.", firstMsb + 1), firstMsb + 1, lastMsb);
+		} else {
+			assertEquals(String.format("The last MSB should be iqual to the first %s.", firstMsb), firstMsb, lastMsb);
+		}
 
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP + 1));
 		uuid = creator.create();
@@ -46,20 +53,20 @@ public class CombGuidCreatorTest {
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		UUID uuid = creator.create();
-		long firstLsb = uuid.getLeastSignificantBits() >> 48;
+		long firstLsb = uuid.getLeastSignificantBits() >>> 48;
 		long lastLsb = 0;
 		for (int i = 0; i < DEFAULT_LOOP; i++) {
 			uuid = creator.create();
-			lastLsb = uuid.getLeastSignificantBits() >> 48;
+			lastLsb = uuid.getLeastSignificantBits() >>> 48;
 		}
 
-		long expected = firstLsb + DEFAULT_LOOP;
+		long expected = ( firstLsb + DEFAULT_LOOP ) % (long) Math.pow(2, 16);
 		assertEquals(String.format("The last LSB should be iqual to %s.", expected), expected, lastLsb);
 
-		long notExpected = firstLsb + DEFAULT_LOOP + 1;
+		long notExpected = expected + 1;
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP + 1));
 		uuid = creator.create();
-		lastLsb = uuid.getLeastSignificantBits() >> 48;
+		lastLsb = uuid.getLeastSignificantBits() >>> 48;
 		assertNotEquals("The last LSB should be different to the first after timestamp changed.", notExpected, lastLsb);
 	}
 

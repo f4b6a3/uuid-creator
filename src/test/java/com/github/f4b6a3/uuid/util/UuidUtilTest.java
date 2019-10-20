@@ -10,11 +10,18 @@ import org.junit.Test;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
-import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
+import com.github.f4b6a3.uuid.enums.UuidVersion;
 
 import static com.github.f4b6a3.uuid.util.UuidUtil.*;
 
 public class UuidUtilTest {
+	
+	// Values to be used in bitwise operations
+	protected static final long RFC4122_VARIANT_BITS = 0x8000000000000000L;
+	
+	protected static final long[] RFC4122_VERSION_BITS = {
+			0x0000000000000000L, 0x0000000000001000L, 0x0000000000002000L,
+			0x0000000000003000L, 0x0000000000004000L, 0x0000000000005000L };
 	
 	@Test
 	public void testIsNameBasedVersion() {
@@ -83,9 +90,35 @@ public class UuidUtilTest {
 	}
 
 	@Test
+	public void testIsRfc4122() {
+
+		long lsb = 0x0000000000000000L | RFC4122_VARIANT_BITS;
+
+		long msb = 0x0000000000000000L | RFC4122_VERSION_BITS[UuidVersion.TIME_BASED.getValue()];
+		UUID uuid = new UUID(msb, lsb);
+		assertTrue(UuidUtil.isRfc4122(uuid));
+
+		msb = 0x0000000000000000L | RFC4122_VERSION_BITS[UuidVersion.DCE_SECURITY.getValue()];
+		uuid = new UUID(msb, lsb);
+		assertTrue(UuidUtil.isRfc4122(uuid));
+
+		msb = 0x0000000000000000L | RFC4122_VERSION_BITS[UuidVersion.NAME_BASED_MD5.getValue()];
+		uuid = new UUID(msb, lsb);
+		assertTrue(UuidUtil.isRfc4122(uuid));
+
+		msb = 0x0000000000000000L | RFC4122_VERSION_BITS[UuidVersion.RANDOM_BASED.getValue()];
+		uuid = new UUID(msb, lsb);
+		assertTrue(UuidUtil.isRfc4122(uuid));
+
+		msb = 0x0000000000000000L | RFC4122_VERSION_BITS[UuidVersion.NAMBE_BASED_SHA1.getValue()];
+		uuid = new UUID(msb, lsb);
+		assertTrue(UuidUtil.isRfc4122(uuid));
+	}
+	
+	@Test
 	public void testIsRfc4122Variant() {
 		UUID uuid1 = UuidNamespace.NAMESPACE_DNS.getValue();
-		UUID uuid2 = AbstractUuidCreator.NIL_UUID;
+		UUID uuid2 = UuidCreator.getNil();
 
 		assertTrue(isRfc4122Variant(uuid1));
 		assertFalse(isRfc4122Variant(uuid2));
