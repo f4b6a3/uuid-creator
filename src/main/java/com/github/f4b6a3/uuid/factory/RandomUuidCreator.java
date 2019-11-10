@@ -52,7 +52,7 @@ import com.github.f4b6a3.uuid.util.FingerprintUtil;
  */
 public class RandomUuidCreator extends AbstractUuidCreator implements NoArgumentsUuidCreator {
 
-	private Random random;
+	protected Random random;
 
 	public RandomUuidCreator() {
 		super(UuidVersion.RANDOM_BASED);
@@ -116,7 +116,7 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 	 * For other faster pseudo-random generators, see {@link XorshiftRandom} and
 	 * its variations.
 	 * 
-	 * {@link Random}.
+	 * See {@link Random}.
 	 * 
 	 * @param random
 	 *            a random generator
@@ -128,9 +128,11 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 	}
 
 	/**
-	 * Replaces the default random generator with a fester one.
+	 * Replaces the default random generator with a faster one.
 	 * 
-	 * {@link Xorshift128PlusRandom}
+	 * The host fingerprint is used to generate a seed for the random number generator.
+	 * 
+	 * See {@link Xorshift128PlusRandom} and {@link FingerprintUtil#getFingerprint()}
 	 * 
 	 * @return {@link RandomUuidCreator}
 	 */

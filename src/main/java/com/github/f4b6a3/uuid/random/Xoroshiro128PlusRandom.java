@@ -44,11 +44,19 @@ public class Xoroshiro128PlusRandom extends Random {
 		this((int) System.nanoTime());
 	}
 
+	/**
+	 * Constructor that receives an integer as 'salt'. This value is combined
+	 * with the current milliseconds and the object hash code to generate two
+	 * seeds.
+	 * 
+	 * @param salt
+	 *            a number used to generate two seeds.
+	 */
 	public Xoroshiro128PlusRandom(int salt) {
 		long time = System.currentTimeMillis() + count++;
 		long hash = (long) this.hashCode();
-		this.seed[0] = (((long) salt) << 32) ^ (time & 0x00000000ffffffffL);
-		this.seed[1] = (((long) salt) << 32) ^ (hash & 0x00000000ffffffffL);
+		this.seed[0] = (((long) salt) << 32) | (time & 0x00000000ffffffffL);
+		this.seed[1] = (((long) salt) << 32) | (hash & 0x00000000ffffffffL);
 	}
 
 	public Xoroshiro128PlusRandom(long[] seed) {

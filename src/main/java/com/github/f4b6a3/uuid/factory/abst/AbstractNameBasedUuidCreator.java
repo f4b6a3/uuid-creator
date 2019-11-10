@@ -39,8 +39,8 @@ import static com.github.f4b6a3.uuid.util.ByteUtil.*;
  */
 public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 
-	private UUID namespace;
-	private MessageDigest md = null;
+	protected UUID namespace;
+	protected MessageDigest md = null;
 
 	protected static final String MESSAGE_DIGEST_MD5 = "MD5";
 	protected static final String MESSAGE_DIGEST_SHA1 = "SHA-1";

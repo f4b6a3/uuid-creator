@@ -49,9 +49,16 @@ public class XorshiftRandom extends Random {
 		this((int) System.nanoTime());
 	}
 
+	/**
+	 * Constructor that receives an integer as 'salt'. This value is combined
+	 * with the current milliseconds to generate the seed.
+	 * 
+	 * @param salt
+	 *            a number used to generate the seed.
+	 */
 	public XorshiftRandom(int salt) {
 		long time = System.currentTimeMillis() + count++;
-		this.seed = (((long) salt) << 32) ^ (time & 0x00000000ffffffffL);
+		this.seed = (((long) salt) << 32) | (time & 0x00000000ffffffffL);
 	}
 
 	public XorshiftRandom(long seed) {

@@ -24,13 +24,17 @@
 
 package com.github.f4b6a3.uuid.factory;
 
+import java.util.Random;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
 import com.github.f4b6a3.uuid.factory.abst.NoArgumentsUuidCreator;
+import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
+import com.github.f4b6a3.uuid.random.XorshiftRandom;
 import com.github.f4b6a3.uuid.timestamp.UnixMillisecondsTimestampStretegy;
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
+import com.github.f4b6a3.uuid.util.FingerprintUtil;
 import com.github.f4b6a3.uuid.util.RandomUtil;
 
 /**
@@ -46,6 +50,8 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 
 	protected long previousTimestamp;
 
+	protected Random random;
+	
 	protected long low;
 	protected long high;
 
@@ -148,8 +154,13 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 	 * Reset the random part of the GUID.
 	 */
 	protected synchronized void reset() {
-		this.low = RandomUtil.nextLong();
-		this.high = RandomUtil.nextLong() & MAX_HIGH;
+		if (random == null) {
+			this.low = RandomUtil.nextLong();
+			this.high = RandomUtil.nextLong() & MAX_HIGH;
+		} else {
+			this.low = random.nextLong();
+			this.high = random.nextLong() & MAX_HIGH;
+		}
 	}
 
 	/**
@@ -180,6 +191,43 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 	public synchronized <T extends LexicalOrderGuidCreator> T withTimestampStrategy(
 			TimestampStrategy timestampStrategy) {
 		this.timestampStrategy = timestampStrategy;
+		return (T) this;
+	}
+	
+	/**
+	 * Replace the default random generator, in a fluent way, to another that
+	 * extends {@link Random}.
+	 * 
+	 * The default random generator is {@link java.security.SecureRandom}.
+	 * 
+	 * For other faster pseudo-random generators, see {@link XorshiftRandom} and
+	 * its variations.
+	 * 
+	 * See {@link Random}.
+	 * 
+	 * @param random
+	 *            a random generator
+	 * @return {@link RandomUuidCreator}
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized <T extends LexicalOrderGuidCreator> T withRandomGenerator(Random random) {
+		this.random = random;
+		return (T) this;
+	}
+	
+	/**
+	 * Replaces the default random generator with a faster one.
+	 * 
+	 * The host fingerprint is used to generate a seed for the random number generator.
+	 * 
+	 * See {@link Xorshift128PlusRandom} and {@link FingerprintUtil#getFingerprint()}
+	 * 
+	 * @return {@link RandomUuidCreator}
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized <T extends LexicalOrderGuidCreator> T withFastRandomGenerator() {
+		final int salt = (int) FingerprintUtil.getFingerprint();
+		this.random = new Xorshift128PlusRandom(salt);
 		return (T) this;
 	}
 }
