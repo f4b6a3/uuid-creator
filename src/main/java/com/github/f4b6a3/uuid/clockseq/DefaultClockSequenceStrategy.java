@@ -24,11 +24,10 @@
 
 package com.github.f4b6a3.uuid.clockseq;
 
-import com.github.f4b6a3.uuid.distrib.CyclicDistributor;
-import com.github.f4b6a3.uuid.distrib.Distributor;
 import com.github.f4b6a3.uuid.sequence.AbstractSequence;
 import com.github.f4b6a3.uuid.state.AbstractUuidState;
 import com.github.f4b6a3.uuid.state.FileUuidState;
+import com.github.f4b6a3.uuid.util.RandomUtil;
 import com.github.f4b6a3.uuid.util.SettingsUtil;
 
 /**
@@ -44,6 +43,8 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 
 	protected static final int SEQUENCE_MIN = 0x0000;
 	protected static final int SEQUENCE_MAX = 0x3fff;
+
+	public static final ClockSequenceController CONTROLLER = new ClockSequenceController();
 
 	/**
 	 * This constructor uses a state stored previously.
@@ -90,6 +91,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	public DefaultClockSequenceStrategy(long timestamp, long nodeIdentifier, AbstractUuidState state) {
 		super(SEQUENCE_MIN, SEQUENCE_MAX);
 
+		this.value = -1;
 		this.previousTimestamp = timestamp;
 		this.previousNodeIdentifier = nodeIdentifier;
 
@@ -162,8 +164,18 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	}
 
 	@Override
+	public long next() {
+		int give = (int) this.current();
+		int take = (int) super.next();
+		this.value = CONTROLLER.borrow(give, take);
+		return this.value;
+	}
+
+	@Override
 	public void reset() {
-		this.value = DistributorLazyHolder.INSTANCE.handOut();
+		int give = (int) this.current();
+		int take = RandomUtil.nextInt(SEQUENCE_MAX + 1);
+		this.value = CONTROLLER.borrow(give, take);
 	}
 
 	/**
@@ -199,9 +211,5 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 		public void run() {
 			this.strategy.storeState();
 		}
-	}
-
-	private static class DistributorLazyHolder {
-		static final Distributor INSTANCE = new CyclicDistributor(SEQUENCE_MAX + 1);
 	}
 }

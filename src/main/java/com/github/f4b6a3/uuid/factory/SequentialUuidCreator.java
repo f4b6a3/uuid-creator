@@ -40,7 +40,11 @@ import com.github.f4b6a3.uuid.util.UuidUtil;
 public class SequentialUuidCreator extends AbstractTimeBasedUuidCreator {
 
 	public SequentialUuidCreator() {
-		super(UuidVersion.SEQUENTIAL);
+		this(UuidVersion.SEQUENTIAL);
+	}
+
+	protected SequentialUuidCreator(UuidVersion version) {
+		super(version);
 	}
 
 	/**

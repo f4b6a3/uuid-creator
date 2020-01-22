@@ -3,8 +3,8 @@ package com.github.f4b6a3.uuid;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+import com.github.f4b6a3.uuid.clockseq.ClockSequenceControllerTest;
 import com.github.f4b6a3.uuid.clockseq.DefaultClockSequenceStrategyTest;
-import com.github.f4b6a3.uuid.distrib.CyclicDistributorTest;
 import com.github.f4b6a3.uuid.factory.CombGuidCreatorTest;
 import com.github.f4b6a3.uuid.factory.LexicalOrderGuidCreatorTest;
 import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreatorTest;
@@ -29,11 +29,11 @@ import com.github.f4b6a3.uuid.util.UuidUtilTest;
    UuidUtilTest.class,
    SettingsUtilTest.class,
    UuidStateTest.class,
-   CyclicDistributorTest.class,
    NaiveRandomTest.class,
    CombGuidCreatorTest.class,
-   LexicalOrderGuidCreatorTest.class
+   LexicalOrderGuidCreatorTest.class,
+   ClockSequenceControllerTest.class
 })
 
 public class TestSuite {   
-}  	
+}

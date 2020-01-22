@@ -28,7 +28,6 @@ import java.security.SecureRandom;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
-import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.factory.CombGuidCreator;
 import com.github.f4b6a3.uuid.factory.DceSecurityUuidCreator;
 import com.github.f4b6a3.uuid.factory.LexicalOrderGuidCreator;
@@ -111,12 +110,7 @@ public class UuidCreator {
 	 * @return a sequential UUID
 	 */
 	public static UUID getSequential() {
-		try {
-			return SequentialCreatorLazyHolder.INSTANCE.create();
-		} catch (UuidCreatorException e) {
-			// Ignore the overrun exception and trust the clock sequence
-			return SequentialCreatorLazyHolder.INSTANCE.create();
-		}
+		return SequentialCreatorLazyHolder.INSTANCE.create();
 	}
 
 	/**
@@ -135,12 +129,7 @@ public class UuidCreator {
 	 * @return a sequential UUID with MAC
 	 */
 	public static UUID getSequentialWithMac() {
-		try {
-			return SequentialWithMacCreatorLazyHolder.INSTANCE.create();
-		} catch (UuidCreatorException e) {
-			// Ignore the overrun exception and trust the clock sequence
-			return SequentialWithMacCreatorLazyHolder.INSTANCE.create();
-		}
+		return SequentialWithMacCreatorLazyHolder.INSTANCE.create();
 	}
 
 	/**
@@ -159,12 +148,7 @@ public class UuidCreator {
 	 * @return a sequential UUID with fingerprint
 	 */
 	public static UUID getSequentialWithFingerprint() {
-		try {
-			return SequentialWithFingerprintCreatorLazyHolder.INSTANCE.create();
-		} catch (UuidCreatorException e) {
-			// Ignore the overrun exception and trust the clock sequence
-			return SequentialWithFingerprintCreatorLazyHolder.INSTANCE.create();
-		}
+		return SequentialWithFingerprintCreatorLazyHolder.INSTANCE.create();
 	}
 
 	/**
@@ -182,12 +166,7 @@ public class UuidCreator {
 	 * @return a time-based UUID
 	 */
 	public static UUID getTimeBased() {
-		try {
-			return TimeBasedCreatorLazyHolder.INSTANCE.create();
-		} catch (UuidCreatorException e) {
-			// Ignore the overrun exception and trust the clock sequence
-			return TimeBasedCreatorLazyHolder.INSTANCE.create();
-		}
+		return TimeBasedCreatorLazyHolder.INSTANCE.create();
 	}
 
 	/**
@@ -205,12 +184,7 @@ public class UuidCreator {
 	 * @return a time-based UUID with a MAC
 	 */
 	public static UUID getTimeBasedWithMac() {
-		try {
-			return TimeBasedWithMacCreatorLazyHolder.INSTANCE.create();
-		} catch (UuidCreatorException e) {
-			// Ignore the overrun exception and trust the clock sequence
-			return TimeBasedWithMacCreatorLazyHolder.INSTANCE.create();
-		}
+		return TimeBasedWithMacCreatorLazyHolder.INSTANCE.create();
 	}
 
 	/**
@@ -228,12 +202,7 @@ public class UuidCreator {
 	 * @return a time-based UUID with a fingerprint
 	 */
 	public static UUID getTimeBasedWithFingerprint() {
-		try {
-			return TimeBasedWithFingerprintCreatorLazyHolder.INSTANCE.create();
-		} catch (UuidCreatorException e) {
-			// Ignore the overrun exception and trust the clock sequence
-			return TimeBasedWithFingerprintCreatorLazyHolder.INSTANCE.create();
-		}
+		return TimeBasedWithFingerprintCreatorLazyHolder.INSTANCE.create();
 	}
 
 	/**
@@ -261,12 +230,7 @@ public class UuidCreator {
 	 * @return a DCE Security UUID
 	 */
 	public static UUID getDceSecurity(byte localDomain, int localIdentifier) {
-		try {
-			return DceSecurityCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
-		} catch (UuidCreatorException e) {
-			// Ignore the overrun exception and trust the clock sequence
-			return DceSecurityCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
-		}
+		return DceSecurityCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
@@ -294,12 +258,7 @@ public class UuidCreator {
 	 * @return a DCE Security UUID
 	 */
 	public static UUID getDceSecurityWithMac(byte localDomain, int localIdentifier) {
-		try {
-			return DceSecurityWithMacCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
-		} catch (UuidCreatorException e) {
-			// Ignore the overrun exception and trust the clock sequence
-			return DceSecurityWithMacCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
-		}
+		return DceSecurityWithMacCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
@@ -327,12 +286,7 @@ public class UuidCreator {
 	 * @return a DCE Security UUID
 	 */
 	public static UUID getDceSecurityWithFingerprint(byte localDomain, int localIdentifier) {
-		try {
-			return DceSecurityWithFingerprintCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
-		} catch (UuidCreatorException e) {
-			// Ignore the overrun exception and trust the clock sequence
-			return DceSecurityWithFingerprintCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
-		}
+		return DceSecurityWithFingerprintCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
@@ -460,7 +414,7 @@ public class UuidCreator {
 	public static UUID getNameBasedSha1(UuidNamespace namespace, String name) {
 		return NameBasedSha1CreatorLazyHolder.INSTANCE.create(namespace, name);
 	}
-	
+
 	/**
 	 * Returns a COMB GUID for MS SQL Server.
 	 * 
@@ -469,13 +423,7 @@ public class UuidCreator {
 	 * @return a COMB GUID
 	 */
 	public static UUID getCombGuid() {
-		try {
-			return CombGuidCreatorLazyHolder.INSTANCE.create();
-		} catch (UuidCreatorException e) {
-			// Ignore the overflow exception and trust that there's a lot of
-			// room to increment after reset o zero
-			return CombGuidCreatorLazyHolder.INSTANCE.create();
-		}
+		return CombCreatorLazyHolder.INSTANCE.create();
 	}
 
 	/**
@@ -484,13 +432,7 @@ public class UuidCreator {
 	 * @return a Lexical Order GUID
 	 */
 	public static UUID getLexicalOrderGuid() {
-		try {
-			return LexicalOrderCreatorLazyHolder.INSTANCE.create();
-		} catch (UuidCreatorException e) {
-			// Ignore the overflow exception and trust that there's a lot of
-			// room to increment after reset o zero
-			return LexicalOrderCreatorLazyHolder.INSTANCE.create();
-		}
+		return LexicalOrderCreatorLazyHolder.INSTANCE.create();
 	}
 
 	/*
@@ -561,13 +503,13 @@ public class UuidCreator {
 	public static NameBasedSha1UuidCreator getNameBasedSha1Creator() {
 		return new NameBasedSha1UuidCreator();
 	}
-	
+
 	/**
 	 * Returns a {@link CombGuidCreator}.
 	 * 
 	 * @return {@link CombGuidCreator}
 	 */
-	public static CombGuidCreator getCombGuidCreator() {
+	public static CombGuidCreator getCombCreator() {
 		return new CombGuidCreator();
 	}
 
@@ -593,27 +535,31 @@ public class UuidCreator {
 	}
 
 	private static class SequentialCreatorLazyHolder {
-		static final SequentialUuidCreator INSTANCE = getSequentialCreator();
+		static final SequentialUuidCreator INSTANCE = getSequentialCreator().withoutOverrunException();
 	}
 
 	private static class SequentialWithMacCreatorLazyHolder {
-		static final SequentialUuidCreator INSTANCE = getSequentialCreator().withHardwareAddressNodeIdentifier();
+		static final SequentialUuidCreator INSTANCE = getSequentialCreator().withoutOverrunException()
+				.withHardwareAddressNodeIdentifier();
 	}
 
 	private static class SequentialWithFingerprintCreatorLazyHolder {
-		static final SequentialUuidCreator INSTANCE = getSequentialCreator().withFingerprintNodeIdentifier();
+		static final SequentialUuidCreator INSTANCE = getSequentialCreator().withoutOverrunException()
+				.withFingerprintNodeIdentifier();
 	}
 
 	private static class TimeBasedCreatorLazyHolder {
-		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator();
+		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withoutOverrunException();
 	}
 
 	private static class TimeBasedWithMacCreatorLazyHolder {
-		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withHardwareAddressNodeIdentifier();
+		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withoutOverrunException()
+				.withHardwareAddressNodeIdentifier();
 	}
 
 	private static class TimeBasedWithFingerprintCreatorLazyHolder {
-		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withFingerprintNodeIdentifier();
+		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withoutOverrunException()
+				.withFingerprintNodeIdentifier();
 	}
 
 	private static class NameBasedMd5CreatorLazyHolder {
@@ -623,7 +569,7 @@ public class UuidCreator {
 	private static class NameBasedSha1CreatorLazyHolder {
 		static final NameBasedSha1UuidCreator INSTANCE = getNameBasedSha1Creator();
 	}
-	
+
 	private static class DceSecurityCreatorLazyHolder {
 		static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator();
 	}
@@ -635,12 +581,12 @@ public class UuidCreator {
 	private static class DceSecurityWithFingerprintCreatorLazyHolder {
 		static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator().withFingerprintNodeIdentifier();
 	}
-	
-	private static class CombGuidCreatorLazyHolder {
-		static final CombGuidCreator INSTANCE = getCombGuidCreator();
+
+	private static class CombCreatorLazyHolder {
+		static final CombGuidCreator INSTANCE = getCombCreator().withoutOverflowException();
 	}
 
 	private static class LexicalOrderCreatorLazyHolder {
-		static final LexicalOrderGuidCreator INSTANCE = getLexicalOrderCreator();
+		static final LexicalOrderGuidCreator INSTANCE = getLexicalOrderCreator().withoutOverflowException();
 	}
 }

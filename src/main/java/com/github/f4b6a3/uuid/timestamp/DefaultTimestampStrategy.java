@@ -60,6 +60,7 @@ import com.github.f4b6a3.uuid.util.TimestampUtil;
 public class DefaultTimestampStrategy extends AbstractSequence implements TimestampStrategy {
 
 	protected long previousTimestamp = 0;
+	protected boolean enableOverrunException = true;
 
 	protected static final int COUNTER_MIN = 0;
 	protected static final int COUNTER_MAX = 9_999;
@@ -69,7 +70,12 @@ public class DefaultTimestampStrategy extends AbstractSequence implements Timest
 	protected static final String OVERRUN_MESSAGE = "The system overran the generator by requesting too many UUIDs.";
 
 	public DefaultTimestampStrategy() {
+		this(/* enableOverrunException = */ true);
+	}
+
+	public DefaultTimestampStrategy(boolean enableOverrunException) {
 		super(COUNTER_MIN, COUNTER_MAX);
+		this.enableOverrunException = enableOverrunException;
 		this.value = RandomUtil.nextInt(COUNTER_OFFSET_MAX);
 	}
 
@@ -107,7 +113,9 @@ public class DefaultTimestampStrategy extends AbstractSequence implements Timest
 		if (this.value > maxValue) {
 			this.value = minValue;
 			// (3b) Too many requests
-			throw new UuidCreatorException(OVERRUN_MESSAGE);
+			if (enableOverrunException) {
+				throw new UuidCreatorException(OVERRUN_MESSAGE);
+			}
 		}
 		return this.value++;
 	}

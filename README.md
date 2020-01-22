@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`.
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>1.4.2</version>
+  <version>1.4.3</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/uuid-creator).
@@ -499,19 +499,9 @@ The clock sequence helps to avoid duplicates. It comes in when the system clock 
 
 The first bits of the clock sequence are multiplexed with the variant number of the RFC-4122. Because of that, it has a range from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards. In other words, it acts like a counter that is incremented whenever the timestamp repeats or may be repeated.
 
-This implementation generates _well distributed clock sequences_ in the case that there are many instances of the `AbstractTimeBasedUuidCreator` running in parallel. This is done to avoid more than one instance using the same clock sequence. To assure that the clock sequence values won't be repeated and will be distant enough from the other values, it uses an algorithm created for this purpose: the `CyclicDistributor`. We could just use a random clock sequence every time a generator is instantiated, but there's a small risk of the same clock sequence being given to more than one generator. The cyclic distributor reduces this risk to ZERO with up to 16 thousand parallel generators. Besides, there's a risk of an incremented clock sequence conflicting with the clock sequence of another generator. The cyclic distributor hands out a value as distant as possible from the other values to minimize the risk related to incrementing.
+In the `DefaultClockSequenceStrategy` each generator on the same JVM receives a unique clock sequence value. This local uniqueness is managed by the class `ClockSequenceController`. 
 
 You can create any strategy that implements the `ClockSequenceStrategy` in the case that none of the strategies are good for you.
-
-##### Cyclic distributor
-
-The cyclic distributor is just a simple algorithm that hands out values. It's like a sequence, but the first number is random, and the rest is calculated as points of a circle. I don't know if this algorithm already exists. I call it "cyclic distributor" because it hands out or _distributes_ values as if they were on the perimeter of a _circle_ and does it in iterations or _cycles_.
-
-The class `CyclicDistributor` hands out numbers in a range of values, so that the first value is always random and the rest of values won't repeat. The range is treated as the perimeter of a circle. Each value is a point in this perimeter. The first point handed out is random. The next values are calculated in iterations or cycles. Each cycle has a 2^n number of values to hand out. All the values are at the same distance from the other values of the same iteration.
-
-For example, say a range is 360, similar to the 360 degrees of a circle. The first number handed out is random, and for this exemple it is ZERO. The second value handed out is 180 degrees away from the first point. The third is at 270 degrees far from the first one. The fourth is at 90 degrees far. And so on...
-
-This algorithm is very simple, but it's easier to understand it watching it running. There's an animation in the `doc` directory that shows the algorithm in action. Each point drawn in the circle of the animation is like a value being handed out. Each value is at the same distance of the others in the same iteration or cycle.
 
 ##### State file
 
@@ -523,7 +513,7 @@ Since the state file is disabled by default, it can be enabled by the system pro
 
 The key-value pairs of the state file has effect in these factories: `TimeBasedUuidCreator`, `SequentialUuidCreator` and `DceSecurityUuidCreator`. The the other factories ignore the state file.
 
-Don't enable the state file if you want to use multiple instances of UUID generators in parallel. If you do it, all instances of UUID generators will use the same clock sequence. Just let the algorithm generate different clock sequences for each generator in a well distributed way.
+Don't enable the state file if you want to use multiple instances of UUID generators in parallel. If you do it, all instances of UUID generators will use the same clock sequence. Just let the algorithm generate different clock sequences for each generator.
 
 
 #### Node identifier

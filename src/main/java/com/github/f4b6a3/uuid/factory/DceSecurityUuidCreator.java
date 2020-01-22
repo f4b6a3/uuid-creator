@@ -50,17 +50,15 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	public static final byte LOCAL_DOMAIN_GROUP = 1; // POSIX GID domain
 	public static final byte LOCAL_DOMAIN_ORG = 2;
 
-	protected TimeBasedUuidCreator timeBasedUUIDCreator;
 	protected DCESTimestampCounter timestampCounter;
-
 	protected byte localDomain;
 
-	/**
-	 * Facoty that creates DCE Security UUIDs, version 2.
-	 */
 	public DceSecurityUuidCreator() {
 		super(UuidVersion.DCE_SECURITY);
-		timestampCounter = new DCESTimestampCounter();
+		this.timestampCounter = new DCESTimestampCounter();
+		
+		// Disabled because the timestamp low bits are replaced by the local id
+		this.withoutOverrunException();
 	}
 	
 	@Override
@@ -233,10 +231,7 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 		this.localDomain = localDomain;
 		return this;
 	}
-
-	/**
-	 * Class used to keep a counter to simulate minimize repetition.
-	 */
+	
 	protected class DCESTimestampCounter extends AbstractSequence {
 		
 		// COUNTER_MAX: 2^6 (14 bits of the clock sequence minus 8 bytes)

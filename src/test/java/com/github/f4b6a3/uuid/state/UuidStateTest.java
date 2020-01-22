@@ -58,8 +58,14 @@ public class UuidStateTest {
 		this.state.setClockSequence(CLOCKSEQ);
 		this.state.setNodeIdentifier(NODEID + 1);
 		
+		// Reset the static ClockSequenceController
+		// It could affect this test case
+		DefaultClockSequenceStrategy.CONTROLLER.clearPool();
+		
 		DefaultClockSequenceStrategy clockSequenceStrategy = new DefaultClockSequenceStrategy(this.timestamp, NODEID, this.state);
+		
 		long clockseq = clockSequenceStrategy.current();
+
 		assertEquals(ByteUtil.toHexadecimal(CLOCKSEQ + 1L), ByteUtil.toHexadecimal(clockseq));
 	}
 

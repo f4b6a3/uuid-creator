@@ -45,13 +45,14 @@ import com.github.f4b6a3.uuid.util.RandomUtil;
  */
 public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoArgumentsUuidCreator {
 
-	protected static final long MAX_LOW = 0xffffffffffffffffL; // ignore signal
+	protected static final long MAX_LOW = 0xffffffffffffffffL;
 	protected static final long MAX_HIGH = 0x000000000000ffffL;
 
 	protected long previousTimestamp;
+	protected boolean enableOverflowException = true;
 
 	protected Random random;
-	
+
 	protected long low;
 	protected long high;
 
@@ -171,11 +172,13 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 	 */
 	protected synchronized void increment() {
 		if (this.low++ == MAX_LOW) {
-			this.low = 0;
+			this.low = 0L;
 			if (this.high++ == MAX_HIGH) {
-				this.high = 0;
+				this.high = 0L;
 				// Too many requests
-				throw new UuidCreatorException(OVERFLOW_MESSAGE);
+				if (enableOverflowException) {
+					throw new UuidCreatorException(OVERFLOW_MESSAGE);
+				}
 			}
 		}
 	}
@@ -193,7 +196,7 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 		this.timestampStrategy = timestampStrategy;
 		return (T) this;
 	}
-	
+
 	/**
 	 * Replace the default random generator, in a fluent way, to another that
 	 * extends {@link Random}.
@@ -207,27 +210,43 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 	 * 
 	 * @param random
 	 *            a random generator
-	 * @return {@link RandomUuidCreator}
+	 * @return {@link LexicalOrderGuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends LexicalOrderGuidCreator> T withRandomGenerator(Random random) {
 		this.random = random;
 		return (T) this;
 	}
-	
+
 	/**
 	 * Replaces the default random generator with a faster one.
 	 * 
-	 * The host fingerprint is used to generate a seed for the random number generator.
+	 * The host fingerprint is used to generate a seed for the random number
+	 * generator.
 	 * 
-	 * See {@link Xorshift128PlusRandom} and {@link FingerprintUtil#getFingerprint()}
+	 * See {@link Xorshift128PlusRandom} and
+	 * {@link FingerprintUtil#getFingerprint()}
 	 * 
-	 * @return {@link RandomUuidCreator}
+	 * @return {@link LexicalOrderGuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends LexicalOrderGuidCreator> T withFastRandomGenerator() {
 		final int salt = (int) FingerprintUtil.getFingerprint();
 		this.random = new Xorshift128PlusRandom(salt);
+		return (T) this;
+	}
+	
+	/**
+	 * Used to disable the overflow exception.
+	 * 
+	 * An exception thrown when too many requests within the same millisecond
+	 * causes an overflow while incrementing the random bits of the GUID.
+	 * 
+	 * @return {@link LexicalOrderGuidCreator}
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized <T extends LexicalOrderGuidCreator> T withoutOverflowException() {
+		this.enableOverflowException = false;
 		return (T) this;
 	}
 }

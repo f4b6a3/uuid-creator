@@ -13,6 +13,7 @@ import static org.junit.Assert.*;
 
 import com.github.f4b6a3.uniqueness.UniquenessTest;
 import com.github.f4b6a3.uuid.clockseq.ClockSequenceStrategy;
+import com.github.f4b6a3.uuid.clockseq.DefaultClockSequenceStrategy;
 import com.github.f4b6a3.uuid.clockseq.RandomClockSequenceStrategy;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
@@ -348,14 +349,17 @@ public class UuidCreatorTest {
 			oldMsb = newMsb;
 		}
 	}
-
+	
 	@Test
 	public void testGetTimeBasedTimestampIsCorrect() {
+		
+		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator();
+		
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
 			Instant instant1 = Instant.now();
 
-			UUID uuid = UuidCreator.getTimeBasedCreator().withInstant(instant1).create();
+			UUID uuid = creator.withInstant(instant1).create();
 			Instant instant2 = UuidUtil.extractInstant(uuid);
 
 			long timestamp1 = TimestampUtil.toTimestamp(instant1);
@@ -367,11 +371,14 @@ public class UuidCreatorTest {
 
 	@Test
 	public void testGetSequentialTimestampIsCorrect() {
+		
+		SequentialUuidCreator creator = UuidCreator.getSequentialCreator();
+		
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
 			Instant instant1 = Instant.now();
 
-			UUID uuid = UuidCreator.getSequentialCreator().withInstant(instant1).create();
+			UUID uuid = creator.withInstant(instant1).create();
 			Instant instant2 = UuidUtil.extractInstant(uuid);
 
 			long timestamp1 = TimestampUtil.toTimestamp(instant1);
@@ -481,6 +488,10 @@ public class UuidCreatorTest {
 		Instant stoppedTime = Instant.now();
 		HashSet<UUID> set = new HashSet<>();
 
+		// Reset the static ClockSequenceController
+		// It could affect this test case
+		DefaultClockSequenceStrategy.CONTROLLER.clearPool();
+		
 		// Instantiate a factory with a fixed timestamp, to simulate a request
 		// rate greater than 16,384 per 100-nanosecond interval.
 		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator().withInstant(stoppedTime);
@@ -496,6 +507,7 @@ public class UuidCreatorTest {
 			} else if (i == max - 1) {
 				lastClockSeq = UuidUtil.extractClockSequence(uuid);
 			}
+			
 			// Fail if the insertion into the hash set returns false, indicating
 			// that there's a duplicate UUID.
 			assertTrue(DUPLICATE_UUID_MSG, set.add(uuid));
@@ -511,7 +523,11 @@ public class UuidCreatorTest {
 		int max = 0x3fff + 1; // 16,384
 		Instant stoppedTime = Instant.now();
 		HashSet<UUID> set = new HashSet<>();
-
+		
+		// Reset the static ClockSequenceController
+		// It could affect this test case
+		DefaultClockSequenceStrategy.CONTROLLER.clearPool();
+		
 		// Instantiate a factory with a fixed timestamp, to simulate a request
 		// rate greater than 16,384 per 100-nanosecond interval.
 		SequentialUuidCreator creator = UuidCreator.getSequentialCreator().withInstant(stoppedTime);

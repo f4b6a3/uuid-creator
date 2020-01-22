@@ -377,6 +377,20 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	}
 
 	/**
+	 * Used to disable the overrun exception.
+	 * 
+	 * An exception thrown when more than 10 thousand requests are made within
+	 * the same millisecond. This method disables the exception.
+	 * 
+	 * @return {@link AbstractTimeBasedUuidCreator}
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withoutOverrunException() {
+		this.timestampStrategy = new DefaultTimestampStrategy(/* enableOverrunException */ false);
+		return (T) this;
+	}
+
+	/**
 	 * Formats the most significant bits of the UUID.
 	 * 
 	 * @param timestamp
