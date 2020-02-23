@@ -147,8 +147,6 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	 * 
 	 * @param timestamp
 	 *            a timestamp
-	 * @param nodeIdentifier
-	 *            a node identifier (ignored in this subclass)
 	 * @return a clock sequence
 	 */
 	@Override

@@ -56,6 +56,7 @@ public class NodeIdentifierUtil {
 	 * Checks if a node identifier is multicast.
 	 * 
 	 * @param nodeIdentifier
+	 *            a node identifier
 	 * @return true if is multicast
 	 */
 	public static boolean isMulticastNodeIdentifier(long nodeIdentifier) {

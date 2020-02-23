@@ -83,7 +83,7 @@ public class UuidUtil {
 	 * 
 	 * The validation mode is not strict.
 	 * 
-	 * @see {@link UuidUtil#isValid(String, boolean)}
+	 * See {@link UuidUtil#isValid(String, boolean)}
 	 * 
 	 * @param uuid
 	 *            a UUID string

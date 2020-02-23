@@ -51,7 +51,7 @@ public class UuidCreator {
 	 * 
 	 * The nil UUID is special UUID that has all 128 bits set to zero.
 	 * 
-	 * @return
+	 * @return a Nil UUID
 	 */
 	public static UUID getNil() {
 		return new UUID(0L, 0L);
@@ -428,9 +428,6 @@ public class UuidCreator {
 
 	/**
 	 * Returns a Lexical Order GUID based on the ULID specification.
-	 * 
-	 * If you need a ULID string instead of a GUID, use
-	 * {@link UlidCreator#getUlid()}.
 	 * 
 	 * @return a Lexical Order GUID
 	 */
