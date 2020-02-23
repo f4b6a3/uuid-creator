@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.timestamp.FixedTimestampStretegy;
+import com.github.f4b6a3.uuid.util.RandomUtil;
 
 import static org.junit.Assert.*;
 
@@ -20,7 +21,10 @@ public class LexicalOrderGuidCreatorTest {
 	@Test
 	public void testRandomMostSignificantBits() {
 
-		LexicalOrderGuidCreator creator = new LexicalOrderGuidCreator();
+		long low = RandomUtil.getInstance().nextInt();
+		long high = RandomUtil.getInstance().nextInt(Short.MAX_VALUE);
+
+		LexicalOrderGuidCreatorMock creator = new LexicalOrderGuidCreatorMock(low, high, TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		UUID uuid = creator.create();
@@ -36,7 +40,7 @@ public class LexicalOrderGuidCreatorTest {
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP + 1));
 		uuid = creator.create();
 		lastMsb = (short) uuid.getMostSignificantBits();
-		assertNotEquals("The last MSB should be different to the first after timestamp changed.", firstMsb, lastMsb);
+		assertNotEquals("The last MSB should be be random after timestamp changed.", firstMsb, lastMsb);
 	}
 
 	@Test
@@ -60,24 +64,24 @@ public class LexicalOrderGuidCreatorTest {
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP + 1));
 		uuid = creator.create();
 		lastLsb = uuid.getLeastSignificantBits();
-		assertNotEquals("The last LSB should be different to the first after timestamp changed.", notExpected, lastLsb);
+		assertNotEquals("The last LSB should be random after timestamp changed.", notExpected, lastLsb);
 	}
 
 	@Test
 	public void testIncrementOfRandomLeastSignificantBits() {
 
-		long low = 0;
-		long high = 0;
+		long low = RandomUtil.getInstance().nextInt();
+		long high = RandomUtil.getInstance().nextInt(Short.MAX_VALUE);
 
-		LexicalOrderGuidCreatorMock creator = new LexicalOrderGuidCreatorMock(low, high);
+		LexicalOrderGuidCreatorMock creator = new LexicalOrderGuidCreatorMock(low, high, TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		UUID uuid = new UUID(0, 0);
-		for (int i = 0; i <= DEFAULT_LOOP; i++) {
+		for (int i = 0; i < DEFAULT_LOOP; i++) {
 			uuid = creator.create();
 		}
 
-		long expected = DEFAULT_LOOP;
+		long expected = low + DEFAULT_LOOP;
 		long randomLsb = uuid.getLeastSignificantBits();
 		assertEquals(String.format("The LSB should be iqual to %s.", expected), expected, randomLsb);
 	}
@@ -86,13 +90,13 @@ public class LexicalOrderGuidCreatorTest {
 	public void testIncrementOfRandomMostSignificantBits() {
 
 		long low = MAX_LOW;
-		long high = 0;
+		long high = RandomUtil.getInstance().nextInt(Short.MAX_VALUE);
 
-		LexicalOrderGuidCreatorMock creator = new LexicalOrderGuidCreatorMock(low, high);
+		LexicalOrderGuidCreatorMock creator = new LexicalOrderGuidCreatorMock(low, high, TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		UUID uuid = new UUID(0, 0);
-		for (int i = 0; i <= DEFAULT_LOOP; i++) {
+		for (int i = 0; i < DEFAULT_LOOP; i++) {
 			uuid = creator.create();
 		}
 
@@ -107,11 +111,11 @@ public class LexicalOrderGuidCreatorTest {
 		long low = MAX_LOW - DEFAULT_LOOP;
 		long high = MAX_HIGH;
 
-		LexicalOrderGuidCreatorMock creator = new LexicalOrderGuidCreatorMock(low, high);
+		LexicalOrderGuidCreatorMock creator = new LexicalOrderGuidCreatorMock(low, high, TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		UUID uuid = new UUID(0, 0);
-		for (int i = 0; i <= DEFAULT_LOOP; i++) {
+		for (int i = 0; i < DEFAULT_LOOP; i++) {
 			uuid = creator.create();
 		}
 

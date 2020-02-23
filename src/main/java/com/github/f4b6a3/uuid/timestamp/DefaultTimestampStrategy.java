@@ -76,7 +76,7 @@ public class DefaultTimestampStrategy extends AbstractSequence implements Timest
 	public DefaultTimestampStrategy(boolean enableOverrunException) {
 		super(COUNTER_MIN, COUNTER_MAX);
 		this.enableOverrunException = enableOverrunException;
-		this.value = RandomUtil.nextInt(COUNTER_OFFSET_MAX);
+		this.value = RandomUtil.getInstance().nextInt(COUNTER_OFFSET_MAX);
 	}
 
 	@Override

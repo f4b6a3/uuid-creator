@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2019 Fabio Lima
+ * Copyright (c) 2018-2020 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -67,12 +67,16 @@ public class ByteUtil {
 	 * @return a byte array
 	 */
 	public static byte[] toBytes(final long number) {
-		final int length = 8;
-		byte[] bytes = new byte[length];
-		for (int i = 0; i < length; i++) {
-			bytes[i] = (byte) (number >>> (8 * ((length - 1) - i)));
-		}
-		return bytes;
+		return new byte[] {
+			(byte) (number >>> 56),
+			(byte) (number >>> 48),
+			(byte) (number >>> 40),
+			(byte) (number >>> 32),
+			(byte) (number >>> 24),
+			(byte) (number >>> 16),
+			(byte) (number >>> 8),
+			(byte) (number)
+		};
 	}
 
 	/**
@@ -192,9 +196,7 @@ public class ByteUtil {
 	public static byte[] copy(final byte[] bytes, final int start, final int end) {
 		final int length = end - start;
 		final byte[] result = new byte[length];
-		for (int i = 0; i < length; i++) {
-			result[i] = bytes[start + i];
-		}
+		System.arraycopy(bytes, start, result, 0, length);
 		return result;
 	}
 
@@ -206,15 +208,9 @@ public class ByteUtil {
 	 * @return a byte array
 	 */
 	public static byte[] concat(final byte[] bytes1, final byte[] bytes2) {
-		final int length1 = bytes1.length;
-		final int length2 = bytes2.length;
-		final byte[] result = new byte[length1 + length2];
-		for (int i = 0; i < length1; i++) {
-			result[i] = bytes1[i];
-		}
-		for (int j = 0; j < length2; j++) {
-			result[length1 + j] = bytes2[j];
-		}
+		final byte[] result = new byte[bytes1.length + bytes2.length];
+		System.arraycopy(bytes1, 0, result, 0, bytes1.length);
+		System.arraycopy(bytes2, 0, result, bytes1.length, bytes2.length);
 		return result;
 	}
 

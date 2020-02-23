@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2019 Fabio Lima
+ * Copyright (c) 2018-2020 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -428,6 +428,9 @@ public class UuidCreator {
 
 	/**
 	 * Returns a Lexical Order GUID based on the ULID specification.
+	 * 
+	 * If you need a ULID string instead of a GUID, use
+	 * {@link UlidCreator#getUlid()}.
 	 * 
 	 * @return a Lexical Order GUID
 	 */

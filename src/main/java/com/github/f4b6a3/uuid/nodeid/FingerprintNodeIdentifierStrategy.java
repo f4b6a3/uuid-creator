@@ -25,6 +25,7 @@
 package com.github.f4b6a3.uuid.nodeid;
 
 import com.github.f4b6a3.uuid.util.FingerprintUtil;
+import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 
 public class FingerprintNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
@@ -39,7 +40,8 @@ public class FingerprintNodeIdentifierStrategy implements NodeIdentifierStrategy
 	 * 
 	 */
 	public FingerprintNodeIdentifierStrategy() {
-		this.nodeIdentifier = FingerprintUtil.getFingerprint();
+		final long fingerprint = FingerprintUtil.getFingerprint();
+		this.nodeIdentifier = NodeIdentifierUtil.setMulticastNodeIdentifier(fingerprint);
 	}
 
 	/**

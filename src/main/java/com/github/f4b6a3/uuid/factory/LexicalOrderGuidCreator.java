@@ -45,7 +45,7 @@ import com.github.f4b6a3.uuid.util.RandomUtil;
  */
 public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoArgumentsUuidCreator {
 
-	protected static final long MAX_LOW = 0xffffffffffffffffL;
+	protected static final long MAX_LOW = 0xffffffffffffffffL; // unsigned
 	protected static final long MAX_HIGH = 0x000000000000ffffL;
 
 	protected long previousTimestamp;
@@ -67,7 +67,7 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 
 	/**
 	 * 
-	 * Return a Lexical Order GUID.
+	 * Return a GUID based on the ULID specification.
 	 * 
 	 * It has two parts:
 	 * 
@@ -156,8 +156,8 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 	 */
 	protected synchronized void reset() {
 		if (random == null) {
-			this.low = RandomUtil.nextLong();
-			this.high = RandomUtil.nextLong() & MAX_HIGH;
+			this.low = RandomUtil.getInstance().nextLong();
+			this.high = RandomUtil.getInstance().nextLong() & MAX_HIGH;
 		} else {
 			this.low = random.nextLong();
 			this.high = random.nextLong() & MAX_HIGH;
@@ -171,14 +171,11 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 	 *             if an overflow happens.
 	 */
 	protected synchronized void increment() {
-		if (this.low++ == MAX_LOW) {
-			this.low = 0L;
-			if (this.high++ == MAX_HIGH) {
-				this.high = 0L;
-				// Too many requests
-				if (enableOverflowException) {
-					throw new UuidCreatorException(OVERFLOW_MESSAGE);
-				}
+		if ((this.low++ == MAX_LOW) && (this.high++ == MAX_HIGH)) {
+			this.high = 0L;
+			// Too many requests
+			if (enableOverflowException) {
+				throw new UuidCreatorException(OVERFLOW_MESSAGE);
 			}
 		}
 	}
@@ -235,7 +232,7 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 		this.random = new Xorshift128PlusRandom(salt);
 		return (T) this;
 	}
-	
+
 	/**
 	 * Used to disable the overflow exception.
 	 * 

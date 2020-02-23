@@ -162,7 +162,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 		final long nodeIdentifier = this.nodeIdentifierStrategy.getNodeIdentifier();
 
 		// (5a)(6a) get the sequence value
-		final long clockSequence = this.clockSequenceStrategy.getClockSequence(timestamp, nodeIdentifier);
+		final long clockSequence = this.clockSequenceStrategy.getClockSequence(timestamp);
 
 		// (9a) format the most significant bits
 		final long msb = this.formatMostSignificantBits(timestamp);
@@ -381,6 +381,10 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * 
 	 * An exception thrown when more than 10 thousand requests are made within
 	 * the same millisecond. This method disables the exception.
+	 * 
+	 * This method works only with the {@link DefaultTimestampStrategy}. So
+	 * don't use this method if you want the creator to use another
+	 * {@link TimestampStrategy}.
 	 * 
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */

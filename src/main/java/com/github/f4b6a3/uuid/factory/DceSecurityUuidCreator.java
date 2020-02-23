@@ -235,8 +235,8 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	protected class DCESTimestampCounter extends AbstractSequence {
 		
 		// COUNTER_MAX: 2^6 (14 bits of the clock sequence minus 8 bytes)
-		private static final long COUNTER_MIN = 0;
-		private static final long COUNTER_MAX = 63;
+		private static final int COUNTER_MIN = 0;
+		private static final int COUNTER_MAX = 63;
 
 		protected DCESTimestampCounter() {
 			super(COUNTER_MIN, COUNTER_MAX);

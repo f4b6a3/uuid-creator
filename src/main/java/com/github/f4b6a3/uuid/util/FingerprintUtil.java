@@ -33,39 +33,45 @@ import java.util.TimeZone;
 
 public class FingerprintUtil {
 
-	private static MessageDigest messageDigest = getMessageDigest();
+	private static MessageDigest messageDigest;
 
 	private FingerprintUtil() {
 	}
 
 	/**
-	 * Returns a host fingerprint calculated from a list of system properties:
-	 * OS + JVM + network details + system resources + locale + timezone.
+	 * Returns long value representing a host fingerprint.
 	 * 
-	 * It uses these information to generate the node identifier: operating
-	 * system (name, version, arch), java virtual machine (vendor, version,
-	 * runtime, VM), network settings (IP, MAC, host name, domain name), system
-	 * resources (CPU cores, memory), locale (language, charset) and timezone.
-	 * These information are concatenated and passed to a message digest.
-	 * It returns the last six bytes of the resulting hash.
+	 * The fingerprint is calculated from a list of system properties: OS + JVM
+	 * + network details + system resources + locale + timezone.
+	 * 
+	 * It uses these information to generate the fingerprint: operating system
+	 * (name, version, arch), java virtual machine (vendor, version, runtime,
+	 * VM), network settings (IP, MAC, host name, domain name), system resources
+	 * (CPU cores, memory), locale (language, charset) and timezone. These
+	 * information are concatenated and passed to a SHA-256 message digest.
+	 * 
+	 * It returns the last 8 bytes of the resulting hash as long value.
 	 * 
 	 * Read: https://en.wikipedia.org/wiki/Device_fingerprint
 	 * 
-	 * @return a system identifier
+	 * @return a fingerprint as long value
 	 */
 	public static long getFingerprint() {
 		String hash = getSystemDataHash();
-		long number = ByteUtil.toNumber(hash) & 0x0000FFFFFFFFFFFFL;
-		return NodeIdentifierUtil.setMulticastNodeIdentifier(number);
+		return ByteUtil.toNumber(hash);
 	}
 
 	/**
-	 * Returns a hash string generated from all the system data: OS + JVM +
-	 * network details + system resources.
+	 * Returns a SHA-256 hash string generated from all the system data: OS +
+	 * JVM + network details + system resources.
 	 * 
 	 * @return a string
 	 */
 	protected static String getSystemDataHash() {
+
+		if (messageDigest == null) {
+			messageDigest = getMessageDigest();
+		}
 
 		String os = getOperatingSystem();
 		String jvm = getJavaVirtualMachine();

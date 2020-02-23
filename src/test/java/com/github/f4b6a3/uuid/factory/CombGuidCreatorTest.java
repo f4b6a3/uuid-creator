@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.timestamp.FixedTimestampStretegy;
+import com.github.f4b6a3.uuid.util.RandomUtil;
 
 import static org.junit.Assert.*;
 
@@ -20,7 +21,10 @@ public class CombGuidCreatorTest {
 	@Test
 	public void testRandomMostSignificantBits() {
 
-		CombGuidCreator creator = new CombGuidCreator();
+		long low = RandomUtil.getInstance().nextInt();
+		long high = RandomUtil.getInstance().nextInt(Short.MAX_VALUE);
+
+		CombGuidCreator creator = new CombGuidCreatorMock(high, low, TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		UUID uuid = creator.create();
@@ -33,9 +37,10 @@ public class CombGuidCreatorTest {
 		}
 
 		boolean overflow = (firstLsb + DEFAULT_LOOP) > ((long) Math.pow(2, 16));
-		
+
 		if (overflow) {
-			assertEquals(String.format("The last MSB should be iqual to the first %s plus 1.", firstMsb + 1), firstMsb + 1, lastMsb);
+			assertEquals(String.format("The last MSB should be iqual to the first %s plus 1.", firstMsb + 1),
+					firstMsb + 1, lastMsb);
 		} else {
 			assertEquals(String.format("The last MSB should be iqual to the first %s.", firstMsb), firstMsb, lastMsb);
 		}
@@ -43,13 +48,16 @@ public class CombGuidCreatorTest {
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP + 1));
 		uuid = creator.create();
 		lastMsb = uuid.getMostSignificantBits();
-		assertNotEquals("The last MSB should be different to the first after timestamp changed.", firstMsb, lastMsb);
+		assertNotEquals("The last MSB should be random after timestamp changed.", firstMsb, lastMsb);
 	}
 
 	@Test
 	public void testRandomLeastSignificantBits() {
 
-		CombGuidCreator creator = new CombGuidCreator();
+		long low = RandomUtil.getInstance().nextInt();
+		long high = RandomUtil.getInstance().nextInt(Short.MAX_VALUE);
+
+		CombGuidCreator creator = new CombGuidCreatorMock(high, low, TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		UUID uuid = creator.create();
@@ -60,14 +68,14 @@ public class CombGuidCreatorTest {
 			lastLsb = uuid.getLeastSignificantBits() >>> 48;
 		}
 
-		long expected = ( firstLsb + DEFAULT_LOOP ) % (long) Math.pow(2, 16);
+		long expected = (firstLsb + DEFAULT_LOOP) % (long) Math.pow(2, 16);
 		assertEquals(String.format("The last LSB should be iqual to %s.", expected), expected, lastLsb);
 
 		long notExpected = expected + 1;
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP + 1));
 		uuid = creator.create();
 		lastLsb = uuid.getLeastSignificantBits() >>> 48;
-		assertNotEquals("The last LSB should be different to the first after timestamp changed.", notExpected, lastLsb);
+		assertNotEquals("The last LSB should be random after timestamp changed.", notExpected, lastLsb);
 	}
 
 	@Test
@@ -76,11 +84,11 @@ public class CombGuidCreatorTest {
 		long low = 0;
 		long high = 0;
 
-		CombGuidCreatorMock creator = new CombGuidCreatorMock(low, high);
+		CombGuidCreator creator = new CombGuidCreatorMock(high, low, TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		UUID uuid = new UUID(0, 0);
-		for (int i = 0; i <= DEFAULT_LOOP; i++) {
+		for (int i = 0; i < DEFAULT_LOOP; i++) {
 			uuid = creator.create();
 		}
 
@@ -95,7 +103,7 @@ public class CombGuidCreatorTest {
 		long low = MAX_LOW;
 		long high = 0;
 
-		CombGuidCreatorMock creator = new CombGuidCreatorMock(low, high);
+		CombGuidCreatorMock creator = new CombGuidCreatorMock(low, high, TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		UUID uuid = new UUID(0, 0);
@@ -114,11 +122,11 @@ public class CombGuidCreatorTest {
 		long low = MAX_LOW - DEFAULT_LOOP;
 		long high = MAX_HIGH;
 
-		CombGuidCreatorMock creator = new CombGuidCreatorMock(low, high);
+		CombGuidCreatorMock creator = new CombGuidCreatorMock(low, high, TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		UUID uuid = new UUID(0, 0);
-		for (int i = 0; i <= DEFAULT_LOOP; i++) {
+		for (int i = 0; i < DEFAULT_LOOP; i++) {
 			uuid = creator.create();
 		}
 

@@ -85,7 +85,7 @@ public class RandomNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 */
 	protected long getRandomNodeIdentifier() {
 		if (random == null) {
-			return NodeIdentifierUtil.setMulticastNodeIdentifier(RandomUtil.nextLong());
+			return NodeIdentifierUtil.setMulticastNodeIdentifier(RandomUtil.getInstance().nextLong());
 		}
 		return NodeIdentifierUtil.setMulticastNodeIdentifier(random.nextLong());
 	}

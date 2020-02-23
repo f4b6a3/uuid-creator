@@ -56,7 +56,7 @@ public class NaiveRandomTest {
 		double accumulator = 0;
 		
 		for(int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			long value = RandomUtil.nextLong();
+			long value = RandomUtil.getInstance().nextLong();
 			accumulator += Long.bitCount(value);
 		}
 		

@@ -1,8 +1,9 @@
-package com.github.f4b6a3.uuid;
+package com.github.f4b6a3;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+import com.github.f4b6a3.uuid.UuidCreatorTest;
 import com.github.f4b6a3.uuid.clockseq.ClockSequenceControllerTest;
 import com.github.f4b6a3.uuid.clockseq.DefaultClockSequenceStrategyTest;
 import com.github.f4b6a3.uuid.factory.CombGuidCreatorTest;
@@ -32,8 +33,15 @@ import com.github.f4b6a3.uuid.util.UuidUtilTest;
    NaiveRandomTest.class,
    CombGuidCreatorTest.class,
    LexicalOrderGuidCreatorTest.class,
-   ClockSequenceControllerTest.class
+   ClockSequenceControllerTest.class,
 })
 
-public class TestSuite {   
+/**
+ * 
+ * It bundles all JUnit test cases.
+ * 
+ * Also see {@link UniquenesTest}. 
+ *
+ */
+public class TestSuite {
 }

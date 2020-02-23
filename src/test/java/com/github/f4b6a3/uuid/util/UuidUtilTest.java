@@ -224,50 +224,115 @@ public class UuidUtilTest {
 		try {
 			extractInstant(uuid);
 			fail();
-		} catch (UnsupportedOperationException e) {
+		} catch (UuidUtilException e) {
 			// Success
 		}
 
 		try {
 			extractTimestamp(uuid);
 			fail();
-		} catch (UnsupportedOperationException e) {
+		} catch (UuidUtilException e) {
 			// Success
 		}
 
 		try {
 			extractNodeIdentifier(uuid);
 			fail();
-		} catch (UnsupportedOperationException e) {
+		} catch (UuidUtilException e) {
 			// Success
 		}
 
 		try {
 			extractDceSecurityInstant(uuid);
 			fail();
-		} catch (UnsupportedOperationException e) {
+		} catch (UuidUtilException e) {
 			// Success
 		}
 
 		try {
 			extractDceSecurityTimestamp(uuid);
 			fail();
-		} catch (UnsupportedOperationException e) {
+		} catch (UuidUtilException e) {
 			// Success
 		}
 
 		try {
 			extractDceSecurityLocalDomain(uuid);
 			fail();
-		} catch (UnsupportedOperationException e) {
+		} catch (UuidUtilException e) {
 			// Success
 		}
 
 		try {
 			extractDceSecurityLocalIdentifier(uuid);
 			fail();
-		} catch (UnsupportedOperationException e) {
+		} catch (UuidUtilException e) {
 			// Success
 		}
+	}
+	
+	@Test
+	public void testIsValidLoose() {
+
+		String ulid = null; // Null
+		assertFalse("Null UUID should be invalid in loose mode.", UuidUtil.isValid(ulid));
+
+		ulid = ""; // length: 0
+		assertFalse("UUID with empty string should be invalid  in loose mode.", UuidUtil.isValid(ulid));
+
+		ulid = "01234567-89ab-4def-abcd-ef0123456789"; // All lower case
+		assertTrue("UUID in lower case should be invalid in loose mode.", UuidUtil.isValid(ulid));
+		
+		ulid = "01234567-89AB-4DEF-ABCD-EF0123456789"; // All upper case
+		assertTrue("UUID in upper case should valid in loose mode.", UuidUtil.isValid(ulid));
+
+		ulid = "01234567-89ab-4DEF-abcd-EF0123456789"; // Mixed case
+		assertTrue("UUID in upper and lower case should valid in loose mode.", UuidUtil.isValid(ulid));
+
+		ulid = "0123456789AB4DEFABCDEF0123456789"; // All upper case, without hyphen
+		assertTrue("UUID in upper case without hyphen should be invalid in loose mode.", UuidUtil.isValid(ulid));
+
+		ulid = "0123456789ab4defabcdef0123456789"; // All lower case, without hyphen
+		assertTrue("UUID in lower case without hyphen should be invalid in loose mode.", UuidUtil.isValid(ulid));
+
+		ulid = "0123456789ab4DEFabcdEF0123456789"; // mixed case, without hyphen
+		assertTrue("UUID in upper and lower case without hyphen should be invalid in loose mode.", UuidUtil.isValid(ulid));
+		
+		ulid = "{01234567-89ab-4def-abcd-ef0123456789}"; // All lower case, with curly braces
+		assertTrue("UUID in lower case should be invalid in loose mode.", UuidUtil.isValid(ulid));
+		
+		ulid = "{01234567-89AB-4DEF-ABCD-EF0123456789}"; // All upper case, with curly braces
+		assertTrue("UUID in upper case should valid in loose mode.", UuidUtil.isValid(ulid));
+		
+	}
+	
+	@Test
+	public void testIsValidStrict() {
+		boolean strict = true;
+
+		String ulid = null; // Null
+		assertFalse("Null UUID should be invalid in strict mode.", UuidUtil.isValid(ulid, strict));
+
+		ulid = ""; // length: 0
+		assertFalse("UUID with empty string should be invalid  in strict mode.", UuidUtil.isValid(ulid, strict));
+
+		ulid = "01234567-89ab-4def-abcd-ef0123456789"; // All lower case
+		assertTrue("UUID in lower case should be invalid in strict mode.", UuidUtil.isValid(ulid, strict));
+		
+		ulid = "01234567-89AB-4DEF-ABCD-EF0123456789"; // All upper case
+		assertTrue("UUID in upper case should valid in strict mode.", UuidUtil.isValid(ulid, strict));
+
+		ulid = "01234567-89ab-4DEF-abcd-EF0123456789"; // Mixed case
+		assertTrue("UUID in upper and lower case should valid in strict mode.", UuidUtil.isValid(ulid, strict));
+
+		ulid = "0123456789AB4DEFABCDEF0123456789"; // All upper case, without hyphen
+		assertFalse("UUID in upper case without hyphen should be invalid in strict mode.", UuidUtil.isValid(ulid, strict));
+
+		ulid = "0123456789ab4defabcdef0123456789"; // All lower case, without hyphen
+		assertFalse("UUID in lower case without hyphen should be invalid in strict mode.", UuidUtil.isValid(ulid, strict));
+
+		ulid = "0123456789ab4DEFabcdEF0123456789"; // mixed case, without hyphen
+		assertFalse("UUID in upper and lower case without hyphen should be invalid in strict mode.", UuidUtil.isValid(ulid, strict));
+		
 	}
 }

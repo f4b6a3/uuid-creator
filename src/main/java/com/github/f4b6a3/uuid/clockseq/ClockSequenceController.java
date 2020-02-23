@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ * 
+ * Copyright (c) 2018-2020 Fabio Lima
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package com.github.f4b6a3.uuid.clockseq;
 
 /**
@@ -62,11 +86,11 @@ public class ClockSequenceController {
 			return false;
 		}
 
-		int byteIndex = value / 8;
-		int bitIndex = value % 8;
+		final int byteIndex = value / 8;
+		final int bitIndex = value % 8;
 
-		int mask = (0x00000001 << bitIndex);
-		boolean clear = (pool[byteIndex] & mask) == 0;
+		final int mask = (0x00000001 << bitIndex);
+		final boolean clear = (pool[byteIndex] & mask) == 0;
 
 		if (clear) {
 			pool[byteIndex] = (byte) (pool[byteIndex] | mask);
@@ -92,10 +116,10 @@ public class ClockSequenceController {
 			return;
 		}
 
-		int byteIndex = value / 8;
-		int bitIndex = value % 8;
+		final int byteIndex = value / 8;
+		final int bitIndex = value % 8;
 
-		int mask = (~(1 << bitIndex));
+		final int mask = (~(1 << bitIndex));
 
 		pool[byteIndex] = (byte) (pool[byteIndex] & mask);
 	}
@@ -109,10 +133,10 @@ public class ClockSequenceController {
 	 */
 	public boolean isUsed(int value) {
 
-		int byteIndex = value / 8;
-		int bitIndex = value % 8;
+		final int byteIndex = value / 8;
+		final int bitIndex = value % 8;
 
-		int mask = (0x00000001 << bitIndex);
+		final int mask = (0x00000001 << bitIndex);
 		boolean clear = (pool[byteIndex] & mask) == 0;
 
 		return !clear;

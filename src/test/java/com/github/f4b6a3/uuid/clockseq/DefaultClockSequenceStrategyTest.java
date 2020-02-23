@@ -14,16 +14,16 @@ public class DefaultClockSequenceStrategyTest {
 		long oldTimestamp = 1000;
 		long newTimestamp = 999;
 		DefaultClockSequenceStrategy clockSequence = new DefaultClockSequenceStrategy();
-		long oldSequence = clockSequence.getClockSequence(oldTimestamp, 0);
-		long newSequence = clockSequence.getClockSequence(newTimestamp, 0);
+		long oldSequence = clockSequence.getClockSequence(oldTimestamp);
+		long newSequence = clockSequence.getClockSequence(newTimestamp);
 		assertEquals(oldSequence + 1, newSequence);
 
 		// It should increment if the new timestamp is EQUAL TO the old timestamp
 		oldTimestamp = 1000;
 		newTimestamp = 1000;
 		clockSequence = new DefaultClockSequenceStrategy();
-		oldSequence = clockSequence.getClockSequence(oldTimestamp, 0);
-		newSequence = clockSequence.getClockSequence(newTimestamp, 0);
+		oldSequence = clockSequence.getClockSequence(oldTimestamp);
+		newSequence = clockSequence.getClockSequence(newTimestamp);
 		assertEquals(oldSequence + 1, newSequence);
 	}
 
@@ -34,8 +34,8 @@ public class DefaultClockSequenceStrategyTest {
 		long oldTimestamp = 1000;
 		long newTimestamp = 1001;
 		DefaultClockSequenceStrategy clockSequence = new DefaultClockSequenceStrategy();
-		long oldSequence = clockSequence.getClockSequence(oldTimestamp, 0);
-		long newSequence = clockSequence.getClockSequence(newTimestamp, 0);
+		long oldSequence = clockSequence.getClockSequence(oldTimestamp);
+		long newSequence = clockSequence.getClockSequence(newTimestamp);
 		assertEquals(oldSequence, newSequence);
 	}
 	
@@ -52,9 +52,9 @@ public class DefaultClockSequenceStrategyTest {
 		
 		DefaultClockSequenceStrategy clockSequence = new DefaultClockSequenceStrategy();
 
-		first = clockSequence.getClockSequence(timestamp, 0);
+		first = clockSequence.getClockSequence(timestamp);
 		for (int i = 0; i < DefaultClockSequenceStrategy.SEQUENCE_MAX; i++) {
-			last = clockSequence.getClockSequence(timestamp, 0);
+			last = clockSequence.getClockSequence(timestamp);
 		}
 
 		assertEquals(first - 1L, last);

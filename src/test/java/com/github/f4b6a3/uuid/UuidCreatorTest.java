@@ -11,13 +11,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import com.github.f4b6a3.uniqueness.UniquenessTest;
+import com.github.f4b6a3.UniquenessTest;
 import com.github.f4b6a3.uuid.clockseq.ClockSequenceStrategy;
 import com.github.f4b6a3.uuid.clockseq.DefaultClockSequenceStrategy;
 import com.github.f4b6a3.uuid.clockseq.RandomClockSequenceStrategy;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
-import com.github.f4b6a3.uuid.factory.LexicalOrderGuidCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedMd5UuidCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedSha1UuidCreator;
 import com.github.f4b6a3.uuid.factory.RandomUuidCreator;
@@ -30,7 +29,6 @@ import com.github.f4b6a3.uuid.nodeid.RandomNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.FingerprintNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.random.Xoroshiro128PlusRandom;
 import com.github.f4b6a3.uuid.timestamp.UnixMillisecondsTimestampStretegy;
-import com.github.f4b6a3.uuid.timestamp.FixedTimestampStretegy;
 import com.github.f4b6a3.uuid.timestamp.NanosecondTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.RandomTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
@@ -39,9 +37,6 @@ import com.github.f4b6a3.uuid.util.TimestampUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 import static com.github.f4b6a3.uuid.util.ByteUtil.*;
 
-/**
- * Unit test for uuid-generator.
- */
 public class UuidCreatorTest {
 
 	private static final String GITHUB_URL = "www.github.com";
@@ -637,25 +632,6 @@ public class UuidCreatorTest {
 		UUID uuid2 = creator2.create();
 		Instant instant2 = UuidUtil.extractInstant(uuid2);
 		assertEquals(instant1, instant2);
-	}
-
-	@Test
-	public void testGetLexicalOrderGuidShouldIncrementWhenTheTimeIsStopped() {
-
-		long timestamp = System.currentTimeMillis();
-
-		LexicalOrderGuidCreator creator = UuidCreator.getLexicalOrderCreator()
-				.withTimestampStrategy(new FixedTimestampStretegy(timestamp));
-
-		long firstLsb = 0;
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			if (i == 0) {
-				firstLsb = creator.create().getLeastSignificantBits();
-			}
-			creator.create();
-		}
-		long lastLsb = creator.create().getLeastSignificantBits();
-		assertEquals((lastLsb % DEFAULT_LOOP_MAX) - 1, (firstLsb % DEFAULT_LOOP_MAX));
 	}
 
 	private void checkIfStringIsValid(UUID uuid) {

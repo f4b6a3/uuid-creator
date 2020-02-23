@@ -152,7 +152,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	 * @return a clock sequence
 	 */
 	@Override
-	public long getClockSequence(final long timestamp, final long nodeIdentifier) {
+	public long getClockSequence(final long timestamp) {
 
 		if (timestamp > this.previousTimestamp) {
 			this.previousTimestamp = timestamp;
@@ -165,16 +165,16 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 
 	@Override
 	public long next() {
-		int give = (int) this.current();
-		int take = (int) super.next();
+		final int give = (int) this.current();
+		final int take = (int) super.next();
 		this.value = CONTROLLER.borrow(give, take);
 		return this.value;
 	}
 
 	@Override
 	public void reset() {
-		int give = (int) this.current();
-		int take = RandomUtil.nextInt(SEQUENCE_MAX + 1);
+		final int give = (int) this.current();
+		final int take = RandomUtil.getInstance().nextInt(SEQUENCE_MAX + 1);
 		this.value = CONTROLLER.borrow(give, take);
 	}
 

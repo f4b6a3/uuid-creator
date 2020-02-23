@@ -109,6 +109,6 @@ public class HardwareAddressNodeIdentifierStrategy implements NodeIdentifierStra
 	 * @return a random multicast node identifier
 	 */
 	protected long getRandomMulticastNodeIdentifier() {
-		return NodeIdentifierUtil.setMulticastNodeIdentifier(RandomUtil.nextLong());
+		return NodeIdentifierUtil.setMulticastNodeIdentifier(RandomUtil.getInstance().nextLong());
 	}
 }

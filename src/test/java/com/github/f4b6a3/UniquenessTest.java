@@ -1,4 +1,4 @@
-package com.github.f4b6a3.uniqueness;
+package com.github.f4b6a3;
 
 import java.util.HashSet;
 import java.util.UUID;
@@ -7,11 +7,13 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.timestamp.StoppedDefaultTimestampStrategy;
-import com.github.f4b6a3.uuid.util.LogUtil;
 
 /**
  * This test starts many threads that keep requesting thousands of time-based
  * UUIDs to a single generator.
+ * 
+ * This is is not included in the {@link TestSuite} because it takes a long
+ * time to finish.
  * 
  * The theoretical maximum amount of UUIDs that can be generated at the same
  * millisecond by a single generator without duplicated UUIDs is about 163
@@ -48,6 +50,9 @@ public class UniquenessTest {
 
 	/**
 	 * Initialize the test.
+	 * 
+	 * This test is not included in the {@link TestSuite} because it takes a
+	 * long time to finish.
 	 * 
 	 * @param threadCount
 	 * @param requestCount
@@ -131,7 +136,7 @@ public class UniquenessTest {
 					// Calculate and show progress
 					progress = (i * 1.0 / max) * 100;
 					if (progress % 1 == 0) {
-						LogUtil.log(String.format("[Thread %06d] %s %s %s%%", id, uuid, i, (int) progress));
+						System.out.println(String.format("[Thread %06d] %s %s %s%%", id, uuid, i, (int) progress));
 					}
 				}
 				synchronized (hashSet) {
@@ -139,13 +144,13 @@ public class UniquenessTest {
 					if (!hashSet.add((Long) value)) {
 						throw new UuidCreatorException(
 								String.format("[DUPLICATE][Thread %s] %s %s %s%%", id, uuid, i, (int) progress));
-					}	
+					}
 				}
 			}
 
 			if (verbose) {
 				// Finished
-				LogUtil.log(String.format("[Thread %s] Done.", id));
+				System.out.println(String.format("[Thread %s] Done.", id));
 			}
 		}
 	}

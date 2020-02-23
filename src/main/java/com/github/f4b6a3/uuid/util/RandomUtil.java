@@ -32,22 +32,8 @@ public class RandomUtil {
 	private RandomUtil() {
 	}
 
-	public static void nextBytes(byte[] bytes) {
-		SecureRandomLazyHolder.INSTANCE.nextBytes(bytes);
-	}
-
-	public static long nextLong() {
-		byte[] bytes = new byte[8];
-		SecureRandomLazyHolder.INSTANCE.nextBytes(bytes);
-		return ByteUtil.toNumber(bytes);
-	}
-
-	public static int nextInt(int max) {
-		return SecureRandomLazyHolder.INSTANCE.nextInt(max);
-	}
-
-	public static int nextInt() {
-		return SecureRandomLazyHolder.INSTANCE.nextInt();
+	public static Random getInstance() {
+		return SecureRandomLazyHolder.INSTANCE;
 	}
 
 	private static class SecureRandomLazyHolder {

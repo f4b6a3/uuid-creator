@@ -31,7 +31,10 @@ import com.github.f4b6a3.uuid.enums.UuidVariant;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 
 public class UuidUtil {
-	
+
+	public static final String UUID_PATTERN_STRICT = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
+	public static final String UUID_PATTERN_LOOSE = "^(\\{?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\\}?|[0-9a-fA-F]{32})$";
+
 	private static final String NOT_DCE_SECURITY = "Not a DCE Security UUID: %s.";
 
 	private UuidUtil() {
@@ -74,7 +77,53 @@ public class UuidUtil {
 
 		return variant == UuidVariant.VARIANT_RFC4122.getValue() && version >= 1 && version <= 5;
 	}
-	
+
+	/**
+	 * Checks if the UUID string is valid.
+	 * 
+	 * The validation mode is not strict.
+	 * 
+	 * @see {@link UuidUtil#isValid(String, boolean)}
+	 * 
+	 * @param uuid
+	 *            a UUID string
+	 * @return boolean true if valid
+	 */
+	protected static boolean isValid(String uuid) {
+		return isValid(uuid, false);
+	}
+
+	/**
+	 * Checks if the UUID string is valid.
+	 * 
+	 * <pre>
+	 * Strict validation: accepts only the RFC-4122 format:
+	 * 
+	 * 12345678-abcd-1bcd-abcd-123456789abcd (36 hexadecimal chars, case insensitive, with dash and RFC-4122 version and variant)
+	 * 
+	 * Loose validation: accepts UUID strings similar to this examples:
+	 * 
+	 * 12345678abcdabcdabcd123456789abcd       (32 hexadecimal chars, lower case and without dash)
+	 * 12345678ABCDABCDABCD123456789ABCD       (32 hexadecimal chars, UPPER CASE and without dash)
+	 * 12345678-abcd-abcd-abcd-123456789abcd   (36 hexadecimal chars, lower case and with dash)
+	 * 12345678-ABCD-ABCD-ABCD-123456789ABCD   (36 hexadecimal chars, UPPER CASE and with dash)
+	 * {12345678-abcd-abcd-abcd-123456789abcd} (38 hexadecimal chars, lower case, with dash and curly braces)
+	 * {12345678-ABCD-ABCD-ABCD-123456789ABCD} (38 hexadecimal chars, UPPER CASE, with dash and curly braces)
+	 * </pre>
+	 * 
+	 * @param uuid
+	 *            a UUID string
+	 * @param strict
+	 *            true for strict validation, false for loose validation
+	 * @return boolean true if valid
+	 */
+	public static boolean isValid(String uuid, boolean strict) {
+		if (strict) {
+			return uuid != null && uuid.matches(UUID_PATTERN_STRICT);
+		}
+		return uuid != null && uuid.matches(UUID_PATTERN_LOOSE);
+	}
+
 	/**
 	 * Checks whether the UUID variant is the one defined by the RFC-4122.
 	 * 
@@ -158,7 +207,7 @@ public class UuidUtil {
 
 		if (!(UuidUtil.isTimeBasedVersion(uuid) || UuidUtil.isSequentialVersion(uuid)
 				|| UuidUtil.isDceSecurityVersion(uuid))) {
-			throw new UnsupportedOperationException(
+			throw new UuidUtilException(
 					String.format("Not a time-based, sequential or DCE Security UUID: %s.", uuid.toString()));
 		}
 
@@ -175,8 +224,7 @@ public class UuidUtil {
 	public static int extractClockSequence(UUID uuid) {
 
 		if (!(UuidUtil.isTimeBasedVersion(uuid) || UuidUtil.isSequentialVersion(uuid))) {
-			throw new UnsupportedOperationException(
-					String.format("Not a time-based or sequential UUID: %s.", uuid.toString()));
+			throw new UuidUtilException(String.format("Not a time-based or sequential UUID: %s.", uuid.toString()));
 		}
 
 		return (int) ((uuid.getLeastSignificantBits() >>> 48) & 0x0000000000003fffL);
@@ -222,8 +270,7 @@ public class UuidUtil {
 	public static long extractTimestamp(UUID uuid) {
 
 		if (!(UuidUtil.isTimeBasedVersion(uuid) || UuidUtil.isSequentialVersion(uuid))) {
-			throw new UnsupportedOperationException(
-					String.format("Not a time-based or sequential UUID: %s.", uuid.toString()));
+			throw new UuidUtilException(String.format("Not a time-based or sequential UUID: %s.", uuid.toString()));
 		}
 
 		if (uuid.version() == 1) {
@@ -303,7 +350,7 @@ public class UuidUtil {
 	public static byte extractDceSecurityLocalDomain(UUID uuid) {
 
 		if (!UuidUtil.isDceSecurityVersion(uuid)) {
-			throw new UnsupportedOperationException(String.format(NOT_DCE_SECURITY, uuid.toString()));
+			throw new UuidUtilException(String.format(NOT_DCE_SECURITY, uuid.toString()));
 		}
 
 		return (byte) ((uuid.getLeastSignificantBits() & 0x00ff000000000000L) >> 48);
@@ -319,7 +366,7 @@ public class UuidUtil {
 	public static int extractDceSecurityLocalIdentifier(UUID uuid) {
 
 		if (!UuidUtil.isDceSecurityVersion(uuid)) {
-			throw new UnsupportedOperationException(String.format(NOT_DCE_SECURITY, uuid.toString()));
+			throw new UuidUtilException(String.format(NOT_DCE_SECURITY, uuid.toString()));
 		}
 
 		return (int) (uuid.getMostSignificantBits() >> 32);
@@ -337,7 +384,7 @@ public class UuidUtil {
 	 */
 	public static long extractDceSecurityTimestamp(UUID uuid) {
 		if (!UuidUtil.isDceSecurityVersion(uuid)) {
-			throw new UnsupportedOperationException(String.format(NOT_DCE_SECURITY, uuid.toString()));
+			throw new UuidUtilException(String.format(NOT_DCE_SECURITY, uuid.toString()));
 		}
 
 		return extractTimeBasedTimestamp((uuid.getMostSignificantBits() & 0x00000000ffffffffL));
@@ -395,7 +442,7 @@ public class UuidUtil {
 	public static UUID fromSequentialUuidToTimeBasedUuid(UUID uuid) {
 
 		if (!(UuidUtil.isSequentialVersion(uuid))) {
-			throw new UnsupportedOperationException(String.format("Not a sequential UUID: %s.", uuid.toString()));
+			throw new UuidUtilException(String.format("Not a sequential UUID: %s.", uuid.toString()));
 		}
 
 		long timestamp = extractTimestamp(uuid);
@@ -416,7 +463,7 @@ public class UuidUtil {
 	public static UUID fromTimeBasedUuidToSequentialUuid(UUID uuid) {
 
 		if (!(UuidUtil.isTimeBasedVersion(uuid))) {
-			throw new UnsupportedOperationException(String.format("Not a time-based UUID: %s.", uuid.toString()));
+			throw new UuidUtilException(String.format("Not a time-based UUID: %s.", uuid.toString()));
 		}
 
 		long timestamp = extractTimestamp(uuid);
@@ -519,10 +566,8 @@ public class UuidUtil {
 	 * @return the MSB
 	 */
 	public static long formatTimeBasedMostSignificantBits(final long timestamp) {
-		return ((timestamp & 0x0fff_0000_00000000L) >>> 48)
-				| ((timestamp & 0x0000_ffff_00000000L) >>> 16)
-				| ((timestamp & 0x0000_0000_ffffffffL) << 32)
-				| 0x00000000_0000_1000L;
+		return ((timestamp & 0x0fff_0000_00000000L) >>> 48) | ((timestamp & 0x0000_ffff_00000000L) >>> 16)
+				| ((timestamp & 0x0000_0000_ffffffffL) << 32) | 0x00000000_0000_1000L;
 	}
 
 	/**
@@ -611,5 +656,13 @@ public class UuidUtil {
 	 */
 	public static long formatRfc4122LeastSignificantBits(final long nodeIdentifier, final long clockSequence) {
 		return ((clockSequence << 48) | (nodeIdentifier & 0x0000ffffffffffffL) | 0x8000000000000000L);
+	}
+
+	public static class UuidUtilException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public UuidUtilException(String message) {
+			super(message);
+		}
 	}
 }
