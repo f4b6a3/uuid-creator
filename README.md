@@ -6,22 +6,22 @@ A Java library for generating and handling RFC-4122 UUIDs and non-standard UUIDs
 
 #### RFC-4122 UUIDs:
 
-__Random__: the pseudo-randomly generated version that uses a secure RNG;
-__Time-based:__ the time-based version;
-__Time-based with MAC:__ the time-based version with hardware address;
-__Time-based with fingerprint:__ the time-based version with a host fingerprint <sup>[10]</sup>;
-__Name-based MD5:__ the base-named version that uses MD5;
-__Name-based SHA-1:__ the base-named version that uses SHA-1;
-__DCE security:__ the time-based version that embeds local domains and identifiers.
+* __Random__: the pseudo-randomly generated version that uses a secure RNG;
+* __Time-based:__ the time-based version;
+* __Time-based with MAC:__ the time-based version with hardware address;
+* __Time-based with fingerprint:__ the time-based version with a host fingerprint <sup>[10]</sup>;
+* __Name-based MD5:__ the base-named version that uses MD5;
+* __Name-based SHA-1:__ the base-named version that uses SHA-1;
+* __DCE security:__ the time-based version that embeds local domains and identifiers.
 
 #### Non-standard UUIDs/GUIDs:
 
-__Fast Random__: a pseudo-randomly generated version that uses a fast RNG;
-__Sequential:__ a modified time-based version that is also known as Ordered UUID <sup>[4]</sup>;
-__Sequential with MAC:__ a sequential version with hardware address;
-__Sequential with fingerprint:__ a sequential version with a host fingerprint <sup>[10]</sup>;
-__COMB Guid:__ a modified random version that replaces the last 6 bytes with milliseconds for MS SQL Server <sup>[7]</sup>;
-__Lexical Order Guid:__ a lexicographically sortable GUID based on the ULID specification <sup>[9]</sup>.
+* __Fast Random__: a pseudo-randomly generated version that uses a fast RNG;
+* __Sequential:__ a modified time-based version that is also known as Ordered UUID <sup>[4]</sup>;
+* __Sequential with MAC:__ a sequential version with hardware address;
+* __Sequential with fingerprint:__ a sequential version with a host fingerprint <sup>[10]</sup>;
+* __COMB Guid:__ a modified random version that replaces the last 6 bytes with milliseconds for MS SQL Server <sup>[7]</sup>;
+* __Lexical Order Guid:__ a lexicographically sortable GUID based on the ULID specification <sup>[9]</sup>.
 
 How to Use
 ------------------------------------------------------
