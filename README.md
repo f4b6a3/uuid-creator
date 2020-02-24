@@ -847,28 +847,28 @@ This table shows the results of a simple benchmark using JMH v1.21.
 ------------------------------------------------------------------------------
 Benchmark                                   Mode   Cnt   Score   Error  Units
 ------------------------------------------------------------------------------
-MyBenchmark.EAIO_TimeBasedWithMac             ss  1000   5,834 ± 0,092  ms/op
-MyBenchmark.JUG_NameBasedMd5                  ss  1000  28,265 ± 0,229  ms/op
-MyBenchmark.JUG_NameBasedSha1                 ss  1000  38,724 ± 0,254  ms/op
-MyBenchmark.JUG_Random                        ss  1000  50,912 ± 0,264  ms/op
-MyBenchmark.JUG_TimeBased                     ss  1000   9,225 ± 0,162  ms/op
-MyBenchmark.JUG_TimeBasedWithMAC              ss  1000   9,237 ± 0,159  ms/op
-MyBenchmark.Java_NameBased                    ss  1000  36,122 ± 0,367  ms/op
-MyBenchmark.Java_Random                       ss  1000  50,832 ± 0,271  ms/op
-MyBenchmark.UuidCreator_CombGuid              ss  1000   5,958 ± 0,105  ms/op
-MyBenchmark.UuidCreator_DceSecurity           ss  1000   5,966 ± 0,107  ms/op
-MyBenchmark.UuidCreator_DceSecurityWithMac    ss  1000   5,911 ± 0,109  ms/op
-MyBenchmark.UuidCreator_FastRandom            ss  1000   1,916 ± 0,067  ms/op
-MyBenchmark.UuidCreator_LexicalOrderGuid      ss  1000   5,742 ± 0,099  ms/op
-MyBenchmark.UuidCreator_NameBasedMd5          ss  1000  27,564 ± 0,215  ms/op
-MyBenchmark.UuidCreator_NameBasedSha1         ss  1000  37,800 ± 0,243  ms/op
-MyBenchmark.UuidCreator_Random                ss  1000  50,594 ± 0,277  ms/op
-MyBenchmark.UuidCreator_Sequential            ss  1000   5,385 ± 0,099  ms/op
-MyBenchmark.UuidCreator_SequentialWithMac     ss  1000   5,397 ± 0,102  ms/op
-MyBenchmark.UuidCreator_TimeBased             ss  1000   5,557 ± 0,102  ms/op
-MyBenchmark.UuidCreator_TimeBasedWithMac      ss  1000   5,582 ± 0,106  ms/op
+MyBenchmark.EAIO_TimeBasedWithMac             ss  1000   5,760 ± 0,106  ms/op
+MyBenchmark.JUG_NameBasedMd5                  ss  1000  26,435 ± 0,227  ms/op
+MyBenchmark.JUG_NameBasedSha1                 ss  1000  35,587 ± 0,264  ms/op
+MyBenchmark.JUG_Random                        ss  1000  47,862 ± 0,268  ms/op
+MyBenchmark.JUG_TimeBased                     ss  1000   9,313 ± 0,141  ms/op
+MyBenchmark.JUG_TimeBasedWithMAC              ss  1000   9,325 ± 0,141  ms/op
+MyBenchmark.Java_NameBased                    ss  1000  35,136 ± 0,374  ms/op
+MyBenchmark.Java_Random                       ss  1000  47,670 ± 0,270  ms/op
+MyBenchmark.UuidCreator_CombGuid              ss  1000   5,782 ± 0,099  ms/op
+MyBenchmark.UuidCreator_DceSecurity           ss  1000   5,736 ± 0,107  ms/op
+MyBenchmark.UuidCreator_DceSecurityWithMac    ss  1000   5,713 ± 0,105  ms/op
+MyBenchmark.UuidCreator_FastRandom            ss  1000   1,893 ± 0,062  ms/op
+MyBenchmark.UuidCreator_NameBasedMd5          ss  1000  25,300 ± 0,194  ms/op
+MyBenchmark.UuidCreator_NameBasedSha1         ss  1000  35,346 ± 0,265  ms/op
+MyBenchmark.UuidCreator_Random                ss  1000  47,906 ± 0,267  ms/op
+MyBenchmark.UuidCreator_Sequential            ss  1000   5,211 ± 0,096  ms/op
+MyBenchmark.UuidCreator_SequentialWithMac     ss  1000   5,265 ± 0,105  ms/op
+MyBenchmark.UuidCreator_TimeBased             ss  1000   5,363 ± 0,101  ms/op
+MyBenchmark.UuidCreator_TimeBasedWithMac      ss  1000   5,375 ± 0,102  ms/op
+MyBenchmark.UuidCreator_UlidBasedGuid         ss  1000   5,635 ± 0,106  ms/op
 ------------------------------------------------------------------------------
-Total time: 00:07:37
+Total time: 00:07:16
 ------------------------------------------------------------------------------
 ```
 
