@@ -7,7 +7,7 @@ import com.github.f4b6a3.uuid.UuidCreatorTest;
 import com.github.f4b6a3.uuid.clockseq.ClockSequenceControllerTest;
 import com.github.f4b6a3.uuid.clockseq.DefaultClockSequenceStrategyTest;
 import com.github.f4b6a3.uuid.factory.CombGuidCreatorTest;
-import com.github.f4b6a3.uuid.factory.LexicalOrderGuidCreatorTest;
+import com.github.f4b6a3.uuid.factory.UlidBasedGuidCreatorTest;
 import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreatorTest;
 import com.github.f4b6a3.uuid.random.NaiveRandomTest;
 import com.github.f4b6a3.uuid.sequence.AbstractSequenceTest;
@@ -32,7 +32,7 @@ import com.github.f4b6a3.uuid.util.UuidUtilTest;
    UuidStateTest.class,
    NaiveRandomTest.class,
    CombGuidCreatorTest.class,
-   LexicalOrderGuidCreatorTest.class,
+   UlidBasedGuidCreatorTest.class,
    ClockSequenceControllerTest.class,
 })
 

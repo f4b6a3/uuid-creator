@@ -11,7 +11,7 @@ import com.github.f4b6a3.uuid.timestamp.FixedTimestampStretegy;
 
 import static org.junit.Assert.*;
 
-public class LexicalOrderGuidCreatorTest {
+public class UlidBasedGuidCreatorTest {
 
 	private static final long DEFAULT_LOOP_MAX = 1_048_576; // 2^20
 
@@ -25,7 +25,7 @@ public class LexicalOrderGuidCreatorTest {
 		long low = RANDOM.nextLong();
 		long high = (short) (RANDOM.nextInt());
 
-		LexicalOrderGuidCreatorMock creator = new LexicalOrderGuidCreatorMock(low, high, TIMESTAMP);
+		UlidBasedGuidCreatorMock creator = new UlidBasedGuidCreatorMock(low, high, TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		UUID uuid = creator.create();
@@ -47,7 +47,7 @@ public class LexicalOrderGuidCreatorTest {
 	@Test
 	public void testRandomLeastSignificantBits() {
 
-		LexicalOrderGuidCreator creator = new LexicalOrderGuidCreator();
+		UlidBasedGuidCreator creator = new UlidBasedGuidCreator();
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		UUID uuid = creator.create();
@@ -74,7 +74,7 @@ public class LexicalOrderGuidCreatorTest {
 		long low = RANDOM.nextLong();
 		long high = (short) RANDOM.nextInt();
 
-		LexicalOrderGuidCreatorMock creator = new LexicalOrderGuidCreatorMock(low, high, TIMESTAMP);
+		UlidBasedGuidCreatorMock creator = new UlidBasedGuidCreatorMock(low, high, TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		UUID uuid = new UUID(0, 0);
@@ -93,7 +93,7 @@ public class LexicalOrderGuidCreatorTest {
 		long low = RANDOM.nextLong();
 		long high = (short) (RANDOM.nextInt());
 
-		LexicalOrderGuidCreatorMock creator = new LexicalOrderGuidCreatorMock(low, high, TIMESTAMP);
+		UlidBasedGuidCreatorMock creator = new UlidBasedGuidCreatorMock(low, high, TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		UUID uuid = new UUID(0, 0);
@@ -115,7 +115,7 @@ public class LexicalOrderGuidCreatorTest {
 		long low = startLow - DEFAULT_LOOP_MAX;
 		long high = (short) (startHigh - 1);
 
-		LexicalOrderGuidCreatorMock creator = new LexicalOrderGuidCreatorMock(low, high, startLow, startHigh,
+		UlidBasedGuidCreatorMock creator = new UlidBasedGuidCreatorMock(low, high, startLow, startHigh,
 				TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 

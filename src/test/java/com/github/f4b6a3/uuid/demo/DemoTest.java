@@ -46,10 +46,10 @@ public class DemoTest {
 		}
 
 		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### Lexical Order Guid");
+		System.out.println("### ULID-based GUID");
 
 		for (int i = 0; i < max; i++) {
-			System.out.println(UuidCreator.getLexicalOrderGuid());
+			System.out.println(UuidCreator.getUlidBasedGuid());
 		}
 
 		System.out.println(HORIZONTAL_LINE);

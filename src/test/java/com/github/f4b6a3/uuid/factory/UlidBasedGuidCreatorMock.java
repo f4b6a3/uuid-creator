@@ -1,12 +1,12 @@
 package com.github.f4b6a3.uuid.factory;
 
-class LexicalOrderGuidCreatorMock extends LexicalOrderGuidCreator {
+class UlidBasedGuidCreatorMock extends UlidBasedGuidCreator {
 
-	public LexicalOrderGuidCreatorMock(long low, long high, long previousTimestamp) {
+	public UlidBasedGuidCreatorMock(long low, long high, long previousTimestamp) {
 		this(low, high, low, high, previousTimestamp);
 	}
 
-	public LexicalOrderGuidCreatorMock(long low, long high, long firstLow, long firstHigh, long previousTimestamp) {
+	public UlidBasedGuidCreatorMock(long low, long high, long firstLow, long firstHigh, long previousTimestamp) {
 		super();
 
 		// Set initial values

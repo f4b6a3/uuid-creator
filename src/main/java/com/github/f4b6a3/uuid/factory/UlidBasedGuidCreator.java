@@ -37,12 +37,12 @@ import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.uuid.random.XorshiftRandom;
 
 /**
- * Factory that creates lexicographically sortable GUIDs, based on the ULID
- * specification - Universally Unique Lexicographically Sortable Identifier.
+ * Factory that creates GUIDs based on the ULID specification - Universally
+ * Unique Lexicographically Sortable Identifier.
  * 
  * ULID specification: https://github.com/ulid/spec
  */
-public class LexicalOrderGuidCreator implements NoArgumentsUuidCreator {
+public class UlidBasedGuidCreator implements NoArgumentsUuidCreator {
 
 	protected long low;
 	protected long high;
@@ -60,7 +60,7 @@ public class LexicalOrderGuidCreator implements NoArgumentsUuidCreator {
 
 	protected TimestampStrategy timestampStrategy;
 
-	public LexicalOrderGuidCreator() {
+	public UlidBasedGuidCreator() {
 		this.reset();
 		this.timestampStrategy = new UnixMillisecondsTimestampStretegy();
 	}
@@ -190,11 +190,10 @@ public class LexicalOrderGuidCreator implements NoArgumentsUuidCreator {
 	 * 
 	 * @param timestampStrategy
 	 *            a timestamp strategy
-	 * @return {@link LexicalOrderGuidCreator}
+	 * @return {@link UlidBasedGuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized <T extends LexicalOrderGuidCreator> T withTimestampStrategy(
-			TimestampStrategy timestampStrategy) {
+	public synchronized <T extends UlidBasedGuidCreator> T withTimestampStrategy(TimestampStrategy timestampStrategy) {
 		this.timestampStrategy = timestampStrategy;
 		return (T) this;
 	}
@@ -212,10 +211,10 @@ public class LexicalOrderGuidCreator implements NoArgumentsUuidCreator {
 	 * 
 	 * @param random
 	 *            a random generator
-	 * @return {@link LexicalOrderGuidCreator}
+	 * @return {@link UlidBasedGuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized <T extends LexicalOrderGuidCreator> T withRandomGenerator(Random random) {
+	public synchronized <T extends UlidBasedGuidCreator> T withRandomGenerator(Random random) {
 		this.random = random;
 		return (T) this;
 	}
@@ -229,10 +228,10 @@ public class LexicalOrderGuidCreator implements NoArgumentsUuidCreator {
 	 * See {@link Xorshift128PlusRandom} and
 	 * {@link FingerprintUtil#getFingerprint()}
 	 * 
-	 * @return {@link LexicalOrderGuidCreator}
+	 * @return {@link UlidBasedGuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized <T extends LexicalOrderGuidCreator> T withFastRandomGenerator() {
+	public synchronized <T extends UlidBasedGuidCreator> T withFastRandomGenerator() {
 		final int salt = (int) FingerprintUtil.getFingerprint();
 		this.random = new Xorshift128PlusRandom(salt);
 		return (T) this;

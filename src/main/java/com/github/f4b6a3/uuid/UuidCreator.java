@@ -30,7 +30,7 @@ import java.util.UUID;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.factory.CombGuidCreator;
 import com.github.f4b6a3.uuid.factory.DceSecurityUuidCreator;
-import com.github.f4b6a3.uuid.factory.LexicalOrderGuidCreator;
+import com.github.f4b6a3.uuid.factory.UlidBasedGuidCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedMd5UuidCreator;
 import com.github.f4b6a3.uuid.factory.RandomUuidCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedSha1UuidCreator;
@@ -427,12 +427,12 @@ public class UuidCreator {
 	}
 
 	/**
-	 * Returns a Lexical Order GUID based on the ULID specification.
+	 * Returns a GUID based on the ULID specification.
 	 * 
-	 * @return a Lexical Order GUID
+	 * @return a ULID-based GUID
 	 */
-	public static UUID getLexicalOrderGuid() {
-		return LexicalOrderCreatorLazyHolder.INSTANCE.create();
+	public static UUID getUlidBasedGuid() {
+		return UlidBasedCreatorLazyHolder.INSTANCE.create();
 	}
 
 	/*
@@ -514,12 +514,12 @@ public class UuidCreator {
 	}
 
 	/**
-	 * Returns a {@link LexicalOrderGuidCreator}.
+	 * Returns a {@link UlidBasedGuidCreator}.
 	 * 
-	 * @return {@link LexicalOrderGuidCreator}
+	 * @return {@link UlidBasedGuidCreator}
 	 */
-	public static LexicalOrderGuidCreator getLexicalOrderCreator() {
-		return new LexicalOrderGuidCreator();
+	public static UlidBasedGuidCreator getUlidBasedCreator() {
+		return new UlidBasedGuidCreator();
 	}
 
 	/*
@@ -586,7 +586,7 @@ public class UuidCreator {
 		static final CombGuidCreator INSTANCE = getCombCreator();
 	}
 
-	private static class LexicalOrderCreatorLazyHolder {
-		static final LexicalOrderGuidCreator INSTANCE = getLexicalOrderCreator();
+	private static class UlidBasedCreatorLazyHolder {
+		static final UlidBasedGuidCreator INSTANCE = getUlidBasedCreator();
 	}
 }

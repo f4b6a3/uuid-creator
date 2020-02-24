@@ -31,7 +31,7 @@ import java.util.UUID;
  * 
  * This implementation is derived from the ULID specification. The only
  * difference is that the millisecond bits are moved to the end of the GUID. See
- * the {@link LexicalOrderGuidCreator}.
+ * the {@link UlidBasedGuidCreator}.
  * 
  * The Cost of GUIDs as Primary Keys (COMB GUID inception):
  * http://www.informit.com/articles/article.aspx?p=25862
@@ -39,12 +39,12 @@ import java.util.UUID;
  * ULID specification: https://github.com/ulid/spec
  * 
  */
-public class CombGuidCreator extends LexicalOrderGuidCreator {
+public class CombGuidCreator extends UlidBasedGuidCreator {
 
 	/**
 	 * Return a COMB GUID.
 	 * 
-	 * See {@link LexicalOrderGuidCreator#create()}
+	 * See {@link UlidBasedGuidCreator#create()}
 	 */
 	@Override
 	public synchronized UUID create() {
