@@ -583,10 +583,10 @@ public class UuidCreator {
 	}
 
 	private static class CombCreatorLazyHolder {
-		static final CombGuidCreator INSTANCE = getCombCreator().withoutOverflowException();
+		static final CombGuidCreator INSTANCE = getCombCreator();
 	}
 
 	private static class LexicalOrderCreatorLazyHolder {
-		static final LexicalOrderGuidCreator INSTANCE = getLexicalOrderCreator().withoutOverflowException();
+		static final LexicalOrderGuidCreator INSTANCE = getLexicalOrderCreator();
 	}
 }

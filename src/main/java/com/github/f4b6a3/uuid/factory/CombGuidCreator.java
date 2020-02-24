@@ -51,7 +51,7 @@ public class CombGuidCreator extends LexicalOrderGuidCreator {
 
 		final long timestamp = this.getTimestamp();
 
-		final long msb = (high << 48) | (low >> 16);
+		final long msb = (high << 48) | (low >>> 16);
 		final long lsb = (low << 48) | timestamp;
 
 		return new UUID(msb, lsb);

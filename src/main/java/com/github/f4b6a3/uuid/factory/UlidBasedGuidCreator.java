@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2019 Fabio Lima
+ * Copyright (c) 2018-2020 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,18 +24,17 @@
 
 package com.github.f4b6a3.uuid.factory;
 
+import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
+import com.github.f4b6a3.uuid.timestamp.UnixMillisecondsTimestampStretegy;
+import com.github.f4b6a3.uuid.util.FingerprintUtil;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
-import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
 import com.github.f4b6a3.uuid.factory.abst.NoArgumentsUuidCreator;
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.uuid.random.XorshiftRandom;
-import com.github.f4b6a3.uuid.timestamp.UnixMillisecondsTimestampStretegy;
-import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
-import com.github.f4b6a3.uuid.util.FingerprintUtil;
-import com.github.f4b6a3.uuid.util.RandomUtil;
 
 /**
  * Factory that creates lexicographically sortable GUIDs, based on the ULID
@@ -43,20 +42,21 @@ import com.github.f4b6a3.uuid.util.RandomUtil;
  * 
  * ULID specification: https://github.com/ulid/spec
  */
-public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoArgumentsUuidCreator {
-
-	protected static final long MAX_LOW = 0xffffffffffffffffL; // unsigned
-	protected static final long MAX_HIGH = 0x000000000000ffffL;
-
-	protected long previousTimestamp;
-	protected boolean enableOverflowException = true;
-
-	protected Random random;
+public class LexicalOrderGuidCreator implements NoArgumentsUuidCreator {
 
 	protected long low;
 	protected long high;
 
-	protected static final String OVERFLOW_MESSAGE = "The system caused an overflow in the generator by requesting too many GUIDs.";
+	protected long firstLow;
+	protected long firstHigh;
+
+	protected long previousTimestamp;
+
+	protected Random random;
+
+	protected static final long MASK_UNSIGNED_SHORT = 0x000000000000ffffL; // 2^16
+
+	protected static final String OVERRUN_MESSAGE = "The system overran the generator by requesting too many GUIDs.";
 
 	protected TimestampStrategy timestampStrategy;
 
@@ -77,11 +77,13 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 	 * 2. A part of 80 bits that has a random value generated a secure random
 	 * generator.
 	 * 
+	 * The random part is reset to a new value every time the millisecond part
+	 * changes.
+	 * 
 	 * If more than one GUID is generated within the same millisecond, the
 	 * random part is incremented by one.
 	 * 
-	 * The random part is reset to a new value every time the millisecond part
-	 * changes.
+	 * The maximum GUIDs that can be generated per millisecond is 2^80.
 	 * 
 	 * ### Specification of Universally Unique Lexicographically Sortable ID
 	 * 
@@ -111,17 +113,15 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 	 * significant bit position (with carrying).
 	 * 
 	 * If, in the extremely unlikely event that, you manage to generate more
-	 * than 280 ULIDs within the same millisecond, or cause the random component
-	 * to overflow with less, the generation will fail.
+	 * than 2^80 ULIDs within the same millisecond, or cause the random
+	 * component to overflow with less, the generation will fail.
 	 * 
 	 * @return {@link UUID} a UUID value
 	 * 
-	 * @throws UuidCreatorException
-	 *             an overflow exception if too many requests within the same
-	 *             millisecond causes an overflow when incrementing the random
-	 *             bits of the GUID.
+	 * @throws UlidCreatorException
+	 *             an overrun exception if too many requests are made within the
+	 *             same millisecond.
 	 */
-	@Override
 	public synchronized UUID create() {
 
 		final long timestamp = this.getTimestamp();
@@ -155,28 +155,33 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 	 * Reset the random part of the GUID.
 	 */
 	protected synchronized void reset() {
+
+		// Get random values
 		if (random == null) {
-			this.low = RandomUtil.getInstance().nextLong();
-			this.high = RandomUtil.getInstance().nextLong() & MAX_HIGH;
+			this.low = SecureRandomLazyHolder.INSTANCE.nextLong();
+			this.high = SecureRandomLazyHolder.INSTANCE.nextInt() & MASK_UNSIGNED_SHORT;
 		} else {
 			this.low = random.nextLong();
-			this.high = random.nextLong() & MAX_HIGH;
+			this.high = random.nextInt() & MASK_UNSIGNED_SHORT;
 		}
+
+		// Save the random values
+		this.firstLow = this.low;
+		this.firstHigh = this.high;
 	}
 
 	/**
 	 * Increment the random part of the GUID.
 	 * 
-	 * @throws UuidCreatorException
-	 *             if an overflow happens.
+	 * An exception is thrown when more than 2^80 increment operations are made.
+	 * 
+	 * @throws UlidCreatorException
+	 *             if an overrun happens.
 	 */
 	protected synchronized void increment() {
-		if ((this.low++ == MAX_LOW) && (this.high++ == MAX_HIGH)) {
-			this.high = 0L;
-			// Too many requests
-			if (enableOverflowException) {
-				throw new UuidCreatorException(OVERFLOW_MESSAGE);
-			}
+		if ((++this.low == this.firstLow) && (++this.high == this.firstHigh)) {
+			this.reset();
+			throw new UuidCreatorException(OVERRUN_MESSAGE);
 		}
 	}
 
@@ -233,17 +238,7 @@ public class LexicalOrderGuidCreator extends AbstractUuidCreator implements NoAr
 		return (T) this;
 	}
 
-	/**
-	 * Used to disable the overflow exception.
-	 * 
-	 * An exception thrown when too many requests within the same millisecond
-	 * causes an overflow while incrementing the random bits of the GUID.
-	 * 
-	 * @return {@link LexicalOrderGuidCreator}
-	 */
-	@SuppressWarnings("unchecked")
-	public synchronized <T extends LexicalOrderGuidCreator> T withoutOverflowException() {
-		this.enableOverflowException = false;
-		return (T) this;
+	private static class SecureRandomLazyHolder {
+		static final Random INSTANCE = new SecureRandom();
 	}
 }
