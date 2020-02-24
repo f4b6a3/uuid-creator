@@ -118,7 +118,7 @@ public class UlidBasedGuidCreator implements NoArgumentsUuidCreator {
 	 * 
 	 * @return {@link UUID} a UUID value
 	 * 
-	 * @throws UlidCreatorException
+	 * @throws UuidCreatorException
 	 *             an overrun exception if too many requests are made within the
 	 *             same millisecond.
 	 */
@@ -175,7 +175,7 @@ public class UlidBasedGuidCreator implements NoArgumentsUuidCreator {
 	 * 
 	 * An exception is thrown when more than 2^80 increment operations are made.
 	 * 
-	 * @throws UlidCreatorException
+	 * @throws UuidCreatorException
 	 *             if an overrun happens.
 	 */
 	protected synchronized void increment() {
