@@ -3,7 +3,7 @@
 
 	<groupId>com.github.f4b6a3</groupId>
 	<artifactId>uuid-creator</artifactId>
-	<version>1.4.5</version>
+	<version>1.4.6-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>uuid-creator</name>
@@ -43,7 +43,7 @@
 		<connection>scm:git:git://github.com/dexecutor/dependent-tasks-executor.git</connection>
 		<developerConnection>scm:git:git@github.com:dexecutor/dexecutor.git</developerConnection>
 		<url>https://github.com/dexecutor/dependent-tasks-executor</url>
-		<tag>uuid-creator-1.4.5</tag>
+		<tag>uuid-creator-1.2.5</tag>
 	</scm>
 
 	<distributionManagement>
