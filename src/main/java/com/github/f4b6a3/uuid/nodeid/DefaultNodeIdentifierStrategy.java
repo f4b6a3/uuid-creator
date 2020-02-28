@@ -99,7 +99,7 @@ public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * @return a random multicast node identifier
 	 */
 	protected static long getRandomNodeIdentifier() {
-		long random = RandomUtil.getInstance().nextLong() & NODEID_MAX;
+		final long random = RandomUtil.getInstance().nextLong() & NODEID_MAX;
 		return NodeIdentifierUtil.setMulticastNodeIdentifier(random);
 	}
 }
