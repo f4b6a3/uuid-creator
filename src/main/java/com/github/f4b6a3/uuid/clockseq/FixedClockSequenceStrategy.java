@@ -25,15 +25,17 @@
 package com.github.f4b6a3.uuid.clockseq;
 
 public class FixedClockSequenceStrategy implements ClockSequenceStrategy {
-	
+
 	protected int clockSequence = 0;
 
+	protected static final int SEQUENCE_MAX = 0x00003fff;
+
 	public FixedClockSequenceStrategy(int clockSequence) {
-		this.clockSequence = clockSequence;
+		this.clockSequence = clockSequence & SEQUENCE_MAX;
 	}
 
 	@Override
-	public long getClockSequence(long timestamp) {
+	public int getClockSequence(long timestamp) {
 		return this.clockSequence;
 	}
 }

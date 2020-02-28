@@ -34,9 +34,11 @@ public class RandomNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 	protected Random random;
 
+	protected static final long NODEID_MAX = 0x0000FFFFFFFFFFFFL;
+
 	public RandomNodeIdentifierStrategy() {
 	}
-	
+
 	public RandomNodeIdentifierStrategy(Random random) {
 		this.random = random;
 	}
@@ -73,7 +75,7 @@ public class RandomNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 */
 	@Override
 	public long getNodeIdentifier() {
-		return getRandomNodeIdentifier();
+		return getRandomNodeIdentifier() & NODEID_MAX;
 	}
 
 	/**

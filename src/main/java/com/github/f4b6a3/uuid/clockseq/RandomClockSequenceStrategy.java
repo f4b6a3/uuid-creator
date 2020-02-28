@@ -31,18 +31,20 @@ public class RandomClockSequenceStrategy implements ClockSequenceStrategy {
 
 	protected Random random;
 
+	protected static final int SEQUENCE_MAX = 0x00003fff;
+
 	public RandomClockSequenceStrategy() {
 	}
 
 	public RandomClockSequenceStrategy(Random random) {
 		this.random = random;
 	}
-	
+
 	@Override
-	public long getClockSequence(long timestamp) {
-		if(this.random == null) {
-			return RandomUtil.getInstance().nextInt();
+	public int getClockSequence(long timestamp) {
+		if (this.random == null) {
+			return RandomUtil.getInstance().nextInt() & SEQUENCE_MAX;
 		}
-		return this.random.nextInt();
+		return this.random.nextInt() & SEQUENCE_MAX;
 	}
 }

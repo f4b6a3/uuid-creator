@@ -35,8 +35,10 @@ public class HardwareAddressNodeIdentifierStrategy implements NodeIdentifierStra
 
 	protected long nodeIdentifier;
 
+	protected static final long NODEID_MAX = 0x0000FFFFFFFFFFFFL;
+
 	public HardwareAddressNodeIdentifierStrategy() {
-		this.nodeIdentifier = getHardwareAddress();
+		this.nodeIdentifier = getHardwareAddress() & NODEID_MAX;
 	}
 
 	/**

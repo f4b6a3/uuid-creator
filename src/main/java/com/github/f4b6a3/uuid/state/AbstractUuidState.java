@@ -27,7 +27,7 @@ package com.github.f4b6a3.uuid.state;
 public abstract class AbstractUuidState {
 
 	protected long timestamp = 0;
-	protected long clockSequence = 0;
+	protected int clockSequence = 0;
 	protected long nodeIdentifier = 0;
 
 	public AbstractUuidState() {
@@ -41,11 +41,11 @@ public abstract class AbstractUuidState {
 		this.timestamp = timestamp;
 	}
 
-	public long getClockSequence() {
+	public int getClockSequence() {
 		return clockSequence;
 	}
 
-	public void setClockSequence(long clockSequence) {
+	public void setClockSequence(int clockSequence) {
 		this.clockSequence = clockSequence;
 	}
 

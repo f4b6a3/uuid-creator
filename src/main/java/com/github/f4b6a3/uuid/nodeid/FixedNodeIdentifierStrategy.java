@@ -27,9 +27,11 @@ package com.github.f4b6a3.uuid.nodeid;
 public class FixedNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 	protected long nodeIdentifier;
+	
+	protected static final long NODEID_MAX = 0x0000FFFFFFFFFFFFL;
 
 	public FixedNodeIdentifierStrategy(long nodeIdentifier) {
-		this.nodeIdentifier = nodeIdentifier;
+		this.nodeIdentifier = nodeIdentifier & NODEID_MAX;
 	}
 
 	@Override

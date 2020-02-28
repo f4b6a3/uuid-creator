@@ -41,8 +41,8 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 
 	protected AbstractUuidState state;
 
-	protected static final int SEQUENCE_MIN = 0x0000;
-	protected static final int SEQUENCE_MAX = 0x3fff;
+	protected static final int SEQUENCE_MIN = 0x00000000;
+	protected static final int SEQUENCE_MAX = 0x00003fff;
 
 	public static final ClockSequenceController CONTROLLER = new ClockSequenceController();
 
@@ -112,7 +112,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 
 			long lastTimestamp = this.state.getTimestamp();
 			long lastNodeIdentifier = this.state.getNodeIdentifier();
-			long lastClockSequence = this.state.getClockSequence();
+			int lastClockSequence = this.state.getClockSequence();
 
 			this.set(lastClockSequence);
 			if ((this.previousTimestamp <= lastTimestamp) || (this.previousNodeIdentifier != lastNodeIdentifier)) {
@@ -150,7 +150,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	 * @return a clock sequence
 	 */
 	@Override
-	public long getClockSequence(final long timestamp) {
+	public int getClockSequence(final long timestamp) {
 
 		if (timestamp > this.previousTimestamp) {
 			this.previousTimestamp = timestamp;
@@ -162,17 +162,17 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	}
 
 	@Override
-	public long next() {
-		final int give = (int) this.current();
-		final int take = (int) super.next();
+	public int next() {
+		final int give = this.current();
+		final int take = super.next();
 		this.value = CONTROLLER.borrow(give, take);
 		return this.value;
 	}
 
 	@Override
 	public void reset() {
-		final int give = (int) this.current();
-		final int take = RandomUtil.getInstance().nextInt(SEQUENCE_MAX + 1);
+		final int give = this.current();
+		final int take = RandomUtil.getInstance().nextInt() & SEQUENCE_MAX;
 		this.value = CONTROLLER.borrow(give, take);
 	}
 

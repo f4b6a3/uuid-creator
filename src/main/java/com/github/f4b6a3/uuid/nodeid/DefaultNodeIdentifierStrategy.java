@@ -33,6 +33,8 @@ import com.github.f4b6a3.uuid.util.SettingsUtil;
 public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 	protected long nodeIdentifier;
+	
+	protected static final long NODEID_MAX = 0x0000FFFFFFFFFFFFL;
 
 	/**
 	 * This constructor works in two steps:
@@ -97,6 +99,7 @@ public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * @return a random multicast node identifier
 	 */
 	protected static long getRandomNodeIdentifier() {
-		return NodeIdentifierUtil.setMulticastNodeIdentifier(RandomUtil.getInstance().nextLong());
+		long random = RandomUtil.getInstance().nextLong() & NODEID_MAX;
+		return NodeIdentifierUtil.setMulticastNodeIdentifier(random);
 	}
 }

@@ -30,6 +30,8 @@ import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 public class FingerprintNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 	protected long nodeIdentifier;
+	
+	protected static final long NODEID_MAX = 0x0000FFFFFFFFFFFFL;
 
 	/**
 	 * This constructor calculates a node identifier based on system data like:
@@ -40,7 +42,7 @@ public class FingerprintNodeIdentifierStrategy implements NodeIdentifierStrategy
 	 * 
 	 */
 	public FingerprintNodeIdentifierStrategy() {
-		final long fingerprint = FingerprintUtil.getFingerprint();
+		final long fingerprint = FingerprintUtil.getFingerprint() & NODEID_MAX;
 		this.nodeIdentifier = NodeIdentifierUtil.setMulticastNodeIdentifier(fingerprint);
 	}
 
