@@ -44,17 +44,18 @@ import com.github.f4b6a3.uuid.random.XorshiftRandom;
  */
 public class UlidBasedGuidCreator implements NoArgumentsUuidCreator {
 
-	protected long low;
-	protected long high;
+	protected long randomMsb = 0;
+	protected long randomLsb = 0;
 
-	protected long firstLow;
-	protected long firstHigh;
+	protected long randomLsbMax;
+	protected long randomMsbMax;
+
+	protected static final long HALF_RANDOM_COMPONENT = 0x000000ffffffffffL;
+	protected static final long INCREMENT_MAX = 0x0000010000000000L;
 
 	protected long previousTimestamp;
 
 	protected Random random;
-
-	protected static final long MASK_UNSIGNED_SHORT = 0x000000000000ffffL; // 2^16
 
 	protected static final String OVERRUN_MESSAGE = "The system overran the generator by requesting too many GUIDs.";
 
@@ -125,9 +126,12 @@ public class UlidBasedGuidCreator implements NoArgumentsUuidCreator {
 	public synchronized UUID create() {
 
 		final long timestamp = this.getTimestamp();
+		
+		final long randomHi = truncate(randomMsb);
+		final long randomLo = truncate(randomLsb);
 
-		final long msb = (timestamp << 16) | high;
-		final long lsb = low;
+		final long msb = (timestamp << 16) | (randomHi >>> 24);
+		final long lsb = (randomHi << 40) | randomLo;
 
 		return new UUID(msb, lsb);
 	}
@@ -158,16 +162,16 @@ public class UlidBasedGuidCreator implements NoArgumentsUuidCreator {
 
 		// Get random values
 		if (random == null) {
-			this.low = SecureRandomLazyHolder.INSTANCE.nextLong();
-			this.high = SecureRandomLazyHolder.INSTANCE.nextInt() & MASK_UNSIGNED_SHORT;
+			this.randomMsb = truncate(SecureRandomLazyHolder.INSTANCE.nextLong());
+			this.randomLsb = truncate(SecureRandomLazyHolder.INSTANCE.nextLong());
 		} else {
-			this.low = random.nextLong();
-			this.high = random.nextInt() & MASK_UNSIGNED_SHORT;
+			this.randomMsb = truncate(random.nextLong());
+			this.randomLsb = truncate(random.nextLong());
 		}
 
 		// Save the random values
-		this.firstLow = this.low;
-		this.firstHigh = this.high;
+		this.randomMsbMax = this.randomMsb | INCREMENT_MAX;
+		this.randomLsbMax = this.randomLsb | INCREMENT_MAX;
 	}
 
 	/**
@@ -178,8 +182,9 @@ public class UlidBasedGuidCreator implements NoArgumentsUuidCreator {
 	 * @throws UuidCreatorException
 	 *             if an overrun happens.
 	 */
+
 	protected synchronized void increment() {
-		if ((++this.low == this.firstLow) && (++this.high == this.firstHigh)) {
+		if ((++this.randomLsb == this.randomLsbMax) && (++this.randomMsb == this.randomMsbMax)) {
 			this.reset();
 			throw new UuidCreatorException(OVERRUN_MESSAGE);
 		}
@@ -235,6 +240,31 @@ public class UlidBasedGuidCreator implements NoArgumentsUuidCreator {
 		final int salt = (int) FingerprintUtil.getFingerprint();
 		this.random = new Xorshift128PlusRandom(salt);
 		return (T) this;
+	}
+
+	/**
+	 * Truncate long to half random component.
+	 * 
+	 * @param value
+	 *            a value to be truncated.
+	 * @return truncated value
+	 */
+	protected synchronized long truncate(final long value) {
+		return (value & HALF_RANDOM_COMPONENT);
+	}
+
+	/**
+	 * For unit tests
+	 */
+	protected long extractRandomLsb(UUID uuid) {
+		return uuid.getLeastSignificantBits() & HALF_RANDOM_COMPONENT;
+	}
+
+	/**
+	 * For unit tests
+	 */
+	protected long extractRandomMsb(UUID uuid) {
+		return ((uuid.getMostSignificantBits() & 0xffff) << 24) | (uuid.getLeastSignificantBits() >>> 40);
 	}
 
 	private static class SecureRandomLazyHolder {

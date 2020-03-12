@@ -2,21 +2,35 @@ package com.github.f4b6a3.uuid.factory;
 
 class CombGuidCreatorMock extends CombGuidCreator {
 
-	public CombGuidCreatorMock(long low, long high, long previousTimestamp) {
-		this(low, high, low, high, previousTimestamp);
+	public CombGuidCreatorMock(long previousTimestamp) {
+		super();
+		this.previousTimestamp = previousTimestamp;
 	}
 
-	public CombGuidCreatorMock(long low, long high, long firstLow, long firstHigh, long previousTimestamp) {
-		super();
+	public CombGuidCreatorMock(long randomMsb, long randomLsb, long randomMsbMax, long randomLsbMax, long previousTimestamp) {
 
-		// Set initial values
-		this.low = low;
-		this.high = high;
+		this.randomMsb = randomMsb;
+		this.randomLsb = randomLsb;
 
-		// Save the initial values
-		this.firstLow = firstLow;
-		this.firstHigh = firstHigh;
+		this.randomMsbMax = randomMsbMax;
+		this.randomLsbMax = randomLsbMax;
 
 		this.previousTimestamp = previousTimestamp;
+	}
+
+	public long getRandomMsb() {
+		return this.randomMsb;
+	}
+
+	public long getRandomLsb() {
+		return this.randomLsb;
+	}
+
+	public long getRandomHiMax() {
+		return this.randomMsb;
+	}
+
+	public long getRandomLoMax() {
+		return this.randomLsb;
 	}
 }

@@ -51,9 +51,28 @@ public class CombGuidCreator extends UlidBasedGuidCreator {
 
 		final long timestamp = this.getTimestamp();
 
-		final long msb = (high << 48) | (low >>> 16);
-		final long lsb = (low << 48) | timestamp;
+		final long randomHi = truncate(randomMsb);
+		final long randomLo = truncate(randomLsb);
+
+		final long msb = (randomHi << 24) | (randomLo >>> 16);
+		final long lsb = (randomLo << 48) | timestamp;
 
 		return new UUID(msb, lsb);
+	}
+
+	/**
+	 * For unit tests
+	 */
+	@Override
+	protected long extractRandomLsb(UUID uuid) {
+		return ((uuid.getMostSignificantBits() & 0xffffffL) << 16) | (uuid.getLeastSignificantBits() >>> 48);
+	}
+
+	/**
+	 * For unit tests
+	 */
+	@Override
+	protected long extractRandomMsb(UUID uuid) {
+		return (uuid.getMostSignificantBits() >>> 24);
 	}
 }

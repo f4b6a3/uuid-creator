@@ -2,7 +2,6 @@ package com.github.f4b6a3.uuid.factory;
 
 import java.util.Random;
 import java.util.UUID;
-
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
@@ -13,7 +12,7 @@ import static org.junit.Assert.*;
 
 public class UlidBasedGuidCreatorTest {
 
-	private static final long DEFAULT_LOOP_MAX = 1_048_576; // 2^20
+	private static final long DEFAULT_LOOP_MAX = 1_000_000;
 
 	private static final long TIMESTAMP = System.currentTimeMillis();
 
@@ -22,42 +21,39 @@ public class UlidBasedGuidCreatorTest {
 	@Test
 	public void testRandomMostSignificantBits() {
 
-		long low = RANDOM.nextLong();
-		long high = (short) (RANDOM.nextInt());
-
-		UlidBasedGuidCreatorMock creator = new UlidBasedGuidCreatorMock(low, high, TIMESTAMP);
+		UlidBasedGuidCreatorMock creator = new UlidBasedGuidCreatorMock(TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		UUID uuid = creator.create();
-		long firstMsb = (short) uuid.getMostSignificantBits();
-		long lastMsb = 0;
+		long firstMsb = creator.extractRandomMsb(uuid);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			uuid = creator.create();
-			lastMsb = (short) uuid.getMostSignificantBits();
+
 		}
 
-		assertEquals(String.format("The last MSB should be iqual to the first %s.", firstMsb), firstMsb, lastMsb);
+		long lastMsb = creator.extractRandomMsb(uuid);
+		long expectedMsb = firstMsb;
+		assertEquals(String.format("The last MSB should be iqual to the first %s.", expectedMsb), expectedMsb, lastMsb);
 
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP + 1));
 		uuid = creator.create();
-		lastMsb = (short) uuid.getMostSignificantBits();
-		assertNotEquals("The last MSB should be be random after timestamp changed.", firstMsb, lastMsb);
+		lastMsb = uuid.getMostSignificantBits();
+		assertNotEquals("The last MSB should be random after timestamp changed.", firstMsb, lastMsb);
 	}
 
 	@Test
 	public void testRandomLeastSignificantBits() {
 
-		UlidBasedGuidCreator creator = new UlidBasedGuidCreator();
+		UlidBasedGuidCreatorMock creator = new UlidBasedGuidCreatorMock(TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		UUID uuid = creator.create();
-		long firstLsb = uuid.getLeastSignificantBits();
-		long lastLsb = 0;
+		long firstLsb = creator.extractRandomLsb(uuid);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			uuid = creator.create();
-			lastLsb = uuid.getLeastSignificantBits();
 		}
 
+		long lastLsb = creator.extractRandomLsb(uuid);
 		long expected = firstLsb + DEFAULT_LOOP_MAX;
 		assertEquals(String.format("The last LSB should be iqual to %s.", expected), expected, lastLsb);
 
@@ -71,52 +67,81 @@ public class UlidBasedGuidCreatorTest {
 	@Test
 	public void testIncrementOfRandomLeastSignificantBits() {
 
-		long low = RANDOM.nextLong();
-		long high = (short) RANDOM.nextInt();
-
-		UlidBasedGuidCreatorMock creator = new UlidBasedGuidCreatorMock(low, high, TIMESTAMP);
+		UlidBasedGuidCreatorMock creator = new UlidBasedGuidCreatorMock(TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
+
+		long lsb = creator.getRandomLsb();
 
 		UUID uuid = new UUID(0, 0);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			uuid = creator.create();
 		}
 
-		long expectedLsb = low + DEFAULT_LOOP_MAX;
-		long randomLsb = uuid.getLeastSignificantBits();
-		assertEquals(String.format("The LSB should be iqual to %s.", expectedLsb), expectedLsb, randomLsb);
+		long expectedLsb = lsb + DEFAULT_LOOP_MAX;
+		long randomLsb = creator.getRandomLsb();
+		assertEquals("Wrong LSB after loop.", expectedLsb, randomLsb);
+
+		randomLsb = creator.extractRandomLsb(uuid);
+		assertEquals("Wrong LSB after loop.", expectedLsb, randomLsb);
 	}
 
 	@Test
 	public void testIncrementOfRandomMostSignificantBits() {
 
-		long low = RANDOM.nextLong();
-		long high = (short) (RANDOM.nextInt());
-
-		UlidBasedGuidCreatorMock creator = new UlidBasedGuidCreatorMock(low, high, TIMESTAMP);
+		UlidBasedGuidCreatorMock creator = new UlidBasedGuidCreatorMock(TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
+
+		long msb = creator.getRandomMsb();
 
 		UUID uuid = new UUID(0, 0);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			uuid = creator.create();
 		}
 
-		long expected = high;
-		long randomMsb = (short) (uuid.getMostSignificantBits());
-		assertEquals(String.format("The MSB should be iqual to %s.", expected), expected, randomMsb);
+		long expectedMsb = msb;
+		long randomMsb = creator.getRandomMsb();
+		assertEquals("Wrong MSB after loop.", expectedMsb, randomMsb);
+
+		randomMsb = creator.extractRandomMsb(uuid);
+		assertEquals("Wrong MSB after loop.", expectedMsb, randomMsb);
 	}
 
 	@Test
-	public void testShouldThrowOverflowException() {
+	public void testShouldThrowOverflowException1() {
 
-		long startLow = RANDOM.nextInt() + DEFAULT_LOOP_MAX;
-		long startHigh = (short) (RANDOM.nextInt() + 1);
+		long msbMax = 0x000001ffffffffffL;
+		long lsbMax = 0x000001ffffffffffL;
 
-		long low = startLow - DEFAULT_LOOP_MAX;
-		long high = (short) (startHigh - 1);
+		long msb = msbMax - 1;
+		long lsb = lsbMax - DEFAULT_LOOP_MAX;
 
-		UlidBasedGuidCreatorMock creator = new UlidBasedGuidCreatorMock(low, high, startLow, startHigh,
-				TIMESTAMP);
+		UlidBasedGuidCreatorMock creator = new UlidBasedGuidCreatorMock(msb, lsb, msbMax, lsbMax, TIMESTAMP);
+		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX - 1; i++) {
+			creator.create();
+		}
+
+		try {
+			creator.create();
+			fail("It should throw an overflow exception.");
+		} catch (UuidCreatorException e) {
+			// success
+		}
+	}
+
+	@Test
+	public void testShouldThrowOverflowException2() {
+
+		long msbMax = (RANDOM.nextLong() & UlidBasedGuidCreatorMock.HALF_RANDOM_COMPONENT)
+				| UlidBasedGuidCreatorMock.INCREMENT_MAX;
+		long lsbMax = (RANDOM.nextLong() & UlidBasedGuidCreatorMock.HALF_RANDOM_COMPONENT)
+				| UlidBasedGuidCreatorMock.INCREMENT_MAX;
+
+		long msb = msbMax - 1;
+		long lsb = lsbMax - DEFAULT_LOOP_MAX;
+
+		UlidBasedGuidCreatorMock creator = new UlidBasedGuidCreatorMock(msb, lsb, msbMax, lsbMax, TIMESTAMP);
 		creator.withTimestampStrategy(new FixedTimestampStretegy(TIMESTAMP));
 
 		UUID uuid = new UUID(0, 0);
@@ -124,13 +149,13 @@ public class UlidBasedGuidCreatorTest {
 			uuid = creator.create();
 		}
 
-		long expectedLsb = startLow - 1;
-		long randomLsb = uuid.getLeastSignificantBits();
-		assertEquals(String.format("The LSB should be iqual to %s.", expectedLsb), expectedLsb, randomLsb);
+		long expectedLsb = (lsbMax - 1) & UlidBasedGuidCreatorMock.HALF_RANDOM_COMPONENT;
+		long randomLsb = creator.extractRandomLsb(uuid);
+		assertEquals("Incorrect LSB after loop.", expectedLsb, randomLsb);
 
-		long expectedMsb = startHigh - 1;
-		long randomMsb = (short) (uuid.getMostSignificantBits());
-		assertEquals(String.format("The MSB should be iqual to %s.", expectedMsb), expectedMsb, randomMsb);
+		long expectedMsb = (msbMax - 1) & UlidBasedGuidCreatorMock.HALF_RANDOM_COMPONENT;
+		long randomMsb = creator.extractRandomMsb(uuid);
+		assertEquals("Incorrect MSB after loop.", expectedMsb, randomMsb);
 
 		try {
 			creator.create();

@@ -1,15 +1,12 @@
 package com.github.f4b6a3.uuid.demo;
 
-import org.junit.Ignore;
-
 import com.github.f4b6a3.uuid.UuidCreator;
 
 public class DemoTest {
 
 	private static final String HORIZONTAL_LINE = "----------------------------------------";
 
-	@Ignore
-	public void testPrintList() {
+	public static void printList() {
 		int max = 100;
 
 		System.out.println();
@@ -53,5 +50,9 @@ public class DemoTest {
 		}
 
 		System.out.println(HORIZONTAL_LINE);
+	}
+
+	public static void main(String[] args) {
+		printList();
 	}
 }
