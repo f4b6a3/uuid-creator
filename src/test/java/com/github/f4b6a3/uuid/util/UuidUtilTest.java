@@ -47,7 +47,7 @@ public class UuidUtilTest {
 	public void testExtractTimestamp() {
 
 		Instant instant1 = Instant.now().truncatedTo(ChronoUnit.MILLIS);
-		long timestamp1 = TimestampUtil.toTimestamp(instant1);
+		long timestamp1 = UuidTimeUtil.toTimestamp(instant1);
 
 		UUID uuid = UuidCreator.getTimeBasedCreator().withInstant(instant1).create();
 		long timestamp2 = extractTimestamp(uuid);
@@ -150,7 +150,7 @@ public class UuidUtilTest {
 		int localIdentifier = 1701;
 		
 		Instant instant1 = Instant.now();
-		long timestamp1 = TimestampUtil.toTimestamp(instant1);
+		long timestamp1 = UuidTimeUtil.toTimestamp(instant1);
 		UUID uuid = UuidCreator.getDceSecurity(localDomain, localIdentifier);
 		long timestamp2 = extractDceSecurityTimestamp(uuid);
 
@@ -169,8 +169,8 @@ public class UuidUtilTest {
 		Instant instant2 = extractDceSecurityInstant(uuid);
 
 		// The expected Instant is trunked like the DCE Security does internally
-		long expectedTimestamp = TimestampUtil.toTimestamp(instant1) & 0xffffffff00000000L;
-		Instant expectedInstant = TimestampUtil.toInstant(expectedTimestamp);
+		long expectedTimestamp = UuidTimeUtil.toTimestamp(instant1) & 0xffffffff00000000L;
+		Instant expectedInstant = UuidTimeUtil.toInstant(expectedTimestamp);
 
 		assertEquals(expectedInstant, instant2);
 	}

@@ -35,6 +35,7 @@ import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.uuid.random.XorshiftRandom;
 import com.github.f4b6a3.uuid.util.ByteUtil;
 import com.github.f4b6a3.uuid.util.FingerprintUtil;
+import com.github.f4b6a3.uuid.util.RandomUtil;
 
 /**
  * Factory that creates random-based UUIDs.
@@ -84,7 +85,7 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 		if (this.random == null) {
 
 			final byte[] bytes = new byte[16];
-			SecureRandomLazyHolder.INSTANCE.nextBytes(bytes);
+			RandomUtil.get().nextBytes(bytes);
 			msb = ByteUtil.toNumber(bytes, 0, 8);
 			lsb = ByteUtil.toNumber(bytes, 8, 16);
 
@@ -130,9 +131,11 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 	/**
 	 * Replaces the default random generator with a faster one.
 	 * 
-	 * The host fingerprint is used to generate a seed for the random number generator.
+	 * The host fingerprint is used to generate a seed for the random number
+	 * generator.
 	 * 
-	 * See {@link Xorshift128PlusRandom} and {@link FingerprintUtil#getFingerprint()}
+	 * See {@link Xorshift128PlusRandom} and
+	 * {@link FingerprintUtil#getFingerprint()}
 	 * 
 	 * @return {@link RandomUuidCreator}
 	 */
@@ -140,9 +143,5 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 		final int salt = (int) FingerprintUtil.getFingerprint();
 		this.random = new Xorshift128PlusRandom(salt);
 		return this;
-	}
-
-	private static class SecureRandomLazyHolder {
-		static final Random INSTANCE = new SecureRandom();
 	}
 }

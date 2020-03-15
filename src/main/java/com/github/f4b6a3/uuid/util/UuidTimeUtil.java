@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2019 Fabio Lima
+ * Copyright (c) 2018-2020 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,6 @@
 package com.github.f4b6a3.uuid.util;
 
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 
 /**
  * Class that provides methods related to timestamps.
@@ -34,14 +32,14 @@ import java.time.ZoneId;
  * All its public methods have milliseconds precision.
  *
  */
-public class TimestampUtil {
+public class UuidTimeUtil {
 
 	public static final long GREGORIAN_MILLISECONDS = getGregorianMilliseconds();
 
 	public static final long MILLISECONDS_PER_SECOND = 1_000L;
 	public static final long TIMESTAMP_RESOLUTION = 10_000L;
 
-	private TimestampUtil() {
+	private UuidTimeUtil() {
 	}
 
 	/**
@@ -135,7 +133,6 @@ public class TimestampUtil {
 	 * @return the milliseconds since gregorian epoch
 	 */
 	private static long getGregorianMilliseconds() {
-		return LocalDate.parse("1582-10-15").atStartOfDay(ZoneId.of("UTC")).toInstant().getEpochSecond()
-				* MILLISECONDS_PER_SECOND;
+		return Instant.parse("1582-10-15T00:00:00.000Z").getEpochSecond() * MILLISECONDS_PER_SECOND;
 	}
 }

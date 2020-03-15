@@ -41,7 +41,7 @@ public class RandomTimestampStrategy implements TimestampStrategy {
 	@Override
 	public long getTimestamp() {
 		if (this.random == null) {
-			return RandomUtil.getInstance().nextLong();
+			return RandomUtil.get().nextLong();
 		}
 		return this.random.nextLong();
 	}

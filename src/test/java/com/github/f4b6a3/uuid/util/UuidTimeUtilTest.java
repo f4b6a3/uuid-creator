@@ -8,38 +8,38 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 
-public class TimestampUtilTest {
+public class UuidTimeUtilTest {
 
 	@Test
 	public void testToInstantFromInstant() {
 		Clock test = Clock.tickSeconds(ZoneId.of("UTC"));
 		Instant instant1 = Instant.now(test);
-		long timestamp1 = TimestampUtil.toTimestamp(instant1);
-		Instant instant2 = TimestampUtil.toInstant(timestamp1);
+		long timestamp1 = UuidTimeUtil.toTimestamp(instant1);
+		Instant instant2 = UuidTimeUtil.toInstant(timestamp1);
 		assertEquals(instant1, instant2);
 	}
 
 	@Test
 	public void testFromUnixMillisecondsToTimestamp() {
 		long milliseconds = System.currentTimeMillis();
-		long timestamp = TimestampUtil.toTimestamp(milliseconds);
-		Instant instant = TimestampUtil.toInstant(timestamp);
+		long timestamp = UuidTimeUtil.toTimestamp(milliseconds);
+		Instant instant = UuidTimeUtil.toInstant(timestamp);
 		assertEquals(milliseconds, instant.toEpochMilli());
 	}
 	
 	@Test
 	public void testFromCurrentTimestampToUnixMilliseconds() {
-		long timestamp = TimestampUtil.getCurrentTimestamp();
-		long milliseconds = TimestampUtil.toUnixMilliseconds(timestamp);
-		Instant instant = TimestampUtil.toInstant(timestamp);
+		long timestamp = UuidTimeUtil.getCurrentTimestamp();
+		long milliseconds = UuidTimeUtil.toUnixMilliseconds(timestamp);
+		Instant instant = UuidTimeUtil.toInstant(timestamp);
 		assertEquals(milliseconds, instant.toEpochMilli());
 	}
 	
 	@Test
 	public void testFromTimestampToUnixMilliseconds() {
 		long milliseconds1 = System.currentTimeMillis();
-		long timestamp = TimestampUtil.toTimestamp(milliseconds1);
-		long milliseconds2 = TimestampUtil.toUnixMilliseconds(timestamp);
+		long timestamp = UuidTimeUtil.toTimestamp(milliseconds1);
+		long milliseconds2 = UuidTimeUtil.toUnixMilliseconds(timestamp);
 		assertEquals(milliseconds1, milliseconds2);
 	}
 }

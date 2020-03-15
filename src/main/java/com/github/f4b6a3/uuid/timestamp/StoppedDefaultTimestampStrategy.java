@@ -28,7 +28,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 
-import com.github.f4b6a3.uuid.util.TimestampUtil;
+import com.github.f4b6a3.uuid.util.UuidTimeUtil;
 
 /**
  * This is an implementation of {@link TimestampStrategy} that always returns
@@ -47,7 +47,7 @@ public class StoppedDefaultTimestampStrategy extends DefaultTimestampStrategy {
 	@Override
 	public long getTimestamp() {
 
-		final long timestamp = TimestampUtil.toTimestamp(Instant.now(stoppedClock));
+		final long timestamp = UuidTimeUtil.toTimestamp(Instant.now(stoppedClock));
 		final long counter = getNextCounter(timestamp);
 
 		return timestamp + counter;

@@ -172,7 +172,7 @@ public class DefaultClockSequenceStrategy extends AbstractSequence implements Cl
 	@Override
 	public void reset() {
 		final int give = this.current();
-		final int take = RandomUtil.getInstance().nextInt() & SEQUENCE_MAX;
+		final int take = RandomUtil.get().nextInt() & SEQUENCE_MAX;
 		this.value = CONTROLLER.borrow(give, take);
 	}
 

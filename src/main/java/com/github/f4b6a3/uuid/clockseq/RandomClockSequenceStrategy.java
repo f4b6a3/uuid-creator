@@ -43,7 +43,7 @@ public class RandomClockSequenceStrategy implements ClockSequenceStrategy {
 	@Override
 	public int getClockSequence(long timestamp) {
 		if (this.random == null) {
-			return RandomUtil.getInstance().nextInt() & SEQUENCE_MAX;
+			return RandomUtil.get().nextInt() & SEQUENCE_MAX;
 		}
 		return this.random.nextInt() & SEQUENCE_MAX;
 	}

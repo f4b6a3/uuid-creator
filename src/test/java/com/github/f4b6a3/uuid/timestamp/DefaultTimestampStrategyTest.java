@@ -3,7 +3,7 @@ package com.github.f4b6a3.uuid.timestamp;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
-import com.github.f4b6a3.uuid.util.TimestampUtil;
+import com.github.f4b6a3.uuid.util.UuidTimeUtil;
 
 import static org.junit.Assert.*;
 
@@ -33,7 +33,7 @@ public class DefaultTimestampStrategyTest {
 	@Test(expected = UuidCreatorException.class)
 	public void testNextCounterAnOverrunExceptionShouldBeThrown() {
 
-		long timestamp = TimestampUtil.getCurrentTimestamp();
+		long timestamp = UuidTimeUtil.getCurrentTimestamp();
 		DefaultTimestampStrategy timestampStrategy = new DefaultTimestampStrategy();
 		
 		long offset = timestampStrategy.getNextCounter(timestamp);

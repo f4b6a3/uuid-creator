@@ -27,7 +27,7 @@ package com.github.f4b6a3.uuid.timestamp;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.sequence.AbstractSequence;
 import com.github.f4b6a3.uuid.util.RandomUtil;
-import com.github.f4b6a3.uuid.util.TimestampUtil;
+import com.github.f4b6a3.uuid.util.UuidTimeUtil;
 
 /**
  * This is an implementation of {@link TimestampStrategy} that provides
@@ -76,13 +76,13 @@ public class DefaultTimestampStrategy extends AbstractSequence implements Timest
 	public DefaultTimestampStrategy(boolean enableOverrunException) {
 		super(COUNTER_MIN, COUNTER_MAX);
 		this.enableOverrunException = enableOverrunException;
-		this.value = RandomUtil.getInstance().nextInt(COUNTER_OFFSET_MAX);
+		this.value = RandomUtil.get().nextInt(COUNTER_OFFSET_MAX);
 	}
 
 	@Override
 	public long getTimestamp() {
 
-		final long timestamp = TimestampUtil.getCurrentTimestamp();
+		final long timestamp = UuidTimeUtil.getCurrentTimestamp();
 		final long counter = getNextCounter(timestamp);
 
 		// (4a) simulate a high resolution timestamp

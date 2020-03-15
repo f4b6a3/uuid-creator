@@ -15,7 +15,7 @@ import com.github.f4b6a3.uuid.state.UuidStateTest;
 import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategyTest;
 import com.github.f4b6a3.uuid.util.ByteUtilTest;
 import com.github.f4b6a3.uuid.util.SettingsUtilTest;
-import com.github.f4b6a3.uuid.util.TimestampUtilTest;
+import com.github.f4b6a3.uuid.util.UuidTimeUtilTest;
 import com.github.f4b6a3.uuid.util.UuidUtilTest;
 
 @RunWith(Suite.class)
@@ -26,7 +26,7 @@ import com.github.f4b6a3.uuid.util.UuidUtilTest;
    DefaultClockSequenceStrategyTest.class,
    DefaultTimestampStrategyTest.class,
    ByteUtilTest.class,
-   TimestampUtilTest.class,
+   UuidTimeUtilTest.class,
    UuidUtilTest.class,
    SettingsUtilTest.class,
    UuidStateTest.class,

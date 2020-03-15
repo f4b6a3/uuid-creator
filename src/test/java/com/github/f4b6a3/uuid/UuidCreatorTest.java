@@ -33,7 +33,7 @@ import com.github.f4b6a3.uuid.timestamp.NanosecondTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.RandomTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
 import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
-import com.github.f4b6a3.uuid.util.TimestampUtil;
+import com.github.f4b6a3.uuid.util.UuidTimeUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 import static com.github.f4b6a3.uuid.util.ByteUtil.*;
 
@@ -357,8 +357,8 @@ public class UuidCreatorTest {
 			UUID uuid = creator.withInstant(instant1).create();
 			Instant instant2 = UuidUtil.extractInstant(uuid);
 
-			long timestamp1 = TimestampUtil.toTimestamp(instant1);
-			long timestamp2 = TimestampUtil.toTimestamp(instant2);
+			long timestamp1 = UuidTimeUtil.toTimestamp(instant1);
+			long timestamp2 = UuidTimeUtil.toTimestamp(instant2);
 
 			assertEquals(timestamp1, timestamp2);
 		}
@@ -376,8 +376,8 @@ public class UuidCreatorTest {
 			UUID uuid = creator.withInstant(instant1).create();
 			Instant instant2 = UuidUtil.extractInstant(uuid);
 
-			long timestamp1 = TimestampUtil.toTimestamp(instant1);
-			long timestamp2 = TimestampUtil.toTimestamp(instant2);
+			long timestamp1 = UuidTimeUtil.toTimestamp(instant1);
+			long timestamp2 = UuidTimeUtil.toTimestamp(instant2);
 
 			assertEquals(timestamp1, timestamp2);
 		}
@@ -617,7 +617,7 @@ public class UuidCreatorTest {
 		// time
 		long timestamp0 = 0x0fffffffffffffffL;
 		Instant instant0 = Instant.parse("5236-03-31T21:21:00.684Z");
-		assertEquals(TimestampUtil.toInstant(timestamp0), instant0);
+		assertEquals(UuidTimeUtil.toInstant(timestamp0), instant0);
 
 		// Test the extraction of the maximum 60 bit timestamp
 		long timestamp1 = 0x0fffffffffffffffL;

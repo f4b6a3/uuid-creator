@@ -239,7 +239,7 @@ public class UuidUtil {
 	 */
 	public static Instant extractInstant(UUID uuid) {
 		long timestamp = extractTimestamp(uuid);
-		return TimestampUtil.toInstant(timestamp);
+		return UuidTimeUtil.toInstant(timestamp);
 	}
 
 	/**
@@ -254,7 +254,7 @@ public class UuidUtil {
 	 */
 	public static long extractUnixMilliseconds(UUID uuid) {
 		long timestamp = extractTimestamp(uuid);
-		return TimestampUtil.toInstant(timestamp).toEpochMilli();
+		return UuidTimeUtil.toInstant(timestamp).toEpochMilli();
 	}
 
 	/**
@@ -399,7 +399,7 @@ public class UuidUtil {
 	 */
 	public static Instant extractDceSecurityInstant(UUID uuid) {
 		long timestamp = extractDceSecurityTimestamp(uuid);
-		return TimestampUtil.toInstant(timestamp);
+		return UuidTimeUtil.toInstant(timestamp);
 	}
 
 	/**

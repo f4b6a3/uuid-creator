@@ -29,14 +29,12 @@ import java.util.Random;
 
 public class RandomUtil {
 
+	protected static final ThreadLocal<Random> THREAD_LOCAL_RANDOM = ThreadLocal.withInitial(SecureRandom::new);
+
 	private RandomUtil() {
 	}
 
-	public static Random getInstance() {
-		return SecureRandomLazyHolder.INSTANCE;
-	}
-
-	private static class SecureRandomLazyHolder {
-		static final Random INSTANCE = new SecureRandom();
+	public static Random get() {
+		return THREAD_LOCAL_RANDOM.get();
 	}
 }

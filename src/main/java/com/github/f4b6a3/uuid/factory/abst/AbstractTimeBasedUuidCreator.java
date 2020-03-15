@@ -43,7 +43,7 @@ import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.FixedTimestampStretegy;
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
 import com.github.f4b6a3.uuid.util.SettingsUtil;
-import com.github.f4b6a3.uuid.util.TimestampUtil;
+import com.github.f4b6a3.uuid.util.UuidTimeUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator implements NoArgumentsUuidCreator {
@@ -240,7 +240,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends AbstractTimeBasedUuidCreator> T withInstant(Instant instant) {
-		this.timestampStrategy = new FixedTimestampStretegy(TimestampUtil.toTimestamp(instant));
+		this.timestampStrategy = new FixedTimestampStretegy(UuidTimeUtil.toTimestamp(instant));
 		return (T) this;
 	}
 
@@ -274,7 +274,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends AbstractTimeBasedUuidCreator> T withUnixMilliseconds(long unixMilliseconds) {
-		long timestamp = TimestampUtil.toTimestamp(unixMilliseconds);
+		long timestamp = UuidTimeUtil.toTimestamp(unixMilliseconds);
 		this.timestampStrategy = new FixedTimestampStretegy(timestamp);
 		return (T) this;
 	}

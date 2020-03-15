@@ -12,8 +12,8 @@ import com.github.f4b6a3.uuid.timestamp.StoppedDefaultTimestampStrategy;
  * This test starts many threads that keep requesting thousands of time-based
  * UUIDs to a single generator.
  * 
- * This is is not included in the {@link TestSuite} because it takes a long
- * time to finish.
+ * This is is not included in the {@link TestSuite} because it takes a long time
+ * to finish.
  * 
  * The theoretical maximum amount of UUIDs that can be generated at the same
  * millisecond by a single generator without duplicated UUIDs is about 163
@@ -112,7 +112,7 @@ public class UniquenessTest {
 			long msb = 0;
 			long lsb = 0;
 			long value = 0;
-			double progress = 0;
+			int progress = 0;
 			int max = requestCount;
 
 			for (int i = 0; i < max; i++) {
@@ -134,23 +134,23 @@ public class UniquenessTest {
 
 				if (verbose) {
 					// Calculate and show progress
-					progress = (i * 1.0 / max) * 100;
-					if (progress % 1 == 0) {
+					progress = (int) ((i * 1.0 / max) * 100);
+					if (progress % 10 == 0) {
 						System.out.println(String.format("[Thread %06d] %s %s %s%%", id, uuid, i, (int) progress));
 					}
 				}
 				synchronized (hashSet) {
 					// Insert the value in cache, if it does not exist in it.
 					if (!hashSet.add((Long) value)) {
-						throw new UuidCreatorException(
-								String.format("[DUPLICATE][Thread %s] %s %s %s%%", id, uuid, i, (int) progress));
+						System.err.println(
+								String.format("[Thread %06d] %s %s %s%% [DUPLICATE]", id, uuid, i, (int) progress));
 					}
 				}
 			}
 
 			if (verbose) {
 				// Finished
-				System.out.println(String.format("[Thread %s] Done.", id));
+				System.out.println(String.format("[Thread %06d] Done.", id));
 			}
 		}
 	}
