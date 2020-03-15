@@ -27,10 +27,12 @@ package com.github.f4b6a3.uuid.factory;
 import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.UnixMillisecondsTimestampStretegy;
 import com.github.f4b6a3.uuid.util.FingerprintUtil;
+import com.github.f4b6a3.uuid.util.RandomUtil;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.factory.abst.NoArgumentsUuidCreator;
 import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
@@ -57,6 +59,8 @@ public class UlidBasedGuidCreator implements NoArgumentsUuidCreator {
 
 	protected Random random;
 
+	protected boolean useThreadLocal = false;
+
 	protected static final String OVERRUN_MESSAGE = "The system overran the generator by requesting too many GUIDs.";
 
 	protected TimestampStrategy timestampStrategy;
@@ -81,8 +85,8 @@ public class UlidBasedGuidCreator implements NoArgumentsUuidCreator {
 	 * The random part is reset to a new value every time the millisecond part
 	 * changes.
 	 * 
-	 * If more than one GUID is generated within the same millisecond, the
-	 * random part is incremented by one.
+	 * If more than one GUID is generated within the same millisecond, the random
+	 * part is incremented by one.
 	 * 
 	 * The maximum GUIDs that can be generated per millisecond is 2^80.
 	 * 
@@ -97,36 +101,35 @@ public class UlidBasedGuidCreator implements NoArgumentsUuidCreator {
 	 * 
 	 * ##### Randomness
 	 * 
-	 * It is a 80 bits integer. Cryptographically secure source of randomness,
-	 * if possible.
+	 * It is a 80 bits integer. Cryptographically secure source of randomness, if
+	 * possible.
 	 * 
 	 * #### Sorting
 	 * 
-	 * The left-most character must be sorted first, and the right-most
-	 * character sorted last (lexical order). The default ASCII character set
-	 * must be used. Within the same millisecond, sort order is not guaranteed.
+	 * The left-most character must be sorted first, and the right-most character
+	 * sorted last (lexical order). The default ASCII character set must be used.
+	 * Within the same millisecond, sort order is not guaranteed.
 	 * 
 	 * #### Monotonicity
 	 * 
 	 * When generating a ULID within the same millisecond, we can provide some
-	 * guarantees regarding sort order. Namely, if the same millisecond is
-	 * detected, the random component is incremented by 1 bit in the least
-	 * significant bit position (with carrying).
+	 * guarantees regarding sort order. Namely, if the same millisecond is detected,
+	 * the random component is incremented by 1 bit in the least significant bit
+	 * position (with carrying).
 	 * 
-	 * If, in the extremely unlikely event that, you manage to generate more
-	 * than 2^80 ULIDs within the same millisecond, or cause the random
-	 * component to overflow with less, the generation will fail.
+	 * If, in the extremely unlikely event that, you manage to generate more than
+	 * 2^80 ULIDs within the same millisecond, or cause the random component to
+	 * overflow with less, the generation will fail.
 	 * 
 	 * @return {@link UUID} a UUID value
 	 * 
-	 * @throws UuidCreatorException
-	 *             an overrun exception if too many requests are made within the
-	 *             same millisecond.
+	 * @throws UuidCreatorException an overrun exception if too many requests are
+	 *                              made within the same millisecond.
 	 */
 	public synchronized UUID create() {
 
 		final long timestamp = this.getTimestamp();
-		
+
 		final long randomHi = truncate(randomMsb);
 		final long randomLo = truncate(randomLsb);
 
@@ -161,9 +164,12 @@ public class UlidBasedGuidCreator implements NoArgumentsUuidCreator {
 	protected synchronized void reset() {
 
 		// Get random values
-		if (random == null) {
-			this.randomMsb = truncate(SecureRandomLazyHolder.INSTANCE.nextLong());
-			this.randomLsb = truncate(SecureRandomLazyHolder.INSTANCE.nextLong());
+		if (useThreadLocal) {
+			this.randomMsb = truncate(ThreadLocalRandom.current().nextLong());
+			this.randomLsb = truncate(ThreadLocalRandom.current().nextLong());
+		} else if (random == null) {
+			this.randomMsb = truncate(RandomUtil.get().nextLong());
+			this.randomLsb = truncate(RandomUtil.get().nextLong());
 		} else {
 			this.randomMsb = truncate(random.nextLong());
 			this.randomLsb = truncate(random.nextLong());
@@ -179,8 +185,7 @@ public class UlidBasedGuidCreator implements NoArgumentsUuidCreator {
 	 * 
 	 * An exception is thrown when more than 2^80 increment operations are made.
 	 * 
-	 * @throws UuidCreatorException
-	 *             if an overrun happens.
+	 * @throws UuidCreatorException if an overrun happens.
 	 */
 
 	protected synchronized void increment() {
@@ -193,8 +198,7 @@ public class UlidBasedGuidCreator implements NoArgumentsUuidCreator {
 	/**
 	 * Used for changing the timestamp strategy.
 	 * 
-	 * @param timestampStrategy
-	 *            a timestamp strategy
+	 * @param timestampStrategy a timestamp strategy
 	 * @return {@link UlidBasedGuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -209,18 +213,22 @@ public class UlidBasedGuidCreator implements NoArgumentsUuidCreator {
 	 * 
 	 * The default random generator is {@link java.security.SecureRandom}.
 	 * 
-	 * For other faster pseudo-random generators, see {@link XorshiftRandom} and
-	 * its variations.
+	 * For other faster pseudo-random generators, see {@link XorshiftRandom} and its
+	 * variations.
 	 * 
 	 * See {@link Random}.
 	 * 
-	 * @param random
-	 *            a random generator
+	 * @param random a random generator
 	 * @return {@link UlidBasedGuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends UlidBasedGuidCreator> T withRandomGenerator(Random random) {
+
 		this.random = random;
+
+		// disable thread local
+		this.useThreadLocal = false;
+
 		return (T) this;
 	}
 
@@ -237,16 +245,38 @@ public class UlidBasedGuidCreator implements NoArgumentsUuidCreator {
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends UlidBasedGuidCreator> T withFastRandomGenerator() {
+
 		final int salt = (int) FingerprintUtil.getFingerprint();
 		this.random = new Xorshift128PlusRandom(salt);
+
+		// disable thread local
+		this.useThreadLocal = false;
+
+		return (T) this;
+	}
+
+	/**
+	 * Replaces the default random generator with ThreadLocalRandom.
+	 * 
+	 * See {@link java.util.concurrent.ThreadLocalRandom}
+	 * 
+	 * @return {@link RandomUuidCreator}
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized <T extends UlidBasedGuidCreator> T withThreadLocalRandomGenerator() {
+
+		this.useThreadLocal = true;
+
+		// remove random instance
+		this.random = null;
+
 		return (T) this;
 	}
 
 	/**
 	 * Truncate long to half random component.
 	 * 
-	 * @param value
-	 *            a value to be truncated.
+	 * @param value a value to be truncated.
 	 * @return truncated value
 	 */
 	protected synchronized long truncate(final long value) {
@@ -265,9 +295,5 @@ public class UlidBasedGuidCreator implements NoArgumentsUuidCreator {
 	 */
 	protected long extractRandomMsb(UUID uuid) {
 		return ((uuid.getMostSignificantBits() & 0xffff) << 24) | (uuid.getLeastSignificantBits() >>> 40);
-	}
-
-	private static class SecureRandomLazyHolder {
-		static final Random INSTANCE = new SecureRandom();
 	}
 }

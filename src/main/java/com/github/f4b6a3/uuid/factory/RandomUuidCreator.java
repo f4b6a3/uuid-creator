@@ -27,6 +27,7 @@ package com.github.f4b6a3.uuid.factory;
 import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.abst.AbstractUuidCreator;
@@ -55,6 +56,8 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 
 	protected Random random;
 
+	protected boolean useThreadLocal = false;
+
 	public RandomUuidCreator() {
 		super(UuidVersion.RANDOM_BASED);
 	}
@@ -71,8 +74,7 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 	 * (2) Set the four most significant bits (bits 12 through 15) of the
 	 * time_hi_and_version field to the 4-bit version number from Section 4.1.3.
 	 * 
-	 * (3) Set all the other bits to randomly (or pseudo-randomly) chosen
-	 * values.
+	 * (3) Set all the other bits to randomly (or pseudo-randomly) chosen values.
 	 * 
 	 * @return a random UUID
 	 */
@@ -82,23 +84,24 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 		long lsb = 0;
 
 		// (3) set all bit randomly
-		if (this.random == null) {
-
+		if (this.useThreadLocal) {
+			msb = ThreadLocalRandom.current().nextLong();
+			lsb = ThreadLocalRandom.current().nextLong();
+		} else if (this.random == null) {
 			final byte[] bytes = new byte[16];
 			RandomUtil.get().nextBytes(bytes);
 			msb = ByteUtil.toNumber(bytes, 0, 8);
 			lsb = ByteUtil.toNumber(bytes, 8, 16);
-
-		} else if (this.random instanceof SecureRandom) {
-
-			final byte[] bytes = new byte[16];
-			this.random.nextBytes(bytes);
-			msb = ByteUtil.toNumber(bytes, 0, 8);
-			lsb = ByteUtil.toNumber(bytes, 8, 16);
-
 		} else {
-			msb = this.random.nextLong();
-			lsb = this.random.nextLong();
+			if (this.random instanceof SecureRandom) {
+				final byte[] bytes = new byte[16];
+				this.random.nextBytes(bytes);
+				msb = ByteUtil.toNumber(bytes, 0, 8);
+				lsb = ByteUtil.toNumber(bytes, 8, 16);
+			} else {
+				msb = this.random.nextLong();
+				lsb = this.random.nextLong();
+			}
 		}
 
 		// (1)(2) Set the version and variant bits
@@ -114,17 +117,21 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 	 * 
 	 * The default random generator is {@link java.security.SecureRandom}.
 	 * 
-	 * For other faster pseudo-random generators, see {@link XorshiftRandom} and
-	 * its variations.
+	 * For other faster pseudo-random generators, see {@link XorshiftRandom} and its
+	 * variations.
 	 * 
 	 * See {@link Random}.
 	 * 
-	 * @param random
-	 *            a random generator
+	 * @param random a random generator
 	 * @return {@link RandomUuidCreator}
 	 */
 	public synchronized RandomUuidCreator withRandomGenerator(Random random) {
+
 		this.random = random;
+
+		// disable thread local
+		this.useThreadLocal = false;
+
 		return this;
 	}
 
@@ -140,8 +147,30 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 	 * @return {@link RandomUuidCreator}
 	 */
 	public synchronized RandomUuidCreator withFastRandomGenerator() {
+
 		final int salt = (int) FingerprintUtil.getFingerprint();
 		this.random = new Xorshift128PlusRandom(salt);
+
+		// disable thread local
+		this.useThreadLocal = false;
+
+		return this;
+	}
+
+	/**
+	 * Replaces the default random generator with ThreadLocalRandom.
+	 * 
+	 * See {@link java.util.concurrent.ThreadLocalRandom}
+	 * 
+	 * @return {@link RandomUuidCreator}
+	 */
+	public synchronized RandomUuidCreator withThreadLocalRandomGenerator() {
+
+		this.useThreadLocal = true;
+
+		// remove random instance
+		this.random = null;
+
 		return this;
 	}
 }

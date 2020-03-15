@@ -60,8 +60,7 @@ public class UuidCreator {
 	/**
 	 * Returns a random UUID.
 	 * 
-	 * The random generator used is {@link java.security.SecureRandom} with
-	 * SHA1PRNG algorithm.
+	 * The random generator used is {@link java.security.SecureRandom}.
 	 * 
 	 * <pre>
 	 * It uses the Details: 
