@@ -30,7 +30,6 @@ import java.util.UUID;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.factory.CombGuidCreator;
 import com.github.f4b6a3.uuid.factory.DceSecurityUuidCreator;
-import com.github.f4b6a3.uuid.factory.UlidBasedGuidCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedMd5UuidCreator;
 import com.github.f4b6a3.uuid.factory.RandomUuidCreator;
 import com.github.f4b6a3.uuid.factory.NameBasedSha1UuidCreator;
@@ -425,15 +424,6 @@ public class UuidCreator {
 		return CombCreatorLazyHolder.INSTANCE.create();
 	}
 
-	/**
-	 * Returns a GUID based on the ULID specification.
-	 * 
-	 * @return a ULID-based GUID
-	 */
-	public static UUID getUlidBasedGuid() {
-		return UlidBasedCreatorLazyHolder.INSTANCE.create();
-	}
-
 	/*
 	 * Public static methods for creating FACTORIES of UUIDs
 	 */
@@ -512,15 +502,6 @@ public class UuidCreator {
 		return new CombGuidCreator();
 	}
 
-	/**
-	 * Returns a {@link UlidBasedGuidCreator}.
-	 * 
-	 * @return {@link UlidBasedGuidCreator}
-	 */
-	public static UlidBasedGuidCreator getUlidBasedCreator() {
-		return new UlidBasedGuidCreator();
-	}
-
 	/*
 	 * Private classes for lazy holders
 	 */
@@ -583,9 +564,5 @@ public class UuidCreator {
 
 	private static class CombCreatorLazyHolder {
 		static final CombGuidCreator INSTANCE = getCombCreator();
-	}
-
-	private static class UlidBasedCreatorLazyHolder {
-		static final UlidBasedGuidCreator INSTANCE = getUlidBasedCreator();
 	}
 }

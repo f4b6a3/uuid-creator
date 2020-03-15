@@ -43,13 +43,6 @@ public class DemoTest {
 		}
 
 		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### ULID-based GUID");
-
-		for (int i = 0; i < max; i++) {
-			System.out.println(UuidCreator.getUlidBasedGuid());
-		}
-
-		System.out.println(HORIZONTAL_LINE);
 	}
 
 	public static void main(String[] args) {

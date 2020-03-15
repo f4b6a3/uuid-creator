@@ -237,32 +237,6 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testCreateUlidBasedGuid() {
-
-		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-
-		long startTime = System.currentTimeMillis();
-
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = UuidCreator.getUlidBasedGuid();
-		}
-
-		long endTime = System.currentTimeMillis();
-
-		checkOrdering(list);
-		checkUniqueness(list);
-
-		long previous = 0;
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			long creationTime = list[i].getMostSignificantBits() >> 16;
-			assertTrue("ULID-based GUID creation time before start time", startTime <= creationTime);
-			assertTrue("ULID-based GUID creation time after end time", creationTime <= endTime);
-			assertTrue("ULID-based GUID sequence is not sorted " + previous + " " + creationTime, previous <= creationTime);
-			previous = creationTime;
-		}
-	}
-
-	@Test
 	public void testGetSequentialUuidStringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			UUID uuid = UuidCreator.getSequential();
@@ -577,27 +551,6 @@ public class UuidCreatorTest {
 		// Instantiate and start many threads
 		for (int i = 0; i < processors; i++) {
 			threads[i] = new TestThread(UuidCreator.getSequentialCreator(), DEFAULT_LOOP_MAX);
-			threads[i].start();
-		}
-
-		// Wait all the threads to finish
-		for (Thread thread : threads) {
-			thread.join();
-		}
-
-		// Check if the quantity of unique UUIDs is correct
-		assertTrue(DUPLICATE_UUID_MSG, TestThread.hashSet.size() == (DEFAULT_LOOP_MAX * processors));
-	}
-
-	@Test
-	public void testGetUlidBasedGuidParallelGeneratorsShouldCreateUniqueUuids() throws InterruptedException {
-
-		Thread[] threads = new Thread[processors];
-		TestThread.clearHashSet();
-
-		// Instantiate and start many threads
-		for (int i = 0; i < processors; i++) {
-			threads[i] = new TestThread(UuidCreator.getUlidBasedCreator(), DEFAULT_LOOP_MAX);
 			threads[i].start();
 		}
 
