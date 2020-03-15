@@ -26,18 +26,18 @@ package com.github.f4b6a3.uuid.nodeid;
 
 import java.util.List;
 
-import com.github.f4b6a3.uuid.util.ByteUtil;
-import com.github.f4b6a3.uuid.util.NetworkData;
+import com.github.f4b6a3.commons.util.ByteUtil;
+import com.github.f4b6a3.commons.util.NetworkData;
+import com.github.f4b6a3.commons.util.RandomUtil;
 import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
-import com.github.f4b6a3.uuid.util.RandomUtil;
 
-public class HardwareAddressNodeIdentifierStrategy implements NodeIdentifierStrategy {
+public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 	protected long nodeIdentifier;
 
 	protected static final long NODEID_MAX = 0x0000FFFFFFFFFFFFL;
 
-	public HardwareAddressNodeIdentifierStrategy() {
+	public MacNodeIdentifierStrategy() {
 		this.nodeIdentifier = getHardwareAddress() & NODEID_MAX;
 	}
 
@@ -74,7 +74,7 @@ public class HardwareAddressNodeIdentifierStrategy implements NodeIdentifierStra
 
 	/**
 	 * 
-	 * {@link HardwareAddressNodeIdentifierStrategy#getNodeIdentifier()}
+	 * {@link MacNodeIdentifierStrategy#getNodeIdentifier()}
 	 * 
 	 * @return a hardware address
 	 */
@@ -106,7 +106,7 @@ public class HardwareAddressNodeIdentifierStrategy implements NodeIdentifierStra
 	/**
 	 * Return a random generated node identifier.
 	 * 
-	 * {@link HardwareAddressNodeIdentifierStrategy#getNodeIdentifier()}
+	 * {@link MacNodeIdentifierStrategy#getNodeIdentifier()}
 	 * 
 	 * @return a random multicast node identifier
 	 */

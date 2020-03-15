@@ -29,7 +29,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
 
-import com.github.f4b6a3.uuid.util.ByteUtil;
+import com.github.f4b6a3.commons.util.ByteUtil;
 import com.github.f4b6a3.uuid.util.SettingsUtil;
 
 public class FileUuidState extends AbstractUuidState {

@@ -24,10 +24,10 @@
 
 package com.github.f4b6a3.uuid.clockseq;
 
+import com.github.f4b6a3.commons.util.RandomUtil;
 import com.github.f4b6a3.uuid.sequence.AbstractSequence;
 import com.github.f4b6a3.uuid.state.AbstractUuidState;
 import com.github.f4b6a3.uuid.state.FileUuidState;
-import com.github.f4b6a3.uuid.util.RandomUtil;
 import com.github.f4b6a3.uuid.util.SettingsUtil;
 
 /**

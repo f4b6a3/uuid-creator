@@ -24,19 +24,18 @@
 
 package com.github.f4b6a3.uuid.factory;
 
-import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.UnixMillisecondsTimestampStretegy;
-import com.github.f4b6a3.uuid.util.FingerprintUtil;
-import com.github.f4b6a3.uuid.util.RandomUtil;
+import com.github.f4b6a3.commons.util.FingerprintUtil;
+import com.github.f4b6a3.commons.util.RandomUtil;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.factory.abst.NoArgumentsUuidCreator;
-import com.github.f4b6a3.uuid.random.Xorshift128PlusRandom;
-import com.github.f4b6a3.uuid.random.XorshiftRandom;
+import com.github.f4b6a3.commons.random.Xorshift128PlusRandom;
+import com.github.f4b6a3.commons.random.XorshiftRandom;
 
 /**
  * Factory that creates GUIDs based on the ULID specification - Universally

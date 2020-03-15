@@ -3,7 +3,11 @@ package com.github.f4b6a3.uuid.random;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import com.github.f4b6a3.uuid.util.RandomUtil;
+import com.github.f4b6a3.commons.random.Xoroshiro128PlusRandom;
+import com.github.f4b6a3.commons.random.Xorshift128PlusRandom;
+import com.github.f4b6a3.commons.random.XorshiftRandom;
+import com.github.f4b6a3.commons.random.XorshiftStarRandom;
+import com.github.f4b6a3.commons.util.RandomUtil;
 
 import static org.junit.Assert.*;
 

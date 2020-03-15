@@ -24,9 +24,9 @@
 
 package com.github.f4b6a3.uuid.timestamp;
 
+import com.github.f4b6a3.commons.util.RandomUtil;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.sequence.AbstractSequence;
-import com.github.f4b6a3.uuid.util.RandomUtil;
 import com.github.f4b6a3.uuid.util.UuidTimeUtil;
 
 /**

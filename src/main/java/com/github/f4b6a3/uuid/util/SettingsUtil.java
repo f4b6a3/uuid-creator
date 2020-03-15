@@ -24,6 +24,8 @@
 
 package com.github.f4b6a3.uuid.util;
 
+import com.github.f4b6a3.commons.util.ByteUtil;
+
 public class SettingsUtil {
 
 	protected static final String PROPERTY_PREFIX = "uuidcreator";

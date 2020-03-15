@@ -32,7 +32,7 @@ import java.util.UUID;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 
-import static com.github.f4b6a3.uuid.util.ByteUtil.*;
+import static com.github.f4b6a3.commons.util.ByteUtil.*;
 
 /**
  * Factory that creates name-based UUIDs.

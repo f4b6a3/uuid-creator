@@ -2,7 +2,7 @@ package com.github.f4b6a3.uuid.util;
 
 import org.junit.Test;
 
-import static com.github.f4b6a3.uuid.util.ByteUtil.*;
+import static com.github.f4b6a3.commons.util.ByteUtil.*;
 
 import static org.junit.Assert.*;
 

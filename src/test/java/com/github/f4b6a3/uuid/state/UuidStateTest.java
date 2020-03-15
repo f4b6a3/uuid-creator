@@ -7,8 +7,8 @@ import static org.junit.Assert.*;
 
 import com.github.f4b6a3.uuid.clockseq.DefaultClockSequenceStrategy;
 import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
-import com.github.f4b6a3.uuid.util.ByteUtil;
 import com.github.f4b6a3.uuid.util.SettingsUtil;
+import com.github.f4b6a3.commons.util.ByteUtil;
 
 public class UuidStateTest {
 

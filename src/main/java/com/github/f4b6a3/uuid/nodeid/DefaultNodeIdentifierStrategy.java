@@ -26,8 +26,8 @@ package com.github.f4b6a3.uuid.nodeid;
 
 import java.security.SecureRandom;
 
+import com.github.f4b6a3.commons.util.RandomUtil;
 import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
-import com.github.f4b6a3.uuid.util.RandomUtil;
 import com.github.f4b6a3.uuid.util.SettingsUtil;
 
 public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {

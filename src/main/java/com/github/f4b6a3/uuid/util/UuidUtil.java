@@ -27,6 +27,7 @@ package com.github.f4b6a3.uuid.util;
 import java.time.Instant;
 import java.util.UUID;
 
+import com.github.f4b6a3.commons.util.ByteUtil;
 import com.github.f4b6a3.uuid.enums.UuidVariant;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 

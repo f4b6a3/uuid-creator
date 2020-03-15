@@ -35,7 +35,7 @@ import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.nodeid.DefaultNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.FixedNodeIdentifierStrategy;
-import com.github.f4b6a3.uuid.nodeid.HardwareAddressNodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.nodeid.MacNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.NodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.RandomNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.FingerprintNodeIdentifierStrategy;
@@ -304,7 +304,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends AbstractTimeBasedUuidCreator> T withHardwareAddressNodeIdentifier() {
-		this.nodeIdentifierStrategy = new HardwareAddressNodeIdentifierStrategy();
+		this.nodeIdentifierStrategy = new MacNodeIdentifierStrategy();
 		return (T) this;
 	}
 

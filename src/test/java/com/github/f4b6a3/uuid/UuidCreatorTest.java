@@ -27,7 +27,7 @@ import com.github.f4b6a3.uuid.factory.abst.NoArgumentsUuidCreator;
 import com.github.f4b6a3.uuid.nodeid.NodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.RandomNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.nodeid.FingerprintNodeIdentifierStrategy;
-import com.github.f4b6a3.uuid.random.Xoroshiro128PlusRandom;
+import com.github.f4b6a3.commons.random.Xoroshiro128PlusRandom;
 import com.github.f4b6a3.uuid.timestamp.UnixMillisecondsTimestampStretegy;
 import com.github.f4b6a3.uuid.timestamp.NanosecondTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.RandomTimestampStrategy;
@@ -35,7 +35,7 @@ import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
 import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 import com.github.f4b6a3.uuid.util.UuidTimeUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
-import static com.github.f4b6a3.uuid.util.ByteUtil.*;
+import static com.github.f4b6a3.commons.util.ByteUtil.*;
 
 public class UuidCreatorTest {
 

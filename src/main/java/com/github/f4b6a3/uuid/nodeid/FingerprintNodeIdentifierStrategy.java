@@ -24,7 +24,7 @@
 
 package com.github.f4b6a3.uuid.nodeid;
 
-import com.github.f4b6a3.uuid.util.FingerprintUtil;
+import com.github.f4b6a3.commons.util.FingerprintUtil;
 import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 
 public class FingerprintNodeIdentifierStrategy implements NodeIdentifierStrategy {
