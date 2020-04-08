@@ -92,13 +92,11 @@ public class DefaultTimestampStrategy extends AbstractSequence implements Timest
 	/**
 	 * Get the next counter value.
 	 * 
-	 * @param timestamp
-	 *            a timestamp
+	 * @param timestamp a timestamp
 	 * @return the next counter value
 	 * 
-	 * @throws UuidCreatorException
-	 *             an overrun exception if more than 10 thousand UUIDs are
-	 *             requested within the same millisecond
+	 * @throws UuidCreatorException an overrun exception if more than 10 thousand
+	 *                              UUIDs are requested within the same millisecond
 	 */
 	protected long getNextCounter(final long timestamp) {
 		if (timestamp > this.previousTimestamp) {

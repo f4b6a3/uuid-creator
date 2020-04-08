@@ -40,7 +40,7 @@ import com.github.f4b6a3.uuid.util.UuidTimeUtil;
  * It's useful for tests only.
  * 
  */
-public class StoppedDefaultTimestampStrategy extends DefaultTimestampStrategy {
+public class StoppedTimestampStrategy extends DefaultTimestampStrategy {
 
 	protected static final Clock stoppedClock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
 

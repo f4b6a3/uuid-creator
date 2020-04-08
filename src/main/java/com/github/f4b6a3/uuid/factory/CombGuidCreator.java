@@ -27,7 +27,6 @@ package com.github.f4b6a3.uuid.factory;
 import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 import com.github.f4b6a3.commons.random.Xorshift128PlusRandom;
 import com.github.f4b6a3.commons.random.XorshiftRandom;
@@ -48,9 +47,7 @@ import com.github.f4b6a3.uuid.timestamp.UnixMillisecondsTimestampStretegy;
 public class CombGuidCreator implements NoArgumentsUuidCreator {
 
 	protected Random random;
-
-	protected boolean useThreadLocal = false;
-
+	
 	protected TimestampStrategy timestampStrategy;
 
 	public CombGuidCreator() {
@@ -69,10 +66,7 @@ public class CombGuidCreator implements NoArgumentsUuidCreator {
 		final long lsb;
 
 		// Get random values
-		if (useThreadLocal) {
-			msb = ThreadLocalRandom.current().nextLong();
-			lsb = ThreadLocalRandom.current().nextLong();
-		} else if (random == null) {
+		if (random == null) {
 			final byte[] bytes = new byte[10];
 			RandomUtil.get().nextBytes(bytes);
 			msb = ByteUtil.toNumber(bytes, 0, 8);
@@ -118,12 +112,7 @@ public class CombGuidCreator implements NoArgumentsUuidCreator {
 	 * @return {@link CombGuidCreator}
 	 */
 	public synchronized CombGuidCreator withRandomGenerator(Random random) {
-
 		this.random = random;
-
-		// disable thread local
-		this.useThreadLocal = false;
-
 		return this;
 	}
 
@@ -139,30 +128,8 @@ public class CombGuidCreator implements NoArgumentsUuidCreator {
 	 * @return {@link CombGuidCreator}
 	 */
 	public synchronized CombGuidCreator withFastRandomGenerator() {
-
 		final int salt = (int) FingerprintUtil.getFingerprint();
 		this.random = new Xorshift128PlusRandom(salt);
-
-		// disable thread local
-		this.useThreadLocal = false;
-
-		return this;
-	}
-
-	/**
-	 * Replaces the default random generator with ThreadLocalRandom.
-	 * 
-	 * See {@link java.util.concurrent.ThreadLocalRandom}
-	 * 
-	 * @return {@link RandomUuidCreator}
-	 */
-	public synchronized CombGuidCreator withThreadLocalRandomGenerator() {
-
-		this.useThreadLocal = true;
-
-		// remove random instance
-		this.random = null;
-
 		return this;
 	}
 }

@@ -22,44 +22,35 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.state;
+package com.github.f4b6a3.uuid.factory;
 
-public abstract class AbstractUuidState {
+import com.github.f4b6a3.uuid.enums.UuidVersion;
+import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
+import com.github.f4b6a3.uuid.util.UuidUtil;
 
-	protected long timestamp = 0;
-	protected int clockSequence = 0;
-	protected long nodeIdentifier = 0;
+/**
+ * Factory that creates time-ordered UUIDs.
+ * 
+ * RFC-4122 version: 6.
+ */
+public class TimeOrderedUuidCreator extends AbstractTimeBasedUuidCreator {
 
-	public AbstractUuidState() {
+	public TimeOrderedUuidCreator() {
+		this(UuidVersion.TIME_ORDERED);
 	}
 
-	public long getTimestamp() {
-		return timestamp;
+	protected TimeOrderedUuidCreator(UuidVersion version) {
+		super(version);
 	}
 
-	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
+	/**
+	 * Returns the timestamp bits of the UUID in the 'natural' order of bytes.
+	 * 
+	 * @param timestamp a timestamp
+	 * @return the MSB
+	 */
+	@Override
+	protected long formatMostSignificantBits(final long timestamp) {
+		return ((timestamp & 0x0ffffffffffff000L) << 4) | (timestamp & 0x0000000000000fffL) | 0x00000000_0000_6000L;
 	}
-
-	public int getClockSequence() {
-		return clockSequence;
-	}
-
-	public void setClockSequence(int clockSequence) {
-		this.clockSequence = clockSequence;
-	}
-
-	public long getNodeIdentifier() {
-		return nodeIdentifier;
-	}
-
-	public void setNodeIdentifier(long nodeIdentifier) {
-		this.nodeIdentifier = nodeIdentifier;
-	}
-
-	public abstract void store();
-
-	public abstract void load();
-	
-	public abstract boolean isValid();
 }

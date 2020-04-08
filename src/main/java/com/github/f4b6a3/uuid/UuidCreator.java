@@ -131,8 +131,8 @@ public class UuidCreator {
 	}
 
 	/**
-	 * Returns a UUID with timestamp and fingerprint, but the bytes
-	 * corresponding to timestamp are arranged in the "natural" order.
+	 * Returns a UUID with timestamp and fingerprint, but the bytes corresponding to
+	 * timestamp are arranged in the "natural" order.
 	 *
 	 * <pre>
 	 * Details: 
@@ -204,8 +204,7 @@ public class UuidCreator {
 	}
 
 	/**
-	 * Returns a DCE Security UUID based on a local domain and a local
-	 * identifier.
+	 * Returns a DCE Security UUID based on a local domain and a local identifier.
 	 *
 	 * <pre>
 	 * Domain identifiers listed in the RFC-4122: 
@@ -221,10 +220,8 @@ public class UuidCreator {
 	 * - Timestamp bytes are in the RFC-4122 order?: YES
 	 * </pre>
 	 * 
-	 * @param localDomain
-	 *            a local domain
-	 * @param localIdentifier
-	 *            a local identifier
+	 * @param localDomain     a local domain
+	 * @param localIdentifier a local identifier
 	 * @return a DCE Security UUID
 	 */
 	public static UUID getDceSecurity(byte localDomain, int localIdentifier) {
@@ -232,8 +229,8 @@ public class UuidCreator {
 	}
 
 	/**
-	 * Returns a DCE Security UUID with machine address based on a local domain
-	 * and a local identifier.
+	 * Returns a DCE Security UUID with machine address based on a local domain and
+	 * a local identifier.
 	 *
 	 * <pre>
 	 * Domain identifiers listed in the RFC-4122: 
@@ -249,10 +246,8 @@ public class UuidCreator {
 	 * - Timestamp bytes are in the RFC-4122 order?: YES
 	 * </pre>
 	 * 
-	 * @param localDomain
-	 *            a local domain
-	 * @param localIdentifier
-	 *            a local identifier
+	 * @param localDomain     a local domain
+	 * @param localIdentifier a local identifier
 	 * @return a DCE Security UUID
 	 */
 	public static UUID getDceSecurityWithMac(byte localDomain, int localIdentifier) {
@@ -260,8 +255,8 @@ public class UuidCreator {
 	}
 
 	/**
-	 * Returns a DCE Security UUID with fingerprint based on a local domain and
-	 * a local identifier.
+	 * Returns a DCE Security UUID with fingerprint based on a local domain and a
+	 * local identifier.
 	 *
 	 * <pre>
 	 * Domain identifiers listed in the RFC-4122: 
@@ -277,10 +272,8 @@ public class UuidCreator {
 	 * - Timestamp bytes are in the RFC-4122 order?: YES
 	 * </pre>
 	 * 
-	 * @param localDomain
-	 *            a local domain
-	 * @param localIdentifier
-	 *            a local identifier
+	 * @param localDomain     a local domain
+	 * @param localIdentifier a local identifier
 	 * @return a DCE Security UUID
 	 */
 	public static UUID getDceSecurityWithFingerprint(byte localDomain, int localIdentifier) {
@@ -298,8 +291,7 @@ public class UuidCreator {
 	 * - Name Space: none
 	 * </pre>
 	 * 
-	 * @param name
-	 *            a name string
+	 * @param name a name string
 	 * @return a name-based UUID
 	 */
 	public static UUID getNameBasedMd5(String name) {
@@ -317,10 +309,8 @@ public class UuidCreator {
 	 * - Name Space: informed by user
 	 * </pre>
 	 * 
-	 * @param namespace
-	 *            a name space UUID
-	 * @param name
-	 *            a name string
+	 * @param namespace a name space UUID
+	 * @param name      a name string
 	 * @return a name-based UUID
 	 */
 	public static UUID getNameBasedMd5(UUID namespace, String name) {
@@ -340,10 +330,8 @@ public class UuidCreator {
 	 * - Name Space: informed by user
 	 * </pre>
 	 * 
-	 * @param namespace
-	 *            a name space enumeration
-	 * @param name
-	 *            a name string
+	 * @param namespace a name space enumeration
+	 * @param name      a name string
 	 * @return a name-based UUID
 	 */
 	public static UUID getNameBasedMd5(UuidNamespace namespace, String name) {
@@ -361,8 +349,7 @@ public class UuidCreator {
 	 * - Name Space: none
 	 * </pre>
 	 * 
-	 * @param name
-	 *            a name string
+	 * @param name a name string
 	 * @return a name-based UUID
 	 */
 	public static UUID getNameBasedSha1(String name) {
@@ -380,10 +367,8 @@ public class UuidCreator {
 	 * - Name Space: informed by user
 	 * </pre>
 	 * 
-	 * @param namespace
-	 *            a name space UUID
-	 * @param name
-	 *            a name string
+	 * @param namespace a name space UUID
+	 * @param name      a name string
 	 * @return a name-based UUID
 	 */
 	public static UUID getNameBasedSha1(UUID namespace, String name) {
@@ -403,10 +388,8 @@ public class UuidCreator {
 	 * - Name Space: informed by user
 	 * </pre>
 	 * 
-	 * @param namespace
-	 *            a name space enumeration
-	 * @param name
-	 *            a name string
+	 * @param namespace a name space enumeration
+	 * @param name      a name string
 	 * @return a name-based UUID
 	 */
 	public static UUID getNameBasedSha1(UuidNamespace namespace, String name) {
@@ -515,31 +498,27 @@ public class UuidCreator {
 	}
 
 	private static class SequentialCreatorLazyHolder {
-		static final SequentialUuidCreator INSTANCE = getSequentialCreator().withoutOverrunException();
+		static final SequentialUuidCreator INSTANCE = getSequentialCreator();
 	}
 
 	private static class SequentialWithMacCreatorLazyHolder {
-		static final SequentialUuidCreator INSTANCE = getSequentialCreator().withoutOverrunException()
-				.withHardwareAddressNodeIdentifier();
+		static final SequentialUuidCreator INSTANCE = getSequentialCreator().withHardwareAddressNodeIdentifier();
 	}
 
 	private static class SequentialWithFingerprintCreatorLazyHolder {
-		static final SequentialUuidCreator INSTANCE = getSequentialCreator().withoutOverrunException()
-				.withFingerprintNodeIdentifier();
+		static final SequentialUuidCreator INSTANCE = getSequentialCreator().withFingerprintNodeIdentifier();
 	}
 
 	private static class TimeBasedCreatorLazyHolder {
-		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withoutOverrunException();
+		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator();
 	}
 
 	private static class TimeBasedWithMacCreatorLazyHolder {
-		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withoutOverrunException()
-				.withHardwareAddressNodeIdentifier();
+		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withHardwareAddressNodeIdentifier();
 	}
 
 	private static class TimeBasedWithFingerprintCreatorLazyHolder {
-		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withoutOverrunException()
-				.withFingerprintNodeIdentifier();
+		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withFingerprintNodeIdentifier();
 	}
 
 	private static class NameBasedMd5CreatorLazyHolder {

@@ -27,7 +27,6 @@ package com.github.f4b6a3.uuid.factory;
 import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 import com.github.f4b6a3.commons.util.ByteUtil;
 import com.github.f4b6a3.commons.util.FingerprintUtil;
@@ -56,8 +55,6 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 
 	protected Random random;
 
-	protected boolean useThreadLocal = false;
-
 	public RandomUuidCreator() {
 		super(UuidVersion.RANDOM_BASED);
 	}
@@ -84,10 +81,7 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 		long lsb = 0;
 
 		// (3) set all bit randomly
-		if (this.useThreadLocal) {
-			msb = ThreadLocalRandom.current().nextLong();
-			lsb = ThreadLocalRandom.current().nextLong();
-		} else if (this.random == null) {
+		if (this.random == null) {
 			final byte[] bytes = new byte[16];
 			RandomUtil.get().nextBytes(bytes);
 			msb = ByteUtil.toNumber(bytes, 0, 8);
@@ -126,12 +120,7 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 	 * @return {@link RandomUuidCreator}
 	 */
 	public synchronized RandomUuidCreator withRandomGenerator(Random random) {
-
 		this.random = random;
-
-		// disable thread local
-		this.useThreadLocal = false;
-
 		return this;
 	}
 
@@ -147,30 +136,8 @@ public class RandomUuidCreator extends AbstractUuidCreator implements NoArgument
 	 * @return {@link RandomUuidCreator}
 	 */
 	public synchronized RandomUuidCreator withFastRandomGenerator() {
-
 		final int salt = (int) FingerprintUtil.getFingerprint();
 		this.random = new Xorshift128PlusRandom(salt);
-
-		// disable thread local
-		this.useThreadLocal = false;
-
-		return this;
-	}
-
-	/**
-	 * Replaces the default random generator with ThreadLocalRandom.
-	 * 
-	 * See {@link java.util.concurrent.ThreadLocalRandom}
-	 * 
-	 * @return {@link RandomUuidCreator}
-	 */
-	public synchronized RandomUuidCreator withThreadLocalRandomGenerator() {
-
-		this.useThreadLocal = true;
-
-		// remove random instance
-		this.random = null;
-
 		return this;
 	}
 }

@@ -98,7 +98,7 @@ public class UuidTimeUtil {
 	}
 
 	/**
-	 * Get the timestamp of a given instant with milliseconds precision.
+	 * Get the timestamp of a given instant.
 	 *
 	 * The value returned by this method is the number of 100-nanos since
 	 * 1582-10-15 (Gregorian epoch).
@@ -108,18 +108,22 @@ public class UuidTimeUtil {
 	 * @return the timestamp
 	 */
 	public static long toTimestamp(final Instant instant) {
-		return toTimestamp(instant.toEpochMilli());
+		final long a = (instant.toEpochMilli() - GREGORIAN_MILLISECONDS) * 10_000;
+		final long b = (instant.getNano() / 100) % 10_000;
+		return a + b;
 	}
 
 	/**
-	 * Get the instant of the given timestamp with milliseconds precision.
+	 * Get the instant of the given timestamp.
 	 *
 	 * @param timestamp
 	 *            a timestamp
 	 * @return the instant
 	 */
 	public static Instant toInstant(final long timestamp) {
-		return Instant.ofEpochMilli(toUnixMilliseconds(timestamp));
+		final long millis = ((timestamp / 10_000) + GREGORIAN_MILLISECONDS);
+		final long nanos = (timestamp % 10_000) * 100;
+		return Instant.ofEpochMilli(millis).plusNanos(nanos);
 	}
 
 	/**

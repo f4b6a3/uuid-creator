@@ -4,16 +4,13 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-import java.time.Clock;
 import java.time.Instant;
-import java.time.ZoneId;
 
 public class UuidTimeUtilTest {
 
 	@Test
 	public void testToInstantFromInstant() {
-		Clock test = Clock.tickSeconds(ZoneId.of("UTC"));
-		Instant instant1 = Instant.now(test);
+		Instant instant1 = Instant.now();
 		long timestamp1 = UuidTimeUtil.toTimestamp(instant1);
 		Instant instant2 = UuidTimeUtil.toInstant(timestamp1);
 		assertEquals(instant1, instant2);

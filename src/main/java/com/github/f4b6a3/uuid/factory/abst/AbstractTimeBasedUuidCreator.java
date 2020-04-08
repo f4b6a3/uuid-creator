@@ -42,7 +42,6 @@ import com.github.f4b6a3.uuid.nodeid.FingerprintNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.timestamp.FixedTimestampStretegy;
 import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
-import com.github.f4b6a3.uuid.util.SettingsUtil;
 import com.github.f4b6a3.uuid.util.UuidTimeUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
@@ -55,22 +54,13 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	/**
 	 * This constructor requires a version number.
 	 * 
-	 * @param version
-	 *            the version number
+	 * @param version the version number
 	 */
 	protected AbstractTimeBasedUuidCreator(UuidVersion version) {
 		super(version);
-
 		this.timestampStrategy = new DefaultTimestampStrategy();
 		this.nodeIdentifierStrategy = new DefaultNodeIdentifierStrategy();
-
-		if (SettingsUtil.isStateEnabled()) {
-			long timestamp = this.timestampStrategy.getTimestamp();
-			long nodeIdentifier = this.nodeIdentifierStrategy.getNodeIdentifier();
-			this.clockSequenceStrategy = new DefaultClockSequenceStrategy(timestamp, nodeIdentifier);
-		} else {
-			this.clockSequenceStrategy = new DefaultClockSequenceStrategy();
-		}
+		this.clockSequenceStrategy = new DefaultClockSequenceStrategy();
 	}
 
 	/**
@@ -78,9 +68,9 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * 
 	 * ### Timestamp
 	 * 
-	 * The timestamp has 100-nanoseconds resolution, starting from 1582-10-15.
-	 * It uses 60 bits from the most significant bits. The the time value rolls
-	 * over around AD 5235.
+	 * The timestamp has 100-nanoseconds resolution, starting from 1582-10-15. It
+	 * uses 60 bits from the most significant bits. The the time value rolls over
+	 * around AD 5235.
 	 * 
 	 * <pre>
 	 *   s = 10_000_000
@@ -95,24 +85,24 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * 
 	 * ### RFC-4122 - 4.1.4. Timestamp
 	 * 
-	 * The timestamp is a 60-bit value. For UUID version 1, this is represented
-	 * by Coordinated Universal Time (UTC) as a count of 100- nanosecond
-	 * intervals since 00:00:00.00, 15 October 1582 (the date of Gregorian
-	 * reform to the Christian calendar).
+	 * The timestamp is a 60-bit value. For UUID version 1, this is represented by
+	 * Coordinated Universal Time (UTC) as a count of 100- nanosecond intervals
+	 * since 00:00:00.00, 15 October 1582 (the date of Gregorian reform to the
+	 * Christian calendar).
 	 * 
 	 * ### RFC-4122 - 4.1.5. Clock Sequence
 	 * 
-	 * For UUID version 1, the clock sequence is used to help avoid duplicates
-	 * that could arise when the clock is set backwards in time or if the node
-	 * ID changes.
+	 * For UUID version 1, the clock sequence is used to help avoid duplicates that
+	 * could arise when the clock is set backwards in time or if the node ID
+	 * changes.
 	 * 
 	 * ### RFC-4122 - 4.1.6. Node
 	 * 
 	 * For UUID version 1, the node field consists of an IEEE 802 MAC address,
-	 * usually the host address. For systems with multiple IEEE 802 addresses,
-	 * any available one can be used. The lowest addressed octet (octet number
-	 * 10) contains the global/local bit and the unicast/multicast bit, and is
-	 * the first octet of the address transmitted on an 802.3 LAN.
+	 * usually the host address. For systems with multiple IEEE 802 addresses, any
+	 * available one can be used. The lowest addressed octet (octet number 10)
+	 * contains the global/local bit and the unicast/multicast bit, and is the first
+	 * octet of the address transmitted on an 802.3 LAN.
 	 * 
 	 * For systems with no IEEE address, a randomly or pseudo-randomly generated
 	 * value may be used; see Section 4.5. The multicast bit must be set in such
@@ -127,31 +117,30 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * generator state: the values of the timestamp, clock sequence, and node ID
 	 * used to generate the last UUID.
 	 * 
-	 * (3a) Get the current time as a 60-bit count of 100-nanosecond intervals
-	 * since 00:00:00.00, 15 October 1582.
+	 * (3a) Get the current time as a 60-bit count of 100-nanosecond intervals since
+	 * 00:00:00.00, 15 October 1582.
 	 * 
 	 * (4a) Get the current node ID.
 	 * 
-	 * (5a) If the state was unavailable (e.g., non-existent or corrupted), or
-	 * the saved node ID is different than the current node ID, generate a
-	 * random clock sequence value.
+	 * (5a) If the state was unavailable (e.g., non-existent or corrupted), or the
+	 * saved node ID is different than the current node ID, generate a random clock
+	 * sequence value.
 	 * 
-	 * (6a) If the state was available, but the saved timestamp is later than
-	 * the current timestamp, increment the clock sequence value.
+	 * (6a) If the state was available, but the saved timestamp is later than the
+	 * current timestamp, increment the clock sequence value.
 	 * 
-	 * (7a) Save the state (current timestamp, clock sequence, and node ID) back
-	 * to the stable store.
+	 * (7a) Save the state (current timestamp, clock sequence, and node ID) back to
+	 * the stable store.
 	 * 
 	 * (8a) Release the global lock.
 	 * 
-	 * (9a) Format a UUID from the current timestamp, clock sequence, and node
-	 * ID values according to the steps in Section 4.2.2.
+	 * (9a) Format a UUID from the current timestamp, clock sequence, and node ID
+	 * values according to the steps in Section 4.2.2.
 	 * 
 	 * @return {@link UUID} a UUID value
 	 * 
-	 * @throws UuidCreatorException
-	 *             an overrun exception if more than 10 thousand UUIDs are
-	 *             requested within the same millisecond
+	 * @throws UuidCreatorException an overrun exception if more than 10 thousand
+	 *                              UUIDs are requested within the same millisecond
 	 */
 	public synchronized UUID create() {
 
@@ -180,10 +169,8 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * needs a real 100-nanosecond resolution, another implementation of
 	 * {@link TimestampStrategy} may be provided via this method.
 	 * 
-	 * @param timestampStrategy
-	 *            a timestamp strategy
-	 * @param <T>
-	 *            type parameter
+	 * @param timestampStrategy a timestamp strategy
+	 * @param <T>               type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -194,13 +181,10 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	}
 
 	/**
-	 * Use an alternate {@link NodeIdentifierStrategy} to generate node
-	 * identifiers.
+	 * Use an alternate {@link NodeIdentifierStrategy} to generate node identifiers.
 	 * 
-	 * @param nodeIdentifierStrategy
-	 *            a node identifier strategy
-	 * @param <T>
-	 *            type parameter
+	 * @param nodeIdentifierStrategy a node identifier strategy
+	 * @param <T>                    type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -211,13 +195,10 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	}
 
 	/**
-	 * Use an alternate {@link ClockSequenceStrategy} to generate clock
-	 * sequences.
+	 * Use an alternate {@link ClockSequenceStrategy} to generate clock sequences.
 	 * 
-	 * @param clockSequenceStrategy
-	 *            a clock sequence strategy
-	 * @param <T>
-	 *            type parameter
+	 * @param clockSequenceStrategy a clock sequence strategy
+	 * @param <T>                   type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -232,10 +213,8 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * 
 	 * This method is useful for unit tests.
 	 * 
-	 * @param instant
-	 *            an {@link Instant}
-	 * @param <T>
-	 *            type parameter
+	 * @param instant an {@link Instant}
+	 * @param <T>     type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -249,10 +228,8 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * 
 	 * This method is useful for unit tests.
 	 * 
-	 * @param timestamp
-	 *            a timestamp
-	 * @param <T>
-	 *            type parameter
+	 * @param timestamp a timestamp
+	 * @param <T>       type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -266,10 +243,8 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * 
 	 * This method is useful for unit tests.
 	 * 
-	 * @param unixMilliseconds
-	 *            a Unix Epoch milliseconds value
-	 * @param <T>
-	 *            type parameter
+	 * @param unixMilliseconds a Unix Epoch milliseconds value
+	 * @param <T>              type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -282,10 +257,8 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	/**
 	 * Set a fixed node identifier to generate UUIDs.
 	 * 
-	 * @param nodeIdentifier
-	 *            a node identifier
-	 * @param <T>
-	 *            type parameter
+	 * @param nodeIdentifier a node identifier
+	 * @param <T>            type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -295,11 +268,9 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	}
 
 	/**
-	 * Set the node identifier to be a real hardware address of the host
-	 * machine.
+	 * Set the node identifier to be a real hardware address of the host machine.
 	 * 
-	 * @param <T>
-	 *            type parameter
+	 * @param <T> type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -311,14 +282,13 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	/**
 	 * Set the node identifier to be a system data hash.
 	 * 
-	 * The node identifier is calculated using these system data: OS + JVM +
-	 * network details + system resources. The resulting node identifier is as
-	 * unique and mutable as the host machine.
+	 * The node identifier is calculated using these system data: OS + JVM + network
+	 * details + system resources. The resulting node identifier is as unique and
+	 * mutable as the host machine.
 	 * 
 	 * Read: https://en.wikipedia.org/wiki/Device_fingerprint
 	 * 
-	 * @param <T>
-	 *            type parameter
+	 * @param <T> type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -332,8 +302,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * 
 	 * Each UUID generated will have a different random node identifier.
 	 * 
-	 * @param <T>
-	 *            type parameter
+	 * @param <T> type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -347,10 +316,8 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * 
 	 * Each UUID generated will have a different random node identifier.
 	 * 
-	 * @param random
-	 *            a random number generator
-	 * @param <T>
-	 *            type parameter
+	 * @param random a random number generator
+	 * @param <T>    type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -364,10 +331,8 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * 
 	 * The clock sequence has a range from 0 to 16,383 (0x3fff).
 	 * 
-	 * @param clockSequence
-	 *            a clock sequence
-	 * @param <T>
-	 *            type parameter
+	 * @param clockSequence a clock sequence
+	 * @param <T>           type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
@@ -379,11 +344,11 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	/**
 	 * Used to disable the overrun exception.
 	 * 
-	 * An exception thrown when more than 10 thousand requests are made within
-	 * the same millisecond. This method disables the exception.
+	 * An exception thrown when more than 10 thousand requests are made within the
+	 * same millisecond. This method disables the exception.
 	 * 
-	 * This method works only with the {@link DefaultTimestampStrategy}. So
-	 * don't use this method if you want the creator to use another
+	 * This method works only with the {@link DefaultTimestampStrategy}. So don't
+	 * use this method if you want the creator to use another
 	 * {@link TimestampStrategy}.
 	 * 
 	 * @return {@link AbstractTimeBasedUuidCreator}
@@ -397,8 +362,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	/**
 	 * Formats the most significant bits of the UUID.
 	 * 
-	 * @param timestamp
-	 *            a timestamp
+	 * @param timestamp a timestamp
 	 * @return the MSB
 	 */
 	protected abstract long formatMostSignificantBits(long timestamp);
@@ -408,8 +372,8 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * 
 	 * ### RFC-4122 - 4.2.2. Generation Details
 	 * 
-	 * Set the clock_seq_low field to the eight least significant bits (bits
-	 * zero through 7) of the clock sequence in the same order of significance.
+	 * Set the clock_seq_low field to the eight least significant bits (bits zero
+	 * through 7) of the clock sequence in the same order of significance.
 	 * 
 	 * Set the 6 least significant bits (bits zero through 5) of the
 	 * clock_seq_hi_and_reserved field to the 6 most significant bits (bits 8
@@ -421,10 +385,8 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * Set the node field to the 48-bit IEEE address in the same order of
 	 * significance as the address.
 	 * 
-	 * @param nodeIdentifier
-	 *            a node identifier
-	 * @param clockSequence
-	 *            a clock sequence
+	 * @param nodeIdentifier a node identifier
+	 * @param clockSequence  a clock sequence
 	 * @return the LSB
 	 */
 	protected long formatLeastSignificantBits(final long nodeIdentifier, final long clockSequence) {

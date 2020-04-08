@@ -25,15 +25,15 @@ public class UuidUtilTest {
 			0x0000000000003000L, 0x0000000000004000L, 0x0000000000005000L };
 	
 	@Test
-	public void testIsNameBasedVersion() {
+	public void testIsNameBasedMd5() {
 		UUID uuid = UUID.nameUUIDFromBytes("test".getBytes());
-		assertTrue(isNameBasedVersion(uuid));
+		assertTrue(isNameBasedMd5(uuid));
 	}
 
 	@Test
-	public void testIsRandomBasedVersion() {
+	public void testIsRandomBased() {
 		UUID uuid = UUID.randomUUID();
-		assertTrue(isRandomBasedVersion(uuid));
+		assertTrue(isRandomBased(uuid));
 	}
 
 	@Test
@@ -89,40 +89,14 @@ public class UuidUtilTest {
 		int localIdentifier2 = extractDceSecurityLocalIdentifier(uuid);
 		assertEquals(localIdentifier1, localIdentifier2);
 	}
-
-	@Test
-	public void testIsRfc4122() {
-
-		long lsb = 0x0000000000000000L | RFC4122_VARIANT_BITS;
-
-		long msb = 0x0000000000000000L | RFC4122_VERSION_BITS[UuidVersion.TIME_BASED.getValue()];
-		UUID uuid = new UUID(msb, lsb);
-		assertTrue(UuidUtil.isRfc4122(uuid));
-
-		msb = 0x0000000000000000L | RFC4122_VERSION_BITS[UuidVersion.DCE_SECURITY.getValue()];
-		uuid = new UUID(msb, lsb);
-		assertTrue(UuidUtil.isRfc4122(uuid));
-
-		msb = 0x0000000000000000L | RFC4122_VERSION_BITS[UuidVersion.NAME_BASED_MD5.getValue()];
-		uuid = new UUID(msb, lsb);
-		assertTrue(UuidUtil.isRfc4122(uuid));
-
-		msb = 0x0000000000000000L | RFC4122_VERSION_BITS[UuidVersion.RANDOM_BASED.getValue()];
-		uuid = new UUID(msb, lsb);
-		assertTrue(UuidUtil.isRfc4122(uuid));
-
-		msb = 0x0000000000000000L | RFC4122_VERSION_BITS[UuidVersion.NAMBE_BASED_SHA1.getValue()];
-		uuid = new UUID(msb, lsb);
-		assertTrue(UuidUtil.isRfc4122(uuid));
-	}
 	
 	@Test
-	public void testIsRfc4122Variant() {
+	public void testIsRfc4122() {
 		UUID uuid1 = UuidNamespace.NAMESPACE_DNS.getValue();
 		UUID uuid2 = UuidCreator.getNil();
 
-		assertTrue(isRfc4122Variant(uuid1));
-		assertFalse(isRfc4122Variant(uuid2));
+		assertTrue(isRfc4122(uuid1));
+		assertFalse(isRfc4122(uuid2));
 	}
 
 	@Test
@@ -181,7 +155,7 @@ public class UuidUtilTest {
 		UUID uuid1 = UuidCreator.getTimeBased();
 		UUID uuid2 = fromTimeBasedUuidToSequentialUuid(uuid1);
 		
-		assertTrue(isSequentialVersion(uuid2));
+		assertTrue(isSequential(uuid2));
 	}
 	
 	@Test
@@ -189,7 +163,7 @@ public class UuidUtilTest {
 		UUID uuid1 = UuidCreator.getSequential();
 		UUID uuid2 = fromSequentialUuidToTimeBasedUuid(uuid1);
 		
-		assertTrue(isTimeBasedVersion(uuid2));
+		assertTrue(isTimeBased(uuid2));
 	}
 	
 	@Test

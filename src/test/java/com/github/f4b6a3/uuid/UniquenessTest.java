@@ -1,4 +1,4 @@
-package com.github.f4b6a3;
+package com.github.f4b6a3.uuid;
 
 import java.util.HashSet;
 import java.util.UUID;
@@ -6,7 +6,7 @@ import java.util.UUID;
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
-import com.github.f4b6a3.uuid.timestamp.StoppedDefaultTimestampStrategy;
+import com.github.f4b6a3.uuid.timestamp.StoppedTimestampStrategy;
 
 /**
  * This test starts many threads that keep requesting thousands of time-based
@@ -29,7 +29,7 @@ import com.github.f4b6a3.uuid.timestamp.StoppedDefaultTimestampStrategy;
  * Each UUID is reduced to a `long` value to use less memory. The timestamp high
  * bits and the node identifier bits are ignored since they don't change.
  * 
- * The timestamp strategy used is {@link StoppedDefaultTimestampStrategy} which
+ * The timestamp strategy used is {@link StoppedTimestampStrategy} which
  * always returns the same timestamp.
  * 
  * An exception is thrown if a UUID value is generated more than once.
@@ -157,7 +157,7 @@ public class UniquenessTest {
 
 	public static void execute(boolean verbose, int threadCount, int requestCount) {
 		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator()
-				.withTimestampStrategy(new StoppedDefaultTimestampStrategy());
+				.withTimestampStrategy(new StoppedTimestampStrategy());
 
 		UniquenessTest test = new UniquenessTest(threadCount, requestCount, creator, verbose);
 		test.start();

@@ -11,7 +11,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import com.github.f4b6a3.UniquenessTest;
 import com.github.f4b6a3.uuid.clockseq.ClockSequenceStrategy;
 import com.github.f4b6a3.uuid.clockseq.DefaultClockSequenceStrategy;
 import com.github.f4b6a3.uuid.clockseq.RandomClockSequenceStrategy;
@@ -569,7 +568,7 @@ public class UuidCreatorTest {
 		// Check if the greatest 60 bit timestamp corresponds to the date and
 		// time
 		long timestamp0 = 0x0fffffffffffffffL;
-		Instant instant0 = Instant.parse("5236-03-31T21:21:00.684Z");
+		Instant instant0 = Instant.parse("5236-03-31T21:21:00.684697500Z");
 		assertEquals(UuidTimeUtil.toInstant(timestamp0), instant0);
 
 		// Test the extraction of the maximum 60 bit timestamp
@@ -580,11 +579,10 @@ public class UuidCreatorTest {
 		assertEquals(timestamp1, timestamp2);
 
 		// Test the extraction of the maximum date and time
-		Instant instant1 = Instant.parse("5236-03-31T21:21:00.684Z");
-		TimeBasedUuidCreator creator2 = UuidCreator.getTimeBasedCreator().withTimestamp(timestamp1);
+		TimeBasedUuidCreator creator2 = UuidCreator.getTimeBasedCreator().withTimestamp(timestamp0);
 		UUID uuid2 = creator2.create();
 		Instant instant2 = UuidUtil.extractInstant(uuid2);
-		assertEquals(instant1, instant2);
+		assertEquals(instant0, instant2);
 	}
 
 	private void checkIfStringIsValid(UUID uuid) {
@@ -594,7 +592,7 @@ public class UuidCreatorTest {
 	private void checkNullOrInvalid(UUID[] list) {
 		for (UUID uuid : list) {
 			assertTrue("UUID is null", uuid != null);
-			assertTrue("UUID is not RFC-4122 variant", UuidUtil.isRfc4122Variant(uuid));
+			assertTrue("UUID is not RFC-4122 variant", UuidUtil.isRfc4122(uuid));
 		}
 	}
 

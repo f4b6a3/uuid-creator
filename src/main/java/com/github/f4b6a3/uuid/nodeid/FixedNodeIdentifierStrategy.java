@@ -24,14 +24,23 @@
 
 package com.github.f4b6a3.uuid.nodeid;
 
+import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
+
 public class FixedNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 	protected long nodeIdentifier;
-	
+
 	protected static final long NODEID_MAX = 0x0000FFFFFFFFFFFFL;
 
 	public FixedNodeIdentifierStrategy(long nodeIdentifier) {
+		this(nodeIdentifier, false);
+	}
+
+	public FixedNodeIdentifierStrategy(long nodeIdentifier, boolean multicast) {
 		this.nodeIdentifier = nodeIdentifier & NODEID_MAX;
+		if (multicast) {
+			this.nodeIdentifier = NodeIdentifierUtil.setMulticastNodeIdentifier(this.nodeIdentifier);
+		}
 	}
 
 	@Override

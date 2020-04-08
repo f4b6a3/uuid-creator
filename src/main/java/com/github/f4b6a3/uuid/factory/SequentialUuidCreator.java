@@ -48,11 +48,11 @@ public class SequentialUuidCreator extends AbstractTimeBasedUuidCreator {
 	}
 
 	/**
+	 * Returns the timestamp bits of the UUID in the 'natural' order of bytes.
 	 * 
-	 * {@link UuidUtil#formatSequentialMostSignificantBits(long)}
+	 * It's not necessary to set the version bits because they are already ZERO.
 	 * 
-	 * @param timestamp
-	 *            a timestamp
+	 * @param timestamp a timestamp
 	 * @return the MSB
 	 */
 	@Override
