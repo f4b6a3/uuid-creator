@@ -4,33 +4,24 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import com.github.f4b6a3.uuid.clockseq.ClockSequenceStrategy;
-import com.github.f4b6a3.uuid.clockseq.DefaultClockSequenceStrategy;
-import com.github.f4b6a3.uuid.clockseq.RandomClockSequenceStrategy;
+import com.github.f4b6a3.uuid.creator.AbstractTimeBasedUuidCreator;
+import com.github.f4b6a3.uuid.creator.NoArgumentsUuidCreator;
+import com.github.f4b6a3.uuid.creator.rfc4122.DceSecurityUuidCreator;
+import com.github.f4b6a3.uuid.creator.rfc4122.NameBasedMd5UuidCreator;
+import com.github.f4b6a3.uuid.creator.rfc4122.NameBasedSha1UuidCreator;
+import com.github.f4b6a3.uuid.creator.rfc4122.RandomBasedUuidCreator;
+import com.github.f4b6a3.uuid.creator.rfc4122.TimeBasedUuidCreator;
+import com.github.f4b6a3.uuid.creator.rfc4122.TimeOrderedUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
-import com.github.f4b6a3.uuid.factory.NameBasedMd5UuidCreator;
-import com.github.f4b6a3.uuid.factory.NameBasedSha1UuidCreator;
-import com.github.f4b6a3.uuid.factory.RandomUuidCreator;
-import com.github.f4b6a3.uuid.factory.SequentialUuidCreator;
-import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
-import com.github.f4b6a3.uuid.factory.abst.AbstractTimeBasedUuidCreator;
-import com.github.f4b6a3.uuid.factory.abst.NoArgumentsUuidCreator;
-import com.github.f4b6a3.uuid.nodeid.NodeIdentifierStrategy;
-import com.github.f4b6a3.uuid.nodeid.RandomNodeIdentifierStrategy;
-import com.github.f4b6a3.uuid.nodeid.FingerprintNodeIdentifierStrategy;
-import com.github.f4b6a3.commons.random.Xoroshiro128PlusRandom;
-import com.github.f4b6a3.uuid.timestamp.UnixMillisecondsTimestampStretegy;
-import com.github.f4b6a3.uuid.timestamp.NanosecondTimestampStrategy;
-import com.github.f4b6a3.uuid.timestamp.RandomTimestampStrategy;
-import com.github.f4b6a3.uuid.timestamp.TimestampStrategy;
+import com.github.f4b6a3.uuid.strategy.clockseq.DefaultClockSequenceStrategy;
+import com.github.f4b6a3.uuid.strategy.timestamp.FixedTimestampStretegy;
 import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 import com.github.f4b6a3.uuid.util.UuidTimeUtil;
 import com.github.f4b6a3.uuid.util.UuidUtil;
@@ -44,7 +35,7 @@ public class UuidCreatorTest {
 	private static final int COUNTER_OFFSET_MAX = 256;
 	private static final int DEFAULT_LOOP_MAX = 10_000 - COUNTER_OFFSET_MAX;
 
-	private static final String UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
+	private static final String UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-6][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
 
 	private static final String DUPLICATE_UUID_MSG = "A duplicate UUID was created";
 	private static final String CLOCK_SEQUENCE_MSG = "The last clock sequence should be equal to the first clock sequence minus 1";
@@ -57,17 +48,18 @@ public class UuidCreatorTest {
 			processors = 4;
 		}
 	}
-	
+
 	@Test
-	public void testSequentialUuid() {
+	public void testTimeOrderedUuid() {
 		boolean multicast = true;
-		testCreateAbstractTimeBasedUuid(UuidCreator.getSequentialCreator(), multicast);
+		testCreateAbstractTimeBasedUuid(UuidCreator.getTimeOrderedCreator(), multicast);
 	}
 
 	@Test
-	public void testSequentialUuidWithMac() {
+	public void testTimeOrderedUuidWithMac() {
 		boolean multicast = false;
-		testCreateAbstractTimeBasedUuid(UuidCreator.getSequentialCreator().withHardwareAddressNodeIdentifier(), multicast);
+		testCreateAbstractTimeBasedUuid(UuidCreator.getTimeOrderedCreator().withHardwareAddressNodeIdentifier(),
+				multicast);
 	}
 
 	@Test
@@ -79,65 +71,15 @@ public class UuidCreatorTest {
 	@Test
 	public void testCreateTimeBasedUuidWithMac() {
 		boolean multicast = false;
-		testCreateAbstractTimeBasedUuid(UuidCreator.getTimeBasedCreator().withHardwareAddressNodeIdentifier(), multicast);
+		testCreateAbstractTimeBasedUuid(UuidCreator.getTimeBasedCreator().withHardwareAddressNodeIdentifier(),
+				multicast);
 	}
 
-	@Test
-	public void testCreateTimeBasedUuidWithSystemDataHashNodeIdentifier() {
-		boolean multicast = true;
-		NodeIdentifierStrategy strategy = new FingerprintNodeIdentifierStrategy();
-		testCreateAbstractTimeBasedUuid(UuidCreator.getTimeBasedCreator().withNodeIdentifierStrategy(strategy), multicast);
-	}
-
-	@Test
-	public void testCreateTimeBasedUuidWithRandomNodeIdentifierStrategy() {
-		boolean multicast = true;
-		NodeIdentifierStrategy strategy = new RandomNodeIdentifierStrategy();
-		testCreateAbstractTimeBasedUuid(UuidCreator.getTimeBasedCreator().withNodeIdentifierStrategy(strategy), multicast);
-	}
-	
-	@Test
-	public void testCreateTimeBasedUuidWithFastRandomNodeIdentifierStrategy() {
-		boolean multicast = true;
-		NodeIdentifierStrategy strategy = new RandomNodeIdentifierStrategy(new Xoroshiro128PlusRandom());
-		testCreateAbstractTimeBasedUuid(UuidCreator.getTimeBasedCreator().withNodeIdentifierStrategy(strategy), multicast);
-	}
-	
-	@Test
-	public void testCreateTimeBasedUuidWithNanosecondTimestampStrategy() {
-		TimestampStrategy strategy = new NanosecondTimestampStrategy();
-		testCreateGenericUuid(UuidCreator.getTimeBasedCreator().withTimestampStrategy(strategy));
-	}
-
-	@Test
-	public void testCreateTimeBasedUuidWithUnixMilliTimestampStrategy() {
-		TimestampStrategy strategy = new UnixMillisecondsTimestampStretegy();
-		testCreateGenericUuid(UuidCreator.getTimeBasedCreator().withTimestampStrategy(strategy));
-	}
-	
-	@Test
-	public void testCreateTimeBasedUuidWithRandomTimestampStrategy() {
-		TimestampStrategy strategy = new RandomTimestampStrategy();
-		testCreateGenericUuid(UuidCreator.getTimeBasedCreator().withTimestampStrategy(strategy));
-	}
-	
-	@Test
-	public void testCreateTimeBasedUuidWithFastRandomTimestampStrategy() {
-		TimestampStrategy strategy = new RandomTimestampStrategy(new Xoroshiro128PlusRandom());
-		testCreateGenericUuid(UuidCreator.getTimeBasedCreator().withTimestampStrategy(strategy));
-	}
-
-	@Test
-	public void testCreateTimeBasedUuidWithFastRandomClockSequenceStrategy() {
-		ClockSequenceStrategy strategy = new RandomClockSequenceStrategy(new Xoroshiro128PlusRandom());
-		testCreateGenericUuid(UuidCreator.getTimeBasedCreator().withClockSequenceStrategy(strategy));
-	}
-	
 	@Test
 	public void testRandomUuid() {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		RandomUuidCreator creator = UuidCreator.getRandomCreator();
+		RandomBasedUuidCreator creator = UuidCreator.getRandomBasedCreator();
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = creator.create();
@@ -145,14 +87,14 @@ public class UuidCreatorTest {
 
 		checkNullOrInvalid(list);
 		checkUniqueness(list);
-		checkVersion(list, UuidVersion.RANDOM_BASED.getValue());
+		checkVersion(list, UuidVersion.VERSION_RANDOM_BASED.getValue());
 	}
-	
+
 	@Test
 	public void testFastRandomUuid() {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		RandomUuidCreator creator = UuidCreator.getFastRandomCreator();
+		RandomBasedUuidCreator creator = UuidCreator.getRandomBasedCreator().withFastRandomGenerator();
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = creator.create();
@@ -160,7 +102,7 @@ public class UuidCreatorTest {
 
 		checkNullOrInvalid(list);
 		checkUniqueness(list);
-		checkVersion(list, UuidVersion.RANDOM_BASED.getValue());
+		checkVersion(list, UuidVersion.VERSION_RANDOM_BASED.getValue());
 	}
 
 	@Test
@@ -170,18 +112,18 @@ public class UuidCreatorTest {
 		NameBasedMd5UuidCreator creator = UuidCreator.getNameBasedMd5Creator();
 
 		byte[] name;
-		
+
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			name = ("url" + i).getBytes(StandardCharsets.UTF_8);
+			name = ("url" + i).getBytes();
 			list[i] = creator.create(UuidNamespace.NAMESPACE_URL.getValue(), name);
 		}
 
 		checkNullOrInvalid(list);
 		checkUniqueness(list);
-		checkVersion(list, UuidVersion.NAME_BASED_MD5.getValue());
+		checkVersion(list, UuidVersion.VERSION_NAME_BASED_MD5.getValue());
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			name = ("url" + i).getBytes(StandardCharsets.UTF_8);
+			name = ("url" + i).getBytes();
 			UUID other = creator.create(UuidNamespace.NAMESPACE_URL.getValue(), name);
 			assertTrue("Two different MD5 UUIDs for the same input", list[i].equals(other));
 		}
@@ -193,20 +135,20 @@ public class UuidCreatorTest {
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
 		NameBasedSha1UuidCreator creator = UuidCreator.getNameBasedSha1Creator();
 
-		byte[] name;
-		
+		String name;
+
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			name = ("url" + i).getBytes(StandardCharsets.UTF_8);
-			list[i] = creator.create(UuidNamespace.NAMESPACE_URL.getValue(), name);
+			name = ("url" + i);
+			list[i] = creator.create(UuidNamespace.NAMESPACE_URL, name);
 		}
 
 		checkNullOrInvalid(list);
 		checkUniqueness(list);
-		checkVersion(list, UuidVersion.NAMBE_BASED_SHA1.getValue());
+		checkVersion(list, UuidVersion.VERSION_NAMBE_BASED_SHA1.getValue());
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			name = ("url" + i).getBytes(StandardCharsets.UTF_8);
-			UUID other = creator.create(UuidNamespace.NAMESPACE_URL.getValue(), name);
+			name = ("url" + i);
+			UUID other = creator.create(UuidNamespace.NAMESPACE_URL, name);
 			assertTrue("Two different SHA1 UUIDs for the same input", list[i].equals(other));
 		}
 	}
@@ -236,17 +178,17 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testGetSequentialUuidStringIsValid() {
+	public void testGetTimeOrderedUuidStringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			UUID uuid = UuidCreator.getSequential();
+			UUID uuid = UuidCreator.getTimeOrdered();
 			checkIfStringIsValid(uuid);
 		}
 	}
 
 	@Test
-	public void testGetSequentialWithMacStringIsValid() {
+	public void testGetTimeOrderedWithMacStringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			UUID uuid = UuidCreator.getSequentialWithMac();
+			UUID uuid = UuidCreator.getTimeOrderedWithMac();
 			checkIfStringIsValid(uuid);
 		}
 	}
@@ -254,7 +196,7 @@ public class UuidCreatorTest {
 	@Test
 	public void testGetRandomUuidStringIsValid() {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			UUID uuid = UuidCreator.getRandom();
+			UUID uuid = UuidCreator.getRandomBased();
 			checkIfStringIsValid(uuid);
 		}
 	}
@@ -276,10 +218,10 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testGetSequentialTimestampBitsAreSequential() {
+	public void testGetTimeOrderedTimestampBitsAreTimeOrdered() {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		SequentialUuidCreator creator = UuidCreator.getSequentialCreator();
+		TimeOrderedUuidCreator creator = UuidCreator.getTimeOrderedCreator();
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = creator.create();
@@ -297,10 +239,10 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testGetSequentialMostSignificantBitsAreSequential() {
+	public void testGetTimeOrderedMostSignificantBitsAreTimeOrdered() {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		SequentialUuidCreator creator = UuidCreator.getSequentialCreator();
+		TimeOrderedUuidCreator creator = UuidCreator.getTimeOrderedCreator();
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = creator.create();
@@ -317,17 +259,17 @@ public class UuidCreatorTest {
 			oldMsb = newMsb;
 		}
 	}
-	
+
 	@Test
 	public void testGetTimeBasedTimestampIsCorrect() {
-		
+
 		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator();
-		
+
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
 			Instant instant1 = Instant.now();
 
-			UUID uuid = creator.withInstant(instant1).create();
+			UUID uuid = creator.withTimestampStrategy(new FixedTimestampStretegy(instant1)).create();
 			Instant instant2 = UuidUtil.extractInstant(uuid);
 
 			long timestamp1 = UuidTimeUtil.toTimestamp(instant1);
@@ -338,15 +280,15 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testGetSequentialTimestampIsCorrect() {
-		
-		SequentialUuidCreator creator = UuidCreator.getSequentialCreator();
-		
+	public void testGetTimeOrderedTimestampIsCorrect() {
+
+		TimeOrderedUuidCreator creator = UuidCreator.getTimeOrderedCreator();
+
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
 			Instant instant1 = Instant.now();
 
-			UUID uuid = creator.withInstant(instant1).create();
+			UUID uuid = creator.withTimestampStrategy(new FixedTimestampStretegy(instant1)).create();
 			Instant instant2 = UuidUtil.extractInstant(uuid);
 
 			long timestamp1 = UuidTimeUtil.toTimestamp(instant1);
@@ -358,24 +300,28 @@ public class UuidCreatorTest {
 
 	@Test
 	public void testGetDCESecuritylLocalDomainAndLocalIdentifierAreCorrect() {
+
+		DceSecurityUuidCreator creator = UuidCreator.getDceSecurityCreator();
+		DceSecurityUuidCreator creatorWithMac = UuidCreator.getDceSecurityCreator().withHardwareAddressNodeIdentifier();
+
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
 			byte localDomain = (byte) i;
 			int localIdentifier = 1701 + 1;
 
-			UUID uuid = UuidCreator.getDceSecurity(localDomain, localIdentifier);
+			UUID uuid = creator.create(localDomain, localIdentifier);
 
-			byte localDomain2 = UuidUtil.extractDceSecurityLocalDomain(uuid);
-			int localIdentifier2 = UuidUtil.extractDceSecurityLocalIdentifier(uuid);
+			byte localDomain2 = UuidUtil.extractLocalDomain(uuid);
+			int localIdentifier2 = UuidUtil.extractLocalIdentifier(uuid);
 
 			assertEquals(localDomain, localDomain2);
 			assertEquals(localIdentifier, localIdentifier2);
-			
-			// Test with hardware address too
-			uuid = UuidCreator.getDceSecurityWithMac(localDomain, localIdentifier);
 
-			localDomain2 = UuidUtil.extractDceSecurityLocalDomain(uuid);
-			localIdentifier2 = UuidUtil.extractDceSecurityLocalIdentifier(uuid);
+			// Test with hardware address too
+			uuid = creatorWithMac.create(localDomain, localIdentifier);
+
+			localDomain2 = UuidUtil.extractLocalDomain(uuid);
+			localIdentifier2 = UuidUtil.extractLocalIdentifier(uuid);
 
 			assertEquals(localDomain, localDomain2);
 			assertEquals(localIdentifier, localIdentifier2);
@@ -385,16 +331,16 @@ public class UuidCreatorTest {
 	@Test
 	public void testGetNameBasedMd5CompareWithJavaUtilUuidNameUuidFromBytes() {
 
-		UUID namespace = UuidNamespace.NAMESPACE_DNS.getValue();
+		UuidNamespace namespace = UuidNamespace.NAMESPACE_DNS;
 		String name = null;
 		UUID uuid = null;
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
-			name = UuidCreator.getRandom().toString();
+			name = UuidCreator.getRandomBased().toString();
 			uuid = UuidCreator.getNameBasedMd5(namespace, name);
 
-			byte[] namespaceBytes = toBytes(namespace.toString().replaceAll("-", ""));
+			byte[] namespaceBytes = toBytes(namespace.getValue().toString().replaceAll("-", ""));
 			byte[] nameBytes = name.getBytes();
 			byte[] bytes = concat(namespaceBytes, nameBytes);
 
@@ -404,7 +350,8 @@ public class UuidCreatorTest {
 
 	@Test
 	public void testGetNameBasedMd5NamespaceDnsAndSiteGithub() {
-		UUID namespace = UuidNamespace.NAMESPACE_DNS.getValue();
+
+		UuidNamespace namespace = UuidNamespace.NAMESPACE_DNS;
 		String name = GITHUB_URL;
 
 		// Value generated by UUIDGEN (util-linux)
@@ -427,7 +374,7 @@ public class UuidCreatorTest {
 	@Test
 	public void testGetNameBasedSha1NamespaceDnsAndSiteGithub() {
 
-		UUID namespace = UuidNamespace.NAMESPACE_DNS.getValue();
+		UuidNamespace namespace = UuidNamespace.NAMESPACE_DNS;
 		String name = GITHUB_URL;
 
 		// Value generated by UUIDGEN (util-linux)
@@ -453,16 +400,17 @@ public class UuidCreatorTest {
 	public void testGetTimeBasedShouldCreateAlmostSixteenThousandUniqueUuidsWithTheTimeStopped() {
 
 		int max = 0x3fff + 1; // 16,384
-		Instant stoppedTime = Instant.now();
+		Instant instant = Instant.now();
 		HashSet<UUID> set = new HashSet<>();
 
 		// Reset the static ClockSequenceController
 		// It could affect this test case
 		DefaultClockSequenceStrategy.CONTROLLER.clearPool();
-		
+
 		// Instantiate a factory with a fixed timestamp, to simulate a request
 		// rate greater than 16,384 per 100-nanosecond interval.
-		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator().withInstant(stoppedTime);
+		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator()
+				.withTimestampStrategy(new FixedTimestampStretegy(instant));
 
 		int firstClockSeq = 0;
 		int lastClockSeq = 0;
@@ -475,7 +423,7 @@ public class UuidCreatorTest {
 			} else if (i == max - 1) {
 				lastClockSeq = UuidUtil.extractClockSequence(uuid);
 			}
-			
+
 			// Fail if the insertion into the hash set returns false, indicating
 			// that there's a duplicate UUID.
 			assertTrue(DUPLICATE_UUID_MSG, set.add(uuid));
@@ -486,19 +434,20 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testGetSequentialShouldCreateAlmostSixteenThousandUniqueUuidsWithTheTimeStopped() {
+	public void testGetTimeOrderedShouldCreateAlmostSixteenThousandUniqueUuidsWithTheTimeStopped() {
 
 		int max = 0x3fff + 1; // 16,384
-		Instant stoppedTime = Instant.now();
+		Instant instant = Instant.now();
 		HashSet<UUID> set = new HashSet<>();
-		
+
 		// Reset the static ClockSequenceController
 		// It could affect this test case
 		DefaultClockSequenceStrategy.CONTROLLER.clearPool();
-		
+
 		// Instantiate a factory with a fixed timestamp, to simulate a request
 		// rate greater than 16,384 per 100-nanosecond interval.
-		SequentialUuidCreator creator = UuidCreator.getSequentialCreator().withInstant(stoppedTime);
+		TimeOrderedUuidCreator creator = UuidCreator.getTimeOrderedCreator()
+				.withTimestampStrategy(new FixedTimestampStretegy(instant));
 
 		int firstClockSeq = 0;
 		int lastClockSeq = 0;
@@ -542,14 +491,14 @@ public class UuidCreatorTest {
 	}
 
 	@Test
-	public void testGetSequentialParallelGeneratorsShouldCreateUniqueUuids() throws InterruptedException {
+	public void testGetTimeOrderedParallelGeneratorsShouldCreateUniqueUuids() throws InterruptedException {
 
 		Thread[] threads = new Thread[processors];
 		TestThread.clearHashSet();
 
 		// Instantiate and start many threads
 		for (int i = 0; i < processors; i++) {
-			threads[i] = new TestThread(UuidCreator.getSequentialCreator(), DEFAULT_LOOP_MAX);
+			threads[i] = new TestThread(UuidCreator.getTimeOrderedCreator(), DEFAULT_LOOP_MAX);
 			threads[i].start();
 		}
 
@@ -573,13 +522,15 @@ public class UuidCreatorTest {
 
 		// Test the extraction of the maximum 60 bit timestamp
 		long timestamp1 = 0x0fffffffffffffffL;
-		TimeBasedUuidCreator creator1 = UuidCreator.getTimeBasedCreator().withTimestamp(timestamp1);
+		TimeBasedUuidCreator creator1 = UuidCreator.getTimeBasedCreator()
+				.withTimestampStrategy(new FixedTimestampStretegy(timestamp1));
 		UUID uuid1 = creator1.create();
 		long timestamp2 = UuidUtil.extractTimestamp(uuid1);
 		assertEquals(timestamp1, timestamp2);
 
 		// Test the extraction of the maximum date and time
-		TimeBasedUuidCreator creator2 = UuidCreator.getTimeBasedCreator().withTimestamp(timestamp0);
+		TimeBasedUuidCreator creator2 = UuidCreator.getTimeBasedCreator()
+				.withTimestampStrategy(new FixedTimestampStretegy(timestamp0));
 		UUID uuid2 = creator2.create();
 		Instant instant2 = UuidUtil.extractInstant(uuid2);
 		assertEquals(instant0, instant2);
@@ -598,11 +549,10 @@ public class UuidCreatorTest {
 
 	private void checkVersion(UUID[] list, int version) {
 		for (UUID uuid : list) {
-			assertTrue(String.format("UUID is not version %s", version),
-					uuid.version() == version);
+			assertTrue(String.format("UUID is not version %s", version), uuid.version() == version);
 		}
 	}
-	
+
 	private void testCreateAbstractTimeBasedUuid(AbstractTimeBasedUuidCreator creator, boolean multicast) {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
@@ -624,14 +574,6 @@ public class UuidCreatorTest {
 
 	}
 
-	private void testCreateGenericUuid(AbstractTimeBasedUuidCreator creator) {
-		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = creator.create();
-		}
-		checkUniqueness(list);
-	}
-	
 	private void checkUniqueness(UUID[] list) {
 
 		HashSet<UUID> set = new HashSet<>();
@@ -659,8 +601,11 @@ public class UuidCreatorTest {
 	private void checkNodeIdentifier(UUID[] list, boolean multicast) {
 		for (UUID uuid : list) {
 			long nodeIdentifier = UuidUtil.extractNodeIdentifier(uuid);
-			assertTrue("Node identifier is not multicast",
-					NodeIdentifierUtil.isMulticastNodeIdentifier(nodeIdentifier) == multicast);
+
+			if (multicast) {
+				assertTrue("Node identifier is not multicast",
+						NodeIdentifierUtil.isMulticastNodeIdentifier(nodeIdentifier));
+			}
 		}
 	}
 

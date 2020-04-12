@@ -18,7 +18,7 @@ public class DemoTest {
 		System.out.println("### Random UUID");
 
 		for (int i = 0; i < max; i++) {
-			System.out.println(UuidCreator.getFastRandom());
+			System.out.println(UuidCreator.getFastRandomBased());
 		}
 
 		System.out.println(HORIZONTAL_LINE);
@@ -29,10 +29,10 @@ public class DemoTest {
 		}
 
 		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### Sequential UUID");
+		System.out.println("### Time-ordered UUID");
 
 		for (int i = 0; i < max; i++) {
-			System.out.println(UuidCreator.getSequential());
+			System.out.println(UuidCreator.getTimeOrdered());
 		}
 
 		System.out.println(HORIZONTAL_LINE);
@@ -42,6 +42,13 @@ public class DemoTest {
 			System.out.println(UuidCreator.getCombGuid());
 		}
 
+		System.out.println(HORIZONTAL_LINE);
+		System.out.println("### Alt COMB GUID");
+
+		for (int i = 0; i < max; i++) {
+			System.out.println(UuidCreator.getAltCombGuid());
+		}
+		
 		System.out.println(HORIZONTAL_LINE);
 	}
 

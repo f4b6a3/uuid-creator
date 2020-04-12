@@ -22,34 +22,19 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.enums;
+package com.github.f4b6a3.uuid.creator.rfc4122;
 
-/**
- * UUID variants defined by RFC-4122.
- */
-public enum UuidVariant {
+import com.github.f4b6a3.uuid.creator.AbstractNameBasedUuidCreator;
+import com.github.f4b6a3.uuid.enums.UuidVersion;
 
-	VARIANT_RESERVED_NCS(0), //
-	VARIANT_RFC_4122(2), //
-	VARIANT_RESERVED_MICROSOFT(6), //
-	VARIANT_RESERVED_FUTURE(7); //
-
-	private final int value;
-
-	UuidVariant(int value) {
-		this.value = value;
-	}
-
-	public int getValue() {
-		return this.value;
-	}
-
-	public static UuidVariant getVariant(int value) {
-		for (UuidVariant variant : UuidVariant.values()) {
-			if (variant.getValue() == value) {
-				return variant;
-			}
-		}
-		return null;
+public class NameBasedMd5UuidCreator extends AbstractNameBasedUuidCreator {
+	
+	/**
+	 * Factory that creates name-based UUIDs (MD5).
+	 * 
+	 * RFC-4122 version: 3.
+	 */
+	public NameBasedMd5UuidCreator() {
+		super(UuidVersion.VERSION_NAME_BASED_MD5, MESSAGE_DIGEST_MD5);
 	}
 }

@@ -4,9 +4,9 @@ import java.util.HashSet;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.UuidCreator;
+import com.github.f4b6a3.uuid.creator.rfc4122.TimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
-import com.github.f4b6a3.uuid.factory.TimeBasedUuidCreator;
-import com.github.f4b6a3.uuid.timestamp.StoppedTimestampStrategy;
+import com.github.f4b6a3.uuid.strategy.timestamp.StoppedTimestampStrategy;
 
 /**
  * This test starts many threads that keep requesting thousands of time-based

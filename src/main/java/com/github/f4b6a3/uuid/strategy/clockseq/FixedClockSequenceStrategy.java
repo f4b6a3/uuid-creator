@@ -22,34 +22,26 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.enums;
+package com.github.f4b6a3.uuid.strategy.clockseq;
+
+import com.github.f4b6a3.uuid.strategy.ClockSequenceStrategy;
 
 /**
- * UUID variants defined by RFC-4122.
+ * Strategy that always provides the same clock sequence.
+ * 
+ * The clock sequence passed to the constructor is truncated to fit the accepted
+ * range.
  */
-public enum UuidVariant {
+public class FixedClockSequenceStrategy implements ClockSequenceStrategy {
 
-	VARIANT_RESERVED_NCS(0), //
-	VARIANT_RFC_4122(2), //
-	VARIANT_RESERVED_MICROSOFT(6), //
-	VARIANT_RESERVED_FUTURE(7); //
+	protected int clockSequence = 0;
 
-	private final int value;
-
-	UuidVariant(int value) {
-		this.value = value;
+	public FixedClockSequenceStrategy(int clockSequence) {
+		this.clockSequence = clockSequence & 0x00003fff;
 	}
 
-	public int getValue() {
-		return this.value;
-	}
-
-	public static UuidVariant getVariant(int value) {
-		for (UuidVariant variant : UuidVariant.values()) {
-			if (variant.getValue() == value) {
-				return variant;
-			}
-		}
-		return null;
+	@Override
+	public int getClockSequence(long timestamp) {
+		return this.clockSequence;
 	}
 }

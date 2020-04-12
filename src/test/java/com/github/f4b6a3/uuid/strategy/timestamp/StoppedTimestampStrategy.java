@@ -22,34 +22,36 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.enums;
+package com.github.f4b6a3.uuid.strategy.timestamp;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+
+import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
+import com.github.f4b6a3.uuid.strategy.timestamp.DefaultTimestampStrategy;
+import com.github.f4b6a3.uuid.util.UuidTimeUtil;
 
 /**
- * UUID variants defined by RFC-4122.
+ * This is an implementation of {@link TimestampStrategy} that always returns
+ * the same timestamp, simulating a stopped wall clock.
+ * 
+ * This strategy was created to substitute the strategy
+ * {@link DefaultTimestampStrategy} in test cases.
+ * 
+ * It's useful for tests only.
+ * 
  */
-public enum UuidVariant {
+public class StoppedTimestampStrategy extends DefaultTimestampStrategy {
 
-	VARIANT_RESERVED_NCS(0), //
-	VARIANT_RFC_4122(2), //
-	VARIANT_RESERVED_MICROSOFT(6), //
-	VARIANT_RESERVED_FUTURE(7); //
+	protected static final Clock stoppedClock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
 
-	private final int value;
+	@Override
+	public long getTimestamp() {
 
-	UuidVariant(int value) {
-		this.value = value;
-	}
+		final long timestamp = UuidTimeUtil.toTimestamp(Instant.now(stoppedClock));
+		final long counter = getNextCounter(timestamp);
 
-	public int getValue() {
-		return this.value;
-	}
-
-	public static UuidVariant getVariant(int value) {
-		for (UuidVariant variant : UuidVariant.values()) {
-			if (variant.getValue() == value) {
-				return variant;
-			}
-		}
-		return null;
+		return timestamp + counter;
 	}
 }

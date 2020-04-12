@@ -27,10 +27,7 @@ package com.github.f4b6a3.uuid.util;
 import java.time.Instant;
 
 /**
- * Class that provides methods related to timestamps.
- * 
- * All its public methods have milliseconds precision.
- *
+ * Utility that provides methods related to timestamps.
  */
 public class UuidTimeUtil {
 
@@ -50,18 +47,18 @@ public class UuidTimeUtil {
 	 * 
 	 * ### RFC-4122 - 4.2.1.2. System Clock Resolution
 	 * 
-	 * The timestamp is generated from the system time, whose resolution may be
-	 * less than the resolution of the UUID timestamp.
+	 * The timestamp is generated from the system time, whose resolution may be less
+	 * than the resolution of the UUID timestamp.
 	 * 
-	 * If UUIDs do not need to be frequently generated, the timestamp can simply
-	 * be the system time multiplied by the number of 100-nanosecond intervals
-	 * per system time interval.
+	 * If UUIDs do not need to be frequently generated, the timestamp can simply be
+	 * the system time multiplied by the number of 100-nanosecond intervals per
+	 * system time interval.
 	 * 
-	 * (4) A high resolution timestamp can be simulated by keeping a count of
-	 * the number of UUIDs that have been generated with the same value of the
-	 * system time, and using it to construct the low order bits of the
-	 * timestamp. The count will range between zero and the number of
-	 * 100-nanosecond intervals per system time interval.
+	 * (4) A high resolution timestamp can be simulated by keeping a count of the
+	 * number of UUIDs that have been generated with the same value of the system
+	 * time, and using it to construct the low order bits of the timestamp. The
+	 * count will range between zero and the number of 100-nanosecond intervals per
+	 * system time interval.
 	 * 
 	 * @return the current timestamp
 	 */
@@ -72,11 +69,10 @@ public class UuidTimeUtil {
 	/**
 	 * Get the timestamp of a given Unix Epoch milliseconds.
 	 * 
-	 * The value returned by this method is the number of 100-nanos since
-	 * 1582-10-15 (Gregorian epoch).
+	 * The value returned by this method is the number of 100-nanos since 1582-10-15
+	 * (Gregorian epoch).
 	 * 
-	 * @param unixMilliseconds
-	 *            the Unix Epoch milliseconds
+	 * @param unixMilliseconds the Unix Epoch milliseconds
 	 * @return the timestamp
 	 */
 	public static long toTimestamp(final long unixMilliseconds) {
@@ -89,8 +85,7 @@ public class UuidTimeUtil {
 	 * The value returned by this method is the number of milliseconds since
 	 * 1970-01-01 (Unix epoch).
 	 * 
-	 * @param timestamp
-	 *            a timestamp
+	 * @param timestamp a timestamp
 	 * @return the Unix milliseconds
 	 */
 	public static long toUnixMilliseconds(final long timestamp) {
@@ -100,11 +95,10 @@ public class UuidTimeUtil {
 	/**
 	 * Get the timestamp of a given instant.
 	 *
-	 * The value returned by this method is the number of 100-nanos since
-	 * 1582-10-15 (Gregorian epoch).
+	 * The value returned by this method is the number of 100-nanos since 1582-10-15
+	 * (Gregorian epoch).
 	 * 
-	 * @param instant
-	 *            an instant
+	 * @param instant an instant
 	 * @return the timestamp
 	 */
 	public static long toTimestamp(final Instant instant) {
@@ -116,8 +110,7 @@ public class UuidTimeUtil {
 	/**
 	 * Get the instant of the given timestamp.
 	 *
-	 * @param timestamp
-	 *            a timestamp
+	 * @param timestamp a timestamp
 	 * @return the instant
 	 */
 	public static Instant toInstant(final long timestamp) {

@@ -22,34 +22,59 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.enums;
+package com.github.f4b6a3.uuid.util.sequence;
 
 /**
- * UUID variants defined by RFC-4122.
+ * This abstract class represents a circular a counter or sequence.
+ * 
+ * If the maximum value is reached the value is reset to the minimum.
  */
-public enum UuidVariant {
+public abstract class AbstractSequence implements Sequence {
 
-	VARIANT_RESERVED_NCS(0), //
-	VARIANT_RFC_4122(2), //
-	VARIANT_RESERVED_MICROSOFT(6), //
-	VARIANT_RESERVED_FUTURE(7); //
+	protected int value;
+	public final int minValue;
+	public final int maxValue;
 
-	private final int value;
-
-	UuidVariant(int value) {
-		this.value = value;
+	protected AbstractSequence(int min, int max) {
+		this.minValue = min;
+		this.maxValue = max;
+		this.value = minValue;
 	}
 
-	public int getValue() {
+	@Override
+	public int current() {
 		return this.value;
 	}
 
-	public static UuidVariant getVariant(int value) {
-		for (UuidVariant variant : UuidVariant.values()) {
-			if (variant.getValue() == value) {
-				return variant;
-			}
+	@Override
+	public int next() {
+		if (this.value >= maxValue) {
+			this.value = minValue;
+			return this.value;
 		}
-		return null;
+		return ++this.value;
+	}
+
+	@Override
+	public int min() {
+		return minValue;
+	}
+
+	@Override
+	public int max() {
+		return maxValue;
+	}
+
+	@Override
+	public void reset() {
+		this.value = minValue;
+	}
+	
+	@Override
+	public void set(final int value) {
+		if (value < minValue || value > maxValue) {
+			this.reset();
+		}
+		this.value = value;
 	}
 }

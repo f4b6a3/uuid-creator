@@ -22,34 +22,32 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.enums;
+package com.github.f4b6a3.uuid.strategy.timestamp;
+
+import java.time.Instant;
+
+import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
+import com.github.f4b6a3.uuid.util.UuidTimeUtil;
 
 /**
- * UUID variants defined by RFC-4122.
+ * Strategy that always provides the same node identifier.
+ *
+ * This strategy is useful for tests only.
  */
-public enum UuidVariant {
+public class FixedTimestampStretegy implements TimestampStrategy {
 
-	VARIANT_RESERVED_NCS(0), //
-	VARIANT_RFC_4122(2), //
-	VARIANT_RESERVED_MICROSOFT(6), //
-	VARIANT_RESERVED_FUTURE(7); //
+	protected long timestamp = 0;
 
-	private final int value;
-
-	UuidVariant(int value) {
-		this.value = value;
+	public FixedTimestampStretegy(long timestamp) {
+		this.timestamp = timestamp;
 	}
 
-	public int getValue() {
-		return this.value;
+	public FixedTimestampStretegy(Instant instant) {
+		this.timestamp = UuidTimeUtil.toTimestamp(instant);
 	}
 
-	public static UuidVariant getVariant(int value) {
-		for (UuidVariant variant : UuidVariant.values()) {
-			if (variant.getValue() == value) {
-				return variant;
-			}
-		}
-		return null;
+	@Override
+	public long getTimestamp() {
+		return this.timestamp;
 	}
 }

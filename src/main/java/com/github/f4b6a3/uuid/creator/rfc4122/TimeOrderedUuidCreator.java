@@ -22,34 +22,41 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.enums;
+package com.github.f4b6a3.uuid.creator.rfc4122;
+
+import com.github.f4b6a3.uuid.creator.AbstractTimeBasedUuidCreator;
+import com.github.f4b6a3.uuid.enums.UuidVersion;
+import com.github.f4b6a3.uuid.util.UuidFormatter;
 
 /**
- * UUID variants defined by RFC-4122.
+ * Factory that creates time-ordered UUIDs.
+ * 
+ * RFC-4122 version: 6.
+ * 
+ * Proposal: http://gh.peabody.io/uuidv6/
+ * 
+ * IETF Draft:
+ * https://tools.ietf.org/html/draft-peabody-dispatch-new-uuid-format
+ * 
  */
-public enum UuidVariant {
+public class TimeOrderedUuidCreator extends AbstractTimeBasedUuidCreator {
 
-	VARIANT_RESERVED_NCS(0), //
-	VARIANT_RFC_4122(2), //
-	VARIANT_RESERVED_MICROSOFT(6), //
-	VARIANT_RESERVED_FUTURE(7); //
-
-	private final int value;
-
-	UuidVariant(int value) {
-		this.value = value;
+	public TimeOrderedUuidCreator() {
+		this(UuidVersion.VERSION_TIME_ORDERED);
 	}
 
-	public int getValue() {
-		return this.value;
+	protected TimeOrderedUuidCreator(UuidVersion version) {
+		super(version);
 	}
 
-	public static UuidVariant getVariant(int value) {
-		for (UuidVariant variant : UuidVariant.values()) {
-			if (variant.getValue() == value) {
-				return variant;
-			}
-		}
-		return null;
+	/**
+	 * Returns the timestamp bits of the UUID, keeping its byte order unchanged.
+	 * 
+	 * @param timestamp a timestamp
+	 * @return the MSB
+	 */
+	@Override
+	protected long formatMostSignificantBits(final long timestamp) {
+		return UuidFormatter.formatTimeOrderedMostSignificantBits(timestamp);
 	}
 }

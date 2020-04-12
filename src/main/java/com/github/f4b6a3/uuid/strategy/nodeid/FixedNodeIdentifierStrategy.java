@@ -22,34 +22,27 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.enums;
+package com.github.f4b6a3.uuid.strategy.nodeid;
+
+import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 
 /**
- * UUID variants defined by RFC-4122.
+ * Strategy that always provides the same node identifier.
+ * 
+ * The node identifier passed to the constructor is converted to multicast.
  */
-public enum UuidVariant {
+public class FixedNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
-	VARIANT_RESERVED_NCS(0), //
-	VARIANT_RFC_4122(2), //
-	VARIANT_RESERVED_MICROSOFT(6), //
-	VARIANT_RESERVED_FUTURE(7); //
+	protected long nodeIdentifier;
 
-	private final int value;
-
-	UuidVariant(int value) {
-		this.value = value;
+	public FixedNodeIdentifierStrategy(long nodeIdentifier) {
+		this.nodeIdentifier = nodeIdentifier & 0x0000FFFFFFFFFFFFL;
+		this.nodeIdentifier = NodeIdentifierUtil.setMulticastNodeIdentifier(this.nodeIdentifier);
 	}
 
-	public int getValue() {
-		return this.value;
-	}
-
-	public static UuidVariant getVariant(int value) {
-		for (UuidVariant variant : UuidVariant.values()) {
-			if (variant.getValue() == value) {
-				return variant;
-			}
-		}
-		return null;
+	@Override
+	public long getNodeIdentifier() {
+		return this.nodeIdentifier;
 	}
 }

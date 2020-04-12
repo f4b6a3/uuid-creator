@@ -22,34 +22,13 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.enums;
+package com.github.f4b6a3.uuid.exception;
 
-/**
- * UUID variants defined by RFC-4122.
- */
-public enum UuidVariant {
+public class InvalidUuidException extends RuntimeException {
 
-	VARIANT_RESERVED_NCS(0), //
-	VARIANT_RFC_4122(2), //
-	VARIANT_RESERVED_MICROSOFT(6), //
-	VARIANT_RESERVED_FUTURE(7); //
+	private static final long serialVersionUID = 1L;
 
-	private final int value;
-
-	UuidVariant(int value) {
-		this.value = value;
-	}
-
-	public int getValue() {
-		return this.value;
-	}
-
-	public static UuidVariant getVariant(int value) {
-		for (UuidVariant variant : UuidVariant.values()) {
-			if (variant.getValue() == value) {
-				return variant;
-			}
-		}
-		return null;
+	public InvalidUuidException(String message) {
+		super(message);
 	}
 }

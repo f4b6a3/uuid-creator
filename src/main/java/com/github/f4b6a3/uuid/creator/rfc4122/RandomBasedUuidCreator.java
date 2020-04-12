@@ -22,34 +22,23 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.enums;
+package com.github.f4b6a3.uuid.creator.rfc4122;
+
+import java.util.Random;
+
+import com.github.f4b6a3.uuid.creator.AbstractRandomBasedUuidCreator;
+import com.github.f4b6a3.uuid.enums.UuidVersion;
 
 /**
- * UUID variants defined by RFC-4122.
+ * Factory that creates random-based UUIDs.
+ * 
+ * RFC-4122 version: 4.
  */
-public enum UuidVariant {
+public class RandomBasedUuidCreator extends AbstractRandomBasedUuidCreator {
 
-	VARIANT_RESERVED_NCS(0), //
-	VARIANT_RFC_4122(2), //
-	VARIANT_RESERVED_MICROSOFT(6), //
-	VARIANT_RESERVED_FUTURE(7); //
+	protected Random random;
 
-	private final int value;
-
-	UuidVariant(int value) {
-		this.value = value;
-	}
-
-	public int getValue() {
-		return this.value;
-	}
-
-	public static UuidVariant getVariant(int value) {
-		for (UuidVariant variant : UuidVariant.values()) {
-			if (variant.getValue() == value) {
-				return variant;
-			}
-		}
-		return null;
+	public RandomBasedUuidCreator() {
+		super(UuidVersion.VERSION_RANDOM_BASED);
 	}
 }

@@ -24,10 +24,17 @@
 
 package com.github.f4b6a3.uuid.enums;
 
+/**
+ * UUID versions defined by RFC-4122.
+ */
 public enum UuidVersion {
 
-	// UUID versions defined by RFC-4122, plus an extension (zero)
-	SEQUENTIAL(0), TIME_BASED(1), DCE_SECURITY(2), NAME_BASED_MD5(3), RANDOM_BASED(4), NAMBE_BASED_SHA1(5), TIME_ORDERED(6);
+	VERSION_TIME_BASED(1), //
+	VERSION_DCE_SECURITY(2), //
+	VERSION_NAME_BASED_MD5(3), //
+	VERSION_RANDOM_BASED(4), //
+	VERSION_NAMBE_BASED_SHA1(5), //
+	VERSION_TIME_ORDERED(6); // proposal
 
 	private final int value;
 

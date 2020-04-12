@@ -25,29 +25,28 @@
 package com.github.f4b6a3.uuid.enums;
 
 /**
- * UUID variants defined by RFC-4122.
+ * Local domains used to create DCE Security UUIDs.
  */
-public enum UuidVariant {
+public enum UuidLocalDomain {
 
-	VARIANT_RESERVED_NCS(0), //
-	VARIANT_RFC_4122(2), //
-	VARIANT_RESERVED_MICROSOFT(6), //
-	VARIANT_RESERVED_FUTURE(7); //
+	LOCAL_DOMAIN_PERSON((byte) 0), // POSIX UID domain
+	LOCAL_DOMAIN_GROUP((byte) 1), // POSIX GID domain
+	LOCAL_DOMAIN_ORG((byte) 2);
 
-	private final int value;
+	private final byte value;
 
-	UuidVariant(int value) {
+	UuidLocalDomain(byte value) {
 		this.value = value;
 	}
 
-	public int getValue() {
+	public byte getValue() {
 		return this.value;
 	}
 
-	public static UuidVariant getVariant(int value) {
-		for (UuidVariant variant : UuidVariant.values()) {
-			if (variant.getValue() == value) {
-				return variant;
+	public static UuidLocalDomain getLocalDomain(byte value) {
+		for (UuidLocalDomain domain : UuidLocalDomain.values()) {
+			if (domain.getValue() == value) {
+				return domain;
 			}
 		}
 		return null;
