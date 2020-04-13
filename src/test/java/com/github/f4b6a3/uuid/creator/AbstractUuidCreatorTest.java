@@ -1,37 +1,140 @@
 package com.github.f4b6a3.uuid.creator;
 
-import org.junit.Test;
-
-import com.github.f4b6a3.uuid.creator.AbstractUuidCreator;
-import com.github.f4b6a3.uuid.enums.UuidVersion;
+import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.util.UuidUtil;
 
 import static org.junit.Assert.*;
 
-public class AbstractUuidCreatorTest {
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
-	// Values to be used in bitwise operations
-	protected static final long RFC4122_VARIANT_BITS = 0x8000000000000000L;
-	
-	protected static final long[] RFC4122_VERSION_BITS = {
-			0x0000000000000000L, 0x0000000000001000L, 0x0000000000002000L,
-			0x0000000000003000L, 0x0000000000004000L, 0x0000000000005000L };
-	
-	@Test
-	public void testSetVersionBits() {
-		
-		AbstractUuidCreator creator = new AbstractUuidCreator(UuidVersion.VERSION_RANDOM_BASED) { };
-		long msb = 0x0000000000000000L | RFC4122_VERSION_BITS[UuidVersion.VERSION_RANDOM_BASED.getValue()];
-		long result1 = creator.setVersionBits(msb);
-		long result2 = creator.getVersionBits(result1);
-		assertEquals(msb, result2);
+public abstract class AbstractUuidCreatorTest {
+
+	// The timestamp counter starts with a random value between 0 and 255
+	protected static final int DEFAULT_LOOP_MAX = 9744; // 10_000 - 256
+
+	protected static final String RFC4122_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-6][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
+
+	protected static final String DUPLICATE_UUID_MSG = "A duplicate UUID was created";
+
+	protected static final String GITHUB_URL = "www.github.com";
+
+	protected static final int THREAD_TOTAL = availableProcessors();
+
+	private static int availableProcessors() {
+		int processors = Runtime.getRuntime().availableProcessors();
+		if (processors < 4) {
+			processors = 4;
+		}
+		return processors;
 	}
-	
-	@Test
-	public void testSetVariantBits() {
-		AbstractUuidCreator creator = new AbstractUuidCreator(UuidVersion.VERSION_RANDOM_BASED) { };
-		long lsb = 0x0000000000000000L | RFC4122_VARIANT_BITS;
-		long result1 = creator.setVariantBits(lsb);
-		long result2 = creator.getVariantBits(result1);
-		assertEquals(lsb, result2);
+
+	protected void checkIfStringIsValid(UUID uuid) {
+		assertTrue(uuid.toString().matches(AbstractUuidCreatorTest.RFC4122_PATTERN));
+	}
+
+	protected void checkNullOrInvalid(UUID[] list) {
+		for (UUID uuid : list) {
+			assertTrue("UUID is null", uuid != null);
+			assertTrue("UUID is not RFC-4122 variant", UuidUtil.isRfc4122(uuid));
+		}
+	}
+
+	protected void checkVersion(UUID[] list, int version) {
+		for (UUID uuid : list) {
+			assertTrue(String.format("UUID is not version %s", version), uuid.version() == version);
+		}
+	}
+
+	protected void checkCreationTime(UUID[] list, long startTime, long endTime) {
+
+		assertTrue("Start time was after end time", startTime <= endTime);
+
+		for (UUID uuid : list) {
+			long creationTime = UuidUtil.extractUnixMilliseconds(uuid);
+			assertTrue("Creation time was before start time " + creationTime + " " + startTime,
+					creationTime >= startTime);
+			assertTrue("Creation time was after end time", creationTime <= endTime);
+		}
+
+	}
+
+	protected void checkNodeIdentifier(UUID[] list, boolean multicast) {
+		for (UUID uuid : list) {
+			long nodeIdentifier = UuidUtil.extractNodeIdentifier(uuid);
+
+			if (multicast) {
+				assertTrue("Node identifier is not multicast",
+						NodeIdentifierStrategy.isMulticastNodeIdentifier(nodeIdentifier));
+			}
+		}
+	}
+
+	protected void checkOrdering(UUID[] list) {
+		UUID[] other = Arrays.copyOf(list, list.length);
+		Arrays.sort(other);
+
+		for (int i = 0; i < list.length; i++) {
+			assertTrue("The UUID list is not ordered", list[i].equals(other[i]));
+		}
+	}
+
+	protected void checkUniqueness(UUID[] list) {
+
+		HashSet<UUID> set = new HashSet<>();
+
+		for (UUID uuid : list) {
+			assertTrue(String.format("UUID is duplicated %s", uuid), set.add(uuid));
+		}
+
+		assertTrue("There are duplicated UUIDs", set.size() == list.length);
+	}
+
+	protected void testCreateAbstractTimeBasedUuid(AbstractTimeBasedUuidCreator creator, boolean multicast) {
+
+		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+
+		long startTime = System.currentTimeMillis();
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			list[i] = creator.create();
+		}
+
+		long endTime = System.currentTimeMillis();
+
+		checkNullOrInvalid(list);
+		checkVersion(list, creator.getVersion());
+		checkCreationTime(list, startTime, endTime);
+		checkNodeIdentifier(list, multicast);
+		checkOrdering(list);
+		checkUniqueness(list);
+
+	}
+
+	public static class TestThread extends Thread {
+
+		public static Set<UUID> hashSet = new HashSet<>();
+		private NoArgumentsUuidCreator creator;
+		private int loopLimit;
+
+		public TestThread(NoArgumentsUuidCreator creator, int loopLimit) {
+			this.creator = creator;
+			this.loopLimit = loopLimit;
+		}
+
+		public static void clearHashSet() {
+			hashSet = new HashSet<>();
+		}
+
+		@Override
+		public void run() {
+			for (int i = 0; i < loopLimit; i++) {
+				synchronized (hashSet) {
+					hashSet.add(creator.create());
+				}
+			}
+		}
 	}
 }

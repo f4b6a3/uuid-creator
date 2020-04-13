@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
+
 public class UuidValidatorTest {
 
 	@Test
@@ -20,6 +22,14 @@ public class UuidValidatorTest {
 
 		uuid = new byte[17];
 		assertFalse("UUID byte array with length greater than 16 should be invalid .", UuidValidator.isValid(uuid));
+
+		try {
+			uuid = null;
+			UuidValidator.validate(uuid);
+			fail();
+		} catch (InvalidUuidException e) {
+			// Success
+		}
 	}
 
 	@Test
@@ -60,5 +70,13 @@ public class UuidValidatorTest {
 
 		uuid = "01234567-89ab-4def-!@#$-ef0123456789"; // String with non alphanumeric chars
 		assertFalse("UUID string non alphanumeric chars should be invalid.", UuidValidator.isValid(uuid));
+
+		try {
+			uuid = null;
+			UuidValidator.validate(uuid);
+			fail();
+		} catch (InvalidUuidException e) {
+			// Success
+		}
 	}
 }

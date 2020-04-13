@@ -24,8 +24,8 @@
 
 package com.github.f4b6a3.uuid.strategy.nodeid;
 
+import com.github.f4b6a3.commons.util.ByteUtil;
 import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
-import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 
 /**
  * Strategy that always provides the same node identifier.
@@ -37,8 +37,12 @@ public class FixedNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	protected long nodeIdentifier;
 
 	public FixedNodeIdentifierStrategy(long nodeIdentifier) {
-		this.nodeIdentifier = nodeIdentifier & 0x0000FFFFFFFFFFFFL;
-		this.nodeIdentifier = NodeIdentifierUtil.setMulticastNodeIdentifier(this.nodeIdentifier);
+		this.nodeIdentifier = NodeIdentifierStrategy.setMulticastNodeIdentifier(nodeIdentifier);
+	}
+
+	public FixedNodeIdentifierStrategy(byte[] nodeIdentifier) {
+		long nodeid = ByteUtil.toNumber(nodeIdentifier);
+		this.nodeIdentifier = NodeIdentifierStrategy.setMulticastNodeIdentifier(nodeid);
 	}
 
 	@Override

@@ -110,7 +110,11 @@ public class UuidConverter {
 
 		long timestamp = UuidUtil.extractTimestamp(uuid);
 
-		long msb = UuidFormatter.formatTimeBasedMostSignificantBits(timestamp);
+		long msb = ((timestamp & 0x0fff_0000_00000000L) >>> 48) //
+				| ((timestamp & 0x0000_ffff_00000000L) >>> 16) //
+				| ((timestamp & 0x0000_0000_ffffffffL) << 32) //
+				| 0x0000000000001000L; // set version 1
+
 		long lsb = uuid.getLeastSignificantBits();
 
 		return new UUID(msb, lsb);
@@ -131,7 +135,10 @@ public class UuidConverter {
 
 		long timestamp = UuidUtil.extractTimestamp(uuid);
 
-		long msb = UuidFormatter.formatTimeOrderedMostSignificantBits(timestamp);
+		long msb = ((timestamp & 0x0ffffffffffff000L) << 4) //
+				| (timestamp & 0x0000000000000fffL) //
+				| 0x0000000000006000L; // set version 6
+
 		long lsb = uuid.getLeastSignificantBits();
 
 		return new UUID(msb, lsb);

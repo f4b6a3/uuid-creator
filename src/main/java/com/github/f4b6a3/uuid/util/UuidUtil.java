@@ -116,10 +116,6 @@ public class UuidUtil {
 		return isVariant(uuid, UuidVariant.VARIANT_RESERVED_FUTURE);
 	}
 
-	private static boolean isVariant(UUID uuid, UuidVariant variant) {
-		return (uuid.variant() == variant.getValue());
-	}
-
 	/**
 	 * Checks whether the UUID version 4.
 	 * 
@@ -180,15 +176,13 @@ public class UuidUtil {
 		return isVersion(uuid, UuidVersion.VERSION_DCE_SECURITY);
 	}
 
-	private static boolean isVersion(UUID uuid, UuidVersion version) {
-		return isRfc4122(uuid) && (uuid.version() == version.getValue());
-	}
-
 	/**
 	 * Get the node identifier from a time-based, time-ordered or DCE Security UUID.
 	 *
 	 * @param uuid a UUID
 	 * @return long the node identifier
+	 * @throws IllegalUuidException if the input is not a time-based, time-ordered
+	 *                              or DCE Security UUID.
 	 */
 	public static long extractNodeIdentifier(UUID uuid) {
 
@@ -205,6 +199,8 @@ public class UuidUtil {
 	 *
 	 * @param uuid a UUID
 	 * @return int the clock sequence
+	 * @throws IllegalUuidException if the input is not a time-based, time-ordered
+	 *                              or DCE Security UUID.
 	 */
 	public static int extractClockSequence(UUID uuid) {
 
@@ -214,10 +210,10 @@ public class UuidUtil {
 		}
 
 		if (UuidUtil.isDceSecurity(uuid)) {
-			return (int) (uuid.getLeastSignificantBits() >>> 56);
+			return (int) (uuid.getLeastSignificantBits() >>> 56) & 0x0000003f;
 		}
 
-		return (int) (uuid.getLeastSignificantBits() >>> 48);
+		return (int) (uuid.getLeastSignificantBits() >>> 48) & 0x00003fff;
 	}
 
 	/**
@@ -225,6 +221,8 @@ public class UuidUtil {
 	 *
 	 * @param uuid a UUID
 	 * @return {@link Instant}
+	 * @throws IllegalUuidException if the input is not a time-based, time-ordered
+	 *                              or DCE Security UUID.
 	 */
 	public static Instant extractInstant(UUID uuid) {
 		long timestamp = extractTimestamp(uuid);
@@ -240,6 +238,8 @@ public class UuidUtil {
 	 * 
 	 * @param uuid a UUID
 	 * @return Unix milliseconds
+	 * @throws IllegalUuidException if the input is not a time-based, time-ordered
+	 *                              or DCE Security UUID.
 	 */
 	public static long extractUnixMilliseconds(UUID uuid) {
 		long timestamp = extractTimestamp(uuid);
@@ -254,6 +254,8 @@ public class UuidUtil {
 	 *
 	 * @param uuid a UUID
 	 * @return long the timestamp
+	 * @throws IllegalUuidException if the input is not a time-based, time-ordered
+	 *                              or DCE Security UUID.
 	 */
 	public static long extractTimestamp(UUID uuid) {
 		if (UuidUtil.isTimeBased(uuid)) {
@@ -269,49 +271,11 @@ public class UuidUtil {
 	}
 
 	/**
-	 * Get the timestamp from a standard time-based MSB.
-	 *
-	 * @param msb a long value that has the "Most Significant Bits" of the UUID.
-	 * @return the timestamp
-	 */
-	protected static long extractTimeBasedTimestamp(long msb) {
-
-		long hii = (msb & 0xffffffff00000000L) >>> 32;
-		long mid = (msb & 0x00000000ffff0000L) << 16;
-		long low = (msb & 0x0000000000000fffL) << 48;
-
-		return (hii | mid | low);
-	}
-
-	/**
-	 * Get the timestamp from a time-ordered MSB.
-	 *
-	 * @param msb a long value that has the "Most Significant Bits" of the UUID.
-	 * @return the timestamp
-	 */
-	protected static long extractTimeOrderedTimestamp(long msb) {
-
-		long himid = (msb & 0xffffffffffff0000L) >>> 4;
-		long low = (msb & 0x0000000000000fffL);
-
-		return (himid | low);
-	}
-
-	/**
-	 * Get the timestamp from a standard DCE security MSB.
-	 *
-	 * @param msb a long value that has the "Most Significant Bits" of the UUID.
-	 * @return the timestamp
-	 */
-	protected static long extractDceSecurityTimestamp(long msb) {
-		return extractTimeBasedTimestamp((msb & 0x00000000ffffffffL));
-	}
-
-	/**
 	 * Get the local domain number from a DCE Security UUID.
 	 *
 	 * @param uuid a UUID
 	 * @return the local domain
+	 * @throws IllegalUuidException if the input is not a DCE Security UUID.
 	 */
 	public static byte extractLocalDomain(UUID uuid) {
 
@@ -327,6 +291,7 @@ public class UuidUtil {
 	 *
 	 * @param uuid a UUID
 	 * @return the local identifier
+	 * @throws IllegalUuidException if the input is not a DCE Security UUID.
 	 */
 	public static int extractLocalIdentifier(UUID uuid) {
 
@@ -335,5 +300,52 @@ public class UuidUtil {
 		}
 
 		return (int) (uuid.getMostSignificantBits() >>> 32);
+	}
+
+	private static boolean isVariant(UUID uuid, UuidVariant variant) {
+		return (uuid.variant() == variant.getValue());
+	}
+
+	private static boolean isVersion(UUID uuid, UuidVersion version) {
+		return isRfc4122(uuid) && (uuid.version() == version.getValue());
+	}
+
+	/**
+	 * Get the timestamp from a standard time-based MSB.
+	 *
+	 * @param msb a long value that has the "Most Significant Bits" of the UUID.
+	 * @return the timestamp
+	 */
+	private static long extractTimeBasedTimestamp(long msb) {
+
+		long hii = (msb & 0xffffffff00000000L) >>> 32;
+		long mid = (msb & 0x00000000ffff0000L) << 16;
+		long low = (msb & 0x0000000000000fffL) << 48;
+
+		return (hii | mid | low);
+	}
+
+	/**
+	 * Get the timestamp from a time-ordered MSB.
+	 *
+	 * @param msb a long value that has the "Most Significant Bits" of the UUID.
+	 * @return the timestamp
+	 */
+	private static long extractTimeOrderedTimestamp(long msb) {
+
+		long himid = (msb & 0xffffffffffff0000L) >>> 4;
+		long low = (msb & 0x0000000000000fffL);
+
+		return (himid | low);
+	}
+
+	/**
+	 * Get the timestamp from a standard DCE security MSB.
+	 *
+	 * @param msb a long value that has the "Most Significant Bits" of the UUID.
+	 * @return the timestamp
+	 */
+	private static long extractDceSecurityTimestamp(long msb) {
+		return extractTimeBasedTimestamp((msb & 0x00000000ffffffffL));
 	}
 }

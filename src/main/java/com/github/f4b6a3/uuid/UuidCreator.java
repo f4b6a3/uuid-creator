@@ -452,7 +452,7 @@ public class UuidCreator {
 	}
 
 	private static class TimeOrderedWithMacCreatorLazyHolder {
-		static final TimeOrderedUuidCreator INSTANCE = getTimeOrderedCreator().withHardwareAddressNodeIdentifier();
+		static final TimeOrderedUuidCreator INSTANCE = getTimeOrderedCreator().withMacNodeIdentifier();
 	}
 
 	private static class TimeBasedCreatorLazyHolder {
@@ -460,7 +460,7 @@ public class UuidCreator {
 	}
 
 	private static class TimeBasedWithMacCreatorLazyHolder {
-		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withHardwareAddressNodeIdentifier();
+		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withMacNodeIdentifier();
 	}
 
 	private static class NameBasedMd5CreatorLazyHolder {
@@ -476,7 +476,7 @@ public class UuidCreator {
 	}
 
 	private static class DceSecurityWithMacCreatorLazyHolder {
-		static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator().withHardwareAddressNodeIdentifier();
+		static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator().withMacNodeIdentifier();
 	}
 
 	private static class CombCreatorLazyHolder {

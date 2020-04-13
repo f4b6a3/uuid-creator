@@ -28,9 +28,7 @@ import java.util.List;
 
 import com.github.f4b6a3.commons.util.ByteUtil;
 import com.github.f4b6a3.commons.util.NetworkData;
-import com.github.f4b6a3.commons.util.RandomUtil;
 import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
-import com.github.f4b6a3.uuid.util.NodeIdentifierUtil;
 
 /**
  * Strategy that provides the current machine address (MAC), if available.
@@ -107,16 +105,6 @@ public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 		}
 
 		// Return a random node identifier
-		return getRandomNodeIdentifier();
-	}
-
-	/**
-	 * Return a random generated node identifier.
-	 * 
-	 * @return a random multicast node identifier
-	 */
-	protected static long getRandomNodeIdentifier() {
-		final long random = RandomUtil.get().nextLong() & 0x0000FFFFFFFFFFFFL;
-		return NodeIdentifierUtil.setMulticastNodeIdentifier(random);
+		return NodeIdentifierStrategy.getRandomNodeIdentifier();
 	}
 }

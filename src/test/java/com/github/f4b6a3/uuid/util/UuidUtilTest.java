@@ -70,7 +70,7 @@ public class UuidUtilTest {
 	}
 
 	@Test
-	public void testDceSecurityLocalDomain() {
+	public void testExtractLocalDomain() {
 		UuidLocalDomain localDomain1 = UuidLocalDomain.LOCAL_DOMAIN_PERSON;
 		int localIdentifier1 = 1701;
 		UUID uuid = UuidCreator.getDceSecurity(localDomain1, localIdentifier1);
@@ -79,7 +79,7 @@ public class UuidUtilTest {
 	}
 
 	@Test
-	public void testDceSecurityLocalIdentifier() {
+	public void testExctractLocalIdentifier() {
 		UuidLocalDomain localDomain1 = UuidLocalDomain.LOCAL_DOMAIN_PERSON;
 		int localIdentifier1 = 1701;
 		UUID uuid = UuidCreator.getDceSecurity(localDomain1, localIdentifier1);

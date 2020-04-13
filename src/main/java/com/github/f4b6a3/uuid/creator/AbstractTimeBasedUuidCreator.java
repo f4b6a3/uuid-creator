@@ -37,7 +37,6 @@ import com.github.f4b6a3.uuid.strategy.nodeid.DefaultNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.FixedNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.MacNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.timestamp.DefaultTimestampStrategy;
-import com.github.f4b6a3.uuid.util.UuidFormatter;
 
 public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator implements NoArgumentsUuidCreator {
 
@@ -217,13 +216,29 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 
 	/**
 	 * Replaces the default {@link NodeIdentifierStrategy} with the
+	 * {@link FixedNodeIdentifierStrategy}.
+	 * 
+	 * The input node identifier has it's multicast bit set to 1 automatically.
+	 * 
+	 * @param nodeIdentifier a node identifier
+	 * @param <T>            type parameter
+	 * @return {@link AbstractTimeBasedUuidCreator}
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withNodeIdentifier(byte[] nodeIdentifier) {
+		this.nodeIdentifierStrategy = new FixedNodeIdentifierStrategy(nodeIdentifier);
+		return (T) this;
+	}
+
+	/**
+	 * Replaces the default {@link NodeIdentifierStrategy} with the
 	 * {@link MacNodeIdentifierStrategy}.
 	 * 
 	 * @param <T> type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized <T extends AbstractTimeBasedUuidCreator> T withHardwareAddressNodeIdentifier() {
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withMacNodeIdentifier() {
 		this.nodeIdentifierStrategy = new MacNodeIdentifierStrategy();
 		return (T) this;
 	}
@@ -240,6 +255,22 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends AbstractTimeBasedUuidCreator> T withClockSequence(int clockSequence) {
+		this.clockSequenceStrategy = new FixedClockSequenceStrategy(clockSequence);
+		return (T) this;
+	}
+
+	/**
+	 * Replaces the default {@link ClockSequenceStrategy} with the
+	 * {@link FixedClockSequenceStrategy}.
+	 * 
+	 * The input clock sequence is truncated to fit the range 0 and 16,383 (0x3fff).
+	 * 
+	 * @param clockSequence a clock sequence
+	 * @param <T>           type parameter
+	 * @return {@link AbstractTimeBasedUuidCreator}
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withClockSequence(byte[] clockSequence) {
 		this.clockSequenceStrategy = new FixedClockSequenceStrategy(clockSequence);
 		return (T) this;
 	}
@@ -273,15 +304,31 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	protected abstract long formatMostSignificantBits(long timestamp);
 
 	/**
-	 * Formats the least significant bits of the UUID.
+	 * Returns the least significant bits of the UUID.
 	 * 
-	 * See: {@link UuidFormatter#formatRfc4122LeastSignificantBits(long, long)}
+	 * ### RFC-4122 - 4.2.2. Generation Details
+	 * 
+	 * Set the clock_seq_low field to the eight least significant bits (bits zero
+	 * through 7) of the clock sequence in the same order of significance.
+	 * 
+	 * Set the 6 least significant bits (bits zero through 5) of the
+	 * clock_seq_hi_and_reserved field to the 6 most significant bits (bits 8
+	 * through 13) of the clock sequence in the same order of significance.
+	 * 
+	 * Set the two most significant bits (bits 6 and 7) of the
+	 * clock_seq_hi_and_reserved to zero and one, respectively.
+	 * 
+	 * Set the node field to the 48-bit IEEE address in the same order of
+	 * significance as the address.
 	 * 
 	 * @param nodeIdentifier a node identifier
 	 * @param clockSequence  a clock sequence
 	 * @return the LSB
 	 */
 	protected long formatLeastSignificantBits(final long nodeIdentifier, final long clockSequence) {
-		return UuidFormatter.formatRfc4122LeastSignificantBits(nodeIdentifier, clockSequence);
+		return (((clockSequence << 48) //
+				| (nodeIdentifier & 0x0000ffffffffffffL)) //
+				& 0x3fffffffffffffffL // clear variant bits
+				| 0x8000000000000000L); // set variant bits
 	}
 }

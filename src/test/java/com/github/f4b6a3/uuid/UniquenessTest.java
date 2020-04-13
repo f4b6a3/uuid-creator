@@ -4,9 +4,12 @@ import java.util.HashSet;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.UuidCreator;
+import com.github.f4b6a3.uuid.creator.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.creator.rfc4122.TimeBasedUuidCreator;
+import com.github.f4b6a3.uuid.creator.rfc4122.TimeOrderedUuidCreator;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.strategy.timestamp.StoppedTimestampStrategy;
+import com.github.f4b6a3.uuid.util.UuidUtil;
 
 /**
  * This test starts many threads that keep requesting thousands of time-based
@@ -29,8 +32,8 @@ import com.github.f4b6a3.uuid.strategy.timestamp.StoppedTimestampStrategy;
  * Each UUID is reduced to a `long` value to use less memory. The timestamp high
  * bits and the node identifier bits are ignored since they don't change.
  * 
- * The timestamp strategy used is {@link StoppedTimestampStrategy} which
- * always returns the same timestamp.
+ * The timestamp strategy used is {@link StoppedTimestampStrategy} which always
+ * returns the same timestamp.
  * 
  * An exception is thrown if a UUID value is generated more than once.
  * 
@@ -43,26 +46,30 @@ public class UniquenessTest {
 	// private long[][] cacheLong; // Store values generated per thread
 	private HashSet<Long> hashSet;
 
-	private boolean verbose; // Show progress or not
+	private boolean verbose; // Show progress
+	private boolean exception; // Throw exception
 
-	// Time based UUID creator
-	private TimeBasedUuidCreator creator;
+	// Abstract time-based UUID creator
+	private AbstractTimeBasedUuidCreator creator;
 
 	/**
 	 * Initialize the test.
 	 * 
-	 * This test is not included in the {@link TestSuite} because it takes a
-	 * long time to finish.
+	 * This test is not included in the {@link TestSuite} because it takes a long
+	 * time to finish.
 	 * 
 	 * @param threadCount
 	 * @param requestCount
 	 * @param creator
+	 * @param verbose
 	 */
-	public UniquenessTest(int threadCount, int requestCount, TimeBasedUuidCreator creator, boolean progress) {
+	public UniquenessTest(AbstractTimeBasedUuidCreator creator, int threadCount, int requestCount, boolean verbose,
+			boolean exception) {
 		this.threadCount = threadCount;
 		this.requestCount = requestCount;
 		this.creator = creator;
-		this.verbose = progress;
+		this.verbose = verbose;
+		this.exception = exception;
 		this.initCache();
 	}
 
@@ -79,7 +86,7 @@ public class UniquenessTest {
 
 		// Instantiate and start many threads
 		for (int i = 0; i < this.threadCount; i++) {
-			threads[i] = new Thread(new UniquenessTestThread(i, verbose));
+			threads[i] = new Thread(new UniquenessTestThread(i, verbose, exception));
 			threads[i].start();
 		}
 
@@ -97,10 +104,12 @@ public class UniquenessTest {
 
 		private int id;
 		private boolean verbose;
+		private boolean exception;
 
-		public UniquenessTestThread(int id, boolean verbose) {
+		public UniquenessTestThread(int id, boolean verbose, boolean exception) {
 			this.id = id;
 			this.verbose = verbose;
+			this.exception = exception;
 		}
 
 		/**
@@ -126,9 +135,8 @@ public class UniquenessTest {
 					uuid = creator.create();
 				}
 
-				// Convert UUID into a long value, ignoring fixed bits
-				msb = uuid.getMostSignificantBits() & 0xffffffffffff0000L;
-				lsb = (uuid.getLeastSignificantBits() & 0xffff000000000000L) >>> 48;
+				msb = UuidUtil.extractTimestamp(uuid) << 16;
+				lsb = UuidUtil.extractClockSequence(uuid);
 
 				value = (msb | lsb);
 
@@ -142,8 +150,13 @@ public class UniquenessTest {
 				synchronized (hashSet) {
 					// Insert the value in cache, if it does not exist in it.
 					if (!hashSet.add((Long) value)) {
-						System.err.println(
-								String.format("[Thread %06d] %s %s %s%% [DUPLICATE]", id, uuid, i, (int) progress));
+						if (this.exception) {
+							new RuntimeException(
+									String.format("[Thread %06d] %s %s %s%% [DUPLICATE]", id, uuid, i, (int) progress));
+						} else {
+							System.err.println(
+									String.format("[Thread %06d] %s %s %s%% [DUPLICATE]", id, uuid, i, (int) progress));
+						}
 					}
 				}
 			}
@@ -155,18 +168,40 @@ public class UniquenessTest {
 		}
 	}
 
-	public static void execute(boolean verbose, int threadCount, int requestCount) {
-		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator()
-				.withTimestampStrategy(new StoppedTimestampStrategy());
-
-		UniquenessTest test = new UniquenessTest(threadCount, requestCount, creator, verbose);
+	public static void execute(AbstractTimeBasedUuidCreator creator, int threadCount, int requestCount, boolean verbose,
+			boolean exception) {
+		UniquenessTest test = new UniquenessTest(creator, threadCount, requestCount, verbose, exception);
 		test.start();
 	}
 
 	public static void main(String[] args) {
+
+		System.out.println("-------------------------------------------");
+		System.out.println("Time-Based");
+		System.out.println("-------------------------------------------");
+
+		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator()
+				.withTimestampStrategy(new StoppedTimestampStrategy());
+
 		boolean verbose = true;
+		boolean exception = false;
 		int threadCount = 16; // Number of threads to run
 		int requestCount = 1_000_000; // Number of requests for thread
-		execute(verbose, threadCount, requestCount);
+
+		execute(creator, threadCount, requestCount, verbose, exception);
+
+		System.out.println("-------------------------------------------");
+		System.out.println("Ordered-Based");
+		System.out.println("-------------------------------------------");
+
+		TimeOrderedUuidCreator creator2 = UuidCreator.getTimeOrderedCreator()
+				.withTimestampStrategy(new StoppedTimestampStrategy());
+
+		boolean verbose2 = true;
+		boolean exception2 = false;
+		int threadCount2 = 16; // Number of threads to run
+		int requestCount2 = 1_000_000; // Number of requests for thread
+
+		execute(creator2, threadCount2, requestCount2, verbose2, exception2);
 	}
 }

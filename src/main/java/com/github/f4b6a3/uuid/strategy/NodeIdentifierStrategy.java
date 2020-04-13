@@ -24,9 +24,43 @@
 
 package com.github.f4b6a3.uuid.strategy;
 
+import com.github.f4b6a3.commons.util.RandomUtil;
+
 /**
  * Strategy that provides node identifiers for time-based UUIDs.
  */
 public interface NodeIdentifierStrategy {
 	long getNodeIdentifier();
+
+	/**
+	 * Return a random generated node identifier.
+	 * 
+	 * @return a random multicast node identifier
+	 */
+	public static long getRandomNodeIdentifier() {
+		final long random = RandomUtil.get().nextLong();
+		return NodeIdentifierStrategy.setMulticastNodeIdentifier(random);
+	}
+
+	/**
+	 * Sets the the multicast bit ON to indicate that it's NOT a real MAC address.
+	 * 
+	 * The output is truncated to fit the node identifier bit length.
+	 * 
+	 * @param nodeIdentifier a node identifier
+	 * @return a multicast node identifier
+	 */
+	public static long setMulticastNodeIdentifier(long nodeIdentifier) {
+		return (nodeIdentifier & 0x0000ffffffffffffL) | 0x0000010000000000L;
+	}
+
+	/**
+	 * Checks if a node identifier is multicast.
+	 * 
+	 * @param nodeIdentifier a node identifier
+	 * @return true if is multicast
+	 */
+	public static boolean isMulticastNodeIdentifier(long nodeIdentifier) {
+		return (nodeIdentifier & 0x0000010000000000L) == 0x0000010000000000L;
+	}
 }

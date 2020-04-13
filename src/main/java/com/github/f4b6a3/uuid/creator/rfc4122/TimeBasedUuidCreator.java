@@ -26,7 +26,6 @@ package com.github.f4b6a3.uuid.creator.rfc4122;
 
 import com.github.f4b6a3.uuid.creator.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
-import com.github.f4b6a3.uuid.util.UuidFormatter;
 
 /**
  * Factory that creates time-based UUIDs.
@@ -74,6 +73,9 @@ public class TimeBasedUuidCreator extends AbstractTimeBasedUuidCreator {
 	 */
 	@Override
 	protected long formatMostSignificantBits(final long timestamp) {
-		return UuidFormatter.formatTimeBasedMostSignificantBits(timestamp);
+		return ((timestamp & 0x0fff_0000_00000000L) >>> 48) //
+				| ((timestamp & 0x0000_ffff_00000000L) >>> 16) //
+				| ((timestamp & 0x0000_0000_ffffffffL) << 32) //
+				| 0x0000000000001000L; // set version 1
 	}
 }

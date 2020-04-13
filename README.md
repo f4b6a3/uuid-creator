@@ -102,14 +102,14 @@ The DCE Security is a time-based UUID that also has a local domain and a local i
 
 ```java
 // DCE Security
-byte localDomain = DceSecurityUuidCreator.LOCAL_DOMAIN_GROUP;
+byte localDomain = UuidLocalDomain.LOCAL_DOMAIN_GROUP;
 int localIdentifier = 1701;
 UUID uuid = UuidCreator.getDceSecurity(localDomain, localIdentifier);
 ```
 
 ```java
 // DCE Security with hardware address
-byte localDomain = DceSecurityUuidCreator.LOCAL_DOMAIN_GROUP;
+byte localDomain = UuidLocalDomain.LOCAL_DOMAIN_GROUP;
 int localIdentifier = 1701;
 UUID uuid = UuidCreator.getDceSecurityWithMac(localDomain, localIdentifier);
 ```
@@ -586,13 +586,23 @@ UUID uuid = UuidCreator.getTimeBasedCreator()
 
 // with hardware address (first MAC found)
 UUID uuid = UuidCreator.getTimeBasedCreator()
-    .withHardwareAddressNodeIdentifier()
+    .withMacNodeIdentifier()
     .create();
     
 // with fixed node identifier (0x111111111111L)
 UUID uuid = UuidCreator.getTimeBasedCreator()
     .withNodeIdentifier(0x111111111111L)
     .create();
+    
+// with host IP address
+try {
+	byte[] ip = InetAddress.getLocalHost().getAddress();
+	UUID uuid = UuidCreator.getTimeBasedCreator()
+	    .withNodeIdentifier(ip)
+	    .create();
+} catch (UnknownHostException | SocketException e) {
+	// treat exception
+}
 
 // with host fingerprint (SHA-256 hash of OS + JVM + Network + Resources + locale + timezone)
 long fingerprint = FingerprintUtil.getFingerprint();
@@ -696,7 +706,7 @@ UUID uuid = UuidCreator.getCombCreator()
 ```java
 
 // with fixed local domain (standard POSIX User ID)
-UuidLocalDomain localDomain = DceSecurityUuidCreator.LOCAL_DOMAIN_PERSON;
+UuidLocalDomain localDomain = UuidLocalDomain.LOCAL_DOMAIN_PERSON;
 UUID uuid = UuidCreator.getDceSecurityCreator()
     .withLocalDomain(localDomain)
     .create(1701);
@@ -765,8 +775,6 @@ References
 
 [9]. ULID Specification - Universally Unique Lexicographically Sortable Identifier
 
-[10]. Device fingerprint
-
 [1]: https://en.wikipedia.org/wiki/Universally_unique_identifier
 [2]: https://tools.ietf.org/html/rfc4122
 [3]: https://www.percona.com/blog/2007/03/13/to-uuid-or-not-to-uuid
@@ -776,7 +784,6 @@ References
 [7]: http://www.informit.com/articles/printerfriendly/25862
 [8]: https://blogs.msdn.microsoft.com/dbrowne/2012/07/03/how-to-generate-sequential-guids-for-sql-server-in-net
 [9]: https://github.com/ulid/spec
-[10]: https://en.wikipedia.org/wiki/Device_fingerprint
 
 External links
 ------------------------------------------------------
