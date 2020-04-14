@@ -39,6 +39,9 @@ public class SettingsUtil {
 		if (value == null) {
 			return 0;
 		}
+		if (value.toLowerCase().startsWith("0x")) {
+			value = value.substring(2);
+		}
 		return ByteUtil.toNumber(value) & 0x0000FFFFFFFFFFFFL;
 	}
 

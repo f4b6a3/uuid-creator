@@ -665,6 +665,14 @@ UUID uuid = UuidCreator.getNameBasedMd5Creator()
     .withNamespace(namespace)
     .create(name);
 
+// with fixed CUSTOM namespace UUID
+// In this example, the category "products/books" is transformed in custom namespace UUID (MD5)
+UUID customNamespace = UuidCreator.getNameBasedMd5("products/books")
+String name = "War and Peace";
+UUID uuid = UuidCreator.getNameBasedMd5Creator()
+    .withNamespace(customNamespace)
+    .create(name);
+
 ```
 
 #### Random-based
@@ -709,6 +717,13 @@ UUID uuid = UuidCreator.getCombCreator()
 UuidLocalDomain localDomain = UuidLocalDomain.LOCAL_DOMAIN_PERSON;
 UUID uuid = UuidCreator.getDceSecurityCreator()
     .withLocalDomain(localDomain)
+    .create(1701);
+    
+// with fixed CUSTOM local domain (any number n, 2 < n < 255)
+byte customLocalDomain = (byte) 42;
+UuidLocalDomain localDomain = UuidLocalDomain.LOCAL_DOMAIN_PERSON;
+UUID uuid = UuidCreator.getDceSecurityCreator()
+    .withLocalDomain(customLocalDomain)
     .create(1701);
 
 ```

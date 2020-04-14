@@ -144,7 +144,7 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 		// (1a) Create a Time-based UUID (version 1)
 		UUID uuid = super.create();
 
-		// (2a) Insert de local identifier bits
+		// (2a) Insert the local identifier bits
 		long msb = setLocalIdentifierBits(uuid.getMostSignificantBits(), localIdentifier);
 
 		// (3a) Insert the local domain bits

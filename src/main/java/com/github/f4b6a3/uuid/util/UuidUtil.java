@@ -30,6 +30,7 @@ import java.util.UUID;
 import com.github.f4b6a3.uuid.enums.UuidVariant;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.exception.IllegalUuidException;
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
 /**
  * Utility that provides methods for checking UUID version, for extracting
@@ -73,6 +74,9 @@ public class UuidUtil {
 	 * @return boolean true if it is an RFC4122 variant
 	 */
 	public static boolean isNil(UUID uuid) {
+		if (uuid == null) {
+			throw new InvalidUuidException("Null UUID is not comparable to Nil UUID");
+		}
 		return uuid.getMostSignificantBits() == 0L && uuid.getLeastSignificantBits() == 0L;
 	}
 
@@ -303,10 +307,16 @@ public class UuidUtil {
 	}
 
 	private static boolean isVariant(UUID uuid, UuidVariant variant) {
+		if (uuid == null) {
+			throw new InvalidUuidException("Null UUID has no variant");
+		}
 		return (uuid.variant() == variant.getValue());
 	}
 
 	private static boolean isVersion(UUID uuid, UuidVersion version) {
+		if (uuid == null) {
+			throw new InvalidUuidException("Null UUID has no version");
+		}
 		return isRfc4122(uuid) && (uuid.version() == version.getValue());
 	}
 

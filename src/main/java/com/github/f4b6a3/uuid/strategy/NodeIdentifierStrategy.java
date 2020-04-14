@@ -28,6 +28,8 @@ import com.github.f4b6a3.commons.util.RandomUtil;
 
 /**
  * Strategy that provides node identifiers for time-based UUIDs.
+ * 
+ * It also provides static helper methods.
  */
 public interface NodeIdentifierStrategy {
 	long getNodeIdentifier();

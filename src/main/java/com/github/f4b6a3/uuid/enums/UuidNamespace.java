@@ -31,7 +31,6 @@ import java.util.UUID;
  */
 public enum UuidNamespace {
 
-	// UUIDs name spaces defined by RFC-4122
 	NAMESPACE_DNS(new UUID(0x6ba7b8109dad11d1L, 0x80b400c04fd430c8L)), // Domain Name System
 	NAMESPACE_URL(new UUID(0x6ba7b8119dad11d1L, 0x80b400c04fd430c8L)), // Uniform Resource Locator
 	NAMESPACE_ISO_OID(new UUID(0x6ba7b8129dad11d1L, 0x80b400c04fd430c8L)), // ISO Object ID

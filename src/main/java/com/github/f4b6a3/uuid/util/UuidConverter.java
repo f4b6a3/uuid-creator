@@ -70,12 +70,11 @@ public class UuidConverter {
 	 * Get a string from a UUID.
 	 * 
 	 * @param uuid a UUID
-	 * @return a hexadecimal string
+	 * @return a UUID string
 	 */
 	public static String toString(UUID uuid) {
 		String hex = ByteUtil.toHexadecimal(toBytes(uuid));
 		StringBuffer buffer = new StringBuffer(hex);
-		// Example: c1b6fdef-2f4b-4c81-acb0-377a2949e569
 		buffer.insert(8, '-');
 		buffer.insert(13, '-');
 		buffer.insert(18, '-');
@@ -86,7 +85,11 @@ public class UuidConverter {
 	/**
 	 * Get a UUID from string.
 	 * 
-	 * @param uuid a hexadecimal string
+	 * It also accepts UUID strings without dashes.
+	 * 
+	 * It's an alternative to {@link java.util.UUID#fromString(String)}.
+	 * 
+	 * @param uuid a UUID string
 	 * @return a UUID
 	 */
 	public static UUID fromString(String uuid) {
@@ -104,7 +107,7 @@ public class UuidConverter {
 	 */
 	public static UUID toTimeBasedUuid(UUID uuid) {
 
-		if (!(UuidUtil.isTimeOrdered(uuid))) {
+		if (!UuidUtil.isTimeOrdered(uuid)) {
 			throw new IllegalUuidException(String.format("Not a time-ordered UUID: %s.", uuid.toString()));
 		}
 
@@ -129,7 +132,7 @@ public class UuidConverter {
 	 */
 	public static UUID toTimeOrderedUuid(UUID uuid) {
 
-		if (!(UuidUtil.isTimeBased(uuid))) {
+		if (!UuidUtil.isTimeBased(uuid)) {
 			throw new IllegalUuidException(String.format("Not a time-based UUID: %s.", uuid.toString()));
 		}
 
