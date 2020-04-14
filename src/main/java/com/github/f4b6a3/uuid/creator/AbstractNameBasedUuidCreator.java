@@ -121,13 +121,10 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 			hash = md.digest(name);
 		}
 
-		long msb = toNumber(hash, 0, 8);
-		long lsb = toNumber(hash, 8, 16);
+		final long msb = toNumber(hash, 0, 8);
+		final long lsb = toNumber(hash, 8, 16);
 
-		msb = setVersionBits(msb);
-		lsb = setVariantBits(lsb);
-
-		return new UUID(msb, lsb);
+		return new UUID(applyVersionBits(msb), applyVariantBits(lsb));
 	}
 
 	/**

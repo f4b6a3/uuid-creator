@@ -152,7 +152,7 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 		long lsb = setLocalDomainBits(uuid.getLeastSignificantBits(), localDomain, counter);
 
 		// (1b) set version 2
-		return new UUID(setVersionBits(msb), setVariantBits(lsb));
+		return new UUID(applyVersionBits(msb), applyVariantBits(lsb));
 	}
 
 	/**

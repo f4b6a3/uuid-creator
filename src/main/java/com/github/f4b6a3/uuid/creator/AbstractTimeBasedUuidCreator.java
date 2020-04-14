@@ -329,6 +329,6 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 		return (((clockSequence << 48) //
 				| (nodeIdentifier & 0x0000ffffffffffffL)) //
 				& 0x3fffffffffffffffL // clear variant bits
-				| 0x8000000000000000L); // set variant bits
+				| 0x8000000000000000L); // apply variant bits
 	}
 }

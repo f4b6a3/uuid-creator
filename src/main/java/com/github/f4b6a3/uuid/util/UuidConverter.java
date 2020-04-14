@@ -30,7 +30,7 @@ import com.github.f4b6a3.commons.util.ByteUtil;
 import com.github.f4b6a3.uuid.exception.IllegalUuidException;
 
 /**
- * Utility that converts UUIDs to and from strings, byte arrays or other UUIDs
+ * Utility that converts UUIDs to and from strings, byte arrays or other UUID
  * types.
  */
 public class UuidConverter {
@@ -69,6 +69,8 @@ public class UuidConverter {
 	/**
 	 * Get a string from a UUID.
 	 * 
+	 * It's an alternative to {@link java.util.UUID#toString()}.
+	 * 
 	 * @param uuid a UUID
 	 * @return a UUID string
 	 */
@@ -83,7 +85,7 @@ public class UuidConverter {
 	}
 
 	/**
-	 * Get a UUID from string.
+	 * Get a UUID from a string.
 	 * 
 	 * It also accepts UUID strings without dashes.
 	 * 

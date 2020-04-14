@@ -76,6 +76,6 @@ public class TimeBasedUuidCreator extends AbstractTimeBasedUuidCreator {
 		return ((timestamp & 0x0fff_0000_00000000L) >>> 48) //
 				| ((timestamp & 0x0000_ffff_00000000L) >>> 16) //
 				| ((timestamp & 0x0000_0000_ffffffffL) << 32) //
-				| 0x0000000000001000L; // set version 1
+				| 0x0000000000001000L; // apply version 1
 	}
 }

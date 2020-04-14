@@ -69,7 +69,7 @@ public class UuidCreator {
 	 * @return a version 4 UUID
 	 */
 	public static UUID getRandomBased() {
-		return RandomCreatorLazyHolder.INSTANCE.create();
+		return RandomCreatorHolder.INSTANCE.create();
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class UuidCreator {
 	 * @return a version 4 UUID
 	 */
 	public static UUID getFastRandomBased() {
-		return FastRandomCreatorLazyHolder.INSTANCE.create();
+		return FastRandomCreatorHolder.INSTANCE.create();
 	}
 
 	/**
@@ -100,7 +100,7 @@ public class UuidCreator {
 	 * @return a version 1 UUID
 	 */
 	public static UUID getTimeBased() {
-		return TimeBasedCreatorLazyHolder.INSTANCE.create();
+		return TimeBasedCreatorHolder.INSTANCE.create();
 	}
 
 	/**
@@ -116,7 +116,7 @@ public class UuidCreator {
 	 * @return a version 1 UUID
 	 */
 	public static UUID getTimeBasedWithMac() {
-		return TimeBasedWithMacCreatorLazyHolder.INSTANCE.create();
+		return TimeBasedWithMacCreatorHolder.INSTANCE.create();
 	}
 
 	/**
@@ -132,7 +132,7 @@ public class UuidCreator {
 	 * @return a version 6 UUID
 	 */
 	public static UUID getTimeOrdered() {
-		return TimeOrderedCreatorLazyHolder.INSTANCE.create();
+		return TimeOrderedCreatorHolder.INSTANCE.create();
 	}
 
 	/**
@@ -148,7 +148,7 @@ public class UuidCreator {
 	 * @return a version 6 UUID
 	 */
 	public static UUID getTimeOrderedWithMac() {
-		return TimeOrderedWithMacCreatorLazyHolder.INSTANCE.create();
+		return TimeOrderedWithMacCreatorHolder.INSTANCE.create();
 	}
 
 	/**
@@ -165,7 +165,7 @@ public class UuidCreator {
 	 * @return a version 3 UUID
 	 */
 	public static UUID getNameBasedMd5(String name) {
-		return NameBasedMd5CreatorLazyHolder.INSTANCE.create(name);
+		return NameBasedMd5CreatorHolder.INSTANCE.create(name);
 	}
 
 	/**
@@ -182,7 +182,7 @@ public class UuidCreator {
 	 * @return a version 3 UUID
 	 */
 	public static UUID getNameBasedMd5(byte[] name) {
-		return NameBasedMd5CreatorLazyHolder.INSTANCE.create(name);
+		return NameBasedMd5CreatorHolder.INSTANCE.create(name);
 	}
 
 	/**
@@ -202,7 +202,7 @@ public class UuidCreator {
 	 * @return a version 3 UUID
 	 */
 	public static UUID getNameBasedMd5(UuidNamespace namespace, String name) {
-		return NameBasedMd5CreatorLazyHolder.INSTANCE.create(namespace, name);
+		return NameBasedMd5CreatorHolder.INSTANCE.create(namespace, name);
 	}
 
 	/**
@@ -222,7 +222,7 @@ public class UuidCreator {
 	 * @return a version 3 UUID
 	 */
 	public static UUID getNameBasedMd5(UuidNamespace namespace, byte[] name) {
-		return NameBasedMd5CreatorLazyHolder.INSTANCE.create(namespace, name);
+		return NameBasedMd5CreatorHolder.INSTANCE.create(namespace, name);
 	}
 
 	/**
@@ -239,7 +239,7 @@ public class UuidCreator {
 	 * @return a version 5 UUID
 	 */
 	public static UUID getNameBasedSha1(String name) {
-		return NameBasedSha1CreatorLazyHolder.INSTANCE.create(name);
+		return NameBasedSha1CreatorHolder.INSTANCE.create(name);
 	}
 
 	/**
@@ -256,7 +256,7 @@ public class UuidCreator {
 	 * @return a version 5 UUID
 	 */
 	public static UUID getNameBasedSha1(byte[] name) {
-		return NameBasedSha1CreatorLazyHolder.INSTANCE.create(name);
+		return NameBasedSha1CreatorHolder.INSTANCE.create(name);
 	}
 
 	/**
@@ -276,7 +276,7 @@ public class UuidCreator {
 	 * @return a version 5 UUID
 	 */
 	public static UUID getNameBasedSha1(UuidNamespace namespace, String name) {
-		return NameBasedSha1CreatorLazyHolder.INSTANCE.create(namespace, name);
+		return NameBasedSha1CreatorHolder.INSTANCE.create(namespace, name);
 	}
 
 	/**
@@ -296,7 +296,7 @@ public class UuidCreator {
 	 * @return a version 5 UUID
 	 */
 	public static UUID getNameBasedSha1(UuidNamespace namespace, byte[] name) {
-		return NameBasedSha1CreatorLazyHolder.INSTANCE.create(namespace, name);
+		return NameBasedSha1CreatorHolder.INSTANCE.create(namespace, name);
 	}
 
 	/**
@@ -315,7 +315,7 @@ public class UuidCreator {
 	 * @return a version 2 UUID
 	 */
 	public static UUID getDceSecurity(UuidLocalDomain localDomain, int localIdentifier) {
-		return DceSecurityCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
+		return DceSecurityCreatorHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
@@ -334,7 +334,7 @@ public class UuidCreator {
 	 * @return a version 2 UUID
 	 */
 	public static UUID getDceSecurityWithMac(UuidLocalDomain localDomain, int localIdentifier) {
-		return DceSecurityWithMacCreatorLazyHolder.INSTANCE.create(localDomain, localIdentifier);
+		return DceSecurityWithMacCreatorHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
@@ -345,7 +345,7 @@ public class UuidCreator {
 	 * @return a GUID
 	 */
 	public static UUID getCombGuid() {
-		return CombCreatorLazyHolder.INSTANCE.create();
+		return CombCreatorHolder.INSTANCE.create();
 	}
 
 	/**
@@ -356,7 +356,7 @@ public class UuidCreator {
 	 * @return a GUID
 	 */
 	public static UUID getAltCombGuid() {
-		return AltCombCreatorLazyHolder.INSTANCE.create();
+		return AltCombCreatorHolder.INSTANCE.create();
 	}
 
 	/*
@@ -439,51 +439,51 @@ public class UuidCreator {
 	 * Private classes for lazy holders
 	 */
 
-	private static class RandomCreatorLazyHolder {
+	private static class RandomCreatorHolder {
 		static final RandomBasedUuidCreator INSTANCE = getRandomBasedCreator();
 	}
 
-	private static class FastRandomCreatorLazyHolder {
+	private static class FastRandomCreatorHolder {
 		static final RandomBasedUuidCreator INSTANCE = getRandomBasedCreator().withFastRandomGenerator();
 	}
 
-	private static class TimeOrderedCreatorLazyHolder {
+	private static class TimeOrderedCreatorHolder {
 		static final TimeOrderedUuidCreator INSTANCE = getTimeOrderedCreator();
 	}
 
-	private static class TimeOrderedWithMacCreatorLazyHolder {
+	private static class TimeOrderedWithMacCreatorHolder {
 		static final TimeOrderedUuidCreator INSTANCE = getTimeOrderedCreator().withMacNodeIdentifier();
 	}
 
-	private static class TimeBasedCreatorLazyHolder {
+	private static class TimeBasedCreatorHolder {
 		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator();
 	}
 
-	private static class TimeBasedWithMacCreatorLazyHolder {
+	private static class TimeBasedWithMacCreatorHolder {
 		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withMacNodeIdentifier();
 	}
 
-	private static class NameBasedMd5CreatorLazyHolder {
+	private static class NameBasedMd5CreatorHolder {
 		static final NameBasedMd5UuidCreator INSTANCE = getNameBasedMd5Creator();
 	}
 
-	private static class NameBasedSha1CreatorLazyHolder {
+	private static class NameBasedSha1CreatorHolder {
 		static final NameBasedSha1UuidCreator INSTANCE = getNameBasedSha1Creator();
 	}
 
-	private static class DceSecurityCreatorLazyHolder {
+	private static class DceSecurityCreatorHolder {
 		static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator();
 	}
 
-	private static class DceSecurityWithMacCreatorLazyHolder {
+	private static class DceSecurityWithMacCreatorHolder {
 		static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator().withMacNodeIdentifier();
 	}
 
-	private static class CombCreatorLazyHolder {
+	private static class CombCreatorHolder {
 		static final CombGuidCreator INSTANCE = getCombCreator();
 	}
 
-	private static class AltCombCreatorLazyHolder {
+	private static class AltCombCreatorHolder {
 		static final AltCombGuidCreator INSTANCE = getAltCombCreator();
 	}
 }

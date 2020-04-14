@@ -69,8 +69,8 @@ public abstract class AbstractRandomBasedUuidCreator extends AbstractUuidCreator
 	 */
 	public UUID create() {
 
-		long msb = 0;
-		long lsb = 0;
+		final long msb;
+		final long lsb;
 
 		// (3) set all bit randomly
 		if (this.random == null) {
@@ -91,10 +91,7 @@ public abstract class AbstractRandomBasedUuidCreator extends AbstractUuidCreator
 		}
 
 		// (1)(2) Set the version and variant bits
-		msb = setVersionBits(msb);
-		lsb = setVariantBits(lsb);
-
-		return new UUID(msb, lsb);
+		return new UUID(applyVersionBits(msb), applyVariantBits(lsb));
 	}
 
 	/**

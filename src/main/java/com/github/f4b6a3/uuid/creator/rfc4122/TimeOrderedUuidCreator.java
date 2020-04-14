@@ -58,6 +58,6 @@ public class TimeOrderedUuidCreator extends AbstractTimeBasedUuidCreator {
 	protected long formatMostSignificantBits(final long timestamp) {
 		return ((timestamp & 0x0ffffffffffff000L) << 4) //
 				| (timestamp & 0x0000000000000fffL) //
-				| 0x0000000000006000L; // set version 6
+				| 0x0000000000006000L; // apply version 6
 	}
 }
