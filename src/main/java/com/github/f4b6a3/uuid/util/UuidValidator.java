@@ -47,7 +47,7 @@ public class UuidValidator {
 	}
 
 	/**
-	 * Checks if the UUID string is a valid.
+	 * Checks if the UUID byte array is valid.
 	 * 
 	 * @param uuid a UUID
 	 * @throws InvalidUuidException if invalid

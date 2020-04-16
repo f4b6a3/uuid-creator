@@ -30,7 +30,7 @@ import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
 import com.github.f4b6a3.uuid.util.UuidTimeUtil;
 
 /**
- * Strategy that always provides the same node identifier.
+ * Strategy that always provides the same timestamp.
  *
  * This strategy is useful for tests only.
  */

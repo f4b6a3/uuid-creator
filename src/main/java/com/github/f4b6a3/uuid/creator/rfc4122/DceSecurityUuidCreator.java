@@ -215,7 +215,8 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	 * @return the updated MSB
 	 */
 	protected static long setLocalIdentifierBits(long msb, int localIdentifier) {
-		return (msb & 0x00000000ffffffffL) | (((long) localIdentifier) << 32);
+		return (msb & 0x00000000ffffffffL) // clear time_low bits
+				| ((localIdentifier & 0x00000000ffffffffL) << 32);
 	}
 
 	/**
@@ -239,7 +240,9 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	 * @return the updated LSB
 	 */
 	protected static long setLocalDomainBits(long lsb, byte localDomain, long counter) {
-		return ((lsb & 0xff00ffffffffffffL) | (long) localDomain << 48) | (counter << 56);
+		return (lsb & 0x0000ffffffffffffL) // clear clock_seq bits
+				| ((localDomain & 0x00000000000000ffL) << 48) //
+				| ((counter & 0x00000000000000ffL) << 56);
 	}
 
 	/**
