@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>com.github.f4b6a3</groupId>
 			<artifactId>commons</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
