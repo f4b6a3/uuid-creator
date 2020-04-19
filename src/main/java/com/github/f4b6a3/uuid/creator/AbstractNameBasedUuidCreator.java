@@ -24,6 +24,8 @@
 
 package com.github.f4b6a3.uuid.creator;
 
+import static com.github.f4b6a3.uuid.util.ByteUtil.*;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -32,8 +34,6 @@ import java.util.UUID;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
-
-import static com.github.f4b6a3.commons.util.ByteUtil.*;
 
 /**
  * Factory that creates name-based UUIDs.

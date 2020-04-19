@@ -1,14 +1,14 @@
 package com.github.f4b6a3.uuid.util;
 
+import static com.github.f4b6a3.uuid.util.UuidUtil.*;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
 import java.util.UUID;
 
-import com.github.f4b6a3.commons.util.ByteUtil;
 import com.github.f4b6a3.uuid.UuidCreator;
-
-import static com.github.f4b6a3.uuid.util.UuidUtil.*;
+import com.github.f4b6a3.uuid.util.ByteUtil;
+import com.github.f4b6a3.uuid.util.UuidConverter;
 
 public class UuidConverterTest {
 

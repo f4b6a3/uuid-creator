@@ -2,8 +2,6 @@ package com.github.f4b6a3.uuid.creator.rfc4122;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.commons.util.FingerprintUtil;
-import com.github.f4b6a3.commons.util.RandomUtil;
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.creator.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.creator.AbstractUuidCreatorTest;
@@ -35,8 +33,7 @@ public class TimeBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 	@Test
 	public void testCreateTimeBasedUuidWithMac() {
 		boolean multicast = false;
-		testCreateAbstractTimeBasedUuid(UuidCreator.getTimeBasedCreator().withMacNodeIdentifier(),
-				multicast);
+		testCreateAbstractTimeBasedUuid(UuidCreator.getTimeBasedCreator().withMacNodeIdentifier(), multicast);
 	}
 
 	@Test
@@ -58,8 +55,7 @@ public class TimeBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 	@Test
 	public void testGetTimeBasedWithCustomNodeIdentifierStrategy() {
 
-		long fingerprint = FingerprintUtil.getFingerprint();
-		NodeIdentifierStrategy customStrategy = new FixedNodeIdentifierStrategy(fingerprint);
+		NodeIdentifierStrategy customStrategy = new FixedNodeIdentifierStrategy(System.nanoTime());
 		long nodeIdentifier1 = customStrategy.getNodeIdentifier();
 
 		AbstractTimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator()
@@ -70,13 +66,13 @@ public class TimeBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 
 		assertEquals(nodeIdentifier1, nodeIdentifier2);
 	}
-	
+
 	@Test
 	public void testGetTimeBasedWithCustomClockSequenceStrategy() {
 
-		ClockSequenceStrategy customStrategy = new FixedClockSequenceStrategy(RandomUtil.get().nextInt());
+		ClockSequenceStrategy customStrategy = new FixedClockSequenceStrategy((int) System.nanoTime());
 		long clockseq1 = customStrategy.getClockSequence(0);
-		
+
 		AbstractTimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator()
 				.withClockSequenceStrategy(customStrategy);
 
@@ -139,7 +135,8 @@ public class TimeBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 		}
 
 		assertTrue(DUPLICATE_UUID_MSG, set.size() == max);
-		assertTrue("The last clock sequence should be equal to the first clock sequence minus 1", (lastClockSeq % max) == ((firstClockSeq % max) - 1));
+		assertTrue("The last clock sequence should be equal to the first clock sequence minus 1",
+				(lastClockSeq % max) == ((firstClockSeq % max) - 1));
 	}
 
 	@Test

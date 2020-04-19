@@ -36,7 +36,6 @@ import com.github.f4b6a3.uuid.creator.rfc4122.TimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.creator.rfc4122.TimeOrderedUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidLocalDomain;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
-import com.github.f4b6a3.commons.random.Xorshift128PlusRandom;
 
 /**
  * Facade to the UUID factories.

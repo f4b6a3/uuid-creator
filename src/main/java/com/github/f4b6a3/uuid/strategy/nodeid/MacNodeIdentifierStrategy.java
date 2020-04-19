@@ -26,8 +26,8 @@ package com.github.f4b6a3.uuid.strategy.nodeid;
 
 import java.util.List;
 
-import com.github.f4b6a3.commons.util.ByteUtil;
-import com.github.f4b6a3.commons.util.NetworkData;
+import com.github.f4b6a3.uuid.util.ByteUtil;
+import com.github.f4b6a3.uuid.util.NetworkData;
 import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
 
 /**

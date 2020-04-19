@@ -12,6 +12,8 @@ import com.github.f4b6a3.uuid.util.UuidUtilTest;
 import com.github.f4b6a3.uuid.util.sequence.AbstractSequenceTest;
 import com.github.f4b6a3.uuid.util.UuidValidatorTest;
 import com.github.f4b6a3.uuid.util.UuidConverterTest;
+import com.github.f4b6a3.uuid.util.ByteUtilTest;
+import com.github.f4b6a3.uuid.util.random.NaiveRandomTest;
 import com.github.f4b6a3.uuid.creator.nonstandard.AltCombGuidCreatorTest;
 import com.github.f4b6a3.uuid.creator.nonstandard.CombGuidCreatorTest;
 import com.github.f4b6a3.uuid.creator.rfc4122.DceSecurityUuidCreatorTest;
@@ -40,6 +42,8 @@ import com.github.f4b6a3.uuid.creator.rfc4122.TimeOrderedUuidCreatorTest;
    NameBasedSha1UuidCreatorTest.class,
    TimeBasedUuidCreatorTest.class,
    TimeOrderedUuidCreatorTest.class,
+   ByteUtilTest.class,
+   NaiveRandomTest.class,
 })
 
 /**

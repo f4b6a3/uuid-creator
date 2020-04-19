@@ -24,8 +24,9 @@
 
 package com.github.f4b6a3.uuid.strategy.clockseq;
 
-import com.github.f4b6a3.commons.util.ByteUtil;
 import com.github.f4b6a3.uuid.strategy.ClockSequenceStrategy;
+
+import static com.github.f4b6a3.uuid.util.ByteUtil.*;
 
 /**
  * Strategy that always provides the same clock sequence.
@@ -42,7 +43,7 @@ public class FixedClockSequenceStrategy implements ClockSequenceStrategy {
 	}
 
 	public FixedClockSequenceStrategy(byte[] clockSequence) {
-		int clockseq = (int) ByteUtil.toNumber(clockSequence);
+		int clockseq = (int) toNumber(clockSequence);
 		this.clockSequence = clockseq & 0x00003fff;
 	}
 

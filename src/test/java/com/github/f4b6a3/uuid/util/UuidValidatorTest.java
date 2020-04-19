@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
+import com.github.f4b6a3.uuid.util.UuidValidator;
 
 public class UuidValidatorTest {
 

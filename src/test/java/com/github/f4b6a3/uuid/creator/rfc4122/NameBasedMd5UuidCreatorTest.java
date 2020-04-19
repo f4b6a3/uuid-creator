@@ -8,8 +8,7 @@ import com.github.f4b6a3.uuid.creator.rfc4122.NameBasedMd5UuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 
-import static com.github.f4b6a3.commons.util.ByteUtil.concat;
-import static com.github.f4b6a3.commons.util.ByteUtil.toBytes;
+import static com.github.f4b6a3.uuid.util.ByteUtil.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

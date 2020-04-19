@@ -50,10 +50,10 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>2.0.2</version>
+  <version>2.0.3</version>
 </dependency>
 ```
-See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator) and [mvnrepository.com](https://mvnrepository.com/artifact/com.github.f4b6a3/uuid-creator).
+See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
 
 ### Version 1: Time-based
 
@@ -749,23 +749,43 @@ Benchmark
 This section shows benchmarks using JMH v1.23.
 
 ```text
--------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
 THROUGHPUT (operations/millis)
--------------------------------------------------------------------------------
-Benchmark                              Mode  Cnt      Score     Error   Units
--------------------------------------------------------------------------------
-Throughput.EAIO_TimeBased (*)         thrpt    5  21301,487 ± 114,170  ops/ms
-Throughput.Java_Random                thrpt    5   2233,614 ±  12,862  ops/ms
-Throughput.UuidCreator_CombGuid       thrpt    5   2796,290 ±  11,834  ops/ms
-Throughput.UuidCreator_FastRandom     thrpt    5  76560,183 ± 399,871  ops/ms
-Throughput.UuidCreator_NameBasedMd5   thrpt    5   4068,016 ±   7,689  ops/ms
-Throughput.UuidCreator_NameBasedSha1  thrpt    5   3012,655 ±   6,599  ops/ms
-Throughput.UuidCreator_Random         thrpt    5   2223,155 ±   5,762  ops/ms
-Throughput.UuidCreator_TimeBased      thrpt    5  18024,058 ±  73,906  ops/ms
-Throughput.UuidCreator_TimeOrdered    thrpt    5  18135,001 ±  86,720  ops/ms
--------------------------------------------------------------------------------
-Total time: 00:12:03
--------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+Benchmark                                Mode  Cnt      Score     Error   Units
+-----------------------------------------------------------------------------------
+Throughput.Eaio_TimeBased (*)           thrpt    5  21350,078 ± 123,608  ops/ms
+Throughput.Java_Random                  thrpt    5   2199,813 ±   5,564  ops/ms
+Throughput.UuidCreator_CombGuid         thrpt    5   2755,767 ±  16,405  ops/ms
+Throughput.UuidCreator_FastRandomBased  thrpt    5  89950,189 ± 649,687  ops/ms
+Throughput.UuidCreator_NameBasedMd5     thrpt    5   3989,824 ±  13,802  ops/ms
+Throughput.UuidCreator_NameBasedSha1    thrpt    5   3001,964 ±   4,703  ops/ms
+Throughput.UuidCreator_RandomBased      thrpt    5   2184,672 ±   7,996  ops/ms
+Throughput.UuidCreator_TimeBased        thrpt    5  18129,622 ±  53,520  ops/ms
+Throughput.UuidCreator_TimeOrdered      thrpt    5  18222,911 ±  35,550  ops/ms
+-----------------------------------------------------------------------------------
+Total time: 00:17:24
+-----------------------------------------------------------------------------------
+```
+
+```text
+-----------------------------------------------------------------------------------
+AVERAGE TIME (nanos/operation)
+-----------------------------------------------------------------------------------
+Benchmark                                Mode  Cnt    Score   Error  Units
+-----------------------------------------------------------------------------------
+AverageTime.Eaio_TimeBased (*)           avgt    5   47,051 ± 0,213  ns/op
+AverageTime.Java_Random                  avgt    5  456,015 ± 2,100  ns/op
+AverageTime.UuidCreator_CombGuid         avgt    5  361,115 ± 1,268  ns/op
+AverageTime.UuidCreator_FastRandomBased  avgt    5   10,638 ± 0,050  ns/op
+AverageTime.UuidCreator_NameBasedMd5     avgt    5  243,790 ± 1,622  ns/op
+AverageTime.UuidCreator_NameBasedSha1    avgt    5  332,346 ± 0,919  ns/op
+AverageTime.UuidCreator_RandomBased      avgt    5  452,502 ± 1,144  ns/op
+AverageTime.UuidCreator_TimeBased        avgt    5   55,475 ± 0,322  ns/op
+AverageTime.UuidCreator_TimeOrdered      avgt    5   54,210 ± 0,293  ns/op
+-----------------------------------------------------------------------------------
+Total time: 00:17:24
+-----------------------------------------------------------------------------------
 ```
 
 These external generators are used for comparison:
@@ -781,14 +801,6 @@ You can find the benchmark source code at [uuid-creator-benchmark](https://githu
 
 Related projects
 ------------------------------------------------------
-
-* [commons](https://github.com/f4b6a3/commons): Reusable code
-
-* [tsid-creator](https://github.com/f4b6a3/tsid-creator): Time Sortable ID generator
-
-* [ulid-creator](https://github.com/f4b6a3/ulid-creator): Universally Unique Lexicographically Sortable ID generator
-
-* [id-creator](https://github.com/f4b6a3/id-creator): Identifier generator that brings together the other generators
 
 * [uuid-creator-benchmark](https://github.com/fabiolimace/uuid-creator-benchmark): Benchmarks for uuid-creator
 

@@ -24,7 +24,7 @@
 
 package com.github.f4b6a3.uuid.strategy;
 
-import com.github.f4b6a3.commons.util.RandomUtil;
+import com.github.f4b6a3.uuid.util.RandomUtil;
 
 /**
  * Strategy that provides node identifiers for time-based UUIDs.

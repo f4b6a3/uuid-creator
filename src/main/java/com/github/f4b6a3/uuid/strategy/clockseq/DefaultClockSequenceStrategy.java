@@ -24,8 +24,8 @@
 
 package com.github.f4b6a3.uuid.strategy.clockseq;
 
-import com.github.f4b6a3.commons.util.RandomUtil;
 import com.github.f4b6a3.uuid.strategy.ClockSequenceStrategy;
+import com.github.f4b6a3.uuid.util.RandomUtil;
 import com.github.f4b6a3.uuid.util.sequence.AbstractSequence;
 
 /**

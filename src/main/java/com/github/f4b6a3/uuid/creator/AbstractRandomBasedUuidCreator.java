@@ -28,13 +28,13 @@ import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
 
-import com.github.f4b6a3.commons.util.ByteUtil;
-import com.github.f4b6a3.commons.util.FingerprintUtil;
-import com.github.f4b6a3.commons.util.RandomUtil;
 import com.github.f4b6a3.uuid.creator.AbstractUuidCreator;
 import com.github.f4b6a3.uuid.creator.NoArgumentsUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
-import com.github.f4b6a3.commons.random.Xorshift128PlusRandom;
+import com.github.f4b6a3.uuid.util.ByteUtil;
+import com.github.f4b6a3.uuid.util.FingerprintUtil;
+import com.github.f4b6a3.uuid.util.RandomUtil;
+import com.github.f4b6a3.uuid.util.random.Xorshift128PlusRandom;
 
 /**
  * Factory that creates random-based UUIDs.

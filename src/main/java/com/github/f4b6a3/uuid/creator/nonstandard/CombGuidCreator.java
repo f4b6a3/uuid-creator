@@ -27,8 +27,8 @@ package com.github.f4b6a3.uuid.creator.nonstandard;
 import java.security.SecureRandom;
 import java.util.UUID;
 
-import com.github.f4b6a3.commons.util.ByteUtil;
-import com.github.f4b6a3.commons.util.RandomUtil;
+import com.github.f4b6a3.uuid.util.ByteUtil;
+import com.github.f4b6a3.uuid.util.RandomUtil;
 import com.github.f4b6a3.uuid.creator.AbstractRandomBasedUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 

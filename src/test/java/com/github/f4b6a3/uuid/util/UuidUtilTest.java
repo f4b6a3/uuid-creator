@@ -1,5 +1,6 @@
 package com.github.f4b6a3.uuid.util;
 
+import static com.github.f4b6a3.uuid.util.UuidUtil.*;
 import static org.junit.Assert.*;
 
 import java.time.Instant;
@@ -14,8 +15,7 @@ import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.exception.IllegalUuidException;
 import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
 import com.github.f4b6a3.uuid.strategy.timestamp.FixedTimestampStretegy;
-
-import static com.github.f4b6a3.uuid.util.UuidUtil.*;
+import com.github.f4b6a3.uuid.util.UuidTimeUtil;
 
 public class UuidUtilTest {
 

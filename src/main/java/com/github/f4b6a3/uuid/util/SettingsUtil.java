@@ -24,7 +24,7 @@
 
 package com.github.f4b6a3.uuid.util;
 
-import com.github.f4b6a3.commons.util.ByteUtil;
+import com.github.f4b6a3.uuid.util.ByteUtil;
 
 public class SettingsUtil {
 

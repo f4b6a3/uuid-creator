@@ -2,6 +2,8 @@ package com.github.f4b6a3.uuid.util;
 
 import org.junit.Test;
 
+import com.github.f4b6a3.uuid.util.UuidTimeUtil;
+
 import static org.junit.Assert.*;
 
 import java.time.Instant;

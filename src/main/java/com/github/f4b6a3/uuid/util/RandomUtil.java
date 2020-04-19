@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2019 Fabio Lima
+ * Copyright (c) 2018-2020 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,31 +22,19 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.strategy.nodeid;
+package com.github.f4b6a3.uuid.util;
 
-import com.github.f4b6a3.uuid.util.ByteUtil;
-import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
+import java.security.SecureRandom;
+import java.util.Random;
 
-/**
- * Strategy that always provides the same node identifier.
- * 
- * The node identifier passed to the constructor is converted to multicast.
- */
-public class FixedNodeIdentifierStrategy implements NodeIdentifierStrategy {
+public class RandomUtil {
 
-	protected long nodeIdentifier;
+	protected static final ThreadLocal<Random> THREAD_LOCAL_RANDOM = ThreadLocal.withInitial(SecureRandom::new);
 
-	public FixedNodeIdentifierStrategy(long nodeIdentifier) {
-		this.nodeIdentifier = NodeIdentifierStrategy.setMulticastNodeIdentifier(nodeIdentifier);
+	private RandomUtil() {
 	}
 
-	public FixedNodeIdentifierStrategy(byte[] nodeIdentifier) {
-		long nodeid = ByteUtil.toNumber(nodeIdentifier);
-		this.nodeIdentifier = NodeIdentifierStrategy.setMulticastNodeIdentifier(nodeid);
-	}
-
-	@Override
-	public long getNodeIdentifier() {
-		return this.nodeIdentifier;
+	public static Random get() {
+		return THREAD_LOCAL_RANDOM.get();
 	}
 }
