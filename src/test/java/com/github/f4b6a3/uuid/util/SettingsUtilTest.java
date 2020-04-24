@@ -2,44 +2,84 @@ package com.github.f4b6a3.uuid.util;
 
 import static org.junit.Assert.*;
 
-import java.util.UUID;
+import java.util.Random;
 
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.UuidCreator;
-import com.github.f4b6a3.uuid.util.ByteUtil;
 import com.github.f4b6a3.uuid.util.SettingsUtil;
-import com.github.f4b6a3.uuid.util.UuidUtil;
+import com.github.f4b6a3.uuid.util.random.Xorshift128PlusRandom;
 
 public class SettingsUtilTest {
 
-	private static final long NODEID = 0x111111111111L;
-	private static final long NODEID_ZERO = 0x000000000000L;
+	Random random = new Xorshift128PlusRandom();
 
-	@Before
-	public void clearSystemProperties() {
-		System.clearProperty(SettingsUtil.PROPERTY_NODEID);
+	@BeforeClass
+	public static void beforeClass() {
+		SettingsUtil.clearProperty(SettingsUtil.PROPERTY_NODEID);
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		SettingsUtil.clearProperty(SettingsUtil.PROPERTY_NODEID);
 	}
 
 	@Test
-	public void nodeIdentifierShouldBeIqualToSystemProperty() {
-		SettingsUtil.setNodeIdentifier(NODEID);
-		UUID uuid = UuidCreator.getTimeBasedCreator().create();
-		long nodeid = UuidUtil.extractNodeIdentifier(uuid);
-		assertEquals(ByteUtil.toHexadecimal(NODEID), ByteUtil.toHexadecimal(nodeid));
+	public void testSetNodeIdentifier() {
+		for (int i = 0; i < 100; i++) {
+			long number = RandomUtil.get().nextLong() >>> 16;
+			SettingsUtil.setNodeIdentifier(number);
+			long result = SettingsUtil.getNodeIdentifier();
+			assertEquals(number, result);
+		}
 	}
 
 	@Test
-	public void nodeIdentifierShouldNotBeIqualToSystemProperty() {
-		SettingsUtil.setNodeIdentifier(NODEID_ZERO);
-		UUID uuid = UuidCreator.getTimeBasedCreator().create();
-		long nodeid = UuidUtil.extractNodeIdentifier(uuid);
-		assertNotEquals(ByteUtil.toHexadecimal(NODEID), ByteUtil.toHexadecimal(nodeid));
+	public void testSetProperty() {
+		for (int i = 0; i < 100; i++) {
+			long number = random.nextLong() >>> 16;
+			String string = Long.toHexString(number);
+			SettingsUtil.setProperty(SettingsUtil.PROPERTY_NODEID, string);
+			long result = SettingsUtil.getNodeIdentifier();
+			assertEquals(number, result);
+		}
+	}
 
-		clearSystemProperties();
-		uuid = UuidCreator.getTimeBasedCreator().create();
-		nodeid = UuidUtil.extractNodeIdentifier(uuid);
-		assertNotEquals(ByteUtil.toHexadecimal(NODEID), ByteUtil.toHexadecimal(nodeid));
+	@Test
+	public void testSetPropertyWith0x() {
+		long number = random.nextLong() >>> 16;
+		String string = "0x" + Long.toHexString(number);
+		SettingsUtil.setProperty(SettingsUtil.PROPERTY_NODEID, string);
+		long result = SettingsUtil.getNodeIdentifier();
+		assertEquals(number, result);
+	}
+
+	@Test
+	public void testSetPropertyInvalid() {
+		String string = "0xx112233445566"; // typo
+		SettingsUtil.setProperty(SettingsUtil.PROPERTY_NODEID, string);
+		long result = SettingsUtil.getNodeIdentifier();
+		assertEquals(0, result);
+
+		string = " 0x112233445566"; // space
+		SettingsUtil.setProperty(SettingsUtil.PROPERTY_NODEID, string);
+		result = SettingsUtil.getNodeIdentifier();
+		assertEquals(0, result);
+
+		string = " 0x1122334455zz"; // non hexadecimal
+		SettingsUtil.setProperty(SettingsUtil.PROPERTY_NODEID, string);
+		result = SettingsUtil.getNodeIdentifier();
+		assertEquals(0, result);
+
+		string = ""; // empty
+		SettingsUtil.setProperty(SettingsUtil.PROPERTY_NODEID, string);
+		result = SettingsUtil.getNodeIdentifier();
+		assertEquals(0, result);
+
+		string = " "; // blank
+		SettingsUtil.setProperty(SettingsUtil.PROPERTY_NODEID, string);
+		result = SettingsUtil.getNodeIdentifier();
+		assertEquals(0, result);
 	}
 }

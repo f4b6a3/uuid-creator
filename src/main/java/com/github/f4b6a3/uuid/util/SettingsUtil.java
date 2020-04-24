@@ -24,33 +24,38 @@
 
 package com.github.f4b6a3.uuid.util;
 
-import com.github.f4b6a3.uuid.util.ByteUtil;
-
 public class SettingsUtil {
 
 	protected static final String PROPERTY_PREFIX = "uuidcreator";
 	public static final String PROPERTY_NODEID = "nodeid";
 
-	private SettingsUtil() {
+	protected SettingsUtil() {
 	}
 
 	public static long getNodeIdentifier() {
 		String value = getProperty(PROPERTY_NODEID);
-		if (value == null) {
+
+		if (value == null || !value.matches("^(0x|0X)?[0-9A-Fa-f]+$")) {
 			return 0;
 		}
-		if (value.toLowerCase().startsWith("0x")) {
-			value = value.substring(2);
+
+		if (!value.toLowerCase().startsWith("0x")) {
+			value = "0x" + value;
 		}
-		return ByteUtil.toNumber(value) & 0x0000FFFFFFFFFFFFL;
+
+		try {
+			return Long.decode(value) & 0x0000FFFFFFFFFFFFL;
+		} catch (NumberFormatException e) {
+			return 0;
+		}
 	}
 
 	public static void setNodeIdentifier(long nodeid) {
-		String value = ByteUtil.toHexadecimal(nodeid & 0x0000FFFFFFFFFFFFL);
+		String value = Long.toHexString(nodeid & 0x0000FFFFFFFFFFFFL);
 		setProperty(PROPERTY_NODEID, value);
 	}
 
-	private static String getProperty(String name) {
+	protected static String getProperty(String name) {
 
 		String fullName = getPropertyName(name);
 		String value = System.getProperty(fullName);
@@ -67,15 +72,19 @@ public class SettingsUtil {
 		return null;
 	}
 
-	private static void setProperty(String key, String value) {
+	protected static void setProperty(String key, String value) {
 		System.setProperty(getPropertyName(key), value);
 	}
 
-	private static String getPropertyName(String key) {
+	protected static void clearProperty(String key) {
+		System.clearProperty(getPropertyName(key));
+	}
+
+	protected static String getPropertyName(String key) {
 		return String.join(".", PROPERTY_PREFIX, key);
 	}
 
-	private static String getEnvinronmentName(String key) {
+	protected static String getEnvinronmentName(String key) {
 		return String.join("_", PROPERTY_PREFIX, key).toUpperCase().replace(".", "_");
 	}
 
