@@ -26,8 +26,10 @@ package com.github.f4b6a3.uuid;
 
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.creator.nonstandard.AltCombGuidCreator;
-import com.github.f4b6a3.uuid.creator.nonstandard.CombGuidCreator;
+import com.github.f4b6a3.uuid.creator.nonstandard.PrefixCombCreator;
+import com.github.f4b6a3.uuid.creator.nonstandard.ShortPrefixCombCreator;
+import com.github.f4b6a3.uuid.creator.nonstandard.ShortSuffixCombCreator;
+import com.github.f4b6a3.uuid.creator.nonstandard.SuffixCombCreator;
 import com.github.f4b6a3.uuid.creator.rfc4122.DceSecurityUuidCreator;
 import com.github.f4b6a3.uuid.creator.rfc4122.NameBasedMd5UuidCreator;
 import com.github.f4b6a3.uuid.creator.rfc4122.NameBasedSha1UuidCreator;
@@ -337,25 +339,64 @@ public class UuidCreator {
 	}
 
 	/**
-	 * Returns a COMB GUID.
+	 * Returns a Prefix COMB.
 	 * 
-	 * The time a SUFFIX is at the LEAST significant bits.
+	 * The creation millisecond is a 6 bytes PREFIX is at the MOST significant bits.
+	 * 
+	 * Read: The Cost of GUIDs as Primary Keys
+	 * http://www.informit.com/articles/article.aspx?p=25862
 	 * 
 	 * @return a GUID
 	 */
-	public static UUID getCombGuid() {
-		return CombCreatorHolder.INSTANCE.create();
+	public static UUID getPrefixComb() {
+		return PrefixCombCreatorHolder.INSTANCE.create();
 	}
 
 	/**
-	 * Returns an alternate COMB GUID.
+	 * Returns a Suffix COMB.
 	 * 
-	 * The time a PREFIX is at the MOST significant bits.
+	 * The creation millisecond is a 6 bytes SUFFIX is at the LEAST significant
+	 * bits.
+	 * 
+	 * Read: The Cost of GUIDs as Primary Keys
+	 * http://www.informit.com/articles/article.aspx?p=25862
 	 * 
 	 * @return a GUID
 	 */
-	public static UUID getAltCombGuid() {
-		return AltCombCreatorHolder.INSTANCE.create();
+	public static UUID getSuffixComb() {
+		return SuffixCombCreatorHolder.INSTANCE.create();
+	}
+
+	/**
+	 * Returns n Short Prefix COMB.
+	 * 
+	 * The creation minute is a 2 bytes PREFIX is at the MOST significant bits.
+	 * 
+	 * The prefix wraps around every ~45 days (2^16/60/24 = ~45).
+	 * 
+	 * Read: Sequential UUID Generators
+	 * https://www.2ndquadrant.com/en/blog/sequential-uuid-generators/
+	 * 
+	 * @return a GUID
+	 */
+	public static UUID getShortPrefixComb() {
+		return ShortPrefixCombCreatorHolder.INSTANCE.create();
+	}
+
+	/**
+	 * Returns a Short Suffix COMB.
+	 * 
+	 * The creation minute is a 2 bytes SUFFIX is at the LEAST significant bits.
+	 * 
+	 * The suffix wraps around every ~45 days (2^16/60/24 = ~45).
+	 * 
+	 * Read: Sequential UUID Generators
+	 * https://www.2ndquadrant.com/en/blog/sequential-uuid-generators/
+	 * 
+	 * @return a GUID
+	 */
+	public static UUID getShortSuffixComb() {
+		return ShortSuffixCombCreatorHolder.INSTANCE.create();
 	}
 
 	/*
@@ -417,21 +458,51 @@ public class UuidCreator {
 	}
 
 	/**
-	 * Returns a {@link CombGuidCreator}.
+	 * Returns a {@link SuffixCombCreator}.
 	 * 
-	 * @return {@link CombGuidCreator}
+	 * Read: The Cost of GUIDs as Primary Keys
+	 * http://www.informit.com/articles/article.aspx?p=25862
+	 * 
+	 * @return {@link SuffixCombCreator}
 	 */
-	public static CombGuidCreator getCombCreator() {
-		return new CombGuidCreator();
+	public static SuffixCombCreator getSuffixCombCreator() {
+		return new SuffixCombCreator();
 	}
 
 	/**
-	 * Returns a {@link AltCombGuidCreator}.
+	 * Returns a {@link PrefixCombCreator}.
 	 * 
-	 * @return {@link AltCombGuidCreator}
+	 * Read: The Cost of GUIDs as Primary Keys
+	 * http://www.informit.com/articles/article.aspx?p=25862
+	 * 
+	 * @return {@link PrefixCombCreator}
 	 */
-	public static AltCombGuidCreator getAltCombCreator() {
-		return new AltCombGuidCreator();
+	public static PrefixCombCreator getPrefixCombCreator() {
+		return new PrefixCombCreator();
+	}
+
+	/**
+	 * Returns a {@link ShortPrefixCombCreator}.
+	 * 
+	 * Read: Sequential UUID Generators
+	 * https://www.2ndquadrant.com/en/blog/sequential-uuid-generators/
+	 * 
+	 * @return {@link ShortPrefixCombCreator}
+	 */
+	public static ShortPrefixCombCreator getShortPrefixCombCreator() {
+		return new ShortPrefixCombCreator();
+	}
+
+	/**
+	 * Returns a {@link ShortSuffixCombCreator}.
+	 * 
+	 * Read: Sequential UUID Generators
+	 * https://www.2ndquadrant.com/en/blog/sequential-uuid-generators/
+	 * 
+	 * @return {@link ShortSuffixCombCreator}
+	 */
+	public static ShortSuffixCombCreator getShortSuffixCombCreator() {
+		return new ShortSuffixCombCreator();
 	}
 
 	/*
@@ -478,11 +549,19 @@ public class UuidCreator {
 		static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator().withMacNodeIdentifier();
 	}
 
-	private static class CombCreatorHolder {
-		static final CombGuidCreator INSTANCE = getCombCreator();
+	private static class SuffixCombCreatorHolder {
+		static final SuffixCombCreator INSTANCE = getSuffixCombCreator();
 	}
 
-	private static class AltCombCreatorHolder {
-		static final AltCombGuidCreator INSTANCE = getAltCombCreator();
+	private static class PrefixCombCreatorHolder {
+		static final PrefixCombCreator INSTANCE = getPrefixCombCreator();
+	}
+
+	private static class ShortPrefixCombCreatorHolder {
+		static final ShortPrefixCombCreator INSTANCE = getShortPrefixCombCreator();
+	}
+
+	private static class ShortSuffixCombCreatorHolder {
+		static final ShortSuffixCombCreator INSTANCE = getShortSuffixCombCreator();
 	}
 }

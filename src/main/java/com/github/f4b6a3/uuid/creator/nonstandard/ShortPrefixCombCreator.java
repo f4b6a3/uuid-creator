@@ -33,52 +33,54 @@ import com.github.f4b6a3.uuid.creator.AbstractRandomBasedUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 
 /**
- * Factory that creates alternate COMB GUIDs.
+ * Factory that creates Prefix COMB GUIDs.
  * 
- * A COMB GUID is a UUID that combines a creation time with random bits.
+ * A Prefix COMB GUID is a UUID that combines a creation time with random bits.
  * 
- * The creation time is a PREFIX at the MOST significant bits.
+ * The creation minute is a 2 bytes PREFIX at the MOST significant bits.
  * 
- * The Cost of GUIDs as Primary Keys (COMB GUID inception):
- * http://www.informit.com/articles/article.aspx?p=25862
+ * The prefix wraps around every ~45 days (2^16/60/24 = ~45).
+ * 
+ * Read: Sequential UUID Generators
+ * https://www.2ndquadrant.com/en/blog/sequential-uuid-generators/
  * 
  */
-public class AltCombGuidCreator extends AbstractRandomBasedUuidCreator {
+public class ShortPrefixCombCreator extends AbstractRandomBasedUuidCreator {
 
-	public AltCombGuidCreator() {
-		super();
-	}
+	protected static final int ONE_MINUTE = 60_000;
 
-	public AltCombGuidCreator(UuidVersion version) {
-		super();
+	public ShortPrefixCombCreator() {
+		super(UuidVersion.VERSION_RANDOM_BASED);
 	}
 
 	/**
-	 * Returns a COMB GUID.
+	 * Returns a Prefix COMB GUID.
 	 * 
 	 * It combines creation time with random bits.
 	 * 
-	 * The creation time is a PREFIX at the MOST significant bits.
+	 * The creation minute is a 2 bytes PREFIX at the MOST significant bits.
+	 * 
+	 * The prefix wraps around every ~45 days (2^16/60/24 = ~45).
 	 */
 	@Override
 	public synchronized UUID create() {
 
-		final long timestamp = System.currentTimeMillis();
+		final short timestamp = (short) (System.currentTimeMillis() / ONE_MINUTE);
 
-		final long lsb;
-		final long msb;
+		long lsb;
+		long msb;
 
-		// Get random values
+		// Get random values for MSB and LSB
 		if (random == null) {
-			final byte[] bytes = new byte[10];
+			final byte[] bytes = new byte[14];
 			RandomUtil.get().nextBytes(bytes);
-			msb = (bytes[8] << 8) | (bytes[9] & 0xff);
+			msb = ByteUtil.toNumber(bytes, 8, 14);
 			lsb = ByteUtil.toNumber(bytes, 0, 8);
 		} else {
 			if (this.random instanceof SecureRandom) {
-				final byte[] bytes = new byte[10];
+				final byte[] bytes = new byte[14];
 				this.random.nextBytes(bytes);
-				msb = (bytes[8] << 8) | (bytes[9] & 0xff);
+				msb = ByteUtil.toNumber(bytes, 8, 14);
 				lsb = ByteUtil.toNumber(bytes, 0, 8);
 			} else {
 				msb = this.random.nextLong();
@@ -86,6 +88,10 @@ public class AltCombGuidCreator extends AbstractRandomBasedUuidCreator {
 			}
 		}
 
-		return new UUID((msb & 0x000000000000ffffL) | ((timestamp & 0x0000ffffffffffffL) << 16), lsb);
+		// Insert the short prefix in the MSB
+		msb = (msb & 0x0000ffffffffffffL) | ((timestamp & 0x000000000000ffffL) << 48);
+
+		// Set the version and variant bits
+		return new UUID(applyVersionBits(msb), applyVariantBits(lsb));
 	}
 }

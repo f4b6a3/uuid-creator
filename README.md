@@ -15,8 +15,10 @@ A Java library for generating and handling RFC-4122 UUIDs.
 
 #### Non-standard GUIDs:
 
-* __COMB GUID__: a GUID that combines random bits with the creation time (suffix);
-* __Alternate COMB GUID__: a GUID that combines the creation time (prefix) with random bits.
+* __Prefix COMB__: a GUID that combines the creation millisecond (prefix) with random bits;
+* __Suffix COMB__: a GUID that combines random bits with the creation millisecond (suffix);
+* __Short Prefix COMB__: a GUID that combines the creation minute (prefix) with random bits;
+* __Short Suffix COMB__: a GUID that combines random bits with the creation minute (suffix).
 
 How to Use
 ------------------------------------------------------
@@ -50,7 +52,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>2.1.0</version>
+  <version>2.2.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -98,7 +100,7 @@ Examples of time-based UUID:
 
 ### Version 2: DCE Security
 
-The DCE Security is a time-based UUID that also has a local domain and a local identifier.
+The DCE Security<sup>[6]</sup> is a time-based UUID that also has a local domain and a local identifier.
 
 ```java
 // DCE Security
@@ -191,7 +193,7 @@ UUID uuid = UuidCreator.getNameBasedSha1(namespace, name);
 
 ### Version 6: Time-ordered (proposed)
 
-The Time-ordered UUID has a timestamp and may have a hardware address. 
+The Time-ordered<sup>[4]</sup> <sup>[5]</sup> UUID has a timestamp and may have a hardware address. 
 
 The timestamp bits are kept in the original order, unlike the time-based UUID.
 
@@ -230,76 +232,148 @@ Examples of time-ordered UUID:
      timestamp    clkseq  node id
 ```
 
-### COMB GUID (non-standard)
+### Prefix COMB (non-standard)
 
-The COMB GUID<sup>[7]</sup> is a modified random-based UUID that replaces the LAST 6 bytes with Unix epoch milliseconds.
+The Prefix COMB<sup>[7]</sup> is a modified random-based UUID that replaces the FIRST 6 bytes of the MOST significant bits.
 
-The creation time is a SUFFIX after the random bytes.
-
-```java
-// COMB GUID
-UUID uuid = UuidCreator.getCombGuid();
-```
-
-Examples of COMB GUID:
-
-```text
-19a298c8-3f03-0d00-57fe-0170df0cfcdd
-01a8dee9-44dc-d928-419d-0170df0cfcdd
-b7ba49dd-946c-b4a1-04dd-0170df0cfcdd
-faa4a270-7223-e8d3-5ed4-0170df0cfcdd
-cb019dcd-bc8e-1f84-f008-0170df0cfcdd
-610cbbc9-d157-5882-752c-0170df0cfcdd
-b77d6a98-3cf9-12fc-4a07-0170df0cfcdd
-c26bf75c-f95d-bea1-7c4b-0170df0cfcdd
-5655bf86-a00e-1b72-0081-0170df0cfcde < millisecond changed
-459f1115-1ab1-3647-92f6-0170df0cfcde
-ec2bad25-8e46-5b27-80d8-0170df0cfcde
-95c1a524-574e-865e-f626-0170df0cfcde
-1ec88587-8552-5eaa-72d5-0170df0cfcde
-c72801dc-c3c5-d0b9-4335-0170df0cfcde
-d790cb8d-1308-0672-b767-0170df0cfcde
-6d885798-609b-9113-e879-0170df0cfcde
-                                   ^ look
-
-|----------------------|-----------|
-       randomness        millisecs
-```
-
-### Alternate COMB GUID (non-standard)
-
-The Alternate COMB GUID is a modified random-based UUID that replaces the FIRST 6 bytes with Unix epoch milliseconds.
-
-The creation time is a PREFIX before the random bytes.
+The PREFIX is the creation millisecond (Unix epoch).
 
 ```java
-// COMB GUID
-UUID uuid = UuidCreator.getAltCombGuid();
+// Prefix COMB
+UUID uuid = UuidCreator.getPrefixComb();
 ```
 
-Examples of COMB GUID:
+Examples of Prefix COMB:
 
 ```text
-01716fdb-520c-744c-76c2-1281e82e3918
-01716fdb-520c-f09f-7b17-11644106e621
-01716fdb-520c-71ae-1c27-2204b5140680
-01716fdb-520c-a2ab-930d-cf39a9259e40
-01716fdb-520c-652f-595d-c9e268c5b28f
-01716fdb-520c-bd53-f857-8d004d21bcbd
-01716fdb-520c-e09f-6d2f-822731bbdf39
-01716fdb-520c-f04a-2596-c05c38e0fb8b 
-01716fdb-520d-70ac-71c2-7f8db1f67a87 < millisecond changed
-01716fdb-520d-0d20-06a7-1e7041f28d19
-01716fdb-520d-83c6-3e57-8b77409effb7
-01716fdb-520d-fcd1-1b52-3e278610b940
-01716fdb-520d-839e-b83a-e0014be989e2
-01716fdb-520d-b5cc-9230-4505e0776e14
-01716fdb-520d-f3af-1dd2-49401c60a242
-01716fdb-520d-e0ae-36d1-4d80b5ae1fa0
+01720b5c-bf10-423f-9b20-1f88a7e2763a
+01720b5c-bf10-43bf-a639-9b511243507f
+01720b5c-bf10-4b47-9925-f96f0e197ba5
+01720b5c-bf10-49ba-84c0-7ace9ae546bb
+01720b5c-bf10-4327-b62a-2a242dcc197f
+01720b5c-bf10-47cc-b631-4f262f500172
+01720b5c-bf10-42ca-b063-28d5329b8d90
+01720b5c-bf10-4442-876b-2710215d41e1
+01720b5c-bf11-4a08-a63f-4495659603b4 < millisecond changed
+01720b5c-bf11-49a8-8339-8e3b429fc6fb
+01720b5c-bf11-4879-81f9-97194a331e3f
+01720b5c-bf11-497f-a599-c52a8c692107
+01720b5c-bf11-403c-a1e1-4f112539f97a
+01720b5c-bf11-4e97-a9e3-59215d3d5fb1
+01720b5c-bf11-4135-bb7f-422ec3c33cca
+01720b5c-bf11-4460-9a62-bcf16e35b418
+01720b5c-bf11...
             ^ look
-
+            
 |------------|---------------------|
-   millisecs       randomness
+    prefix         randomness
+```
+
+### Suffix COMB (non-standard)
+
+The Suffix COMB<sup>[7]</sup> is a modified random-based UUID that replaces the LAST 6 bytes of the LEAST significant bits.
+
+The SUFFIX is the creation millisecond (Unix epoch).
+
+```java
+// Suffix COMB
+UUID uuid = UuidCreator.getSuffixComb();
+```
+
+Examples of Suffix COMB:
+
+```text
+0c7fb3f5-cf99-4dc4-942a-01720b5cbf0c
+4fa8ccdc-75c5-43ae-bf2f-01720b5cbf0c
+3fdc05c0-8787-4072-b710-01720b5cbf0c
+e1eea5da-5afa-4273-80c3-01720b5cbf0c
+d7df7ec2-3a1a-4c9b-9fbc-01720b5cbf0c
+119a1f87-59d1-4f08-b7e9-01720b5cbf0c
+d0bb8776-37fa-47d4-978f-01720b5cbf0c
+867a1ec3-f8de-46ec-b3a4-01720b5cbf0c
+1739a555-5a45-44fd-9331-01720b5cbf0d < millisecond changed
+43d9c807-2286-4bd7-8263-01720b5cbf0d
+643653e4-8ae2-43bf-be16-01720b5cbf0d
+e1f40089-7cf0-42f1-a27a-01720b5cbf0d
+f68b0dfd-fe74-42d3-a4c4-01720b5cbf0d
+adb7f7eb-760f-427d-ba6e-01720b5cbf0d
+4b69b874-f2b9-4b1a-ad31-01720b5cbf0d
+612cfbc3-70c0-4301-ae95-01720b5cbf0d
+                     ...01720b5cbf0d
+                                   ^ look
+                                   
+|----------------------|-----------|
+       randomness         suffix
+```
+
+### Short Prefix COMB (non-standard)
+
+The Short Prefix COMB<sup>[10]</sup> is a modified random-based UUID that replaces 2 bytes of the MOST significant bits.
+
+The PREFIX is the creation minute (Unix epoch). It wraps around every 45 days (2^16/60/24 = ~45).
+
+```java
+// Short Prefix COMB
+UUID uuid = UuidCreator.getShortPrefixComb();
+```
+
+Examples of Short Prefix COMB:
+
+```text
+2fe8ef26-5684-4192-aab6-fc6a0aaa191c
+2fe808c2-bd77-4338-8954-e2152ae8a8df
+2fe8c7c2-2c1e-4f7d-88fa-e3d115d7e4c9
+2fe84e2f-b8ed-4a1f-99be-742e781067f7
+2fe85dad-4e7f-4447-b035-23882d69027d
+2fe810cb-fa4d-4d2c-9e4f-b122d0d19391
+2fe8a8c1-b039-477b-8b63-483eb986434e
+2fe839c9-b1b7-43c7-88c5-09fda1ef30e6
+2fe8a971-e3ac-4f3b-858a-1aad577e8c36
+2fe87c36-9e81-40c8-bff2-1bf9956c0d32
+2fe86aca-f113-4ef4-8b69-1b5de35d0832
+2fe8ec69-7acc-4cff-91c9-f658b331ee67
+2fe88b94-993f-4176-9991-1f9e778a79a0
+2fe8b041-d0de-4552-b6b5-449a8ee32134
+2fe8da35-ce9d-4d4a-90e5-c2a4c89f18c7
+2fe8...
+
+|---|------------------------------|
+prefix         randomness
+```
+
+### Short Suffix COMB (non-standard)
+
+The Short Suffix COMB GUID<sup>[10]</sup> is a modified random-based UUID that replaces 2 bytes of the LEAST significant bits.
+
+The SUFFIX is the creation minute (Unix epoch). It wraps around every 45 days (2^16/60/24 = ~45).
+
+```java
+// Short Suffix COMB
+UUID uuid = UuidCreator.getShortSuffixComb();
+```
+
+Examples of Short Suffix COMB:
+
+```text
+0c06fac1-fe6a-4efa-ad45-2fe861065351
+2d505d8f-10e6-42b3-9be3-2fe8064a65e9
+d2eed78b-3277-42e4-ae58-2fe8e6f09523
+5e471a1c-6cd8-4112-a9cb-2fe81873ba5f
+5777ecca-471d-4926-8c71-2fe898083dc9
+2c9602c6-d3e7-4cce-b687-2fe8681f205e
+7cc02c02-c867-4bbb-a130-2fe87bd427cc
+033d4881-f059-4171-bc83-2fe89e5a2bed
+727f4de4-0c62-4132-b3ce-2fe824ff3d5b
+e2df0d73-cc2b-455f-a9e4-2fe8bf4bf0f0
+ad0a704a-0d03-48b5-a7eb-2fe8e01165d7
+94d785b2-eb62-4eaa-88e7-2fe8fc5c3478
+4f2a5300-938d-44d2-9b2a-2fe83a86787e
+384df3b4-36b7-4154-961a-2fe87bbbe5f4
+53ab5fd3-31ee-4cb9-8779-2fe8a887b3be
+                     ...2fe8...
+
+|----------------------|---|-------|
+       randomness      suffix
 ```
 
 System properties and environment variables
@@ -707,17 +781,17 @@ UUID uuid = UuidCreator.getRandomBasedCreator()
 
 #### COMB GUID
 
-All the examples in this subsection are also valid for Alternate COMB GUIDs.
+All the examples in this subsection are also valid for Suffix COMB GUIDs.
 
 ```java
 
 // with java random generator (java.util.Random)
-UUID uuid = UuidCreator.getCombCreator()
+UUID uuid = UuidCreator.getPrefixCombCreator()
     .withRandomGenerator(new Random())
     .create();
 
 // with fast random generator (Xorshift128Plus)
-UUID uuid = UuidCreator.getCombCreator()
+UUID uuid = UuidCreator.getPrefixCombCreator()
     .withFastRandomGenerator()
     .create();
 
@@ -754,17 +828,18 @@ THROUGHPUT (operations/millis)
 -----------------------------------------------------------------------------------
 Benchmark                                Mode  Cnt      Score     Error   Units
 -----------------------------------------------------------------------------------
-Throughput.Eaio_TimeBased (*)           thrpt    5  21350,078 ± 123,608  ops/ms
-Throughput.Java_Random                  thrpt    5   2199,813 ±   5,564  ops/ms
-Throughput.UuidCreator_CombGuid         thrpt    5   2755,767 ±  16,405  ops/ms
-Throughput.UuidCreator_FastRandomBased  thrpt    5  89950,189 ± 649,687  ops/ms
-Throughput.UuidCreator_NameBasedMd5     thrpt    5   3989,824 ±  13,802  ops/ms
-Throughput.UuidCreator_NameBasedSha1    thrpt    5   3001,964 ±   4,703  ops/ms
-Throughput.UuidCreator_RandomBased      thrpt    5   2184,672 ±   7,996  ops/ms
-Throughput.UuidCreator_TimeBased        thrpt    5  18129,622 ±  53,520  ops/ms
-Throughput.UuidCreator_TimeOrdered      thrpt    5  18222,911 ±  35,550  ops/ms
+Throughput.Eaio_TimeBased (*)           thrpt    5  20675,885 ± 288,678  ops/ms
+Throughput.Java_RandomBased             thrpt    5   2043,404 ±  29,534  ops/ms
+Throughput.UuidCreator_FastRandomBased  thrpt    5  86240,537 ± 992,770  ops/ms
+Throughput.UuidCreator_NameBasedMd5     thrpt    5   3542,077 ±  34,960  ops/ms
+Throughput.UuidCreator_NameBasedSha1    thrpt    5   2723,757 ±  35,945  ops/ms
+Throughput.UuidCreator_PrefixComb       thrpt    5   2618,561 ±  40,111  ops/ms
+Throughput.UuidCreator_RandomBased      thrpt    5   2011,758 ±  25,476  ops/ms
+Throughput.UuidCreator_ShortPrefixComb  thrpt    5   2042,027 ±  25,951  ops/ms
+Throughput.UuidCreator_TimeBased        thrpt    5  17404,991 ± 306,446  ops/ms
+Throughput.UuidCreator_TimeOrdered      thrpt    5  17305,834 ± 363,300  ops/ms
 -----------------------------------------------------------------------------------
-Total time: 00:17:24
+Total time: 00:13:23
 -----------------------------------------------------------------------------------
 ```
 
@@ -772,19 +847,20 @@ Total time: 00:17:24
 -----------------------------------------------------------------------------------
 AVERAGE TIME (nanos/operation)
 -----------------------------------------------------------------------------------
-Benchmark                                Mode  Cnt    Score   Error  Units
+Benchmark                                Mode  Cnt    Score    Error  Units
 -----------------------------------------------------------------------------------
-AverageTime.Eaio_TimeBased (*)           avgt    5   47,051 ± 0,213  ns/op
-AverageTime.Java_Random                  avgt    5  456,015 ± 2,100  ns/op
-AverageTime.UuidCreator_CombGuid         avgt    5  361,115 ± 1,268  ns/op
-AverageTime.UuidCreator_FastRandomBased  avgt    5   10,638 ± 0,050  ns/op
-AverageTime.UuidCreator_NameBasedMd5     avgt    5  243,790 ± 1,622  ns/op
-AverageTime.UuidCreator_NameBasedSha1    avgt    5  332,346 ± 0,919  ns/op
-AverageTime.UuidCreator_RandomBased      avgt    5  452,502 ± 1,144  ns/op
-AverageTime.UuidCreator_TimeBased        avgt    5   55,475 ± 0,322  ns/op
-AverageTime.UuidCreator_TimeOrdered      avgt    5   54,210 ± 0,293  ns/op
+AverageTime.Eaio_TimeBased (*)           avgt    5   48,500 ±  1,371  ns/op
+AverageTime.Java_RandomBased             avgt    5  489,989 ±  5,458  ns/op
+AverageTime.UuidCreator_FastRandomBased  avgt    5   11,319 ±  0,237  ns/op
+AverageTime.UuidCreator_NameBasedMd5     avgt    5  280,546 ±  1,840  ns/op
+AverageTime.UuidCreator_NameBasedSha1    avgt    5  376,271 ±  3,414  ns/op
+AverageTime.UuidCreator_PrefixComb       avgt    5  381,903 ±  7,952  ns/op
+AverageTime.UuidCreator_RandomBased      avgt    5  493,900 ± 12,183  ns/op
+AverageTime.UuidCreator_ShortPrefixComb  avgt    5  489,810 ±  6,250  ns/op
+AverageTime.UuidCreator_TimeBased        avgt    5   56,973 ±  1,846  ns/op
+AverageTime.UuidCreator_TimeOrdered      avgt    5   56,338 ±  1,330  ns/op
 -----------------------------------------------------------------------------------
-Total time: 00:17:24
+Total time: 00:13:23
 -----------------------------------------------------------------------------------
 ```
 
@@ -793,7 +869,7 @@ These external generators are used for comparison:
 - com.eaio.uuid.UUID (for time-based UUID);
 - java.util.UUID (for random UUID).
 
-Benchmarks executed in a PC with Ubuntu 20.04, JVM 11.0.7, CPU Intel i5-3330 and 8GB RAM.
+Benchmarks executed in a PC with Ubuntu 20.04, JVM 8, CPU Intel i5-3330 and 8GB RAM.
 
 You can find the benchmark source code at [uuid-creator-benchmark](https://github.com/fabiolimace/uuid-creator-benchmark).
 
@@ -827,6 +903,8 @@ References
 
 [9]. ULID Specification - Universally Unique Lexicographically Sortable Identifier
 
+[10]. Sequential UUID Generators
+
 [1]: https://en.wikipedia.org/wiki/Universally_unique_identifier
 [2]: https://tools.ietf.org/html/rfc4122
 [3]: https://www.percona.com/blog/2007/03/13/to-uuid-or-not-to-uuid
@@ -836,6 +914,7 @@ References
 [7]: http://www.informit.com/articles/printerfriendly/25862
 [8]: https://blogs.msdn.microsoft.com/dbrowne/2012/07/03/how-to-generate-sequential-guids-for-sql-server-in-net
 [9]: https://github.com/ulid/spec
+[10]: https://blog.2ndquadrant.com/sequential-uuid-generators/
 
 More links
 ------------------------------------------------------

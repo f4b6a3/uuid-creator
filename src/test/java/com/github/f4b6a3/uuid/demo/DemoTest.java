@@ -36,17 +36,31 @@ public class DemoTest {
 		}
 
 		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### COMB GUID");
+		System.out.println("### Suffix COMB GUID");
 
 		for (int i = 0; i < max; i++) {
-			System.out.println(UuidCreator.getCombGuid());
+			System.out.println(UuidCreator.getSuffixComb());
 		}
 
 		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### Alt COMB GUID");
+		System.out.println("### Prefix COMB GUID");
 
 		for (int i = 0; i < max; i++) {
-			System.out.println(UuidCreator.getAltCombGuid());
+			System.out.println(UuidCreator.getPrefixComb());
+		}
+		
+		System.out.println(HORIZONTAL_LINE);
+		System.out.println("### Short Suffix COMB GUID");
+
+		for (int i = 0; i < max; i++) {
+			System.out.println(UuidCreator.getShortSuffixComb());
+		}
+
+		System.out.println(HORIZONTAL_LINE);
+		System.out.println("### Short Prefix COMB GUID");
+
+		for (int i = 0; i < max; i++) {
+			System.out.println(UuidCreator.getShortPrefixComb());
 		}
 		
 		System.out.println(HORIZONTAL_LINE);

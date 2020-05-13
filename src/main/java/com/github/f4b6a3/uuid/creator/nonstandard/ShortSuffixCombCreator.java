@@ -33,59 +33,66 @@ import com.github.f4b6a3.uuid.creator.AbstractRandomBasedUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 
 /**
- * Factory that creates alternate COMB GUIDs.
+ * Factory that creates Suffix COMB GUIDs.
  * 
- * A COMB GUID is a UUID that combines a creation time with random bits.
+ * A Suffix COMB GUID is a UUID that combines a creation time with random bits.
  * 
- * The creation time is a SUFFIX at the LEAST significant bits.
+ * The creation minute is a 2 bytes SUFFIX at the LEAST significant bits.
  * 
- * The Cost of GUIDs as Primary Keys (COMB GUID inception):
- * http://www.informit.com/articles/article.aspx?p=25862
+ * The suffix wraps around every ~45 days (2^16/60/24 = ~45).
+ * 
+ * Read: Sequential UUID Generators
+ * https://www.2ndquadrant.com/en/blog/sequential-uuid-generators/
  * 
  */
-public class CombGuidCreator extends AbstractRandomBasedUuidCreator {
+public class ShortSuffixCombCreator extends AbstractRandomBasedUuidCreator {
 
-	public CombGuidCreator() {
-		super();
-	}
+	protected static final int ONE_MINUTE = 60_000;
 
-	public CombGuidCreator(UuidVersion version) {
-		super();
+	public ShortSuffixCombCreator() {
+		super(UuidVersion.VERSION_RANDOM_BASED);
 	}
 
 	/**
-	 * Return a COMB GUID.
+	 * Return a Suffix COMB GUID.
 	 * 
 	 * It combines a creation time with random bits.
 	 * 
-	 * The creation time is a SUFFIX at the LEAST significant bits.
+	 * The creation minute is a 2 bytes SUFFIX at the LEAST significant bits.
+	 * 
+	 * The suffix wraps around every ~45 days (2^16/60/24 = ~45).
 	 */
 	@Override
 	public synchronized UUID create() {
 
-		final long timestamp = System.currentTimeMillis();
+		final short timestamp = (short) (System.currentTimeMillis() / ONE_MINUTE);
 
-		final long msb;
-		final long lsb;
+		long msb;
+		long lsb;
 
-		// Get random values
+		// Get random values for MSB and LSB
 		if (random == null) {
-			final byte[] bytes = new byte[10];
+			final byte[] bytes = new byte[14];
 			RandomUtil.get().nextBytes(bytes);
 			msb = ByteUtil.toNumber(bytes, 0, 8);
-			lsb = (bytes[8] << 8) | (bytes[9] & 0xff);
+			lsb = ByteUtil.toNumber(bytes, 8, 14);
 		} else {
 			if (this.random instanceof SecureRandom) {
-				final byte[] bytes = new byte[10];
+				final byte[] bytes = new byte[14];
 				this.random.nextBytes(bytes);
 				msb = ByteUtil.toNumber(bytes, 0, 8);
-				lsb = (bytes[8] << 8) | (bytes[9] & 0xff);
+				lsb = ByteUtil.toNumber(bytes, 8, 14);
 			} else {
 				msb = this.random.nextLong();
 				lsb = this.random.nextLong();
 			}
 		}
 
-		return new UUID(msb, (lsb << 48) | (timestamp & 0x0000ffffffffffffL));
+		// Insert the short suffix in the LSB
+		lsb = ((lsb & 0x0000ffff00000000L) << 16) | (lsb & 0x00000000ffffffffL)
+				| ((timestamp & 0x000000000000ffffL) << 32);
+
+		// Set the version and variant bits
+		return new UUID(applyVersionBits(msb), applyVariantBits(lsb));
 	}
 }
