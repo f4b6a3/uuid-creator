@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2019 Fabio Lima
+ * Copyright (c) 2018-2020 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,19 @@ package com.github.f4b6a3.uuid.enums;
 
 /**
  * Local domains used to create DCE Security UUIDs.
+ * 
+ * <pre>
+ * Local domains predefined by DCE 1.1 Authentication and Security Services (Chapter 11):
+ * 
+ * - LOCAL_DOMAIN_PERSON: 0 (interpreted as POSIX UID domain);
+ * - LOCAL_DOMAIN_GROUP: 1 (interpreted as POSIX GID domain);
+ * - LOCAL_DOMAIN_ORG: 2.
+ * </pre>
+ * 
+ * Source:
+ * 
+ * DCE 1.1: Authentication and Security Services (Chapter 11 - domain names):
+ * https://pubs.opengroup.org/onlinepubs/9696989899/chap11.htm#tagcjh_14_05_01_01
  */
 public enum UuidLocalDomain {
 

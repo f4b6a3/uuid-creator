@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2019 Fabio Lima
+ * Copyright (c) 2018-2020 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,14 +37,20 @@ import com.github.f4b6a3.uuid.util.sequence.AbstractSequence;
  * Factory that creates DCE Security UUIDs (version 2).
  * 
  * <pre>
- * Standard local domains: 
- * - Local Domain Person (POSIX UserID domain): 0
- * - Local Domain Group (POSIX GroupID domain): 1
- * - Local Domain Org: 2
+ * Local domains predefined by DCE 1.1 Authentication and Security Services (Chapter 11):
+ * 
+ * - LOCAL_DOMAIN_PERSON: 0 (interpreted as POSIX UID domain);
+ * - LOCAL_DOMAIN_GROUP: 1 (interpreted as POSIX GID domain);
+ * - LOCAL_DOMAIN_ORG: 2.
  * </pre>
  * 
- * DCE 1.1: Authentication and Security Services:
- * https://pubs.opengroup.org/onlinepubs/9668899/chap1.htm
+ * Sources:
+ * 
+ * DCE 1.1: Authentication and Security Services (Chapter 05 - Version 2 UUIDs):
+ * https://pubs.opengroup.org/onlinepubs/9696989899/chap5.htm#tagcjh_08_02_01_01
+ * 
+ * DCE 1.1: Authentication and Security Services (Chapter 11 - domain names):
+ * https://pubs.opengroup.org/onlinepubs/9696989899/chap11.htm#tagcjh_14_05_01_01
  * 
  * Distributed Computing Environment (DCE):
  * https://en.wikipedia.org/wiki/Distributed_Computing_Environment

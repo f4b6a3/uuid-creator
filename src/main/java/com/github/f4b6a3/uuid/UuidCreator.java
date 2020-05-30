@@ -38,11 +38,23 @@ import com.github.f4b6a3.uuid.creator.rfc4122.TimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.creator.rfc4122.TimeOrderedUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidLocalDomain;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
+import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 
 /**
  * Facade to the UUID factories.
  */
 public class UuidCreator {
+
+	public static final UuidNamespace NAMESPACE_DNS = UuidNamespace.NAMESPACE_DNS;
+	public static final UuidNamespace NAMESPACE_URL = UuidNamespace.NAMESPACE_URL;
+	public static final UuidNamespace NAMESPACE_ISO_OID = UuidNamespace.NAMESPACE_ISO_OID;
+	public static final UuidNamespace NAMESPACE_X500_DN = UuidNamespace.NAMESPACE_X500_DN;
+
+	public static final UuidLocalDomain LOCAL_DOMAIN_PERSON = UuidLocalDomain.LOCAL_DOMAIN_PERSON;
+	public static final UuidLocalDomain LOCAL_DOMAIN_GROUP = UuidLocalDomain.LOCAL_DOMAIN_GROUP;
+	public static final UuidLocalDomain LOCAL_DOMAIN_ORG = UuidLocalDomain.LOCAL_DOMAIN_ORG;
+
+	private static final UUID UUID_NIL = new UUID(0L, 0L);
 
 	private UuidCreator() {
 	}
@@ -50,12 +62,12 @@ public class UuidCreator {
 	/**
 	 * Returns a Nil UUID.
 	 * 
-	 * The nil UUID is special UUID that has all 128 bits set to zero.
+	 * The Nil UUID is special UUID that has all 128 bits set to zero.
 	 * 
 	 * @return a Nil UUID
 	 */
 	public static UUID getNil() {
-		return new UUID(0L, 0L);
+		return UUID_NIL;
 	}
 
 	/**
@@ -94,11 +106,12 @@ public class UuidCreator {
 	 * <pre>
 	 * Details: 
 	 * - Version number: 1
-	 * - Has timestamp?: YES
-	 * - Has hardware address (MAC)?: NO (random)
+	 * - Hardware address (MAC): NO (random)
 	 * </pre>
 	 * 
 	 * @return a version 1 UUID
+	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
+	 *                              requested within the same millisecond
 	 */
 	public static UUID getTimeBased() {
 		return TimeBasedCreatorHolder.INSTANCE.create();
@@ -110,11 +123,12 @@ public class UuidCreator {
 	 * <pre>
 	 * Details: 
 	 * - Version number: 1 
-	 * - Has timestamp?: YES 
-	 * - Has hardware address (MAC)?: YES
+	 * - Hardware address (MAC): YES
 	 * </pre>
 	 * 
 	 * @return a version 1 UUID
+	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
+	 *                              requested within the same millisecond
 	 */
 	public static UUID getTimeBasedWithMac() {
 		return TimeBasedWithMacCreatorHolder.INSTANCE.create();
@@ -126,11 +140,12 @@ public class UuidCreator {
 	 * <pre>
 	 * Details: 
 	 * - Version number: 6
-	 * - Has timestamp?: YES 
-	 * - Has hardware address (MAC)?: NO (random)
+	 * - Hardware address (MAC): NO (random)
 	 * </pre>
 	 * 
 	 * @return a version 6 UUID
+	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
+	 *                              requested within the same millisecond
 	 */
 	public static UUID getTimeOrdered() {
 		return TimeOrderedCreatorHolder.INSTANCE.create();
@@ -142,11 +157,12 @@ public class UuidCreator {
 	 * <pre>
 	 * Details: 
 	 * - Version number: 6
-	 * - Has timestamp?: YES 
-	 * - Has hardware address (MAC)?: YES
+	 * - Hardware address (MAC): YES
 	 * </pre>
 	 * 
 	 * @return a version 6 UUID
+	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
+	 *                              requested within the same millisecond
 	 */
 	public static UUID getTimeOrderedWithMac() {
 		return TimeOrderedWithMacCreatorHolder.INSTANCE.create();
@@ -159,7 +175,7 @@ public class UuidCreator {
 	 * Details: 
 	 * - Version number: 3 
 	 * - Hash Algorithm: MD5 
-	 * - Name Space: none
+	 * - Name Space: NO
 	 * </pre>
 	 * 
 	 * @param name a name string
@@ -176,7 +192,7 @@ public class UuidCreator {
 	 * Details: 
 	 * - Version number: 3 
 	 * - Hash Algorithm: MD5 
-	 * - Name Space: none
+	 * - Name Space: NO
 	 * </pre>
 	 * 
 	 * @param name a byte array
@@ -189,16 +205,61 @@ public class UuidCreator {
 	/**
 	 * Returns a name-based UUID (MD5).
 	 *
-	 * See: {@link UuidNamespace}.
+	 * <pre>
+	 * Details: 
+	 * - Version number: 3 
+	 * - Hash Algorithm: MD5 
+	 * - Name Space: YES (custom)
+	 * </pre>
+	 * 
+	 * @param namespace a custom name space UUID
+	 * @param name      a name string
+	 * @return a version 3 UUID
+	 */
+	public static UUID getNameBasedMd5(UUID namespace, String name) {
+		return NameBasedMd5CreatorHolder.INSTANCE.create(namespace, name);
+	}
+
+	/**
+	 * Returns a name-based UUID (MD5).
 	 * 
 	 * <pre>
 	 * Details: 
 	 * - Version number: 3 
 	 * - Hash Algorithm: MD5 
-	 * - Name Space: informed by user
+	 * - Name Space: YES (custom)
 	 * </pre>
 	 * 
-	 * @param namespace a name space enumeration
+	 * @param namespace a custom name space UUID
+	 * @param name      a byte array
+	 * @return a version 3 UUID
+	 */
+	public static UUID getNameBasedMd5(UUID namespace, byte[] name) {
+		return NameBasedMd5CreatorHolder.INSTANCE.create(namespace, name);
+	}
+
+	/**
+	 * Returns a name-based UUID (MD5).
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 3 
+	 * - Hash Algorithm: MD5 
+	 * - Name Space: YES (predefined)
+	 * </pre>
+	 * 
+	 * <pre>
+	 * Name spaces predefined by RFC-4122 (Appendix C):
+	 * 
+	 * - NAMESPACE_DNS: Name string is a fully-qualified domain name;
+	 * - NAMESPACE_URL: Name string is a URL;
+	 * - NAMESPACE_ISO_OID: Name string is an ISO OID;
+	 * - NAMESPACE_X500_DN: Name string is an X.500 DN (in DER or a text format).
+	 * </pre>
+	 * 
+	 * See: {@link UuidNamespace}.
+	 * 
+	 * @param namespace a predefined name space enumeration
 	 * @param name      a name string
 	 * @return a version 3 UUID
 	 */
@@ -208,17 +269,26 @@ public class UuidCreator {
 
 	/**
 	 * Returns a name-based UUID (MD5).
-	 *
-	 * See: {@link UuidNamespace}.
 	 * 
 	 * <pre>
 	 * Details: 
 	 * - Version number: 3 
 	 * - Hash Algorithm: MD5 
-	 * - Name Space: informed by user
+	 * - Name Space: YES (predefined)
 	 * </pre>
 	 * 
-	 * @param namespace a name space enumeration
+	 * <pre>
+	 * Name spaces predefined by RFC-4122 (Appendix C):
+	 * 
+	 * - NAMESPACE_DNS: Name string is a fully-qualified domain name;
+	 * - NAMESPACE_URL: Name string is a URL;
+	 * - NAMESPACE_ISO_OID: Name string is an ISO OID;
+	 * - NAMESPACE_X500_DN: Name string is an X.500 DN (in DER or a text format).
+	 * </pre>
+	 * 
+	 * See: {@link UuidNamespace}.
+	 * 
+	 * @param namespace a predefined name space enumeration
 	 * @param name      a byte array
 	 * @return a version 3 UUID
 	 */
@@ -233,7 +303,7 @@ public class UuidCreator {
 	 * Details: 
 	 * - Version number: 5 
 	 * - Hash Algorithm: SHA1 
-	 * - Name Space: none
+	 * - Name Space: NO
 	 * </pre>
 	 * 
 	 * @param name a name string
@@ -250,7 +320,7 @@ public class UuidCreator {
 	 * Details: 
 	 * - Version number: 5 
 	 * - Hash Algorithm: SHA1 
-	 * - Name Space: none
+	 * - Name Space: NO
 	 * </pre>
 	 * 
 	 * @param name a byte array
@@ -263,16 +333,61 @@ public class UuidCreator {
 	/**
 	 * Returns a name-based UUID (SHA1).
 	 *
-	 * See: {@link UuidNamespace}.
-	 * 
 	 * <pre>
 	 * Details: 
 	 * - Version number: 5 
 	 * - Hash Algorithm: SHA1 
-	 * - Name Space: informed by user
+	 * - Name Space: YES (custom)
 	 * </pre>
 	 * 
-	 * @param namespace a name space enumeration
+	 * @param namespace a custom name space UUID
+	 * @param name      a name string
+	 * @return a version 5 UUID
+	 */
+	public static UUID getNameBasedSha1(UUID namespace, String name) {
+		return NameBasedSha1CreatorHolder.INSTANCE.create(namespace, name);
+	}
+
+	/**
+	 * Returns a name-based UUID (SHA1).
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 5 
+	 * - Hash Algorithm: SHA1 
+	 * - Name Space: YES (custom)
+	 * </pre>
+	 * 
+	 * @param namespace a custom name space UUID
+	 * @param name      a byte array
+	 * @return a version 5 UUID
+	 */
+	public static UUID getNameBasedSha1(UUID namespace, byte[] name) {
+		return NameBasedSha1CreatorHolder.INSTANCE.create(namespace, name);
+	}
+
+	/**
+	 * Returns a name-based UUID (SHA1).
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 5 
+	 * - Hash Algorithm: SHA1 
+	 * - Name Space: YES (predefined)
+	 * </pre>
+	 * 
+	 * <pre>
+	 * Name spaces predefined by RFC-4122 (Appendix C):
+	 * 
+	 * - NAMESPACE_DNS: Name string is a fully-qualified domain name;
+	 * - NAMESPACE_URL: Name string is a URL;
+	 * - NAMESPACE_ISO_OID: Name string is an ISO OID;
+	 * - NAMESPACE_X500_DN: Name string is an X.500 DN (in DER or a text format).
+	 * </pre>
+	 * 
+	 * See: {@link UuidNamespace}.
+	 * 
+	 * @param namespace a predefined name space enumeration
 	 * @param name      a name string
 	 * @return a version 5 UUID
 	 */
@@ -283,16 +398,25 @@ public class UuidCreator {
 	/**
 	 * Returns a name-based UUID (SHA1).
 	 *
-	 * See: {@link UuidNamespace}.
-	 * 
 	 * <pre>
 	 * Details: 
 	 * - Version number: 5 
 	 * - Hash Algorithm: SHA1 
-	 * - Name Space: informed by user
+	 * - Name Space: YES (predefined)
 	 * </pre>
 	 * 
-	 * @param namespace a name space enumeration
+	 * <pre>
+	 * Name spaces predefined by RFC-4122 (Appendix C):
+	 * 
+	 * - NAMESPACE_DNS: Name string is a fully-qualified domain name;
+	 * - NAMESPACE_URL: Name string is a URL;
+	 * - NAMESPACE_ISO_OID: Name string is an ISO OID;
+	 * - NAMESPACE_X500_DN: Name string is an X.500 DN (in DER or a text format).
+	 * </pre>
+	 * 
+	 * See: {@link UuidNamespace}.
+	 * 
+	 * @param namespace a predefined name space enumeration
 	 * @param name      a byte array
 	 * @return a version 5 UUID
 	 */
@@ -308,14 +432,14 @@ public class UuidCreator {
 	 * <pre>
 	 * Details: 
 	 * - Version number: 2 
-	 * - Has hardware address (MAC)?: NO (random)
+	 * - Hardware address (MAC): NO (random)
 	 * </pre>
 	 * 
-	 * @param localDomain     a local domain enumeration
+	 * @param localDomain     a custom local domain byte
 	 * @param localIdentifier a local identifier
 	 * @return a version 2 UUID
 	 */
-	public static UUID getDceSecurity(UuidLocalDomain localDomain, int localIdentifier) {
+	public static UUID getDceSecurity(byte localDomain, int localIdentifier) {
 		return DceSecurityCreatorHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
@@ -327,10 +451,64 @@ public class UuidCreator {
 	 * <pre>
 	 * Details: 
 	 * - Version number: 2 
-	 * - Has hardware address (MAC)?: YES
+	 * - Hardware address (MAC): YES
 	 * </pre>
 	 * 
-	 * @param localDomain     a local domain enumeration
+	 * @param localDomain     a custom local domain byte
+	 * @param localIdentifier a local identifier
+	 * @return a version 2 UUID
+	 */
+	public static UUID getDceSecurityWithMac(byte localDomain, int localIdentifier) {
+		return DceSecurityWithMacCreatorHolder.INSTANCE.create(localDomain, localIdentifier);
+	}
+
+	/**
+	 * Returns a DCE Security UUID.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 2 
+	 * - Hardware address (MAC): NO (random)
+	 * </pre>
+	 * 
+	 * <pre>
+	 * Local domains predefined by DCE 1.1 Authentication and Security Services (Chapter 11):
+	 * 
+	 * - LOCAL_DOMAIN_PERSON: 0 (interpreted as POSIX UID domain);
+	 * - LOCAL_DOMAIN_GROUP: 1 (interpreted as POSIX GID domain);
+	 * - LOCAL_DOMAIN_ORG: 2.
+	 * </pre>
+	 * 
+	 * See: {@link UuidLocalDomain}.
+	 * 
+	 * @param localDomain     a predefined local domain enumeration
+	 * @param localIdentifier a local identifier
+	 * @return a version 2 UUID
+	 */
+	public static UUID getDceSecurity(UuidLocalDomain localDomain, int localIdentifier) {
+		return DceSecurityCreatorHolder.INSTANCE.create(localDomain, localIdentifier);
+	}
+
+	/**
+	 * Returns a DCE Security UUID.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 2 
+	 * - Hardware address (MAC): YES
+	 * </pre>
+	 * 
+	 * <pre>
+	 * Local domains predefined by DCE 1.1 Authentication and Security Services (Chapter 11):
+	 * 
+	 * - LOCAL_DOMAIN_PERSON: 0 (interpreted as POSIX UID domain);
+	 * - LOCAL_DOMAIN_GROUP: 1 (interpreted as POSIX GID domain);
+	 * - LOCAL_DOMAIN_ORG: 2.
+	 * </pre>
+	 * 
+	 * See: {@link UuidLocalDomain}.
+	 * 
+	 * @param localDomain     a predefined local domain enumeration
 	 * @param localIdentifier a local identifier
 	 * @return a version 2 UUID
 	 */
@@ -404,6 +582,15 @@ public class UuidCreator {
 	 */
 
 	/**
+	 * Returns a {@link RandomBasedUuidCreator} that creates UUID version 4.
+	 * 
+	 * @return {@link RandomBasedUuidCreator}
+	 */
+	public static RandomBasedUuidCreator getRandomBasedCreator() {
+		return new RandomBasedUuidCreator();
+	}
+
+	/**
 	 * Returns a {@link TimeBasedUuidCreator} that creates UUID version 1.
 	 * 
 	 * @return {@link TimeBasedUuidCreator}
@@ -413,12 +600,12 @@ public class UuidCreator {
 	}
 
 	/**
-	 * Returns a {@link DceSecurityUuidCreator} that creates UUID version 2.
+	 * Returns a {@link TimeOrderedUuidCreator} that creates UUID version 6.
 	 * 
-	 * @return {@link DceSecurityUuidCreator}
+	 * @return {@link TimeOrderedUuidCreator}
 	 */
-	public static DceSecurityUuidCreator getDceSecurityCreator() {
-		return new DceSecurityUuidCreator();
+	public static TimeOrderedUuidCreator getTimeOrderedCreator() {
+		return new TimeOrderedUuidCreator();
 	}
 
 	/**
@@ -431,15 +618,6 @@ public class UuidCreator {
 	}
 
 	/**
-	 * Returns a {@link RandomBasedUuidCreator} that creates UUID version 4.
-	 * 
-	 * @return {@link RandomBasedUuidCreator}
-	 */
-	public static RandomBasedUuidCreator getRandomBasedCreator() {
-		return new RandomBasedUuidCreator();
-	}
-
-	/**
 	 * Returns a {@link NameBasedSha1UuidCreator} that creates UUID version 5.
 	 * 
 	 * @return {@link NameBasedSha1UuidCreator}
@@ -449,12 +627,12 @@ public class UuidCreator {
 	}
 
 	/**
-	 * Returns a {@link TimeOrderedUuidCreator} that creates UUID version 6.
+	 * Returns a {@link DceSecurityUuidCreator} that creates UUID version 2.
 	 * 
-	 * @return {@link TimeOrderedUuidCreator}
+	 * @return {@link DceSecurityUuidCreator}
 	 */
-	public static TimeOrderedUuidCreator getTimeOrderedCreator() {
-		return new TimeOrderedUuidCreator();
+	public static DceSecurityUuidCreator getDceSecurityCreator() {
+		return new DceSecurityUuidCreator();
 	}
 
 	/**

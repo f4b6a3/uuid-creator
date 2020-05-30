@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2019 Fabio Lima
+ * Copyright (c) 2018-2020 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,20 @@ import java.util.UUID;
 
 /**
  * Name spaces used to create name-based UUIDs.
+ * 
+ * <pre>
+ * Name spaces predefined by RFC-4122 (Appendix C):
+ * 
+ * - NAMESPACE_DNS: Name string is a fully-qualified domain name;
+ * - NAMESPACE_URL: Name string is a URL;
+ * - NAMESPACE_ISO_OID: Name string is an ISO OID;
+ * - NAMESPACE_X500_DN: Name string is an X.500 DN (in DER or a text format).
+ * </pre>
+ * 
+ * Source:
+ * 
+ * RFC-4122 - Appendix C - Some Name Space IDs
+ * https://tools.ietf.org/html/rfc4122#appendix-C
  */
 public enum UuidNamespace {
 
