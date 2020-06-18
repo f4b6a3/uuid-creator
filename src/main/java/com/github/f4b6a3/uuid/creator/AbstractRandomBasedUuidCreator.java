@@ -24,16 +24,17 @@
 
 package com.github.f4b6a3.uuid.creator;
 
-import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.creator.AbstractUuidCreator;
 import com.github.f4b6a3.uuid.creator.NoArgumentsUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
+import com.github.f4b6a3.uuid.strategy.RandomStrategy;
+import com.github.f4b6a3.uuid.strategy.random.DefaultRandomStrategy;
+import com.github.f4b6a3.uuid.strategy.random.OtherRandomStrategy;
 import com.github.f4b6a3.uuid.util.ByteUtil;
 import com.github.f4b6a3.uuid.util.FingerprintUtil;
-import com.github.f4b6a3.uuid.util.RandomUtil;
 import com.github.f4b6a3.uuid.util.random.Xorshift128PlusRandom;
 
 /**
@@ -41,14 +42,11 @@ import com.github.f4b6a3.uuid.util.random.Xorshift128PlusRandom;
  */
 public abstract class AbstractRandomBasedUuidCreator extends AbstractUuidCreator implements NoArgumentsUuidCreator {
 
-	protected Random random;
-
-	public AbstractRandomBasedUuidCreator() {
-		super();
-	}
+	protected RandomStrategy randomStrategy;
 
 	public AbstractRandomBasedUuidCreator(UuidVersion version) {
 		super(version);
+		this.randomStrategy = new DefaultRandomStrategy();
 	}
 
 	/**
@@ -69,35 +67,20 @@ public abstract class AbstractRandomBasedUuidCreator extends AbstractUuidCreator
 	 */
 	public UUID create() {
 
-		final long msb;
-		final long lsb;
-
 		// (3) set all bit randomly
-		if (this.random == null) {
-			final byte[] bytes = new byte[16];
-			RandomUtil.get().nextBytes(bytes);
-			msb = ByteUtil.toNumber(bytes, 0, 8);
-			lsb = ByteUtil.toNumber(bytes, 8, 16);
-		} else {
-			if (this.random instanceof SecureRandom) {
-				final byte[] bytes = new byte[16];
-				this.random.nextBytes(bytes);
-				msb = ByteUtil.toNumber(bytes, 0, 8);
-				lsb = ByteUtil.toNumber(bytes, 8, 16);
-			} else {
-				msb = this.random.nextLong();
-				lsb = this.random.nextLong();
-			}
-		}
+		final byte[] bytes = new byte[16];
+		this.randomStrategy.nextBytes(bytes);
+		final long msb = ByteUtil.toNumber(bytes, 0, 8);
+		final long lsb = ByteUtil.toNumber(bytes, 8, 16);
 
 		// (1)(2) Set the version and variant bits
 		return new UUID(applyVersionBits(msb), applyVariantBits(lsb));
 	}
 
 	/**
-	 * Replaces the default random generator with another one.
+	 * Replaces the default random strategy with another.
 	 * 
-	 * The default random generator is {@link java.security.SecureRandom}.
+	 * The default random strategy uses {@link java.security.SecureRandom}.
 	 * 
 	 * See {@link Random}.
 	 * 
@@ -106,30 +89,41 @@ public abstract class AbstractRandomBasedUuidCreator extends AbstractUuidCreator
 	 * @return {@link AbstractRandomBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized <T extends AbstractRandomBasedUuidCreator> T withRandomGenerator(Random random) {
-		this.random = random;
+	public synchronized <T extends AbstractRandomBasedUuidCreator> T withRandomStrategy(RandomStrategy randomStrategy) {
+		this.randomStrategy = randomStrategy;
 		return (T) this;
 	}
 
 	/**
-	 * Replaces the default random generator with a faster one.
+	 * Replaces the default random strategy with another that uses the input
+	 * {@link Random} instance.
 	 * 
-	 * The substitute random generator is {@link Xorshift128PlusRandom}.
+	 * It replaces the internal {@link DefaultRandomStrategy} with
+	 * {@link OtherRandomStrategy}.
 	 * 
-	 * The host fingerprint is used to generate a salt for the random number
-	 * generator.
+	 * @param random a random generator
+	 * @param <T>    the type parameter
+	 * @return {@link AbstractRandomBasedUuidCreator}
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized <T extends AbstractRandomBasedUuidCreator> T withRandomGenerator(Random random) {
+		this.randomStrategy = new OtherRandomStrategy(random);
+		return (T) this;
+	}
+
+	/**
+	 * [Deprecated] Replaces the default random generator with a faster one.
 	 * 
-	 * See: {@link Xorshift128PlusRandom}
-	 * 
-	 * See: {@link FingerprintUtil#getFingerprint()}
+	 * Deprecation warning: This method will be removed in the next major version.
 	 * 
 	 * @param <T> the type parameter
 	 * @return {@link AbstractRandomBasedUuidCreator}
 	 */
+	@Deprecated
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends AbstractRandomBasedUuidCreator> T withFastRandomGenerator() {
 		final int salt = (int) FingerprintUtil.getFingerprint();
-		this.random = new Xorshift128PlusRandom(salt);
+		this.randomStrategy = new OtherRandomStrategy(new Xorshift128PlusRandom(salt));
 		return (T) this;
 	}
 }

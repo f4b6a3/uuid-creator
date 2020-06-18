@@ -24,13 +24,11 @@
 
 package com.github.f4b6a3.uuid.creator.nonstandard;
 
-import java.security.SecureRandom;
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.util.ByteUtil;
-import com.github.f4b6a3.uuid.util.RandomUtil;
 import com.github.f4b6a3.uuid.creator.AbstractRandomBasedUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
+import com.github.f4b6a3.uuid.util.ByteUtil;
 
 /**
  * Factory that creates Prefix COMB GUIDs.
@@ -61,26 +59,11 @@ public class PrefixCombCreator extends AbstractRandomBasedUuidCreator {
 
 		final long timestamp = System.currentTimeMillis();
 
-		long lsb;
-		long msb;
-
 		// Get random values for MSB and LSB
-		if (random == null) {
-			final byte[] bytes = new byte[10];
-			RandomUtil.get().nextBytes(bytes);
-			msb = (bytes[8] << 8) | (bytes[9] & 0xff);
-			lsb = ByteUtil.toNumber(bytes, 0, 8);
-		} else {
-			if (this.random instanceof SecureRandom) {
-				final byte[] bytes = new byte[10];
-				this.random.nextBytes(bytes);
-				msb = (bytes[8] << 8) | (bytes[9] & 0xff);
-				lsb = ByteUtil.toNumber(bytes, 0, 8);
-			} else {
-				msb = this.random.nextLong();
-				lsb = this.random.nextLong();
-			}
-		}
+		final byte[] bytes = new byte[10];
+		this.randomStrategy.nextBytes(bytes);
+		long msb = (bytes[8] << 8) | (bytes[9] & 0xff);
+		long lsb = ByteUtil.toNumber(bytes, 0, 8);
 
 		// Insert the prefix in the MSB
 		msb = (msb & 0x000000000000ffffL) | ((timestamp & 0x0000ffffffffffffL) << 16);

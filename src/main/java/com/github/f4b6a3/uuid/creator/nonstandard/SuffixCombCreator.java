@@ -24,13 +24,11 @@
 
 package com.github.f4b6a3.uuid.creator.nonstandard;
 
-import java.security.SecureRandom;
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.util.ByteUtil;
-import com.github.f4b6a3.uuid.util.RandomUtil;
 import com.github.f4b6a3.uuid.creator.AbstractRandomBasedUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
+import com.github.f4b6a3.uuid.util.ByteUtil;
 
 /**
  * Factory that creates Suffix COMB GUIDs.
@@ -61,26 +59,11 @@ public class SuffixCombCreator extends AbstractRandomBasedUuidCreator {
 
 		final long timestamp = System.currentTimeMillis();
 
-		long msb;
-		long lsb;
-
 		// Get random values for MSB and LSB
-		if (random == null) {
-			final byte[] bytes = new byte[10];
-			RandomUtil.get().nextBytes(bytes);
-			msb = ByteUtil.toNumber(bytes, 0, 8);
-			lsb = (bytes[8] << 8) | (bytes[9] & 0xff);
-		} else {
-			if (this.random instanceof SecureRandom) {
-				final byte[] bytes = new byte[10];
-				this.random.nextBytes(bytes);
-				msb = ByteUtil.toNumber(bytes, 0, 8);
-				lsb = (bytes[8] << 8) | (bytes[9] & 0xff);
-			} else {
-				msb = this.random.nextLong();
-				lsb = this.random.nextLong();
-			}
-		}
+		final byte[] bytes = new byte[10];
+		this.randomStrategy.nextBytes(bytes);
+		long msb = ByteUtil.toNumber(bytes, 0, 8);
+		long lsb = (bytes[8] << 8) | (bytes[9] & 0xff);
 
 		// Insert the suffix in the LSB
 		lsb = (lsb << 48) | (timestamp & 0x0000ffffffffffffL);

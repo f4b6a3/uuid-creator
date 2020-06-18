@@ -9,11 +9,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.util.SettingsUtil;
-import com.github.f4b6a3.uuid.util.random.Xorshift128PlusRandom;
 
 public class SettingsUtilTest {
 
-	Random random = new Xorshift128PlusRandom();
+	Random random = new Random();
 
 	@BeforeClass
 	public static void beforeClass() {
