@@ -15,10 +15,10 @@ A Java library for generating and handling RFC-4122 UUIDs.
 
 #### Non-standard GUIDs:
 
-* __Prefix COMB__: a GUID that combines the creation millisecond (prefix) with random bits;
-* __Suffix COMB__: a GUID that combines random bits with the creation millisecond (suffix);
-* __Short Prefix COMB__: a GUID that combines the creation minute (prefix) with random bits;
-* __Short Suffix COMB__: a GUID that combines random bits with the creation minute (suffix).
+* __Prefix COMB__: combination of the creation millisecond (prefix) with random bytes;
+* __Suffix COMB__: combination of the creation millisecond (suffix) with random bytes;
+* __Short Prefix COMB__: combination the creation minute (prefix) with random bytes;
+* __Short Suffix COMB__: combination the creation minute (suffix) with random bytes.
 
 How to Use
 ------------------------------------------------------
@@ -52,7 +52,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>2.3.0</version>
+  <version>2.4.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -148,18 +148,13 @@ List of predefined [name spaces](https://en.wikipedia.org/wiki/Namespace):
 
 ### Version 4: Random-based
 
-The Random UUID is a simple random array of 16 bytes. 
+The random-based UUID is a random array of 16 bytes.
 
-The default random generator is `SecureRandom`.
+The default random generator is a thread local `java.security.SecureRandom`.
 
 ```java
 // Random using the default SecureRandom generator
 UUID uuid = UuidCreator.getRandomBased();
-```
-
-```java
-// Random using the fast random number generator
-UUID uuid = UuidCreator.getFastRandomBased();
 ```
 
 Examples of random-based UUID:
@@ -424,7 +419,7 @@ Implementation
 
 ### Format
 
-The canonical format has 5 groups separated by dashes.
+The canonical format is a hexadecimal string that contains 5 groups separated by dashes.
 
 ```
 Canonical format
@@ -482,7 +477,7 @@ The timestamp is a value that represents date and time. It has 4 subparts: low t
 Standard timestamp arrangement
 
  00000000-0000-v000-m000-000000000000
-|1-------|2---||3--|
+|1-------|2---|3---|
 
 1: timestamp low      *
 2: timestamp mid     ***
@@ -546,7 +541,7 @@ The Time-ordered UUID inherits the same characteristics of the time-based UUID. 
 Time-ordered timestamp arrangement
 
  00000000-0000-v000-m000-000000000000
-|1-------|2---||3--|
+|1-------|2---|3---|
 
 1: timestamp high   *****
 2: timestamp mid     ***
@@ -611,12 +606,17 @@ s: clock sequence bits
 n: node id bits
 ```
 
+### Random-based
 
-###  DCE Security
+The random-based UUID is a random array of 16 bytes.
 
-The DCE Security UUID inherits the same characteristics of the time-based UUID. The RFC-4122 doesn't describe the algorithm for generating this kind of UUID. These instructions are in the document "DCE 1.1: Authentication and Security Services".<sup>[6]</sup>
+The random-based factory uses `java.security.SecureRandom` to get 'cryptographic quality random' bytes as the standard requires.
 
-The difference is that it also contains information of local domain and local identifier. A half of the timestamp is replaced by a local identifier number. And half of the clock sequence is replaced by a local domain number.
+If the default `SecureRandom` is not desired, any instance of `java.util.Random` can be used.
+
+You can also implement a custom `RandomStrategy` that uses any random generator you want, not only instances of `java.util.Random`.
+
+All COMB creators inherit the same characteristics of the random-based creator.
 
 ### Name-based
 
@@ -624,23 +624,28 @@ There are two types of name-based UUIDs: MD5 and SHA-1. The MD5 is registered as
 
 Two arguments are needed to generate a name-based UUID: a name space and a name.
 
-The name space is an optional UUID argument.
+The name space is an optional UUID object.
 
 The name argument may be a string or a byte array.
 
-### Random
+### DCE Security
 
-The random-based factory uses `java.security.SecureRandom`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/security/SecureRandom.html) to get 'cryptographic quality random' numbers as the standard requires.
+The DCE Security<sup>[6]</sup> UUID inherits the same characteristics of the time-based UUID.
 
-If the default `SecureRandom` is not desired, any instance of `java.util.Random` can be passed as parameter to the factory.
+The difference is that it also contains information of local domain and local identifier. A half of the timestamp is replaced by a local identifier number. And half of the clock sequence is replaced by a local domain number.
 
-Fluent interface
+Configuration examples
 ------------------------------------------------------
 
-The UUID factories are configurable via [fluent interface](https://en.wikipedia.org/wiki/Fluent_interface) methods. This section lists a lot of examples for each UUID version.
+This section contains a lot of examples on how to setup the internal UUID creators for specific needs.
 
+Most cases you don't have to configure the internal creators directly. All the UUID types can be generated using a single line of code, for example, `UuidCreator.getTimeBased()`.
 
-#### Time-based
+But if you want, for example, a time-based UUID that has a more accurate timestamp, you can implement another `TimestampStrategy` and pass it to the `TimeBasedUuidCreator`.
+
+All UUID creators are configurable via [method chaining](https://en.wikipedia.org/wiki/Method_chaining).
+
+### Time-based
 
 All the examples in this subsection are also valid for Time-ordered and DCE Security UUIDs.
 
@@ -755,7 +760,53 @@ UUID uuid = UuidCreator.getTimeBasedCreator()
 
 ```
 
-#### Name-based
+### Random-based
+
+All the examples in this subsection are also valid for COMBs.
+
+##### Random generator
+
+```java
+
+// with another random generator that is an instance of `java.util.Random`
+Random random = new Random();
+UUID uuid = UuidCreator.getRandomBasedCreator()
+    .withRandomGenerator(random)
+    .create();
+
+// with another random strategy that uses an instance of `java.util.Random`
+// this example is equivalent to the previous one, but more verbose
+RandomStrategy strategy = new OtherRandomStrategy(new Random());
+UUID uuid = UuidCreator.getRandomBasedCreator()
+    .withRandomStragety(strategy)
+    .create();
+
+```
+
+##### Random generator strategy
+
+```java
+    
+// with a CUSTOM random strategy that uses any random generator
+RandomStrategy customStrategy = new CustomRandomStrategy();
+UUID uuid = UuidCreator.getRandomBasedCreator()
+    .withRandomStrategy(customStrategy)
+    .create();
+
+// with an ANONYMOUS random strategy that uses any random generator
+import com.github.niceguy.random.AwesomeRandom;
+RandomBasedUuidCreator creator = UuidCreator.getRandomBasedCreator()
+		.withRandomStrategy(new RandomStrategy() {
+			private final AwesomeRandom awesomeRandom = new AwesomeRandom();
+			@Override public void nextBytes(byte[] bytes) {
+				this.awesomeRandom.nextBytes(bytes);
+			}
+		});
+UUID uuid = creator.create();
+
+```
+
+### Name-based
 
 All the examples in this subsection are also valid for SHA-1 UUIDs.
 
@@ -783,41 +834,7 @@ UUID uuid = UuidCreator.getNameBasedMd5Creator()
 
 ```
 
-#### Random-based
-
-```java
-
-// with java random generator (java.util.Random)
-UUID uuid = UuidCreator.getRandomBasedCreator()
-    .withRandomGenerator(new Random())
-    .create();
-
-// with fast random generator
-UUID uuid = UuidCreator.getRandomBasedCreator()
-    .withFastRandomGenerator()
-    .create();
-
-```
-
-#### COMB GUID
-
-All the examples in this subsection are also valid for Suffix COMB GUIDs.
-
-```java
-
-// with java random generator (java.util.Random)
-UUID uuid = UuidCreator.getPrefixCombCreator()
-    .withRandomGenerator(new Random())
-    .create();
-
-// with fast random generator
-UUID uuid = UuidCreator.getPrefixCombCreator()
-    .withFastRandomGenerator()
-    .create();
-
-```
-
-#### DCE Security
+### DCE Security
 
 ```java
 
@@ -850,7 +867,6 @@ Benchmark                                Mode  Cnt      Score     Error   Units
 -----------------------------------------------------------------------------------
 Throughput.Eaio_TimeBased (*)           thrpt    5  20675,885 ± 288,678  ops/ms
 Throughput.Java_RandomBased             thrpt    5   2043,404 ±  29,534  ops/ms
-Throughput.UuidCreator_FastRandomBased  thrpt    5  86240,537 ± 992,770  ops/ms
 Throughput.UuidCreator_NameBasedMd5     thrpt    5   3542,077 ±  34,960  ops/ms
 Throughput.UuidCreator_NameBasedSha1    thrpt    5   2723,757 ±  35,945  ops/ms
 Throughput.UuidCreator_PrefixComb       thrpt    5   2618,561 ±  40,111  ops/ms
@@ -871,7 +887,6 @@ Benchmark                                Mode  Cnt    Score    Error  Units
 -----------------------------------------------------------------------------------
 AverageTime.Eaio_TimeBased (*)           avgt    5   48,500 ±  1,371  ns/op
 AverageTime.Java_RandomBased             avgt    5  489,989 ±  5,458  ns/op
-AverageTime.UuidCreator_FastRandomBased  avgt    5   11,319 ±  0,237  ns/op
 AverageTime.UuidCreator_NameBasedMd5     avgt    5  280,546 ±  1,840  ns/op
 AverageTime.UuidCreator_NameBasedSha1    avgt    5  376,271 ±  3,414  ns/op
 AverageTime.UuidCreator_PrefixComb       avgt    5  381,903 ±  7,952  ns/op
