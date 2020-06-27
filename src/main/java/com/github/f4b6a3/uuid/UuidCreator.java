@@ -38,7 +38,9 @@ import com.github.f4b6a3.uuid.creator.rfc4122.TimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.creator.rfc4122.TimeOrderedUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidLocalDomain;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
+import com.github.f4b6a3.uuid.util.UuidConverter;
 
 /**
  * Facade to the UUID factories.
@@ -57,6 +59,36 @@ public class UuidCreator {
 	private static final UUID UUID_NIL = new UUID(0L, 0L);
 
 	private UuidCreator() {
+	}
+
+	/**
+	 * Returns a UUID from a byte array.
+	 * 
+	 * It validates the input byte array.
+	 * 
+	 * @param uuid a byte array
+	 * @return a UUID
+	 * @throws InvalidUuidException if invalid
+	 */
+	public static UUID fromBytes(byte[] uuid) {
+		return UuidConverter.fromBytes(uuid);
+	}
+
+	/**
+	 * Returns a UUID from a string.
+	 * 
+	 * It validates the input string.
+	 * 
+	 * It also accepts UUID strings without hyphens.
+	 * 
+	 * It's an alternative to {@link java.util.UUID#fromString(String)}.
+	 * 
+	 * @param uuid a string
+	 * @return a UUID
+	 * @throws InvalidUuidException if invalid
+	 */
+	public static UUID fromString(String uuid) {
+		return UuidConverter.fromString(uuid);
 	}
 
 	/**
@@ -93,7 +125,7 @@ public class UuidCreator {
 	 * 
 	 * <pre>
 	 * Details: 
-	 * - Version number: 4 
+	 * - Version number: 4
 	 * </pre>
 	 * 
 	 * @return a version 4 UUID

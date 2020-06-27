@@ -28,7 +28,7 @@ package com.github.f4b6a3.uuid.util;
  * Class that contains many static methods for byte handling.
  */
 public class ByteUtil {
-	
+
 	private ByteUtil() {
 	}
 
@@ -43,6 +43,16 @@ public class ByteUtil {
 	}
 
 	/**
+	 * Get a number from a given hexadecimal char array.
+	 *
+	 * @param hexadecimal a string
+	 * @return a long
+	 */
+	public static long toNumber(final char[] hexadecimal) {
+		return toNumber(toBytes(hexadecimal));
+	}
+
+	/**
 	 * Get a number from a given array of bytes.
 	 * 
 	 * @param bytes a byte array
@@ -51,15 +61,23 @@ public class ByteUtil {
 	public static long toNumber(final byte[] bytes) {
 		return toNumber(bytes, 0, bytes.length);
 	}
-	
-	public static long toNumber(final byte[] bytes, final int start, final int end) {
+
+	/**
+	 * Get a number from a given array of bytes.
+	 * 
+	 * @param bytes  a byte array
+	 * @param start  first byte of the number
+	 * @param length byte length of the number
+	 * @return a long
+	 */
+	public static long toNumber(final byte[] bytes, final int start, final int length) {
 		long result = 0;
-		for (int i = start; i < end; i++) {
+		for (int i = start; i < length; i++) {
 			result = (result << 8) | (bytes[i] & 0xff);
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Get an array of bytes from a given number.
 	 *
@@ -80,16 +98,39 @@ public class ByteUtil {
 	}
 
 	/**
+	 * Get an array of bytes from a given array of numbers.
+	 *
+	 * @param number a long value
+	 * @return a byte array
+	 */
+	public static byte[] toBytes(final long... numbers) {
+		byte[] bytes = new byte[numbers.length * 8];
+		for (int i = 0, j = 0; i < numbers.length; i++, j += 8) {
+			System.arraycopy(toBytes(numbers[i]), 0, bytes, j, 8);
+		}
+		return bytes;
+	}
+
+	/**
 	 * Get an array of bytes from a given hexadecimal string.
 	 *
 	 * @param hexadecimal a string
 	 * @return a byte array
 	 */
 	public static byte[] toBytes(final String hexadecimal) {
-		final int length = hexadecimal.length();
-		byte[] bytes = new byte[length / 2];
-		for (int i = 0; i < length; i += 2) {
-			bytes[i / 2] = (byte) ((fromHexChar(hexadecimal.charAt(i)) << 4) | fromHexChar(hexadecimal.charAt(i + 1)));
+		return toBytes(hexadecimal.toCharArray());
+	}
+
+	/**
+	 * Get an array of bytes from a given hexadecimal char array.
+	 *
+	 * @param hexadecimal a string
+	 * @return a byte array
+	 */
+	public static byte[] toBytes(final char[] hexadecimal) {
+		byte[] bytes = new byte[hexadecimal.length / 2];
+		for (int i = 0, j = 0; i < bytes.length; i++, j += 2) {
+			bytes[i] = (byte) ((fromHexChar(hexadecimal[j]) << 4) | fromHexChar(hexadecimal[j + 1]));
 		}
 		return bytes;
 	}
@@ -101,14 +142,43 @@ public class ByteUtil {
 	 * @return a string
 	 */
 	public static String toHexadecimal(final byte[] bytes) {
-		final int length = bytes.length;
-		final char[] hexadecimal = new char[length * 2];
-		for (int i = 0; i < length; i++) {
+		return new String(toHexadecimalChars(bytes));
+	}
+
+	/**
+	 * Get a hexadecimal char array from given array of bytes.
+	 *
+	 * @param bytes byte array
+	 * @return a char array
+	 */
+	public static char[] toHexadecimalChars(final byte[] bytes) {
+		final char[] chars = new char[bytes.length * 2];
+		for (int i = 0, j = 0; i < bytes.length; i++, j += 2) {
 			final int v = bytes[i] & 0xFF;
-			hexadecimal[i * 2] = toHexChar(v >>> 4);
-			hexadecimal[(i * 2) + 1] = toHexChar(v & 0x0F);
+			chars[j] = toHexChar(v >>> 4);
+			chars[j + 1] = toHexChar(v & 0x0F);
 		}
-		return new String(hexadecimal);
+		return chars;
+	}
+
+	/**
+	 * Get a hexadecimal char array from given array of numbers.
+	 *
+	 * @param bytes byte array
+	 * @return a char array
+	 */
+	public static char[] toHexadecimalChars(final long... numbers) {
+		return toHexadecimalChars(toBytes(numbers));
+	}
+
+	/**
+	 * Get a hexadecimal string from given number.
+	 * 
+	 * @param number an integer
+	 * @return a string
+	 */
+	public static String toHexadecimal(final long... numbers) {
+		return new String(toHexadecimalChars(toBytes(numbers)));
 	}
 
 	/**
@@ -118,7 +188,7 @@ public class ByteUtil {
 	 * @return a string
 	 */
 	public static String toHexadecimal(final long number) {
-		return toHexadecimal(toBytes(number));
+		return new String(toHexadecimalChars(number));
 	}
 
 	/**
@@ -127,17 +197,17 @@ public class ByteUtil {
 	 * @param chr a character
 	 * @return an integer
 	 */
-	public static int fromHexChar(final char chr) {
-
-		if (chr >= 0x61 && chr <= 0x66) {
-			// ASCII codes from 'a' to 'f'
-			return (int) chr - 0x57;
-		} else if (chr >= 0x41 && chr <= 0x46) {
-			// ASCII codes from 'A' to 'F'
-			return (int) chr - 0x37;
-		} else if (chr >= 0x30 && chr <= 0x39) {
+	private static int fromHexChar(final char chr) {
+		final int c = chr;
+		if (c >= 0x30 && c <= 0x39) {
 			// ASCII codes from 0 to 9
-			return (int) chr - 0x30;
+			return c - 0x30;
+		} else if (c >= 0x61 && c <= 0x66) {
+			// ASCII codes from 'a' to 'f'
+			return c - 0x57;
+		} else if (c >= 0x41 && c <= 0x46) {
+			// ASCII codes from 'A' to 'F'
+			return c - 0x37;
 		}
 
 		return 0;
@@ -149,13 +219,13 @@ public class ByteUtil {
 	 * @param number an integer
 	 * @return a char
 	 */
-	public static char toHexChar(final int number) {
-		if (number >= 0x0a && number <= 0x0f) {
-			// ASCII codes from 'a' to 'f'
-			return (char) (0x57 + number);
-		} else if (number >= 0x00 && number <= 0x09) {
+	private static char toHexChar(final int number) {
+		if (number >= 0x00 && number <= 0x09) {
 			// ASCII codes from 0 to 9
 			return (char) (0x30 + number);
+		} else if (number >= 0x0a && number <= 0x0f) {
+			// ASCII codes from 'a' to 'f'
+			return (char) (0x57 + number);
 		}
 		return 0;
 	}
@@ -164,7 +234,7 @@ public class ByteUtil {
 	 * Get a new array with a specific length and filled with a byte value.
 	 *
 	 * @param length array size
-	 * @param value byte value
+	 * @param value  byte value
 	 * @return a byte array
 	 */
 	public static byte[] array(final int length, final byte value) {
@@ -190,7 +260,7 @@ public class ByteUtil {
 	 *
 	 * @param bytes byte array
 	 * @param start start position
-	 * @param end end position
+	 * @param end   end position
 	 * @return a byte array
 	 */
 	public static byte[] copy(final byte[] bytes, final int start, final int end) {
@@ -211,29 +281,6 @@ public class ByteUtil {
 		final byte[] result = new byte[bytes1.length + bytes2.length];
 		System.arraycopy(bytes1, 0, result, 0, bytes1.length);
 		System.arraycopy(bytes2, 0, result, bytes1.length, bytes2.length);
-		return result;
-	}
-
-	/**
-	 * Replace part of an array of bytes with another subarray of bytes and
-	 * starting from a given index.
-	 *
-	 * @param bytes byte array
-	 * @param replacement replacement byte array
-	 * @param index start position
-	 * @return a byte array
-	 */
-	public static byte[] replace(final byte[] bytes, final byte[] replacement, final int index) {
-
-		byte[] result = new byte[bytes.length];
-
-		for (int i = 0; i < index; i++) {
-			result[i] = bytes[i];
-		}
-
-		for (int i = 0; i < replacement.length; i++) {
-			result[index + i] = replacement[i];
-		}
 		return result;
 	}
 

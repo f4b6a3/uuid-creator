@@ -31,6 +31,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+/**
+ * [deprecated]
+ * 
+ * Deprecation warning: this class will be removed in the next major version.
+ */
+@Deprecated
 public class FingerprintUtil {
 
 	private static MessageDigest messageDigest;

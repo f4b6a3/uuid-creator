@@ -31,8 +31,6 @@ import com.github.f4b6a3.uuid.exception.InvalidUuidException;
  */
 public class UuidValidator {
 
-	public static final String UUID_PATTERN = "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}|[0-9a-fA-F]{32})$";
-
 	private UuidValidator() {
 	}
 
@@ -42,7 +40,7 @@ public class UuidValidator {
 	 * @param uuid a UUID byte array
 	 * @return true if valid, false if invalid
 	 */
-	protected static boolean isValid(byte[] uuid) {
+	protected static boolean isValid(final byte[] uuid) {
 		return uuid != null && uuid.length == 16;
 	}
 
@@ -52,7 +50,7 @@ public class UuidValidator {
 	 * @param uuid a UUID
 	 * @throws InvalidUuidException if invalid
 	 */
-	public static void validate(byte[] uuid) {
+	public static void validate(final byte[] uuid) {
 		if (!isValid(uuid)) {
 			throw new InvalidUuidException("Invalid UUID byte array.");
 		}
@@ -64,28 +62,111 @@ public class UuidValidator {
 	 * <pre>
 	 * Examples of accepted formats:
 	 * 
-	 * 12345678abcdabcdabcd123456789abcd       (32 hexadecimal chars, lower case and without dash)
-	 * 12345678ABCDABCDABCD123456789ABCD       (32 hexadecimal chars, UPPER CASE and without dash)
-	 * 12345678-abcd-abcd-abcd-123456789abcd   (36 hexadecimal chars, lower case and with dash)
-	 * 12345678-ABCD-ABCD-ABCD-123456789ABCD   (36 hexadecimal chars, UPPER CASE and with dash)
+	 * 12345678abcdabcdabcd123456789abcd       (32 hexadecimal chars, lower case and without hyphen)
+	 * 12345678ABCDABCDABCD123456789ABCD       (32 hexadecimal chars, UPPER CASE and without hyphen)
+	 * 12345678-abcd-abcd-abcd-123456789abcd   (36 hexadecimal chars, lower case and with hyphen)
+	 * 12345678-ABCD-ABCD-ABCD-123456789ABCD   (36 hexadecimal chars, UPPER CASE and with hyphen)
 	 * </pre>
 	 * 
 	 * @param uuid a UUID string
 	 * @return true if valid, false if invalid
 	 */
-	public static boolean isValid(String uuid) {
-		return uuid != null && (uuid.length() == 32 || uuid.length() == 36) && uuid.matches(UUID_PATTERN);
+	public static boolean isValid(final String uuid) {
+		return (uuid != null && isValid(uuid.toCharArray()));
+	}
+	
+	/**
+	 * Checks if the UUID string is valid.
+	 * 
+	 * <pre>
+	 * Examples of accepted formats:
+	 * 
+	 * 12345678abcdabcdabcd123456789abcd       (32 hexadecimal chars, lower case and without hyphen)
+	 * 12345678ABCDABCDABCD123456789ABCD       (32 hexadecimal chars, UPPER CASE and without hyphen)
+	 * 12345678-abcd-abcd-abcd-123456789abcd   (36 hexadecimal chars, lower case and with hyphen)
+	 * 12345678-ABCD-ABCD-ABCD-123456789ABCD   (36 hexadecimal chars, UPPER CASE and with hyphen)
+	 * </pre>
+	 * 
+	 * @param uuid a UUID char array
+	 * @return true if valid, false if invalid
+	 */
+	public static boolean isValid(final char[] chars) {
+		
+		if (chars == null) {
+			return false;
+		}
+
+		if (chars.length == 32) {
+			return isHexadecimal(chars);
+		} else if (chars.length == 36) {
+			if (chars[8] == '-' && chars[13] == '-' && chars[18] == '-' && chars[23] == '-') {
+				return isHexadecimalWithHyphen(chars);
+			}
+		}
+
+		return false;
 	}
 
 	/**
 	 * Checks if the UUID string is a valid.
 	 * 
-	 * @param uuid a UUID
+	 * @param uuid a UUID string
 	 * @throws InvalidUuidException if invalid
 	 */
-	public static void validate(String uuid) {
+	public static void validate(final String uuid) {
 		if (!isValid(uuid)) {
 			throw new InvalidUuidException("Invalid UUID string.");
 		}
+	}
+	
+	/**
+	 * Checks if the UUID char array is a valid.
+	 * 
+	 * @param uuid a UUID char array
+	 * @throws InvalidUuidException if invalid
+	 */
+	public static void validate(final char[] uuid) {
+		if (!isValid(uuid)) {
+			throw new InvalidUuidException("Invalid UUID char array.");
+		}
+	}
+
+	/**
+	 * Checks if a char array contains only hexadecimal chars.
+	 * 
+	 * @param chars char array
+	 * @return true if all chars are hexadecimal chars.
+	 */
+	private static boolean isHexadecimal(final char[] chars) {
+		for (int i = 0; i < chars.length; i++) {
+			final int c = chars[i];
+			if ((c >= 0x30 && c <= 0x39) || (c >= 0x61 && c <= 0x66) || (c >= 0x41 && c <= 0x46)) {
+				// ASCII codes: 0-9, a-f, A-F
+				continue;
+			}
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Checks if a char array contains only hexadecimal or hyphen chars.
+	 * 
+	 * @param chars char array
+	 * @return true if all chars are hexadecimal or hyphen chars.
+	 */
+	private static boolean isHexadecimalWithHyphen(final char[] chars) {
+		for (int i = 0; i < chars.length; i++) {
+			final int c = chars[i];
+			if ((c >= 0x30 && c <= 0x39) || (c >= 0x61 && c <= 0x66) || (c >= 0x41 && c <= 0x46)) {
+				// ASCII codes: 0-9, a-f, A-F
+				continue;
+			} else if (c == 0x2d) {
+				// ASCII code of '-'
+				continue;
+			}
+			return false;
+		}
+		return true;
 	}
 }

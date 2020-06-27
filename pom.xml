@@ -7,7 +7,7 @@
 	<packaging>jar</packaging>
 
 	<name>uuid-creator</name>
-	<url>http://github.com/f4b6a3</url>
+	<url>https://github.com/f4b6a3/uuid-creator</url>
 	<description>A Java library for generating and handling RFC-4122 UUIDs.</description>
 
 	<licenses>
@@ -40,11 +40,11 @@
 	</dependencies>
 
 	<scm>
-		<connection>scm:git:git://github.com/dexecutor/dependent-tasks-executor.git</connection>
-		<developerConnection>scm:git:git@github.com:dexecutor/dexecutor.git</developerConnection>
-		<url>https://github.com/dexecutor/dependent-tasks-executor</url>
-	  <tag>HEAD</tag>
-  </scm>
+		<url>https://github.com/f4b6a3/uuid-creator</url>
+		<connection>scm:git:ssh://git@github.com/f4b6a3/uuid-creator.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/f4b6a3/uuid-creator.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
 
 	<distributionManagement>
 		<snapshotRepository>

@@ -34,8 +34,6 @@ import com.github.f4b6a3.uuid.strategy.RandomStrategy;
 import com.github.f4b6a3.uuid.strategy.random.DefaultRandomStrategy;
 import com.github.f4b6a3.uuid.strategy.random.OtherRandomStrategy;
 import com.github.f4b6a3.uuid.util.ByteUtil;
-import com.github.f4b6a3.uuid.util.FingerprintUtil;
-import com.github.f4b6a3.uuid.util.random.Xorshift128PlusRandom;
 
 /**
  * Factory that creates random-based UUIDs.
@@ -122,8 +120,7 @@ public abstract class AbstractRandomBasedUuidCreator extends AbstractUuidCreator
 	@Deprecated
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends AbstractRandomBasedUuidCreator> T withFastRandomGenerator() {
-		final int salt = (int) FingerprintUtil.getFingerprint();
-		this.randomStrategy = new OtherRandomStrategy(new Xorshift128PlusRandom(salt));
+		this.randomStrategy = new OtherRandomStrategy(new Random());
 		return (T) this;
 	}
 }

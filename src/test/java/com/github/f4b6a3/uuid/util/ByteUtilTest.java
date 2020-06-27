@@ -36,66 +36,53 @@ public class ByteUtilTest {
 			{ (byte) 0x00, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x9a, (byte) 0xbc, (byte) 0xde },
 			{ (byte) 0x01, (byte) 0x23, (byte) 0x45, (byte) 0x67, (byte) 0x89, (byte) 0xab, (byte) 0xcd, (byte) 0xef }
 			};
-
-	@Test
-	public void testConcat() {
-
-		String string1 = "CONCA";
-		String string2 = "TENATE";
-
-		byte[] bytes1 = (string1 + string2).getBytes();
-		byte[] bytes2 = concat(string1.getBytes(), string2.getBytes());
-
-		assertEquals(bytes1.length, bytes2.length);
-
-		for (int i = 0; i < bytes1.length; i++) {
-			if (bytes1[i] != bytes2[i]) {
-				fail();
-			}
-		}
-	}
 	
 	@Test
-	public void testReplace() {
+	public void testConcat() {
+		for (int i = 0; i < bytes.length - 1; i++) {
+			String string1 = Long.toHexString(numbers[i]);
+			String string2 = Long.toHexString(numbers[i + 1]);
 
-		byte[] bytes1 = bytes[0];
-		byte[] bytes2 = {(byte) 0x01, (byte) 0x23 };
-		
-		byte[] bytes3 = replace(bytes1, bytes2, 6);
-		
-		assertEquals(bytes[0].length, bytes3.length);
-		
-		for (int i = 0; i < bytes[0].length; i++) {
-			if (bytes3[i] != bytes[3][i]) {
-				fail();
+			byte[] bytes1 = (string1 + string2).getBytes();
+			byte[] bytes2 = concat(string1.getBytes(), string2.getBytes());
+
+			assertEquals(bytes1.length, bytes2.length);
+
+			for (int j = 0; j < bytes1.length; j++) {
+				if (bytes1[j] != bytes2[j]) {
+					fail();
+				}
 			}
 		}
 	}
 	
 	@Test
 	public void testToBytes() {
-		
-		byte[] bytes1 = toBytes(numbers[15]);
-		
-		assertEquals(bytes[15].length, bytes1.length);
-		
-		for (int i = 0; i < bytes[15].length; i++) {
-			if (bytes1[i] != bytes[15][i]) {
-				fail();
+
+		for (int i = 0; i < bytes.length; i++) {
+			byte[] bytes1 = toBytes(numbers[i]);
+
+			assertEquals(bytes[i].length, bytes1.length);
+
+			for (int j = 0; j < bytes[j].length; j++) {
+				if (bytes1[j] != bytes[i][j]) {
+					fail();
+				}
 			}
 		}
 	}
 
 	@Test
 	public void testCopy() {
-		
-		byte[] bytes1 = copy(bytes[15]);
-		
-		assertEquals(bytes[15].length, bytes1.length);
-		
-		for (int i = 0; i < bytes[15].length; i++) {
-			if (bytes1[i] != bytes[15][i]) {
-				fail();
+		for (int i = 0; i < bytes.length; i++) {
+			byte[] bytes1 = copy(bytes[i]);
+
+			assertEquals(bytes[i].length, bytes1.length);
+
+			for (int j = 0; j < bytes[i].length; j++) {
+				if (bytes1[j] != bytes[i][j]) {
+					fail();
+				}
 			}
 		}
 	}
@@ -103,13 +90,15 @@ public class ByteUtilTest {
 	@Test
 	public void testArray() {
 		
-		byte[] bytes1 = array(bytes[0].length, bytes[0][0]);
-		
-		assertEquals(bytes[0].length, bytes1.length);
-		
-		for (int i = 0; i < bytes[0].length; i++) {
-			if (bytes1[i] != bytes[0][i]) {
-				fail();
+		for (int i = 0; i < bytes.length; i++) {
+			byte[] bytes1 = array(bytes[0].length, bytes[i][bytes[i].length - 1]);
+			
+			assertEquals(bytes[0].length, bytes1.length);
+			
+			for (int j = 0; j < bytes[0].length; j++) {
+				if (bytes1[j] != bytes[i][bytes[i].length - 1]) {
+					fail();
+				}
 			}
 		}
 	}
@@ -134,11 +123,32 @@ public class ByteUtilTest {
 			assertEquals(hexadecimals[i], toHexadecimal(bytes[i]));
 		}
 	}
+	
+	@Test
+	public void testToHexadecimalFromNumbers() {
+		for (int i = 0; i < numbers.length; i++) {
+			assertEquals(hexadecimals[i], toHexadecimal(numbers[i]));
+		}
+	}
+	
+	@Test
+	public void testToHexadecimalCharsFromNumbers() {
+		for (int i = 0; i < numbers.length; i++) {
+			assertEquals(hexadecimals[i], new String(toHexadecimalChars(numbers[i])));
+		}
+	}
 
 	@Test
 	public void testToNumberFromHexadecimal() {
 		for (int i = 0; i < hexadecimals.length; i++) {
 			assertEquals(numbers[i], toNumber(hexadecimals[i]));
+		}
+	}
+	
+	@Test
+	public void testToNumberFromChars() {
+		for (int i = 0; i < hexadecimals.length; i++) {
+			assertEquals(numbers[i], toNumber(hexadecimals[i].toCharArray()));
 		}
 	}
 }

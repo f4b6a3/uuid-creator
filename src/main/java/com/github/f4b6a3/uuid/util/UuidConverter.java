@@ -27,6 +27,7 @@ package com.github.f4b6a3.uuid.util;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.exception.IllegalUuidException;
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.ByteUtil;
 
 /**
@@ -45,11 +46,7 @@ public class UuidConverter {
 	 * @return an array of bytes
 	 */
 	public static byte[] toBytes(UUID uuid) {
-		long msb = uuid.getMostSignificantBits();
-		long lsb = uuid.getLeastSignificantBits();
-		byte[] msbBytes = ByteUtil.toBytes(msb);
-		byte[] lsbBytes = ByteUtil.toBytes(lsb);
-		return ByteUtil.concat(msbBytes, lsbBytes);
+		return ByteUtil.toBytes(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits());
 	}
 
 	/**
@@ -57,12 +54,12 @@ public class UuidConverter {
 	 * 
 	 * @param bytes an array of bytes
 	 * @return a UUID
+	 * @throws InvalidUuidException if invalid
 	 */
 	public static UUID fromBytes(byte[] bytes) {
-		byte[] msbBytes = ByteUtil.copy(bytes, 0, 8);
-		byte[] lsbBytes = ByteUtil.copy(bytes, 8, 16);
-		long msb = ByteUtil.toNumber(msbBytes);
-		long lsb = ByteUtil.toNumber(lsbBytes);
+		UuidValidator.validate(bytes);
+		long msb = ByteUtil.toNumber(bytes, 0, 8);
+		long lsb = ByteUtil.toNumber(bytes, 8, 16);
 		return new UUID(msb, lsb);
 	}
 
@@ -75,29 +72,46 @@ public class UuidConverter {
 	 * @return a UUID string
 	 */
 	public static String toString(UUID uuid) {
-		String hex = ByteUtil.toHexadecimal(toBytes(uuid));
-		StringBuffer buffer = new StringBuffer(hex);
-		buffer.insert(8, '-');
-		buffer.insert(13, '-');
-		buffer.insert(18, '-');
-		buffer.insert(23, '-');
-		return buffer.toString();
+		char[] input = ByteUtil.toHexadecimalChars(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits());
+		char[] output = new char[36];
+
+		System.arraycopy(input, 0, output, 0, 8);
+		System.arraycopy(input, 8, output, 9, 4);
+		System.arraycopy(input, 12, output, 14, 4);
+		System.arraycopy(input, 16, output, 19, 4);
+		System.arraycopy(input, 20, output, 24, 12);
+
+		output[8] = '-';
+		output[13] = '-';
+		output[18] = '-';
+		output[23] = '-';
+
+		return new String(output);
 	}
 
 	/**
 	 * Get a UUID from a string.
 	 * 
-	 * It also accepts UUID strings without dashes.
+	 * It also accepts UUID strings without hyphens.
 	 * 
 	 * It's an alternative to {@link java.util.UUID#fromString(String)}.
 	 * 
 	 * @param uuid a UUID string
 	 * @return a UUID
+	 * @throws InvalidUuidException if invalid
 	 */
 	public static UUID fromString(String uuid) {
 		UuidValidator.validate(uuid);
-		String hex = uuid.replaceAll("[^0-9a-fA-F]", "");
-		return fromBytes(ByteUtil.toBytes(hex));
+		char[] input = uuid.toCharArray();
+		char[] output = new char[32];
+
+		// Loop to remove hyphens
+		for (int i = 0, o = 0; i < input.length; i++) {
+			if ((input[i] != '-')) {
+				output[o++] = input[i];
+			}
+		}
+		return fromBytes(ByteUtil.toBytes(output));
 	}
 
 	/**
