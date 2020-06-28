@@ -27,7 +27,7 @@ package com.github.f4b6a3.uuid.util;
 /**
  * Class that contains many static methods for byte handling.
  */
-public class ByteUtil {
+public final class ByteUtil {
 
 	private ByteUtil() {
 	}

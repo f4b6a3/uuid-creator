@@ -32,12 +32,12 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /**
- * [deprecated]
+ * [deprecated] Utility class to generate host fingerprint.
  * 
- * Deprecation warning: this class will be removed in the next major version.
+ * @deprecated this class will be removed in the next major version.
  */
 @Deprecated
-public class FingerprintUtil {
+public final class FingerprintUtil {
 
 	private static MessageDigest messageDigest;
 

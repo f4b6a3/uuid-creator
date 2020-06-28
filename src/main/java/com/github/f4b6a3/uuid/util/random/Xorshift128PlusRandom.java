@@ -30,13 +30,13 @@ import java.util.Random;
  * [Deprecated] A subclass of {@link java.util.Random} that implements the
  * Xorshift 128 Plus random number generator.
  * 
- * Deprecation warning: this class will be removed in the next major version.
+ * @deprecated this class will be removed in the next major version.
  * 
  * https://en.wikipedia.org/wiki/Xorshift
  * 
  */
 @Deprecated
-public class Xorshift128PlusRandom extends Random {
+public final class Xorshift128PlusRandom extends Random {
 
 	private static final long serialVersionUID = -7271232011767476928L;
 

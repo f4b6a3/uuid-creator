@@ -134,9 +134,9 @@ public class TimeBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 			assertTrue(DUPLICATE_UUID_MSG, set.add(uuid));
 		}
 
-		assertTrue(DUPLICATE_UUID_MSG, set.size() == max);
-		assertTrue("The last clock sequence should be equal to the first clock sequence minus 1",
-				(lastClockSeq % max) == ((firstClockSeq % max) - 1));
+		assertEquals(DUPLICATE_UUID_MSG, set.size(), max);
+		assertEquals("The last clock sequence should be equal to the first clock sequence minus 1",
+				(lastClockSeq % max), ((firstClockSeq % max) - 1));
 	}
 
 	@Test
@@ -182,6 +182,6 @@ public class TimeBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 		}
 
 		// Check if the quantity of unique UUIDs is correct
-		assertTrue(DUPLICATE_UUID_MSG, TestThread.hashSet.size() == (DEFAULT_LOOP_MAX * THREAD_TOTAL));
+		assertEquals(DUPLICATE_UUID_MSG, TestThread.hashSet.size(), (DEFAULT_LOOP_MAX * THREAD_TOTAL));
 	}
 }

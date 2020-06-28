@@ -29,7 +29,7 @@ import java.time.Instant;
 /**
  * Utility that provides methods related to timestamps.
  */
-public class UuidTimeUtil {
+public final class UuidTimeUtil {
 
 	public static final long GREGORIAN_MILLISECONDS = getGregorianMilliseconds();
 

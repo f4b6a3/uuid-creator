@@ -30,10 +30,10 @@ package com.github.f4b6a3.uuid.strategy.clockseq;
  * It manages a pool of 16384 values. The pool is implemented as an array of
  * 2048 bytes (16384 bits). Each bit of this array corresponds to a pool value.
  */
-public class ClockSequenceController {
+public final class ClockSequenceController {
 
-	protected byte[] pool = new byte[2048];
-	protected static final int POOL_MAX = 0x3fff + 1; // 16384
+	private final byte[] pool = new byte[2048];
+	private static final int POOL_MAX = 0x3fff + 1; // 16384
 
 	/**
 	 * Borrow a value from the pool and give back another value to the same

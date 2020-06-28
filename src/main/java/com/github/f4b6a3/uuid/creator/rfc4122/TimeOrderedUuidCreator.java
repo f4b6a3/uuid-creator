@@ -38,18 +38,14 @@ import com.github.f4b6a3.uuid.enums.UuidVersion;
  * https://tools.ietf.org/html/draft-peabody-dispatch-new-uuid-format
  * 
  */
-public class TimeOrderedUuidCreator extends AbstractTimeBasedUuidCreator {
+public final class TimeOrderedUuidCreator extends AbstractTimeBasedUuidCreator {
 
 	public TimeOrderedUuidCreator() {
-		this(UuidVersion.VERSION_TIME_ORDERED);
-	}
-
-	protected TimeOrderedUuidCreator(UuidVersion version) {
-		super(version);
+		super(UuidVersion.VERSION_TIME_ORDERED);
 	}
 
 	/**
-	 * Returns the timestamp bits of the UUID, keeping its byte order unchanged.
+	 * Returns the timestamp bits of the UUID version 6, keeping its byte order unchanged.
 	 * 
 	 * @param timestamp a timestamp
 	 * @return the MSB

@@ -27,7 +27,7 @@ package com.github.f4b6a3.uuid.util;
 import java.security.SecureRandom;
 import java.util.Random;
 
-public class RandomUtil {
+public final class RandomUtil {
 
 	protected static final ThreadLocal<Random> THREAD_LOCAL_RANDOM = ThreadLocal.withInitial(SecureRandom::new);
 

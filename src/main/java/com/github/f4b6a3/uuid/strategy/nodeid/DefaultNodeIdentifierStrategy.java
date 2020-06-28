@@ -40,9 +40,9 @@ import com.github.f4b6a3.uuid.util.SettingsUtil;
  * It uses {@link SecureRandom} by default to generate 'cryptographic quality
  * random number'. The first generated number is returned for all calls.
  */
-public class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
+public final class DefaultNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
-	protected long nodeIdentifier;
+	private final long nodeIdentifier;
 
 	/**
 	 * This constructor works in two steps:

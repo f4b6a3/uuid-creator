@@ -27,8 +27,6 @@ package com.github.f4b6a3.uuid.creator;
 import java.util.Random;
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.creator.AbstractUuidCreator;
-import com.github.f4b6a3.uuid.creator.NoArgumentsUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.strategy.RandomStrategy;
 import com.github.f4b6a3.uuid.strategy.random.DefaultRandomStrategy;
@@ -112,7 +110,7 @@ public abstract class AbstractRandomBasedUuidCreator extends AbstractUuidCreator
 	/**
 	 * [Deprecated] Replaces the default random generator with a faster one.
 	 * 
-	 * Deprecation warning: This method will be removed in the next major version.
+	 * @deprecated This method will be removed in the next major version.
 	 * 
 	 * @param <T> the type parameter
 	 * @return {@link AbstractRandomBasedUuidCreator}

@@ -32,10 +32,7 @@ import com.github.f4b6a3.uuid.util.RandomUtil;
  * 
  * It uses a thread local instance of {@link java.security.SecureRandom}.
  */
-public class DefaultRandomStrategy implements RandomStrategy {
-
-	public DefaultRandomStrategy() {
-	}
+public final class DefaultRandomStrategy implements RandomStrategy {
 
 	@Override
 	public void nextBytes(byte[] bytes) {

@@ -33,7 +33,7 @@ import com.github.f4b6a3.uuid.strategy.RandomStrategy;
  * 
  * It uses an instance of {@link java.util.Random} injected by constructor.
  */
-public class OtherRandomStrategy implements RandomStrategy {
+public final class OtherRandomStrategy implements RandomStrategy {
 
 	private final Random random;
 

@@ -59,15 +59,15 @@ import com.github.f4b6a3.uuid.util.sequence.AbstractSequence;
  * 
  * Unix group identifier (GID): https://en.wikipedia.org/wiki/Group_identifier
  */
-public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
+public final class DceSecurityUuidCreator extends AbstractTimeBasedUuidCreator {
 
-	protected DCESTimestampCounter timestampCounter;
+	private DceSecurityCounter timestampCounter;
 
-	protected UuidLocalDomain localDomain;
+	private UuidLocalDomain localDomain;
 
 	public DceSecurityUuidCreator() {
 		super(UuidVersion.VERSION_DCE_SECURITY);
-		this.timestampCounter = new DCESTimestampCounter();
+		this.timestampCounter = new DceSecurityCounter();
 		this.withoutOverrunException(); // Disable superclass overrun exception
 	}
 
@@ -220,7 +220,7 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	 * @param localIdentifier the local identifier
 	 * @return the updated MSB
 	 */
-	protected static long setLocalIdentifierBits(long msb, int localIdentifier) {
+	private static long setLocalIdentifierBits(long msb, int localIdentifier) {
 		return (msb & 0x00000000ffffffffL) // clear time_low bits
 				| ((localIdentifier & 0x00000000ffffffffL) << 32);
 	}
@@ -245,7 +245,7 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 	 * @param counter     a counter value
 	 * @return the updated LSB
 	 */
-	protected static long setLocalDomainBits(long lsb, byte localDomain, long counter) {
+	private static long setLocalDomainBits(long lsb, byte localDomain, long counter) {
 		return (lsb & 0x0000ffffffffffffL) // clear clock_seq bits
 				| ((localDomain & 0x00000000000000ffL) << 48) //
 				| ((counter & 0x00000000000000ffL) << 56);
@@ -262,13 +262,13 @@ public class DceSecurityUuidCreator extends TimeBasedUuidCreator {
 		return this;
 	}
 
-	protected class DCESTimestampCounter extends AbstractSequence {
+	private class DceSecurityCounter extends AbstractSequence {
 
 		// COUNTER_MAX: 2^6
 		private static final int COUNTER_MIN = 0;
 		private static final int COUNTER_MAX = 63;
 
-		protected DCESTimestampCounter() {
+		private DceSecurityCounter() {
 			super(COUNTER_MIN, COUNTER_MAX);
 		}
 	}

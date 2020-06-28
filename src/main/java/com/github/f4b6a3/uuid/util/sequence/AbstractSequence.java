@@ -32,8 +32,8 @@ package com.github.f4b6a3.uuid.util.sequence;
 public abstract class AbstractSequence implements Sequence {
 
 	protected int value;
-	public final int minValue;
-	public final int maxValue;
+	protected final int minValue;
+	protected final int maxValue;
 
 	protected AbstractSequence(int min, int max) {
 		this.minValue = min;

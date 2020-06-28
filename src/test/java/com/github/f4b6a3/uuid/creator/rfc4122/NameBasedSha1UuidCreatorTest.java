@@ -9,7 +9,6 @@ import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
 
@@ -35,7 +34,7 @@ public class NameBasedSha1UuidCreatorTest extends AbstractUuidCreatorTest {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			name = ("url" + i);
 			UUID other = creator.create(UuidNamespace.NAMESPACE_URL, name);
-			assertTrue("Two different SHA1 UUIDs for the same input", list[i].equals(other));
+			assertEquals("Two different SHA1 UUIDs for the same input", list[i], other);
 		}
 	}
 

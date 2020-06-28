@@ -29,7 +29,7 @@ import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 /**
  * Utility for UUID validation.
  */
-public class UuidValidator {
+public final class UuidValidator {
 
 	private UuidValidator() {
 	}
@@ -40,7 +40,7 @@ public class UuidValidator {
 	 * @param uuid a UUID byte array
 	 * @return true if valid, false if invalid
 	 */
-	protected static boolean isValid(final byte[] uuid) {
+	public static boolean isValid(final byte[] uuid) {
 		return uuid != null && uuid.length == 16;
 	}
 
@@ -74,7 +74,7 @@ public class UuidValidator {
 	public static boolean isValid(final String uuid) {
 		return (uuid != null && isValid(uuid.toCharArray()));
 	}
-	
+
 	/**
 	 * Checks if the UUID string is valid.
 	 * 
@@ -91,17 +91,15 @@ public class UuidValidator {
 	 * @return true if valid, false if invalid
 	 */
 	public static boolean isValid(final char[] chars) {
-		
+
 		if (chars == null) {
 			return false;
 		}
 
-		if (chars.length == 32) {
-			return isHexadecimal(chars);
-		} else if (chars.length == 36) {
-			if (chars[8] == '-' && chars[13] == '-' && chars[18] == '-' && chars[23] == '-') {
-				return isHexadecimalWithHyphen(chars);
-			}
+		if (chars.length == 36) {
+			return isUuidWithHyphens(chars);
+		} else if (chars.length == 32) {
+			return isUuidWithoutHyphens(chars);
 		}
 
 		return false;
@@ -118,7 +116,7 @@ public class UuidValidator {
 			throw new InvalidUuidException("Invalid UUID string.");
 		}
 	}
-	
+
 	/**
 	 * Checks if the UUID char array is a valid.
 	 * 
@@ -131,41 +129,31 @@ public class UuidValidator {
 		}
 	}
 
-	/**
-	 * Checks if a char array contains only hexadecimal chars.
-	 * 
-	 * @param chars char array
-	 * @return true if all chars are hexadecimal chars.
-	 */
-	private static boolean isHexadecimal(final char[] chars) {
-		for (int i = 0; i < chars.length; i++) {
-			final int c = chars[i];
-			if ((c >= 0x30 && c <= 0x39) || (c >= 0x61 && c <= 0x66) || (c >= 0x41 && c <= 0x46)) {
-				// ASCII codes: 0-9, a-f, A-F
-				continue;
+	private static boolean isUuidWithHyphens(final char[] chars) {
+		int i = 0;
+		// Firstly, check hexadecimal chars
+		while (i < chars.length) {
+			// Skip hyphen positions for now
+			if (i == 8 || i == 13 || i == 18 || i == 23) {
+				i++;
 			}
-			return false;
+			final int c = chars[i++];
+			if (!((c >= 0x30 && c <= 0x39) || (c >= 0x61 && c <= 0x66) || (c >= 0x41 && c <= 0x46))) {
+				// ASCII codes: 0-9, a-f, A-F
+				return false;
+			}
 		}
-		return true;
+		// Finally, check hyphens
+		return (chars[8] == '-' && chars[13] == '-' && chars[18] == '-' && chars[23] == '-');
 	}
-	
-	/**
-	 * Checks if a char array contains only hexadecimal or hyphen chars.
-	 * 
-	 * @param chars char array
-	 * @return true if all chars are hexadecimal or hyphen chars.
-	 */
-	private static boolean isHexadecimalWithHyphen(final char[] chars) {
+
+	private static boolean isUuidWithoutHyphens(final char[] chars) {
 		for (int i = 0; i < chars.length; i++) {
 			final int c = chars[i];
-			if ((c >= 0x30 && c <= 0x39) || (c >= 0x61 && c <= 0x66) || (c >= 0x41 && c <= 0x46)) {
+			if (!((c >= 0x30 && c <= 0x39) || (c >= 0x61 && c <= 0x66) || (c >= 0x41 && c <= 0x46))) {
 				// ASCII codes: 0-9, a-f, A-F
-				continue;
-			} else if (c == 0x2d) {
-				// ASCII code of '-'
-				continue;
+				return false;
 			}
-			return false;
 		}
 		return true;
 	}

@@ -45,9 +45,21 @@ public class UuidValidatorTest {
 		uuid = "01234567-89ab-4def-abcd-ef0123456789"; // String length = 36
 		assertTrue("UUID with length equals to 36 should be valid.", UuidValidator.isValid(uuid));
 
+		uuid = "01234567-89ab-4def-abcd-ef01-3456789"; // String length = 36, but an extra hyphen
+		assertFalse("UUID with length equals to 36 with an extra hyphen should be invalid.", UuidValidator.isValid(uuid));
+
+		uuid = "01234567-89ab-4def-abcddef0123456789"; // String length = 36, but a missing hyphen
+		assertFalse("UUID with length equals to 36 with a missing hyphen should be invalid.", UuidValidator.isValid(uuid));
+		
 		uuid = "0123456789ab4defabcdef0123456789"; // String length = 32
 		assertTrue("UUID with length equals to 32 should be valid.", UuidValidator.isValid(uuid));
+		
+		uuid = "0123456789ab4defabcdef012345678"; // String length = 31
+		assertFalse("UUID with length equals to 31 should be invalid.", UuidValidator.isValid(uuid));
 
+		uuid = "0123456789ab4defabcdef01234567899"; // String length = 33
+		assertFalse("UUID with length equals to 33 should be invalid.", UuidValidator.isValid(uuid));
+		
 		uuid = "01234567-89ab-4def-abcd-ef0123456789"; // All lower case
 		assertTrue("UUID in lower case should be valid.", UuidValidator.isValid(uuid));
 

@@ -59,17 +59,17 @@ import com.github.f4b6a3.uuid.util.sequence.AbstractSequence;
  * stall the UUID generator until the system clock catches up.
  * 
  */
-public class DefaultTimestampStrategy extends AbstractSequence implements TimestampStrategy {
+public final class DefaultTimestampStrategy extends AbstractSequence implements TimestampStrategy {
 
-	protected long previousTimestamp = 0;
-	protected boolean enableOverrunException = true;
+	private long previousTimestamp = 0;
+	private boolean enableOverrunException = true;
 
 	protected static final int COUNTER_MIN = 0;
 	protected static final int COUNTER_MAX = 9_999;
 
-	protected static final int COUNTER_OFFSET_MAX = 0xff; // 255
+	private static final int COUNTER_OFFSET_MAX = 0xff; // 255
 
-	protected static final String OVERRUN_MESSAGE = "The system overran the generator by requesting too many UUIDs.";
+	private static final String OVERRUN_MESSAGE = "The system overran the generator by requesting too many UUIDs.";
 
 	public DefaultTimestampStrategy() {
 		this(/* enableOverrunException = */ true);

@@ -34,7 +34,7 @@ import com.github.f4b6a3.uuid.util.sequence.AbstractSequence;
  * This class is an implementation of the 'clock sequence' defined in the
  * RFC-4122. The maximum value of this sequence is 16,383 or 0x3fff.
  */
-public class DefaultClockSequenceStrategy extends AbstractSequence implements ClockSequenceStrategy {
+public final class DefaultClockSequenceStrategy extends AbstractSequence implements ClockSequenceStrategy {
 
 	private long previousTimestamp = 0;
 

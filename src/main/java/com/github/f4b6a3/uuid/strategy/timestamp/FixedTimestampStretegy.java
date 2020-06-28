@@ -36,7 +36,7 @@ import com.github.f4b6a3.uuid.util.UuidTimeUtil;
  */
 public class FixedTimestampStretegy implements TimestampStrategy {
 
-	protected long timestamp = 0;
+	private final long timestamp;
 
 	public FixedTimestampStretegy(long timestamp) {
 		this.timestamp = timestamp;

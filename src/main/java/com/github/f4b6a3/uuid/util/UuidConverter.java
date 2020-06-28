@@ -28,13 +28,12 @@ import java.util.UUID;
 
 import com.github.f4b6a3.uuid.exception.IllegalUuidException;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
-import com.github.f4b6a3.uuid.util.ByteUtil;
 
 /**
  * Utility that converts UUIDs to and from strings, byte arrays or other UUID
  * types.
  */
-public class UuidConverter {
+public final class UuidConverter {
 
 	private UuidConverter() {
 	}
@@ -106,7 +105,8 @@ public class UuidConverter {
 		char[] output = new char[32];
 
 		// Loop to remove hyphens
-		for (int i = 0, o = 0; i < input.length; i++) {
+		int o = 0;
+		for (int i = 0; i < input.length; i++) {
 			if ((input[i] != '-')) {
 				output[o++] = input[i];
 			}

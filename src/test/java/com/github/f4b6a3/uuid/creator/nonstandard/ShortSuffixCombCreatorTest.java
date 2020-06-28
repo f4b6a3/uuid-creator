@@ -6,7 +6,9 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.creator.AbstractUuidCreatorTest;
 import com.github.f4b6a3.uuid.creator.nonstandard.ShortSuffixCombCreator;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.security.SecureRandom;
 import java.util.Random;
@@ -48,7 +50,7 @@ public class ShortSuffixCombCreatorTest extends AbstractUuidCreatorTest {
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = creator.create();
-			assertTrue("UUID is null", list[i] != null);
+			assertNotNull("UUID is null", list[i]);
 		}
 
 		checkUniqueness(list);
@@ -64,7 +66,7 @@ public class ShortSuffixCombCreatorTest extends AbstractUuidCreatorTest {
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = creator.create();
-			assertTrue("UUID is null", list[i] != null);
+			assertNotNull("UUID is null", list[i]);
 		}
 
 		checkUniqueness(list);
@@ -79,9 +81,30 @@ public class ShortSuffixCombCreatorTest extends AbstractUuidCreatorTest {
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = creator.create();
-			assertTrue("UUID is null", list[i] != null);
+			assertNotNull("UUID is null", list[i]);
 		}
 
 		checkUniqueness(list);
+	}
+	
+	@Test
+	public void testGetShortSuffixCombParallelGeneratorsShouldCreateUniqueUuids() throws InterruptedException {
+
+		Thread[] threads = new Thread[THREAD_TOTAL];
+		TestThread.clearHashSet();
+
+		// Instantiate and start many threads
+		for (int i = 0; i < THREAD_TOTAL; i++) {
+			threads[i] = new TestThread(UuidCreator.getShortSuffixCombCreator(), DEFAULT_LOOP_MAX);
+			threads[i].start();
+		}
+
+		// Wait all the threads to finish
+		for (Thread thread : threads) {
+			thread.join();
+		}
+
+		// Check if the quantity of unique UUIDs is correct
+		assertEquals(DUPLICATE_UUID_MSG, TestThread.hashSet.size(), (DEFAULT_LOOP_MAX * THREAD_TOTAL));
 	}
 }

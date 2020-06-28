@@ -34,9 +34,9 @@ import static com.github.f4b6a3.uuid.util.ByteUtil.*;
  * The clock sequence passed to the constructor is truncated to fit the accepted
  * range.
  */
-public class FixedClockSequenceStrategy implements ClockSequenceStrategy {
+public final class FixedClockSequenceStrategy implements ClockSequenceStrategy {
 
-	protected int clockSequence = 0;
+	private final int clockSequence;
 
 	public FixedClockSequenceStrategy(int clockSequence) {
 		this.clockSequence = clockSequence & 0x00003fff;

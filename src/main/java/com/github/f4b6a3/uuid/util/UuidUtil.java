@@ -36,7 +36,10 @@ import com.github.f4b6a3.uuid.exception.InvalidUuidException;
  * Utility that provides methods for checking UUID version, for extracting
  * information from UUIDs, and etc.
  */
-public class UuidUtil {
+public final class UuidUtil {
+
+	private static final String MESSAGE_NOT_A_TIME_BASED_UUID = "Not a time-based, time-ordered or DCE Security UUID: %s.";
+	private static final String MESSAGE_NOT_A_DCE_SECURITY_UUID = "Not a DCE Security UUID: %s.";
 
 	private UuidUtil() {
 	}
@@ -191,8 +194,7 @@ public class UuidUtil {
 	public static long extractNodeIdentifier(UUID uuid) {
 
 		if (!(UuidUtil.isTimeBased(uuid) || UuidUtil.isTimeOrdered(uuid) || UuidUtil.isDceSecurity(uuid))) {
-			throw new IllegalUuidException(
-					String.format("Not a time-based, time-ordered or DCE Security UUID: %s.", uuid.toString()));
+			throw new IllegalUuidException(String.format(MESSAGE_NOT_A_TIME_BASED_UUID, uuid.toString()));
 		}
 
 		return uuid.getLeastSignificantBits() & 0x0000ffffffffffffL;
@@ -209,8 +211,7 @@ public class UuidUtil {
 	public static int extractClockSequence(UUID uuid) {
 
 		if (!(UuidUtil.isTimeBased(uuid) || UuidUtil.isTimeOrdered(uuid)) || UuidUtil.isDceSecurity(uuid)) {
-			throw new IllegalUuidException(
-					String.format("Not a time-based, time-ordered or DCE Security UUID: %s.", uuid.toString()));
+			throw new IllegalUuidException(String.format(MESSAGE_NOT_A_TIME_BASED_UUID, uuid.toString()));
 		}
 
 		if (UuidUtil.isDceSecurity(uuid)) {
@@ -269,8 +270,7 @@ public class UuidUtil {
 		} else if (UuidUtil.isDceSecurity(uuid)) {
 			return extractDceSecurityTimestamp(uuid.getMostSignificantBits());
 		} else {
-			throw new IllegalUuidException(
-					String.format("Not a time-based, time-ordered or DCE Security UUID: %s.", uuid.toString()));
+			throw new IllegalUuidException(String.format(MESSAGE_NOT_A_TIME_BASED_UUID, uuid.toString()));
 		}
 	}
 
@@ -284,7 +284,7 @@ public class UuidUtil {
 	public static byte extractLocalDomain(UUID uuid) {
 
 		if (!UuidUtil.isDceSecurity(uuid)) {
-			throw new IllegalUuidException(String.format("Not a DCE Security UUID: %s.", uuid.toString()));
+			throw new IllegalUuidException(String.format(MESSAGE_NOT_A_DCE_SECURITY_UUID, uuid.toString()));
 		}
 
 		return (byte) ((uuid.getLeastSignificantBits() & 0x00ff000000000000L) >>> 48);
@@ -300,7 +300,7 @@ public class UuidUtil {
 	public static int extractLocalIdentifier(UUID uuid) {
 
 		if (!UuidUtil.isDceSecurity(uuid)) {
-			throw new IllegalUuidException(String.format("Not a DCE Security UUID: %s.", uuid.toString()));
+			throw new IllegalUuidException(String.format(MESSAGE_NOT_A_DCE_SECURITY_UUID, uuid.toString()));
 		}
 
 		return (int) (uuid.getMostSignificantBits() >>> 32);

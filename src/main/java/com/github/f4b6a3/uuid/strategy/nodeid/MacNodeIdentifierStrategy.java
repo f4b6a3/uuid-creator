@@ -35,9 +35,9 @@ import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
  *
  * If no MAC is found, a random node identifier is returned.
  */
-public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
+public final class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
-	protected long nodeIdentifier;
+	private final long nodeIdentifier;
 
 	/**
 	 * Algorithm to find the hardware address:
@@ -83,7 +83,7 @@ public class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * 
 	 * @return a hardware address
 	 */
-	protected long getHardwareAddress() {
+	private long getHardwareAddress() {
 
 		// first try
 		NetworkData networkData = NetworkData.getNetworkData();

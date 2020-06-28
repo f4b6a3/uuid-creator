@@ -27,7 +27,7 @@ package com.github.f4b6a3.uuid.creator.rfc4122;
 import com.github.f4b6a3.uuid.creator.AbstractNameBasedUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 
-public class NameBasedSha1UuidCreator extends AbstractNameBasedUuidCreator {
+public final class NameBasedSha1UuidCreator extends AbstractNameBasedUuidCreator {
 
 	/**
 	 * Factory that creates name-based UUIDs (SHA1).

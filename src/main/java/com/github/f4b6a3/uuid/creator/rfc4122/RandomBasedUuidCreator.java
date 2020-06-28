@@ -32,7 +32,7 @@ import com.github.f4b6a3.uuid.enums.UuidVersion;
  * 
  * RFC-4122 version: 4.
  */
-public class RandomBasedUuidCreator extends AbstractRandomBasedUuidCreator {
+public final class RandomBasedUuidCreator extends AbstractRandomBasedUuidCreator {
 
 	public RandomBasedUuidCreator() {
 		super(UuidVersion.VERSION_RANDOM_BASED);

@@ -37,14 +37,14 @@ public abstract class AbstractUuidCreatorTest {
 
 	protected void checkNullOrInvalid(UUID[] list) {
 		for (UUID uuid : list) {
-			assertTrue("UUID is null", uuid != null);
+			assertNotNull("UUID is null", uuid);
 			assertTrue("UUID is not RFC-4122 variant", UuidUtil.isRfc4122(uuid));
 		}
 	}
 
 	protected void checkVersion(UUID[] list, int version) {
 		for (UUID uuid : list) {
-			assertTrue(String.format("UUID is not version %s", version), uuid.version() == version);
+			assertEquals(String.format("UUID is not version %s", version), uuid.version(), version);
 		}
 	}
 
@@ -77,7 +77,7 @@ public abstract class AbstractUuidCreatorTest {
 		Arrays.sort(other);
 
 		for (int i = 0; i < list.length; i++) {
-			assertTrue("The UUID list is not ordered", list[i].equals(other[i]));
+			assertEquals("The UUID list is not ordered", list[i], other[i]);
 		}
 	}
 
@@ -89,7 +89,7 @@ public abstract class AbstractUuidCreatorTest {
 			assertTrue(String.format("UUID is duplicated %s", uuid), set.add(uuid));
 		}
 
-		assertTrue("There are duplicated UUIDs", set.size() == list.length);
+		assertEquals("There are duplicated UUIDs", set.size(), list.length);
 	}
 
 	protected void testCreateAbstractTimeBasedUuid(AbstractTimeBasedUuidCreator creator, boolean multicast) {

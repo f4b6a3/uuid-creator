@@ -32,9 +32,9 @@ import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
  * 
  * The node identifier passed to the constructor is converted to multicast.
  */
-public class FixedNodeIdentifierStrategy implements NodeIdentifierStrategy {
+public final class FixedNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
-	protected long nodeIdentifier;
+	private final long nodeIdentifier;
 
 	public FixedNodeIdentifierStrategy(long nodeIdentifier) {
 		this.nodeIdentifier = NodeIdentifierStrategy.setMulticastNodeIdentifier(nodeIdentifier);

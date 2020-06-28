@@ -24,9 +24,7 @@
 
 package com.github.f4b6a3.uuid.strategy.timestamp;
 
-import java.time.Clock;
 import java.time.Instant;
-import java.time.ZoneId;
 
 import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
 import com.github.f4b6a3.uuid.strategy.timestamp.DefaultTimestampStrategy;
@@ -36,21 +34,29 @@ import com.github.f4b6a3.uuid.util.UuidTimeUtil;
  * This is an implementation of {@link TimestampStrategy} that always returns
  * the same timestamp, simulating a stopped wall clock.
  * 
+ * The milliseconds part is stopped, but the COUNTER still increments.
+ * 
  * This strategy was created to substitute the strategy
  * {@link DefaultTimestampStrategy} in test cases.
+ * 
+ * This implementation wraps an instance of {@link DefaultTimestampStrategy}
+ * instead of inheriting it.
  * 
  * It's useful for tests only.
  * 
  */
-public class StoppedTimestampStrategy extends DefaultTimestampStrategy {
+public final class StoppedTimestampStrategy implements TimestampStrategy {
 
-	protected static final Clock stoppedClock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
+	// Borrow logic from the default strategy instead of inheriting it
+	private final DefaultTimestampStrategy strategy = new DefaultTimestampStrategy();
+
+	private static final long STOPPED_MILLISECONDS = System.currentTimeMillis();
 
 	@Override
 	public long getTimestamp() {
 
-		final long timestamp = UuidTimeUtil.toTimestamp(Instant.now(stoppedClock));
-		final long counter = getNextCounter(timestamp);
+		final long timestamp = UuidTimeUtil.toTimestamp(STOPPED_MILLISECONDS);
+		final long counter = this.strategy.getNextCounter(timestamp);
 
 		return timestamp + counter;
 	}

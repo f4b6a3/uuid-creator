@@ -42,10 +42,10 @@ public abstract class AbstractUuidCreator {
 	}
 
 	public AbstractUuidCreator(int version) {
-		if (version > 0x0000000f) {
+		if (version < 0x00000000 || version > 0x0000000f) {
 			throw new IllegalArgumentException("Invalid UUID version");
 		}
-		this.version = version & 0x0000000F;
+		this.version = version;
 		this.versionBits = version << 12;
 	}
 

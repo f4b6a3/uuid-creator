@@ -24,7 +24,7 @@
 
 package com.github.f4b6a3.uuid.exception;
 
-public class InvalidUuidException extends RuntimeException {
+public final class InvalidUuidException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 

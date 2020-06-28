@@ -41,7 +41,7 @@ import com.github.f4b6a3.uuid.util.ByteUtil;
  * http://www.informit.com/articles/article.aspx?p=25862
  * 
  */
-public class PrefixCombCreator extends AbstractRandomBasedUuidCreator {
+public final class PrefixCombCreator extends AbstractRandomBasedUuidCreator {
 
 	public PrefixCombCreator() {
 		super(UuidVersion.VERSION_RANDOM_BASED);

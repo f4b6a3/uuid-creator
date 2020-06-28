@@ -24,10 +24,10 @@
 
 package com.github.f4b6a3.uuid.util;
 
-public class SettingsUtil {
+public final class SettingsUtil {
 
 	protected static final String PROPERTY_PREFIX = "uuidcreator";
-	public static final String PROPERTY_NODEID = "nodeid";
+	protected static final String PROPERTY_NODEID = "nodeid";
 
 	protected SettingsUtil() {
 	}

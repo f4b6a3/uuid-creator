@@ -43,7 +43,7 @@ import com.github.f4b6a3.uuid.util.ByteUtil;
  * https://www.2ndquadrant.com/en/blog/sequential-uuid-generators/
  * 
  */
-public class ShortSuffixCombCreator extends AbstractRandomBasedUuidCreator {
+public final class ShortSuffixCombCreator extends AbstractRandomBasedUuidCreator {
 
 	protected static final int ONE_MINUTE = 60_000;
 
@@ -63,7 +63,7 @@ public class ShortSuffixCombCreator extends AbstractRandomBasedUuidCreator {
 	@Override
 	public synchronized UUID create() {
 
-		final short timestamp = (short) (System.currentTimeMillis() / ONE_MINUTE);
+		final long timestamp = System.currentTimeMillis() / ONE_MINUTE;
 
 		// Get random values for MSB and LSB
 		final byte[] bytes = new byte[14];
