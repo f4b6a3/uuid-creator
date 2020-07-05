@@ -27,7 +27,7 @@ public class SettingsUtilTest {
 	@Test
 	public void testSetNodeIdentifier() {
 		for (int i = 0; i < 100; i++) {
-			long number = RandomUtil.get().nextLong() >>> 16;
+			long number = this.random.nextLong() >>> 16;
 			SettingsUtil.setNodeIdentifier(number);
 			long result = SettingsUtil.getNodeIdentifier();
 			assertEquals(number, result);

@@ -26,7 +26,7 @@ package com.github.f4b6a3.uuid.strategy.timestamp;
 
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
-import com.github.f4b6a3.uuid.util.RandomUtil;
+import com.github.f4b6a3.uuid.util.TlsSecureRandom;
 import com.github.f4b6a3.uuid.util.UuidTimeUtil;
 import com.github.f4b6a3.uuid.util.sequence.AbstractSequence;
 
@@ -78,7 +78,7 @@ public final class DefaultTimestampStrategy extends AbstractSequence implements 
 	public DefaultTimestampStrategy(boolean enableOverrunException) {
 		super(COUNTER_MIN, COUNTER_MAX);
 		this.enableOverrunException = enableOverrunException;
-		this.value = RandomUtil.get().nextInt(COUNTER_OFFSET_MAX);
+		this.value = TlsSecureRandom.get().nextInt() & COUNTER_OFFSET_MAX;
 	}
 
 	@Override

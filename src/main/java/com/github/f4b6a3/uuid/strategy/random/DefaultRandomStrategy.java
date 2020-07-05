@@ -25,7 +25,7 @@
 package com.github.f4b6a3.uuid.strategy.random;
 
 import com.github.f4b6a3.uuid.strategy.RandomStrategy;
-import com.github.f4b6a3.uuid.util.RandomUtil;
+import com.github.f4b6a3.uuid.util.TlsSecureRandom;
 
 /**
  * Strategy that provides random values for random-based UUIDs.
@@ -36,6 +36,6 @@ public final class DefaultRandomStrategy implements RandomStrategy {
 
 	@Override
 	public void nextBytes(byte[] bytes) {
-		RandomUtil.get().nextBytes(bytes);
+		TlsSecureRandom.get().nextBytes(bytes);
 	}
 }

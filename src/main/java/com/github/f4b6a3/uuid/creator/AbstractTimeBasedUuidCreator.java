@@ -24,6 +24,7 @@
 
 package com.github.f4b6a3.uuid.creator;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
@@ -37,6 +38,7 @@ import com.github.f4b6a3.uuid.strategy.nodeid.DefaultNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.FixedNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.MacNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.timestamp.DefaultTimestampStrategy;
+import com.github.f4b6a3.uuid.util.UuidTimeUtil;
 
 public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator implements NoArgumentsUuidCreator {
 
@@ -140,6 +142,73 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 
 		// (5a)(6a) get the sequence value
 		final long clockSequence = this.clockSequenceStrategy.getClockSequence(timestamp);
+
+		// (9a) format the most significant bits
+		final long msb = this.formatMostSignificantBits(timestamp);
+
+		// (9a) format the least significant bits
+		final long lsb = this.formatLeastSignificantBits(nodeIdentifier, clockSequence);
+
+		// (9a) format a UUID from the MSB and LSB
+		return new UUID(msb, lsb);
+	}
+
+	/**
+	 * Returns a time-based UUID.
+	 * 
+	 * This method overrides some or all parts of the new UUID.
+	 * 
+	 * For example, If you need to replace the default node identifier, you can pass
+	 * another node identifier as argument.
+	 * 
+	 * The timestamp has 100-nanos resolution, but its accuracy depends on the
+	 * argument passed. In some JVMs the {@link java.time.Instant} accuracy may be
+	 * limited to milliseconds, for example, in the OpenJDK-8.
+	 * 
+	 * The node identifier range is from 0 to 281474976710655 (2^48 - 1). If the
+	 * value passed by argument is out of range, the result of MOD 2^48 is used
+	 * instead. The multicast bit is set to ONE automatically.
+	 * 
+	 * The clock sequence range is from 0 to 16383 (2^14 - 1). If the value passed
+	 * by argument is out of range, the result of MOD 2^14 is used instead.
+	 * 
+	 * The null arguments are ignored. If all arguments are null, this method works
+	 * exactly as the method {@link AbstractTimeBasedUuidCreator#create()}.
+	 * 
+	 * @param instant  an alternate instant
+	 * @param nodeid   an alternate node (0 to 2^48)
+	 * @param clockseq an alternate clock sequence (0 to 16,383)
+	 * @return {@link UUID} a UUID value
+	 * 
+	 * @throws UuidCreatorException an overrun exception if more than 10 thousand
+	 *                              UUIDs are requested within the same millisecond
+	 */
+	public UUID create(final Instant instant, final Long nodeid, final Integer clockseq) {
+
+		final long timestamp;
+		final long nodeIdentifier;
+		final long clockSequence;
+
+		// (3a) get the timestamp
+		if (instant != null) {
+			timestamp = UuidTimeUtil.toTimestamp(instant);
+		} else {
+			timestamp = this.timestampStrategy.getTimestamp();
+		}
+
+		// (4a)(5a) get the node identifier
+		if (nodeid != null) {
+			nodeIdentifier = NodeIdentifierStrategy.setMulticastNodeIdentifier(nodeid);
+		} else {
+			nodeIdentifier = this.nodeIdentifierStrategy.getNodeIdentifier();
+		}
+
+		// (5a)(6a) get the sequence value
+		if (clockseq != null) {
+			clockSequence = clockseq & 0x00003fffL;
+		} else {
+			clockSequence = this.clockSequenceStrategy.getClockSequence(timestamp);
+		}
 
 		// (9a) format the most significant bits
 		final long msb = this.formatMostSignificantBits(timestamp);

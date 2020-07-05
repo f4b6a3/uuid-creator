@@ -25,7 +25,7 @@
 package com.github.f4b6a3.uuid.strategy.clockseq;
 
 import com.github.f4b6a3.uuid.strategy.ClockSequenceStrategy;
-import com.github.f4b6a3.uuid.util.RandomUtil;
+import com.github.f4b6a3.uuid.util.TlsSecureRandom;
 import com.github.f4b6a3.uuid.util.sequence.AbstractSequence;
 
 /**
@@ -115,7 +115,7 @@ public final class DefaultClockSequenceStrategy extends AbstractSequence impleme
 	@Override
 	public void reset() {
 		final int give = this.current();
-		final int take = RandomUtil.get().nextInt() & SEQUENCE_MAX;
+		final int take = TlsSecureRandom.get().nextInt() & SEQUENCE_MAX;
 		this.value = CONTROLLER.borrow(give, take);
 	}
 }

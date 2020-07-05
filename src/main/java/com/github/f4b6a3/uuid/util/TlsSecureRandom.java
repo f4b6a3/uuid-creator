@@ -27,11 +27,15 @@ package com.github.f4b6a3.uuid.util;
 import java.security.SecureRandom;
 import java.util.Random;
 
-public final class RandomUtil {
+/**
+ * A utility class that provides a thread local instance of
+ * {@link java.security.SecureRandom}.
+ */
+public final class TlsSecureRandom {
 
 	protected static final ThreadLocal<Random> THREAD_LOCAL_RANDOM = ThreadLocal.withInitial(SecureRandom::new);
 
-	private RandomUtil() {
+	private TlsSecureRandom() {
 	}
 
 	public static Random get() {

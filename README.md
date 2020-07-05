@@ -52,7 +52,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>2.5.1</version>
+  <version>2.6.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -96,6 +96,26 @@ Examples of time-based UUID:
 
 |-----------------|----|-----------|
      timestamp    clkseq  node id
+```
+
+#### Other usage examples
+
+```java
+// Time-based with a date and time chosen by you
+Instant myInstant = Instant.parse("1987-01-23T01:23:45.123456789Z");
+UUID uuid = UuidCreator.getTimeBased(myInstant, null, null);
+```
+
+```java
+// Time-based with a node identifier chosen by you
+Long myNode = 0xAAAAAAAAAAAAL; // Override random node identifier
+UUID uuid = UuidCreator.getTimeBased(null, myNode, null);
+```
+
+```java
+// Time-ordered with a clock sequence chosen by you
+Integer myClockSeq = 0xAAAA; // Override the random clock sequence
+UUID uuid = UuidCreator.getTimeBased(null, null, myClockSeq);
 ```
 
 ### Version 2: DCE Security
@@ -246,6 +266,26 @@ Examples of time-ordered UUID:
 |-----------------|----|-----------|
      timestamp    clkseq  node id
 ```
+
+#### Other usage examples
+
+```java
+// Time-ordered with a date and time chosen by you
+Instant myInstant = Instant.parse("1987-01-23T01:23:45.123456789Z");
+UUID uuid = UuidCreator.getTimeOrdered(myInstant, null, null);
+```
+
+```java
+// Time-ordered with a node identifier chosen by you
+Long myNode = 0xAAAAAAAAAAAAL; // Override the random node identifier
+UUID uuid = UuidCreator.getTimeOrdered(null, myNode, null);
+```
+
+```java
+// Time-ordered with a clock sequence chosen by you
+Integer myClockSeq = 0xAAAA; // Override the random clock sequence
+UUID uuid = UuidCreator.getTimeOrdered(null, null, myClockSeq);:
+``f
 
 ### Prefix COMB (non-standard)
 
@@ -484,7 +524,9 @@ Standard timestamp arrangement
 3: timestamp high   *****
 ```
 
-In the version 1 UUID the timestamp bytes are rearranged so that the highest bits are put in the end of the array of bits and the lowest ones in the beginning. The standard _timestamp resolution_ is 1 second divided by 10,000,000. The timestamp is the amount of 100 nanoseconds intervals since 1582-10-15. Since the timestamp has 60 bits (unsigned), the greatest date and time that can be represented is 5236-03-31T21:21:00.684Z.
+In the version 1 UUID the timestamp bytes are rearranged so that the highest bits are put in the end of the array of bits and the lowest ones in the beginning. The standard _timestamp resolution_ is 1 second divided by 10,000,000. 
+
+The timestamp is the amount of 100 nanoseconds intervals since 1582-10-15. Since the timestamp has 60 bits (unsigned), the greatest date and time that can be represented is 5236-03-31T21:21:00.684Z (2^60 / 10_000_000 / 60s / 60m / 24h / 365.25y + 1582 A.D. = \~5235). In the RFC-4122, the time field rolls over around 3400 A.D., maybe because it considers a _signed_ timestamp (2^59 / 10_000_000 / 60s / 60m / 24h / 365.25y + 1582 A.D. = \~3408).
 
 In this implementation, the timestamp has milliseconds accuracy, that is, it uses `System.currentTimeMillis()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis()) to get the current milliseconds. An internal _counter_ is used to _simulate_ the standard timestamp resolution of 10 million intervals per second.
 
@@ -865,17 +907,17 @@ THROUGHPUT (operations/millis)
 -----------------------------------------------------------------------------------
 Benchmark                                Mode  Cnt      Score     Error   Units
 -----------------------------------------------------------------------------------
-Throughput.Eaio_TimeBased (*)           thrpt    5  20675,885 ± 288,678  ops/ms
-Throughput.Java_RandomBased             thrpt    5   2043,404 ±  29,534  ops/ms
-Throughput.UuidCreator_NameBasedMd5     thrpt    5   3542,077 ±  34,960  ops/ms
-Throughput.UuidCreator_NameBasedSha1    thrpt    5   2723,757 ±  35,945  ops/ms
-Throughput.UuidCreator_PrefixComb       thrpt    5   2618,561 ±  40,111  ops/ms
-Throughput.UuidCreator_RandomBased      thrpt    5   2011,758 ±  25,476  ops/ms
-Throughput.UuidCreator_ShortPrefixComb  thrpt    5   2042,027 ±  25,951  ops/ms
-Throughput.UuidCreator_TimeBased        thrpt    5  17404,991 ± 306,446  ops/ms
-Throughput.UuidCreator_TimeOrdered      thrpt    5  17305,834 ± 363,300  ops/ms
+Throughput.Eaio_TimeBased (*)           thrpt    5  21444,448 ± 109,625  ops/ms
+Throughput.Java_RandomBased             thrpt    5   2203,710 ±   7,539  ops/ms
+Throughput.UuidCreator_RandomBased      thrpt    5   2204,038 ±   4,716  ops/ms
+Throughput.UuidCreator_PrefixComb       thrpt    5   2750,621 ±  14,206  ops/ms
+Throughput.UuidCreator_ShortPrefixComb  thrpt    5   2149,540 ±   2,840  ops/ms
+Throughput.UuidCreator_NameBasedMd5     thrpt    5   3888,460 ±  18,874  ops/ms
+Throughput.UuidCreator_NameBasedSha1    thrpt    5   2950,550 ±   4,524  ops/ms
+Throughput.UuidCreator_TimeBased        thrpt    5  18111,045 ±  92,912  ops/ms
+Throughput.UuidCreator_TimeOrdered      thrpt    5  18272,405 ±  66,720  ops/ms
 -----------------------------------------------------------------------------------
-Total time: 00:13:23
+Total time: 00:12:00
 -----------------------------------------------------------------------------------
 ```
 
@@ -885,17 +927,17 @@ AVERAGE TIME (nanos/operation)
 -----------------------------------------------------------------------------------
 Benchmark                                Mode  Cnt    Score    Error  Units
 -----------------------------------------------------------------------------------
-AverageTime.Eaio_TimeBased (*)           avgt    5   48,500 ±  1,371  ns/op
-AverageTime.Java_RandomBased             avgt    5  489,989 ±  5,458  ns/op
-AverageTime.UuidCreator_NameBasedMd5     avgt    5  280,546 ±  1,840  ns/op
-AverageTime.UuidCreator_NameBasedSha1    avgt    5  376,271 ±  3,414  ns/op
-AverageTime.UuidCreator_PrefixComb       avgt    5  381,903 ±  7,952  ns/op
-AverageTime.UuidCreator_RandomBased      avgt    5  493,900 ± 12,183  ns/op
-AverageTime.UuidCreator_ShortPrefixComb  avgt    5  489,810 ±  6,250  ns/op
-AverageTime.UuidCreator_TimeBased        avgt    5   56,973 ±  1,846  ns/op
-AverageTime.UuidCreator_TimeOrdered      avgt    5   56,338 ±  1,330  ns/op
+AverageTime.Eaio_TimeBased (*)           avgt    5   46,801 ± 0,664  ns/op
+AverageTime.Java_RandomBased             avgt    5  452,032 ± 2,062  ns/op
+AverageTime.UuidCreator_RandomBased      avgt    5  448,903 ± 1,541  ns/op
+AverageTime.UuidCreator_PrefixComb       avgt    5  360,176 ± 1,578  ns/op
+AverageTime.UuidCreator_ShortPrefixComb  avgt    5  465,791 ± 1,319  ns/op
+AverageTime.UuidCreator_NameBasedMd5     avgt    5  244,583 ± 0,681  ns/op
+AverageTime.UuidCreator_NameBasedSha1    avgt    5  332,775 ± 1,030  ns/op
+AverageTime.UuidCreator_TimeBased        avgt    5   55,593 ± 0,294  ns/op
+AverageTime.UuidCreator_TimeOrdered      avgt    5   55,185 ± 0,292  ns/op
 -----------------------------------------------------------------------------------
-Total time: 00:13:23
+Total time: 00:12:00
 -----------------------------------------------------------------------------------
 ```
 

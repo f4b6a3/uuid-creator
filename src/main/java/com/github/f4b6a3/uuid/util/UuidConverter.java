@@ -102,15 +102,7 @@ public final class UuidConverter {
 	public static UUID fromString(String uuid) {
 		UuidValidator.validate(uuid);
 		char[] input = uuid.toCharArray();
-		char[] output = new char[32];
-
-		// Loop to remove hyphens
-		int o = 0;
-		for (int i = 0; i < input.length; i++) {
-			if ((input[i] != '-')) {
-				output[o++] = input[i];
-			}
-		}
+		char[] output = UuidUtil.removeHyphens(input);
 		return fromBytes(ByteUtil.toBytes(output));
 	}
 

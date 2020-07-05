@@ -24,8 +24,10 @@
 
 package com.github.f4b6a3.uuid;
 
+import java.time.Instant;
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.creator.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.creator.nonstandard.PrefixCombCreator;
 import com.github.f4b6a3.uuid.creator.nonstandard.ShortPrefixCombCreator;
 import com.github.f4b6a3.uuid.creator.nonstandard.ShortSuffixCombCreator;
@@ -123,10 +125,10 @@ public final class UuidCreator {
 	 * 
 	 * @deprecated This method will be removed in the next major version.
 	 * 
-	 * <pre>
+	 *             <pre>
 	 * Details: 
 	 * - Version number: 4
-	 * </pre>
+	 *             </pre>
 	 * 
 	 * @return a version 4 UUID
 	 */
@@ -170,6 +172,50 @@ public final class UuidCreator {
 	}
 
 	/**
+	 * Returns a time-based UUID.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 1
+	 * - Hardware address (MAC): NO (random)
+	 * </pre>
+	 * 
+	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Long, Integer)}
+	 * 
+	 * @param instant  an alternate instant
+	 * @param nodeid   an alternate node (0 to 2^48)
+	 * @param clockseq an alternate clock sequence (0 to 16,383)
+	 * @return a version 1 UUID
+	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
+	 *                              requested within the same millisecond
+	 */
+	public static UUID getTimeBased(final Instant instant, final Long nodeid, final Integer clockseq) {
+		return TimeBasedCreatorHolder.INSTANCE.create(instant, nodeid, clockseq);
+	}
+
+	/**
+	 * Returns a time-based UUID with hardware address.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 1 
+	 * - Hardware address (MAC): YES
+	 * </pre>
+	 * 
+	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Long, Integer)}
+	 * 
+	 * @param instant  an alternate instant instead of the default
+	 * @param nodeid   an alternate node identifier instead of the default
+	 * @param clockseq an alternate clock sequence instead of the default
+	 * @return a version 1 UUID
+	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
+	 *                              requested within the same millisecond
+	 */
+	public static UUID getTimeBasedWithMac(final Instant instant, final Long nodeid, final Integer clockseq) {
+		return TimeBasedWithMacCreatorHolder.INSTANCE.create(instant, nodeid, clockseq);
+	}
+
+	/**
 	 * Returns a time-ordered UUID.
 	 *
 	 * <pre>
@@ -201,6 +247,50 @@ public final class UuidCreator {
 	 */
 	public static UUID getTimeOrderedWithMac() {
 		return TimeOrderedWithMacCreatorHolder.INSTANCE.create();
+	}
+
+	/**
+	 * Returns a time-ordered UUID.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 6
+	 * - Hardware address (MAC): NO (random)
+	 * </pre>
+	 * 
+	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Long, Integer)}
+	 * 
+	 * @param instant  an alternate instant instead of the default
+	 * @param nodeid   an alternate node identifier instead of the default
+	 * @param clockseq an alternate clock sequence instead of the default
+	 * @return a version 6 UUID
+	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
+	 *                              requested within the same millisecond
+	 */
+	public static UUID getTimeOrdered(final Instant instant, final Long nodeid, final Integer clockseq) {
+		return TimeOrderedCreatorHolder.INSTANCE.create(instant, nodeid, clockseq);
+	}
+
+	/**
+	 * Returns a time-ordered UUID with hardware address.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 6
+	 * - Hardware address (MAC): YES
+	 * </pre>
+	 * 
+	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Long, Integer)}
+	 * 
+	 * @param instant  an alternate instant instead of the default
+	 * @param nodeid   an alternate node identifier instead of the default
+	 * @param clockseq an alternate clock sequence instead of the default
+	 * @return a version 6 UUID
+	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
+	 *                              requested within the same millisecond
+	 */
+	public static UUID getTimeOrderedWithMac(final Instant instant, final Long nodeid, final Integer clockseq) {
+		return TimeOrderedWithMacCreatorHolder.INSTANCE.create(instant, nodeid, clockseq);
 	}
 
 	/**

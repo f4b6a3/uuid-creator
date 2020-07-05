@@ -24,7 +24,7 @@
 
 package com.github.f4b6a3.uuid.strategy;
 
-import com.github.f4b6a3.uuid.util.RandomUtil;
+import com.github.f4b6a3.uuid.util.TlsSecureRandom;
 
 /**
  * Strategy that provides node identifiers for time-based UUIDs.
@@ -40,7 +40,7 @@ public interface NodeIdentifierStrategy {
 	 * @return a random multicast node identifier
 	 */
 	public static long getRandomNodeIdentifier() {
-		final long random = RandomUtil.get().nextLong();
+		final long random = TlsSecureRandom.get().nextLong();
 		return NodeIdentifierStrategy.setMulticastNodeIdentifier(random);
 	}
 
