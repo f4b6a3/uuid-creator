@@ -285,7 +285,7 @@ UUID uuid = UuidCreator.getTimeOrdered(null, myNode, null);
 // Time-ordered with a clock sequence chosen by you
 Integer myClockSeq = 0xAAAA; // Override the random clock sequence
 UUID uuid = UuidCreator.getTimeOrdered(null, null, myClockSeq);:
-``f
+```
 
 ### Prefix COMB (non-standard)
 
@@ -694,54 +694,57 @@ All the examples in this subsection are also valid for Time-ordered and DCE Secu
 ##### Timestamp
 
 ```java
-
 // with fixed instant (now)
 Instant instant = Instant.now();
 UUID uuid = UuidCreator.getTimeBasedCreator()
     .withInstant(instant)
     .create();
+```
 
+```java
 // with fixed Unix epoch millisecond (current Unix milliseconds)
 long milliseconds = System.currentTimeMillis();
 UUID uuid = UuidCreator.getTimeBasedCreator()
     .withUnixMilliseconds(milliseconds);
     .create();
-
 ```
 
 ##### Timestamp strategy
 
 ```java
-
 // with timestamp provided by a custom strategy
 TimestampStrategy customStrategy = new CustomTimestampStrategy();
 UUID uuid = UuidCreator.getTimeBasedCreator()
     .withTimestampStrategy(customStrategy)
     .create();
-
 ```
 
 ##### Node identifier
 
 ```java
-
 // with hardware address (first MAC found)
 UUID uuid = UuidCreator.getTimeBasedCreator()
     .withMacNodeIdentifier()
     .create();
-    
+```
+
+```java
 // with fixed number (48 bits)
 long number = 0x0000aabbccddeeffL;
 UUID uuid = UuidCreator.getTimeBasedCreator()
     .withNodeIdentifier(number)
     .create();
-    
+```
+
+```java
 // with fixed byte array (6 bytes)
 byte[] bytes = {(byte) 0xaa, (byte) 0xbb, (byte) 0xcc, (byte) 0xdd, (byte) 0xee, (byte) 0xff};
 UUID uuid = UuidCreator.getTimeBasedCreator()
     .withNodeIdentifier(bytes)
     .create();
-    
+```
+
+```java
 // with host IP address
 try {
 	byte[] ip = InetAddress.getLocalHost().getAddress();
@@ -751,55 +754,52 @@ try {
 } catch (UnknownHostException | SocketException e) {
 	// treat exception
 }
+```
 
+```java
 // with host fingerprint (SHA-256 hash of OS + JVM + Network + Resources + locale + timezone)
 long fingerprint = FingerprintUtil.getFingerprint();
 UUID uuid = UuidCreator.getTimeBasedCreator()
     .withNodeIdentifier(fingerprint)
     .create();
-
 ```
 
 ##### Node identifier strategy
 
 ```java
-
 // with node identifier provided by a custom strategy
 NodeIdentifierStrategy customStrategy = new CustomNodeIdentifierStrategy();
 UUID uuid = UuidCreator.getTimeBasedCreator()
     .withNodeIdentifierStrategy(customStrategy)
     .create();
-
 ```
 
 ##### Clock sequence
 
 ```java
-
 // with fixed number (0 to 16383)
 int number = 2039;
 UUID uuid = UuidCreator.getTimeBasedCreator()
     .withClockSequence(number)
     .create();
-    
+```
+
+```java
 // with fixed byte array (2 bytes)
 byte[] bytes = {(byte) 0xaa, (byte) 0xbb};
 UUID uuid = UuidCreator.getTimeBasedCreator()
     .withClockSequence(bytes)
     .create();
-
 ```
 
 ##### Clock sequence strategy
 
 ```java
-
 // with clock sequence provided by a custom strategy
 ClockSequenceStrategy customStrategy = new CustomClockSequenceStrategy();
 UUID uuid = UuidCreator.getTimeBasedCreator()
     .withClockSequenceStrategy(customStrategy)
     .create();
-
 ```
 
 ### Random-based
@@ -809,32 +809,33 @@ All the examples in this subsection are also valid for COMBs.
 ##### Random generator
 
 ```java
-
 // with another random generator that is an instance of `java.util.Random`
 Random random = new Random();
 UUID uuid = UuidCreator.getRandomBasedCreator()
     .withRandomGenerator(random)
     .create();
+```
 
+```java
 // with another random strategy that uses an instance of `java.util.Random`
 // this example is equivalent to the previous one, but more verbose
 RandomStrategy strategy = new OtherRandomStrategy(new Random());
 UUID uuid = UuidCreator.getRandomBasedCreator()
     .withRandomStragety(strategy)
     .create();
-
 ```
 
 ##### Random generator strategy
 
 ```java
-    
 // with a CUSTOM random strategy that uses any random generator
 RandomStrategy customStrategy = new CustomRandomStrategy();
 UUID uuid = UuidCreator.getRandomBasedCreator()
     .withRandomStrategy(customStrategy)
     .create();
+```
 
+```java
 // with an ANONYMOUS random strategy that uses any random generator
 import com.github.niceguy.random.AwesomeRandom;
 RandomBasedUuidCreator creator = UuidCreator.getRandomBasedCreator()
@@ -845,7 +846,6 @@ RandomBasedUuidCreator creator = UuidCreator.getRandomBasedCreator()
 			}
 		});
 UUID uuid = creator.create();
-
 ```
 
 ### Name-based
@@ -853,19 +853,22 @@ UUID uuid = creator.create();
 All the examples in this subsection are also valid for SHA-1 UUIDs.
 
 ```java
-
 // without name space
 String name = "Paul Smith";
 UUID uuid = UuidCreator.getNameBasedMd5Creator()
     .create(name);
+```
 
+```java
 // with a name space
 UuidNamespace namespace = UuidNamespace.NAMESPACE_URL;
 String name = "www.github.com";
 UUID uuid = UuidCreator.getNameBasedMd5Creator()
     .withNamespace(namespace)
     .create(name);
+```
 
+```java
 // with a CUSTOM name space
 // In this example, the category "products/books" is transformed into a custom namespace
 UUID customNamespace = UuidCreator.getNameBasedMd5("products/books")
@@ -873,27 +876,26 @@ String name = "War and Peace - Leo Tolstoy";
 UUID uuid = UuidCreator.getNameBasedMd5Creator()
     .withNamespace(customNamespace)
     .create(name);
-
 ```
 
 ### DCE Security
 
 ```java
-
 // with fixed local domain (POSIX User ID)
 UuidLocalDomain localDomain = UuidLocalDomain.LOCAL_DOMAIN_PERSON;
 int localIdentifier = 1701;
 UUID uuid = UuidCreator.getDceSecurityCreator()
     .withLocalDomain(localDomain)
     .create(localIdentifier);
-    
+```
+
+```java
 // with fixed CUSTOM local domain
 byte customLocalDomain = (byte) 54;
 int localIdentifier = 1492;
 UUID uuid = UuidCreator.getDceSecurityCreator()
     .withLocalDomain(customLocalDomain)
     .create(localIdentifier);
-
 ```
 
 Benchmark
