@@ -39,10 +39,10 @@ public class RandomBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 	}
 
 	@Test
-	public void testRandomUuidWithFastRandomGenerator() {
+	public void testRandomUuidWithJavaUtilsRandomGenerator() {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		RandomBasedUuidCreator creator = UuidCreator.getRandomBasedCreator().withFastRandomGenerator();
+		RandomBasedUuidCreator creator = UuidCreator.getRandomBasedCreator().withRandomGenerator(new Random());
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = creator.create();

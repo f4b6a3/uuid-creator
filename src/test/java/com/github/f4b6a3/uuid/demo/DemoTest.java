@@ -18,7 +18,7 @@ public class DemoTest {
 		System.out.println("### Random UUID");
 
 		for (int i = 0; i < max; i++) {
-			System.out.println(UuidCreator.getFastRandomBased());
+			System.out.println(UuidCreator.getRandomBased());
 		}
 
 		System.out.println(HORIZONTAL_LINE);

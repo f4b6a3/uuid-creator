@@ -13,7 +13,6 @@ import com.github.f4b6a3.uuid.util.sequence.AbstractSequenceTest;
 import com.github.f4b6a3.uuid.util.UuidValidatorTest;
 import com.github.f4b6a3.uuid.util.UuidConverterTest;
 import com.github.f4b6a3.uuid.util.ByteUtilTest;
-import com.github.f4b6a3.uuid.util.random.NaiveRandomTest;
 import com.github.f4b6a3.uuid.creator.nonstandard.PrefixCombCreatorTest;
 import com.github.f4b6a3.uuid.creator.nonstandard.SuffixCombCreatorTest;
 import com.github.f4b6a3.uuid.creator.nonstandard.ShortPrefixCombCreatorTest;
@@ -47,7 +46,6 @@ import com.github.f4b6a3.uuid.creator.rfc4122.TimeOrderedUuidCreatorTest;
    TimeBasedUuidCreatorTest.class,
    TimeOrderedUuidCreatorTest.class,
    ByteUtilTest.class,
-   NaiveRandomTest.class,
 })
 
 /**

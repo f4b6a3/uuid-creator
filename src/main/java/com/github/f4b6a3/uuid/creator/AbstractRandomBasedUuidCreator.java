@@ -106,19 +106,4 @@ public abstract class AbstractRandomBasedUuidCreator extends AbstractUuidCreator
 		this.randomStrategy = new OtherRandomStrategy(random);
 		return (T) this;
 	}
-
-	/**
-	 * [Deprecated] Replaces the default random generator with a faster one.
-	 * 
-	 * @deprecated This method will be removed in the next major version.
-	 * 
-	 * @param <T> the type parameter
-	 * @return {@link AbstractRandomBasedUuidCreator}
-	 */
-	@Deprecated
-	@SuppressWarnings("unchecked")
-	public synchronized <T extends AbstractRandomBasedUuidCreator> T withFastRandomGenerator() {
-		this.randomStrategy = new OtherRandomStrategy(new Random());
-		return (T) this;
-	}
 }

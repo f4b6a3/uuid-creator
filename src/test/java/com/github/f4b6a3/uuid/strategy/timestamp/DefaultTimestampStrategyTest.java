@@ -22,23 +22,23 @@ public class DefaultTimestampStrategyTest {
 		long newCounter = timestampCounter.getNextCounter(newTimestamp);
 		assertEquals(oldCounter + 1, newCounter);
 
-		// It shouldn't increment if the new timestamp is LOWER THAN the old timestamp
+		// It should reset if the new timestamp is LOWER THAN the old timestamp
 		oldTimestamp = UuidTimeUtil.getCurrentTimestamp();
 		newTimestamp = oldTimestamp - 1;
 		timestampCounter = new DefaultTimestampStrategy();
 		timestampCounter.getNextCounter(oldTimestamp);
 		oldCounter = timestampCounter.getNextCounter(oldTimestamp);
 		newCounter = timestampCounter.getNextCounter(newTimestamp);
-		assertEquals(oldCounter, newCounter);
+		assertEquals(oldCounter & 0x3fff, newCounter & 0x3fff);
 
-		// It shouldn't increment if the new timestamp is GREATER THAN the old timestamp
+		// It should reset if the new timestamp is GREATER THAN the old timestamp
 		oldTimestamp = UuidTimeUtil.getCurrentTimestamp();
 		newTimestamp = oldTimestamp + 1;
 		timestampCounter = new DefaultTimestampStrategy();
 		timestampCounter.getNextCounter(oldTimestamp);
 		oldCounter = timestampCounter.getNextCounter(oldTimestamp);
 		newCounter = timestampCounter.getNextCounter(newTimestamp);
-		assertEquals(oldCounter, newCounter);
+		assertEquals(oldCounter & 0x3fff, newCounter & 0x3fff);
 	}
 
 	@Test
