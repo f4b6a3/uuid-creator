@@ -66,8 +66,9 @@ public abstract class AbstractSequence implements Sequence {
 	}
 
 	@Override
-	public void reset() {
+	public int reset() {
 		this.value = minValue;
+		return this.value;
 	}
 	
 	@Override

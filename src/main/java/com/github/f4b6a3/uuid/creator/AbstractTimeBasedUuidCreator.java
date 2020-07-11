@@ -36,6 +36,7 @@ import com.github.f4b6a3.uuid.strategy.clockseq.DefaultClockSequenceStrategy;
 import com.github.f4b6a3.uuid.strategy.clockseq.FixedClockSequenceStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.DefaultNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.FixedNodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.strategy.nodeid.HashNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.MacNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.util.UuidTimeUtil;
@@ -311,6 +312,19 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 		this.nodeIdentifierStrategy = new MacNodeIdentifierStrategy();
 		return (T) this;
 	}
+	
+	/**
+	 * Replaces the default {@link NodeIdentifierStrategy} with the
+	 * {@link HashNodeIdentifierStrategy}.
+	 * 
+	 * @param <T> type parameter
+	 * @return {@link AbstractTimeBasedUuidCreator}
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withHashNodeIdentifier() {
+		this.nodeIdentifierStrategy = new HashNodeIdentifierStrategy();
+		return (T) this;
+	}
 
 	/**
 	 * Replaces the default {@link ClockSequenceStrategy} with the
@@ -341,24 +355,6 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends AbstractTimeBasedUuidCreator> T withClockSequence(byte[] clockSequence) {
 		this.clockSequenceStrategy = new FixedClockSequenceStrategy(clockSequence);
-		return (T) this;
-	}
-
-	/**
-	 * Disables the overrun exception.
-	 * 
-	 * An exception thrown when more than 10 thousand requests are made within the
-	 * same millisecond. This method disables the exception.
-	 * 
-	 * This method replaces the current {@link TimestampStrategy} with the
-	 * {@link DefaultTimestampStrategy}. So don't use this method if you want the
-	 * creator to use another {@link TimestampStrategy}.
-	 * 
-	 * @return {@link AbstractTimeBasedUuidCreator}
-	 */
-	@SuppressWarnings("unchecked")
-	public synchronized <T extends AbstractTimeBasedUuidCreator> T withoutOverrunException() {
-		this.timestampStrategy = new DefaultTimestampStrategy(/* enableOverrunException */ false);
 		return (T) this;
 	}
 

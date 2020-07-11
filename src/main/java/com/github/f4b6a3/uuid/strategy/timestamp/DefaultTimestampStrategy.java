@@ -59,26 +59,13 @@ import com.github.f4b6a3.uuid.util.sequence.AbstractSequence;
  * stall the UUID generator until the system clock catches up.
  * 
  */
-public final class DefaultTimestampStrategy extends AbstractSequence implements TimestampStrategy {
+public final class DefaultTimestampStrategy implements TimestampStrategy {
 
 	private long previousTimestamp = 0;
-	private boolean enableOverrunException = true;
-
-	protected static final int COUNTER_MIN = 0;
-	protected static final int COUNTER_MAX = 9_999;
-
-	private static final int COUNTER_OFFSET_MAX = 0xff; // 255
-
-	private static final String OVERRUN_MESSAGE = "The system overran the generator by requesting too many UUIDs.";
+	private final TimestampCounter timestampCounter;
 
 	public DefaultTimestampStrategy() {
-		this(/* enableOverrunException = */ true);
-	}
-
-	public DefaultTimestampStrategy(boolean enableOverrunException) {
-		super(COUNTER_MIN, COUNTER_MAX);
-		this.enableOverrunException = enableOverrunException;
-		this.value = TlsSecureRandom.get().nextInt() & COUNTER_OFFSET_MAX;
+		this.timestampCounter = new TimestampCounter();
 	}
 
 	@Override
@@ -101,27 +88,42 @@ public final class DefaultTimestampStrategy extends AbstractSequence implements 
 	 *                              UUIDs are requested within the same millisecond
 	 */
 	protected long getNextCounter(final long timestamp) {
-		if (timestamp > this.previousTimestamp) {
-			this.reset();
+		if (timestamp == this.previousTimestamp) {
+			this.previousTimestamp = timestamp;
+			return this.timestampCounter.next();
 		}
 		this.previousTimestamp = timestamp;
-		return this.next();
+		return this.timestampCounter.reset();
 	}
 
-	@Override
-	public int next() {
-		if (this.value > maxValue) {
-			this.value = minValue;
-			// (3b) Too many requests!
-			if (enableOverrunException) {
+	protected class TimestampCounter extends AbstractSequence {
+
+		protected static final int COUNTER_MIN = 0;
+		protected static final int COUNTER_MAX = 9_999;
+
+		private static final int COUNTER_INITIAL_MASK = 0xff; // 255
+
+		private static final String OVERRUN_MESSAGE = "The system overran the generator by requesting too many UUIDs.";
+
+		protected TimestampCounter() {
+			super(COUNTER_MIN, COUNTER_MAX);
+			this.value = TlsSecureRandom.get().nextInt() & COUNTER_INITIAL_MASK;
+		}
+
+		@Override
+		public int next() {
+			if (this.value >= maxValue) {
+				this.value = minValue;
+				// (3b) Too many requests!
 				throw new UuidCreatorException(OVERRUN_MESSAGE);
 			}
+			return ++this.value;
 		}
-		return this.value++;
-	}
 
-	@Override
-	public void reset() {
-		this.value = this.value & COUNTER_OFFSET_MAX;
+		@Override
+		public int reset() {
+			this.value = this.value & COUNTER_INITIAL_MASK;
+			return this.value;
+		}
 	}
 }

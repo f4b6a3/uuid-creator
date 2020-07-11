@@ -29,6 +29,6 @@ public interface Sequence {
 	int next();
 	int min();
 	int max();
-	void reset();
+	int reset();
 	void set(int value);
 }

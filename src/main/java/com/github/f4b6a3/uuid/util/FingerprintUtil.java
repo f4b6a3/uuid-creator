@@ -32,11 +32,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /**
- * [deprecated] Utility class to generate host fingerprint.
- * 
- * @deprecated this class will be removed in the next major version.
+ * Utility class to generate host fingerprint.
  */
-@Deprecated
 public final class FingerprintUtil {
 
 	private static MessageDigest messageDigest;
@@ -47,14 +44,14 @@ public final class FingerprintUtil {
 	/**
 	 * Returns long value representing a host fingerprint.
 	 * 
-	 * The fingerprint is calculated from a list of system properties: OS + JVM
-	 * + network details + system resources + locale + timezone.
+	 * The fingerprint is calculated from a list of system properties: OS + JVM +
+	 * network details + system resources + locale + timezone.
 	 * 
 	 * It uses these information to generate the fingerprint: operating system
-	 * (name, version, arch), java virtual machine (vendor, version, runtime,
-	 * VM), network settings (IP, MAC, host name, domain name), system resources
-	 * (CPU cores, memory), locale (language, charset) and timezone. These
-	 * information are concatenated and passed to a SHA-256 message digest.
+	 * (name, version, arch), java virtual machine (vendor, version, runtime, VM),
+	 * network settings (IP, MAC, host name, domain name), system resources (CPU
+	 * cores, memory), locale (language, charset) and timezone. These information
+	 * are concatenated and passed to a SHA-256 message digest.
 	 * 
 	 * It returns the last 8 bytes of the resulting hash as long value.
 	 * 
@@ -68,8 +65,8 @@ public final class FingerprintUtil {
 	}
 
 	/**
-	 * Returns a SHA-256 hash string generated from all the system data: OS +
-	 * JVM + network details + system resources + locale + timezone.
+	 * Returns a SHA-256 hash string generated from all the system data: OS + JVM +
+	 * network details + system resources + locale + timezone.
 	 * 
 	 * @return a string
 	 */
@@ -150,8 +147,8 @@ public final class FingerprintUtil {
 	 * 
 	 * 1. it tries to find the network data associated with the host name;
 	 * 
-	 * 2. otherwise, it iterates through all interfaces to return the first one
-	 * that is up and running.
+	 * 2. otherwise, it iterates through all interfaces to return the first one that
+	 * is up and running.
 	 * 
 	 * @return a string
 	 */

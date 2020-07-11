@@ -45,7 +45,7 @@ import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.util.UuidConverter;
 
 /**
- * Facade to the UUID factories.
+ * Facade to all the UUID generators.
  */
 public final class UuidCreator {
 
@@ -143,7 +143,7 @@ public final class UuidCreator {
 	 * <pre>
 	 * Details: 
 	 * - Version number: 1
-	 * - Hardware address (MAC): NO (random)
+	 * - Node identifier: random
 	 * </pre>
 	 * 
 	 * @return a version 1 UUID
@@ -155,12 +155,12 @@ public final class UuidCreator {
 	}
 
 	/**
-	 * Returns a time-based UUID with hardware address.
+	 * Returns a time-based UUID with hardware address as node identifier.
 	 *
 	 * <pre>
 	 * Details: 
 	 * - Version number: 1 
-	 * - Hardware address (MAC): YES
+	 * - Node identifier: MAC
 	 * </pre>
 	 * 
 	 * @return a version 1 UUID
@@ -172,12 +172,29 @@ public final class UuidCreator {
 	}
 
 	/**
+	 * Returns a time-based UUID with system data hash as node identifier.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 1 
+	 * - Node identifier: system data hash
+	 * </pre>
+	 * 
+	 * @return a version 1 UUID
+	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
+	 *                              requested within the same millisecond
+	 */
+	public static UUID getTimeBasedWithHash() {
+		return TimeBasedWithHashCreatorHolder.INSTANCE.create();
+	}
+
+	/**
 	 * Returns a time-based UUID.
 	 *
 	 * <pre>
 	 * Details: 
 	 * - Version number: 1
-	 * - Hardware address (MAC): NO (random)
+	 * - Node identifier: random
 	 * </pre>
 	 * 
 	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Long, Integer)}
@@ -194,25 +211,45 @@ public final class UuidCreator {
 	}
 
 	/**
-	 * Returns a time-based UUID with hardware address.
+	 * Returns a time-based UUID with hardware address as node identifier.
 	 *
 	 * <pre>
 	 * Details: 
-	 * - Version number: 1 
-	 * - Hardware address (MAC): YES
+	 * - Version number: 1
+	 * - Node identifier: MAC
 	 * </pre>
 	 * 
 	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Long, Integer)}
 	 * 
-	 * @param instant  an alternate instant instead of the default
-	 * @param nodeid   an alternate node identifier instead of the default
-	 * @param clockseq an alternate clock sequence instead of the default
+	 * @param instant  an alternate instant
+	 * @param clockseq an alternate clock sequence (0 to 16,383)
 	 * @return a version 1 UUID
 	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
 	 *                              requested within the same millisecond
 	 */
-	public static UUID getTimeBasedWithMac(final Instant instant, final Long nodeid, final Integer clockseq) {
-		return TimeBasedWithMacCreatorHolder.INSTANCE.create(instant, nodeid, clockseq);
+	public static UUID getTimeBasedWithMac(final Instant instant, final Integer clockseq) {
+		return TimeBasedWithMacCreatorHolder.INSTANCE.create(instant, null, clockseq);
+	}
+
+	/**
+	 * Returns a time-based UUID with system data hash as node identifier.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 1
+	 * - Node identifier: hash
+	 * </pre>
+	 * 
+	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Long, Integer)}
+	 * 
+	 * @param instant  an alternate instant
+	 * @param clockseq an alternate clock sequence (0 to 16,383)
+	 * @return a version 1 UUID
+	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
+	 *                              requested within the same millisecond
+	 */
+	public static UUID getTimeBasedWithHash(final Instant instant, final Integer clockseq) {
+		return TimeBasedWithHashCreatorHolder.INSTANCE.create(instant, null, clockseq);
 	}
 
 	/**
@@ -221,7 +258,7 @@ public final class UuidCreator {
 	 * <pre>
 	 * Details: 
 	 * - Version number: 6
-	 * - Hardware address (MAC): NO (random)
+	 * - Node identifier: random
 	 * </pre>
 	 * 
 	 * @return a version 6 UUID
@@ -233,12 +270,12 @@ public final class UuidCreator {
 	}
 
 	/**
-	 * Returns a time-ordered UUID with hardware address.
+	 * Returns a time-ordered UUID with hardware address as node identifier.
 	 *
 	 * <pre>
 	 * Details: 
 	 * - Version number: 6
-	 * - Hardware address (MAC): YES
+	 * - Node identifier: MAC
 	 * </pre>
 	 * 
 	 * @return a version 6 UUID
@@ -250,19 +287,36 @@ public final class UuidCreator {
 	}
 
 	/**
+	 * Returns a time-ordered UUID with system data hash as node identifier.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 6
+	 * - Node identifier: system data hash
+	 * </pre>
+	 * 
+	 * @return a version 6 UUID
+	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
+	 *                              requested within the same millisecond
+	 */
+	public static UUID getTimeOrderedWithHash() {
+		return TimeOrderedWithHashCreatorHolder.INSTANCE.create();
+	}
+
+	/**
 	 * Returns a time-ordered UUID.
 	 *
 	 * <pre>
 	 * Details: 
 	 * - Version number: 6
-	 * - Hardware address (MAC): NO (random)
+	 * - Node identifier: random
 	 * </pre>
 	 * 
 	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Long, Integer)}
 	 * 
-	 * @param instant  an alternate instant instead of the default
-	 * @param nodeid   an alternate node identifier instead of the default
-	 * @param clockseq an alternate clock sequence instead of the default
+	 * @param instant  an alternate instant
+	 * @param nodeid   an alternate node (0 to 2^48)
+	 * @param clockseq an alternate clock sequence (0 to 16,383)
 	 * @return a version 6 UUID
 	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
 	 *                              requested within the same millisecond
@@ -272,25 +326,45 @@ public final class UuidCreator {
 	}
 
 	/**
-	 * Returns a time-ordered UUID with hardware address.
+	 * Returns a time-ordered UUID with hardware address as node identifier.
 	 *
 	 * <pre>
 	 * Details: 
 	 * - Version number: 6
-	 * - Hardware address (MAC): YES
+	 * - Node identifier: MAC
 	 * </pre>
 	 * 
 	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Long, Integer)}
 	 * 
-	 * @param instant  an alternate instant instead of the default
-	 * @param nodeid   an alternate node identifier instead of the default
-	 * @param clockseq an alternate clock sequence instead of the default
+	 * @param instant  an alternate instant
+	 * @param clockseq an alternate clock sequence (0 to 16,383)
 	 * @return a version 6 UUID
 	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
 	 *                              requested within the same millisecond
 	 */
-	public static UUID getTimeOrderedWithMac(final Instant instant, final Long nodeid, final Integer clockseq) {
-		return TimeOrderedWithMacCreatorHolder.INSTANCE.create(instant, nodeid, clockseq);
+	public static UUID getTimeOrderedWithMac(final Instant instant, final Integer clockseq) {
+		return TimeOrderedWithMacCreatorHolder.INSTANCE.create(instant, null, clockseq);
+	}
+
+	/**
+	 * Returns a time-ordered UUID with system data hash as node identifier.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 6
+	 * - Node identifier: hash
+	 * </pre>
+	 * 
+	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Long, Integer)}
+	 * 
+	 * @param instant  an alternate instant
+	 * @param clockseq an alternate clock sequence (0 to 16,383)
+	 * @return a version 6 UUID
+	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
+	 *                              requested within the same millisecond
+	 */
+	public static UUID getTimeOrderedWithHash(final Instant instant, final Integer clockseq) {
+		return TimeOrderedWithHashCreatorHolder.INSTANCE.create(instant, null, clockseq);
 	}
 
 	/**
@@ -557,7 +631,7 @@ public final class UuidCreator {
 	 * <pre>
 	 * Details: 
 	 * - Version number: 2 
-	 * - Hardware address (MAC): NO (random)
+	 * - Node identifier: random
 	 * </pre>
 	 * 
 	 * @param localDomain     a custom local domain byte
@@ -569,14 +643,14 @@ public final class UuidCreator {
 	}
 
 	/**
-	 * Returns a DCE Security UUID.
+	 * Returns a DCE Security UUID with hardware address as node identifier.
 	 *
 	 * See: {@link UuidLocalDomain}.
 	 *
 	 * <pre>
 	 * Details: 
 	 * - Version number: 2 
-	 * - Hardware address (MAC): YES
+	 * - Node identifier: MAC
 	 * </pre>
 	 * 
 	 * @param localDomain     a custom local domain byte
@@ -588,12 +662,31 @@ public final class UuidCreator {
 	}
 
 	/**
+	 * Returns a DCE Security UUID with system data hash as node identifier.
+	 *
+	 * See: {@link UuidLocalDomain}.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 2 
+	 * - Node identifier: system data hash
+	 * </pre>
+	 * 
+	 * @param localDomain     a custom local domain byte
+	 * @param localIdentifier a local identifier
+	 * @return a version 2 UUID
+	 */
+	public static UUID getDceSecurityWithHash(byte localDomain, int localIdentifier) {
+		return DceSecurityWithHashCreatorHolder.INSTANCE.create(localDomain, localIdentifier);
+	}
+
+	/**
 	 * Returns a DCE Security UUID.
 	 *
 	 * <pre>
 	 * Details: 
 	 * - Version number: 2 
-	 * - Hardware address (MAC): NO (random)
+	 * - Node identifier: random
 	 * </pre>
 	 * 
 	 * <pre>
@@ -615,12 +708,12 @@ public final class UuidCreator {
 	}
 
 	/**
-	 * Returns a DCE Security UUID.
+	 * Returns a DCE Security UUID with hardware address as node identifier.
 	 *
 	 * <pre>
 	 * Details: 
 	 * - Version number: 2 
-	 * - Hardware address (MAC): YES
+	 * - Node identifier: MAC
 	 * </pre>
 	 * 
 	 * <pre>
@@ -639,6 +732,25 @@ public final class UuidCreator {
 	 */
 	public static UUID getDceSecurityWithMac(UuidLocalDomain localDomain, int localIdentifier) {
 		return DceSecurityWithMacCreatorHolder.INSTANCE.create(localDomain, localIdentifier);
+	}
+
+	/**
+	 * Returns a DCE Security UUID with system data hash as node identifier.
+	 *
+	 * See: {@link UuidLocalDomain}.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 2 
+	 * - Node identifier: system data hash
+	 * </pre>
+	 * 
+	 * @param localDomain     a predefined local domain enumeration
+	 * @param localIdentifier a local identifier
+	 * @return a version 2 UUID
+	 */
+	public static UUID getDceSecurityWithHash(UuidLocalDomain localDomain, int localIdentifier) {
+		return DceSecurityWithHashCreatorHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
@@ -828,12 +940,20 @@ public final class UuidCreator {
 		static final TimeOrderedUuidCreator INSTANCE = getTimeOrderedCreator().withMacNodeIdentifier();
 	}
 
+	private static class TimeOrderedWithHashCreatorHolder {
+		static final TimeOrderedUuidCreator INSTANCE = getTimeOrderedCreator().withHashNodeIdentifier();
+	}
+
 	private static class TimeBasedCreatorHolder {
 		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator();
 	}
 
 	private static class TimeBasedWithMacCreatorHolder {
 		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withMacNodeIdentifier();
+	}
+
+	private static class TimeBasedWithHashCreatorHolder {
+		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withHashNodeIdentifier();
 	}
 
 	private static class NameBasedMd5CreatorHolder {
@@ -850,6 +970,10 @@ public final class UuidCreator {
 
 	private static class DceSecurityWithMacCreatorHolder {
 		static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator().withMacNodeIdentifier();
+	}
+
+	private static class DceSecurityWithHashCreatorHolder {
+		static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator().withHashNodeIdentifier();
 	}
 
 	private static class SuffixCombCreatorHolder {

@@ -170,20 +170,20 @@ public class TimeBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 	@Test
 	public void testCreateTimeBasedUuidWithOptionalArgumentsForTimestampNodeIdAndClockSequence() {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			
+
 			// Get 46 random bits to generate a date from the year 1970 to 2193.
 			// (2^46 / 10000 / 60 / 60 / 24 / 365.25 + 1970 A.D. = ~2193 A.D.)
 			final Instant instant = Instant.ofEpochMilli(random.nextLong() >>> 24);
-			
+
 			// Get 48 random bits for the node identifier, and set the multicast bit to ONE
 			final long nodeid = random.nextLong() & 0x0000ffffffffffffL | 0x0000010000000000L;
-			
+
 			// Get 14 random bits random to generate the clock sequence
 			final int clockseq = random.nextInt() & 0x000003ff;
-			
+
 			// Create a time-based UUID with those random values
 			UUID uuid = UuidCreator.getTimeBased(instant, nodeid, clockseq);
-			
+
 			// Check if it is valid
 			checkIfStringIsValid(uuid);
 
@@ -191,18 +191,29 @@ public class TimeBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 			assertEquals("The timestamp is incorrect.", instant, UuidUtil.extractInstant(uuid));
 			assertEquals("The node identifier is incorrect", nodeid, UuidUtil.extractNodeIdentifier(uuid));
 			assertEquals("The clock sequence is incorrect", clockseq, UuidUtil.extractClockSequence(uuid));
-			
-			// Repeat the same tests to time-based UUIDs with hardware address
-			
+
+			// Repeat the same tests to time-based UUIDs with hardware address, ignoring the node identifier
+
 			// Create a time-based UUID with those random values
-			uuid = UuidCreator.getTimeBasedWithMac(instant, nodeid, clockseq);
-			
+			uuid = UuidCreator.getTimeBasedWithMac(instant, clockseq);
+
 			// Check if it is valid
 			checkIfStringIsValid(uuid);
 
 			// Check if the embedded values are correct.
 			assertEquals("The timestamp is incorrect.", instant, UuidUtil.extractInstant(uuid));
-			assertEquals("The node identifier is incorrect", nodeid, UuidUtil.extractNodeIdentifier(uuid));
+			assertEquals("The clock sequence is incorrect", clockseq, UuidUtil.extractClockSequence(uuid));
+
+			// Repeat the same tests to time-based UUIDs with system data hash, ignoring the node identifier
+
+			// Create a time-based UUID with those random values
+			uuid = UuidCreator.getTimeBasedWithHash(instant, clockseq);
+
+			// Check if it is valid
+			checkIfStringIsValid(uuid);
+
+			// Check if the embedded values are correct.
+			assertEquals("The timestamp is incorrect.", instant, UuidUtil.extractInstant(uuid));
 			assertEquals("The clock sequence is incorrect", clockseq, UuidUtil.extractClockSequence(uuid));
 		}
 	}

@@ -33,6 +33,37 @@ import com.github.f4b6a3.uuid.util.sequence.AbstractSequence;
  * 
  * This class is an implementation of the 'clock sequence' defined in the
  * RFC-4122. The maximum value of this sequence is 16,383 or 0x3fff.
+ * 
+ * It has a private static controller to ensure that each instance of this
+ * strategy receives a unique clock sequence value in the JVM. This prevents
+ * more than one instance from sharing the same clock sequence at any given
+ * time.
+ * 
+ * ### RFC-4122 - 4.1.5. Clock Sequence
+ * 
+ * (1) For UUID version 1, the clock sequence is used to help avoid duplicates
+ * that could arise when the clock is set backwards in time or if the node ID
+ * changes.
+ * 
+ * (2) If the clock is set backwards, or might have been set backwards (e.g.,
+ * while the system was powered off), and the UUID generator can not be sure
+ * that no UUIDs were generated with timestamps larger than the value to which
+ * the clock was set, then the clock sequence has to be changed. If the previous
+ * value of the clock sequence is known, it can just be incremented; otherwise
+ * it should be set to a random or high-quality pseudo-random value.
+ * 
+ * (3) Similarly, if the node ID changes (e.g., because a network card has been
+ * moved between machines), setting the clock sequence to a random number
+ * minimizes the probability of a duplicate due to slight differences in the
+ * clock settings of the machines. If the value of clock sequence associated
+ * with the changed node ID were known, then the clock sequence could just be
+ * incremented, but that is unlikely.
+ * 
+ * (4) The clock sequence MUST be originally (i.e., once in the lifetime of a
+ * system) initialized to a random number to minimize the correlation across
+ * systems. This provides maximum protection against node identifiers that may
+ * move or switch from system to system rapidly. The initial value MUST NOT be
+ * correlated to the node identifier.
  */
 public final class DefaultClockSequenceStrategy extends AbstractSequence implements ClockSequenceStrategy {
 
@@ -43,34 +74,6 @@ public final class DefaultClockSequenceStrategy extends AbstractSequence impleme
 
 	public static final ClockSequenceController CONTROLLER = new ClockSequenceController();
 
-	/**
-	 * ### RFC-4122 - 4.1.5. Clock Sequence
-	 * 
-	 * (1) For UUID version 1, the clock sequence is used to help avoid duplicates
-	 * that could arise when the clock is set backwards in time or if the node ID
-	 * changes.
-	 * 
-	 * (2) If the clock is set backwards, or might have been set backwards (e.g.,
-	 * while the system was powered off), and the UUID generator can not be sure
-	 * that no UUIDs were generated with timestamps larger than the value to which
-	 * the clock was set, then the clock sequence has to be changed. If the previous
-	 * value of the clock sequence is known, it can just be incremented; otherwise
-	 * it should be set to a random or high-quality pseudo-random value.
-	 * 
-	 * (3) Similarly, if the node ID changes (e.g., because a network card has been
-	 * moved between machines), setting the clock sequence to a random number
-	 * minimizes the probability of a duplicate due to slight differences in the
-	 * clock settings of the machines. If the value of clock sequence associated
-	 * with the changed node ID were known, then the clock sequence could just be
-	 * incremented, but that is unlikely.
-	 * 
-	 * (4) The clock sequence MUST be originally (i.e., once in the lifetime of a
-	 * system) initialized to a random number to minimize the correlation across
-	 * systems. This provides maximum protection against node identifiers that may
-	 * move or switch from system to system rapidly. The initial value MUST NOT be
-	 * correlated to the node identifier.
-	 * 
-	 */
 	public DefaultClockSequenceStrategy() {
 		super(SEQUENCE_MIN, SEQUENCE_MAX);
 		this.value = -1; // set an out of range value before calling reset()
@@ -82,7 +85,7 @@ public final class DefaultClockSequenceStrategy extends AbstractSequence impleme
 	 * 
 	 * ### RFC-4122 - 4.1.5. Clock Sequence
 	 * 
-	 * (2a) If the clock is set backwards, or might have been set backwards (e.g.,
+	 * (2) If the clock is set backwards, or might have been set backwards (e.g.,
 	 * while the system was powered off), and the UUID generator can not be sure
 	 * that no UUIDs were generated with timestamps larger than the value to which
 	 * the clock was set, then the clock sequence has to be changed. If the previous
@@ -113,9 +116,10 @@ public final class DefaultClockSequenceStrategy extends AbstractSequence impleme
 	}
 
 	@Override
-	public void reset() {
+	public int reset() {
 		final int give = this.current();
 		final int take = TlsSecureRandom.get().nextInt() & SEQUENCE_MAX;
 		this.value = CONTROLLER.borrow(give, take);
+		return this.value;
 	}
 }

@@ -24,6 +24,7 @@
 
 package com.github.f4b6a3.uuid.creator.rfc4122;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.creator.AbstractTimeBasedUuidCreator;
@@ -68,7 +69,6 @@ public final class DceSecurityUuidCreator extends AbstractTimeBasedUuidCreator {
 	public DceSecurityUuidCreator() {
 		super(UuidVersion.VERSION_DCE_SECURITY);
 		this.timestampCounter = new DceSecurityCounter();
-		this.withoutOverrunException(); // Disable superclass overrun exception
 	}
 
 	/**
@@ -201,6 +201,19 @@ public final class DceSecurityUuidCreator extends AbstractTimeBasedUuidCreator {
 	 */
 	@Override
 	public synchronized UUID create() {
+		throw new UnsupportedOperationException("Unsuported operation for DCE Security UUID creator");
+	}
+
+	/**
+	 * Throws an exception.
+	 * 
+	 * Overrides the create(Instant, Long, Integer) method from
+	 * {@link AbstractTimeBasedUuidCreator}.
+	 * 
+	 * @throws UnsupportedOperationException always
+	 */
+	@Override
+	public UUID create(final Instant instant, final Long nodeid, final Integer clockseq) {
 		throw new UnsupportedOperationException("Unsuported operation for DCE Security UUID creator");
 	}
 

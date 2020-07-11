@@ -25,6 +25,8 @@ How to Use
 
 ### No time to read
 
+This library is designed to be EASY TO USE. The only thing you have to know is what a UUID is and what type you need.
+
 If you just want a _random_ UUID, which is the most common case, use this single line of code:
 
 ```java
@@ -43,6 +45,8 @@ Or if you want a UUID that is _ordered by_ creation time, use this line:
 UUID uuid = UuidCreator.getTimeOrdered();
 ```
 
+All UUIDs types can be generated from the [facade](https://en.wikipedia.org/wiki/Facade_pattern) `UuidCreator`. If you have a special requirement that is not covered by the facade, you can read the rest of this document or check the source code.
+
 ### Maven dependency
 
 Add these lines to your `pom.xml`:
@@ -52,7 +56,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>2.6.0</version>
+  <version>2.7.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -73,7 +77,12 @@ UUID uuid = UuidCreator.getTimeBased();
 UUID uuid = UuidCreator.getTimeBasedWithMac();
 ```
 
-Examples of time-based UUID:
+```java
+// Time-based with system data hash
+UUID uuid = UuidCreator.getTimeBasedWithHash();
+```
+
+Sequence of time-based UUIDs:
 
 ```text
 0edd7640-8eff-11e9-8649-972f32b091a1
@@ -129,13 +138,6 @@ int localIdentifier = 1701;
 UUID uuid = UuidCreator.getDceSecurity(localDomain, localIdentifier);
 ```
 
-```java
-// DCE Security with hardware address
-UuidLocalDomain localDomain = UuidLocalDomain.LOCAL_DOMAIN_GROUP;
-int localIdentifier = 1984;
-UUID uuid = UuidCreator.getDceSecurityWithMac(localDomain, localIdentifier);
-```
-
 List of predefined local domains:
 
 * `UuidLocalDomain.LOCAL_DOMAIN_PERSON`: Local identifier is member of a [user domain](https://en.wikipedia.org/wiki/User_identifier);
@@ -177,7 +179,7 @@ The default random generator is a thread local `java.security.SecureRandom`.
 UUID uuid = UuidCreator.getRandomBased();
 ```
 
-Examples of random-based UUID:
+Sequence of random-based UUIDs:
 
 ```text
 38b37e02-d978-42cc-b39f-699d41ad6b13
@@ -242,7 +244,12 @@ UUID uuid = UuidCreator.getTimeOrdered();
 UUID uuid = UuidCreator.getTimeOrderedWithMac();
 ```
 
-Examples of time-ordered UUID:
+```java
+// Time-ordered with system data hash
+UUID uuid = UuidCreator.getTimeOrderedWithHash();
+```
+
+Sequence of time-ordered UUIDs:
 
 ```text
 1e98eff0-eddc-6470-a649-ad1cde652e10
@@ -298,7 +305,7 @@ The PREFIX is the creation millisecond (Unix epoch).
 UUID uuid = UuidCreator.getPrefixComb();
 ```
 
-Examples of Prefix COMB:
+Sequence of Prefix COMBs:
 
 ```text
 01720b5c-bf10-423f-9b20-1f88a7e2763a
@@ -335,7 +342,7 @@ The SUFFIX is the creation millisecond (Unix epoch).
 UUID uuid = UuidCreator.getSuffixComb();
 ```
 
-Examples of Suffix COMB:
+Sequence of Suffix COMBs:
 
 ```text
 0c7fb3f5-cf99-4dc4-942a-01720b5cbf0c
@@ -372,7 +379,7 @@ The PREFIX is the creation minute (Unix epoch). It wraps around every 45 days (2
 UUID uuid = UuidCreator.getShortPrefixComb();
 ```
 
-Examples of Short Prefix COMB:
+Sequence of Short Prefix COMBs:
 
 ```text
 2fe8ef26-5684-4192-aab6-fc6a0aaa191c
@@ -407,7 +414,7 @@ The SUFFIX is the creation minute (Unix epoch). It wraps around every 45 days (2
 UUID uuid = UuidCreator.getShortSuffixComb();
 ```
 
-Examples of Short Suffix COMB:
+Sequence of Short Suffix COMBs:
 
 ```text
 0c06fac1-fe6a-4efa-ad45-2fe861065351
@@ -524,7 +531,7 @@ Standard timestamp arrangement
 3: timestamp high   *****
 ```
 
-In the version 1 UUID the timestamp bytes are rearranged so that the highest bits are put in the end of the array of bits and the lowest ones in the beginning. The standard _timestamp resolution_ is 1 second divided by 10,000,000. 
+In the version 1 UUID the timestamp bytes are rearranged so that the highest bits are put in the end of the array of bits and the lowest ones in the beginning. The standard _timestamp resolution_ is 1 second divided by 10,000,000.
 
 The timestamp is the amount of 100 nanoseconds intervals since 1582-10-15. Since the timestamp has 60 bits (unsigned), the greatest date and time that can be represented is 5236-03-31T21:21:00.684Z (2^60 / 10_000_000 / 60s / 60m / 24h / 365.25y + 1582 A.D. = \~5235). In the RFC-4122, the time field rolls over around 3400 A.D., maybe because it considers a _signed_ timestamp (2^59 / 10_000_000 / 60s / 60m / 24h / 365.25y + 1582 A.D. = \~3408).
 
@@ -534,7 +541,7 @@ You can create any strategy that implements the `TimestampStrategy` in the case 
 
 ##### Counter
 
-The counter range is from 0 to 9,999. Every time a request is made at the same millisecond, the counter is increased by 1. Each counter value corresponds to a 100 nanosecond interval. The timestamp is calculated with this formula: MILLISECONDS * 10,000 + COUNTER. 
+The counter range is from 0 to 9,999. Every time a request is made at the same millisecond, the counter is increased by 1. Each counter value corresponds to a 100 nanosecond interval. The timestamp is calculated with this formula: MILLISECONDS * 10,000 + COUNTER.
 
 The timestamp counter is not instantiated with ZERO, but with a random number between 0 and 255. The 8 least significant bits of the counter are random. Every time a new counter value is required, this number is incremented by 1. When the limit of 9,999 is reached within the same interval, the counter is restarted to ZERO and an exception is raised. The first counter value for the next interval is the least 8 significant bits of the previous counter value.
 
@@ -551,29 +558,35 @@ The exception is raised to comply the RFC-4122, that requires:
    catches up.
 ```
 
+You probably don't have to worry if your application doesn't reach the theoretical limit of 10 million UUIDs per second (10k/ms).
+
 #### Clock sequence
 
 The clock sequence helps to avoid duplicates. It comes in when the system clock is backwards or when the node identifier changes. It also expands the amount of UUIDs that can be created at the same millisecond.
 
 The first bits of the clock sequence are multiplexed with the variant number of the RFC-4122. Because of that, it has a range from 0 to 16383 (0x0000 to 0x3FFF). This value is increased by 1 if more than one request is made by the system at the same timestamp or if the timestamp is backwards. In other words, it acts like a counter that is incremented whenever the timestamp repeats or may be repeated.
 
-In the `DefaultClockSequenceStrategy` each generator on the same JVM receives a unique clock sequence value. This local uniqueness is managed by the class `ClockSequenceController`.
+The `DefaultClockSequenceStrategy` uses a private static controller to ensure that each instance of this strategy receives a unique clock sequence value in the JVM. This prevents more than one instance from sharing the same clock sequence at any given time. This local uniqueness is managed by the class `ClockSequenceController`..
 
 You can create any strategy that implements the `ClockSequenceStrategy` in the case that none of the strategies are good for you.
 
 #### Node identifier
 
-The node identifier is an IEEE 802 MAC address, usually the host machine address. But if no address is available or if the usage of MAC address is not desired, the standard allows the usage of a random generated value. In this library the default behavior is to use a random node identifier generated by a secure random generator.
+In this library the node identifier is generated by a secure random generator by default. Alternatively you can use a IEEE 802 MAC address or a system data hash as node identifier.
 
-It's also possible to use a _preferred node identifier_ by setting a system property or environment variable. The system property is `uuidcreator.nodeid` and the environment variable is `UUIDCREATOR_NODEID`. All UUIDs created on a machine will use the value present in the property or variable.
+The simplest way to avoid collisions is to ensure that each generator has its own node identifier. As a suggestion, some Apps may use a device or user ID as node identifier, if their developers don't want a node identifier generated from a random number, a MAC address or a system data hash.
 
-The simplest way to avoid collisions is to ensure that each generator has its own node identifier.
+It's possible to use a _preferred node identifier_ by setting a system property or environment variable. The system property is `uuidcreator.nodeid` and the environment variable is `UUIDCREATOR_NODEID`. All time-based UUIDs instantiated on a machine will use the value present in the property or variable.
 
 You can also create your own strategy that implements the `NodeIdentifierStrategy`.
 
 ##### Hardware address
 
 The hardware address node identifier is the MAC address associated with the host name. If that MAC address can't be found, it uses the first MAC address that is up and running. If no MAC is found, a random number is used.
+
+##### System data hash
+
+The system data hash is calculated from a list of system properties: OS + JVM + network details + system resources + locale + timezone. All these information are collected and passed to a SHA-256 message digest. The node identifier is generated from the last 6 bytes of the resulting SHA-256 hash.
 
 ### Time-ordered
 
@@ -729,7 +742,7 @@ UUID uuid = UuidCreator.getTimeBasedCreator()
 ```
 
 ```java
-// with fixed number (48 bits)
+// with fixed number (48 bits), for example, a device or user ID on your App
 long number = 0x0000aabbccddeeffL;
 UUID uuid = UuidCreator.getTimeBasedCreator()
     .withNodeIdentifier(number)
@@ -737,7 +750,7 @@ UUID uuid = UuidCreator.getTimeBasedCreator()
 ```
 
 ```java
-// with fixed byte array (6 bytes)
+// with fixed byte array (6 bytes), for example, a device or user ID on your App
 byte[] bytes = {(byte) 0xaa, (byte) 0xbb, (byte) 0xcc, (byte) 0xdd, (byte) 0xee, (byte) 0xff};
 UUID uuid = UuidCreator.getTimeBasedCreator()
     .withNodeIdentifier(bytes)
@@ -757,10 +770,10 @@ try {
 ```
 
 ```java
-// with host fingerprint (SHA-256 hash of OS + JVM + Network + Resources + locale + timezone)
-long fingerprint = FingerprintUtil.getFingerprint();
+// with system data hash (SHA-256 hash of OS + JVM + Network + Resources + locale + timezone)
+long hash = FingerprintUtil.getFingerprint();
 UUID uuid = UuidCreator.getTimeBasedCreator()
-    .withNodeIdentifier(fingerprint)
+    .withNodeIdentifier(hash)
     .create();
 ```
 
@@ -768,6 +781,7 @@ UUID uuid = UuidCreator.getTimeBasedCreator()
 
 ```java
 // with node identifier provided by a custom strategy
+// the custom strategy could read the device or user ID from a file and return it as node identifier
 NodeIdentifierStrategy customStrategy = new CustomNodeIdentifierStrategy();
 UUID uuid = UuidCreator.getTimeBasedCreator()
     .withNodeIdentifierStrategy(customStrategy)

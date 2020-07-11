@@ -34,32 +34,39 @@ import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
  * Strategy that provides the current machine address (MAC), if available.
  *
  * If no MAC is found, a random node identifier is returned.
+ * 
+ * It looks for the first MAC that can be found. First it tries to find the MAC
+ * that is associated with the host name. Otherwise, it tries to find the first
+ * MAC that is up and running. This second try may be very expensive on Windows,
+ * because it iterates over a lot of virtual network interfaces created by the
+ * operating system.
+ * 
+ * ### RFC-4122 - 4.1.6. Node
+ * 
+ * For UUID version 1, the node field consists of an IEEE 802 MAC address,
+ * usually the host address. For systems with multiple IEEE 802 addresses, any
+ * available one can be used. The lowest addressed octet (octet number 10)
+ * contains the global/local bit and the unicast/multicast bit, and is the first
+ * octet of the address transmitted on an 802.3 LAN.
+ * 
+ * For systems with no IEEE address, a randomly or pseudo-randomly generated
+ * value may be used; see Section 4.5. The multicast bit must be set in such
+ * addresses, in order that they will never conflict with addresses obtained
+ * from network cards.
+ * 
  */
 public final class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 	private final long nodeIdentifier;
 
 	/**
-	 * Algorithm to find the hardware address:
+	 * This constructor works in three steps:
 	 * 
-	 * It looks for the first MAC that can be found. First it tries to find the MAC
-	 * that is associated with the host name. Otherwise, it tries to find the first
-	 * MAC that is up and running. This second try may be very expensive on Windows,
-	 * because it iterates over a lot of virtual network interfaces created by the
-	 * operating system.
+	 * 1. Find the MAC associated with the host name;
 	 * 
-	 * ### RFC-4122 - 4.1.6. Node
+	 * 2. If not found, find the first MAC that is up and running;
 	 * 
-	 * (1) For UUID version 1, the node field consists of an IEEE 802 MAC address,
-	 * usually the host address. For systems with multiple IEEE 802 addresses, any
-	 * available one can be used. The lowest addressed octet (octet number 10)
-	 * contains the global/local bit and the unicast/multicast bit, and is the first
-	 * octet of the address transmitted on an 802.3 LAN.
-	 * 
-	 * (2) For systems with no IEEE address, a randomly or pseudo-randomly generated
-	 * value may be used; see Section 4.5. The multicast bit must be set in such
-	 * addresses, in order that they will never conflict with addresses obtained
-	 * from network cards.
+	 * 3. If not found, generate a random node identifier.
 	 * 
 	 */
 	public MacNodeIdentifierStrategy() {
