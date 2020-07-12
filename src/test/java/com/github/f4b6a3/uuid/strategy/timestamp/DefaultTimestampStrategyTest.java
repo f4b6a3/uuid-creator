@@ -29,7 +29,7 @@ public class DefaultTimestampStrategyTest {
 		timestampCounter.getNextCounter(oldTimestamp);
 		oldCounter = timestampCounter.getNextCounter(oldTimestamp);
 		newCounter = timestampCounter.getNextCounter(newTimestamp);
-		assertEquals(oldCounter & 0x3fff, newCounter & 0x3fff);
+		assertEquals(oldCounter & 0xff, newCounter & 0xff);
 
 		// It should reset if the new timestamp is GREATER THAN the old timestamp
 		oldTimestamp = UuidTimeUtil.getCurrentTimestamp();
@@ -38,7 +38,7 @@ public class DefaultTimestampStrategyTest {
 		timestampCounter.getNextCounter(oldTimestamp);
 		oldCounter = timestampCounter.getNextCounter(oldTimestamp);
 		newCounter = timestampCounter.getNextCounter(newTimestamp);
-		assertEquals(oldCounter & 0x3fff, newCounter & 0x3fff);
+		assertEquals(oldCounter & 0xff, newCounter & 0xff);
 	}
 
 	@Test

@@ -177,14 +177,14 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * exactly as the method {@link AbstractTimeBasedUuidCreator#create()}.
 	 * 
 	 * @param instant  an alternate instant
-	 * @param nodeid   an alternate node (0 to 2^48)
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
+	 * @param nodeid   an alternate node (0 to 2^48)
 	 * @return {@link UUID} a UUID value
 	 * 
 	 * @throws UuidCreatorException an overrun exception if more than 10 thousand
 	 *                              UUIDs are requested within the same millisecond
 	 */
-	public UUID create(final Instant instant, final Long nodeid, final Integer clockseq) {
+	public UUID create(final Instant instant, final Integer clockseq, final Long nodeid) {
 
 		final long timestamp;
 		final long nodeIdentifier;

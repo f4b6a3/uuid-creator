@@ -25,7 +25,7 @@ How to Use
 
 ### No time to read
 
-This library is designed to be EASY TO USE. The only thing you have to know is what a UUID is and what type you need.
+This library was designed to be _easy to use_. The only things you have to know are what a UUID is and what type you need.
 
 If you just want a _random_ UUID, which is the most common case, use this single line of code:
 
@@ -45,7 +45,9 @@ Or if you want a UUID that is _ordered by_ creation time, use this line:
 UUID uuid = UuidCreator.getTimeOrdered();
 ```
 
-All UUIDs types can be generated from the [facade](https://en.wikipedia.org/wiki/Facade_pattern) `UuidCreator`. If you have a special requirement that is not covered by the facade, you can read the rest of this document or check the source code.
+All UUID types can be generated from the [facade](https://en.wikipedia.org/wiki/Facade_pattern) `UuidCreator`. If you have a special requirement that is not covered by the facade, you can read the rest of this document or check the source code.
+
+The generators here are [thread-safe](https://en.wikipedia.org/wiki/Thread_safety).
 
 ### Maven dependency
 
@@ -56,7 +58,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>2.7.0</version>
+  <version>2.7.1</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -118,13 +120,13 @@ UUID uuid = UuidCreator.getTimeBased(myInstant, null, null);
 ```java
 // Time-based with a node identifier chosen by you
 Long myNode = 0xAAAAAAAAAAAAL; // Override random node identifier
-UUID uuid = UuidCreator.getTimeBased(null, myNode, null);
+UUID uuid = UuidCreator.getTimeBased(null, null, myNode);
 ```
 
 ```java
 // Time-ordered with a clock sequence chosen by you
 Integer myClockSeq = 0xAAAA; // Override the random clock sequence
-UUID uuid = UuidCreator.getTimeBased(null, null, myClockSeq);
+UUID uuid = UuidCreator.getTimeBased(null, myClockSeq, null);
 ```
 
 ### Version 2: DCE Security
@@ -285,13 +287,13 @@ UUID uuid = UuidCreator.getTimeOrdered(myInstant, null, null);
 ```java
 // Time-ordered with a node identifier chosen by you
 Long myNode = 0xAAAAAAAAAAAAL; // Override the random node identifier
-UUID uuid = UuidCreator.getTimeOrdered(null, myNode, null);
+UUID uuid = UuidCreator.getTimeOrdered(null, null, myNode);
 ```
 
 ```java
 // Time-ordered with a clock sequence chosen by you
 Integer myClockSeq = 0xAAAA; // Override the random clock sequence
-UUID uuid = UuidCreator.getTimeOrdered(null, null, myClockSeq);:
+UUID uuid = UuidCreator.getTimeOrdered(null, myClockSeq, null);
 ```
 
 ### Prefix COMB (non-standard)
@@ -372,7 +374,7 @@ adb7f7eb-760f-427d-ba6e-01720b5cbf0d
 
 The Short Prefix COMB<sup>[10]</sup> is a modified random-based UUID that replaces 2 bytes of the MOST significant bits.
 
-The PREFIX is the creation minute (Unix epoch). It wraps around every 45 days (2^16/60/24 = ~45).
+The PREFIX is the creation minute (Unix epoch). It wraps around every 45 days (2^16/60/24 = \~45).
 
 ```java
 // Short Prefix COMB
@@ -407,7 +409,7 @@ prefix         randomness
 
 The Short Suffix COMB GUID<sup>[10]</sup> is a modified random-based UUID that replaces 2 bytes of the LEAST significant bits.
 
-The SUFFIX is the creation minute (Unix epoch). It wraps around every 45 days (2^16/60/24 = ~45).
+The SUFFIX is the creation minute (Unix epoch). It wraps around every 45 days (2^16/60/24 = \~45).
 
 ```java
 // Short Suffix COMB
