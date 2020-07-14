@@ -15,7 +15,7 @@ import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.exception.IllegalUuidException;
 import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
 import com.github.f4b6a3.uuid.strategy.timestamp.FixedTimestampStretegy;
-import com.github.f4b6a3.uuid.util.UuidTimeUtil;
+import com.github.f4b6a3.uuid.util.UuidTime;
 
 public class UuidUtilTest {
 
@@ -43,7 +43,7 @@ public class UuidUtilTest {
 	public void testExtractTimestamp() {
 
 		Instant instant1 = Instant.now().truncatedTo(ChronoUnit.MILLIS);
-		long timestamp1 = UuidTimeUtil.toTimestamp(instant1);
+		long timestamp1 = UuidTime.toTimestamp(instant1);
 		TimestampStrategy strategy = new FixedTimestampStretegy(instant1);
 
 		UUID uuid = UuidCreator.getTimeBasedCreator().withTimestampStrategy(strategy).create();
@@ -103,7 +103,7 @@ public class UuidUtilTest {
 		int localIdentifier = 1701;
 
 		Instant instant1 = Instant.now();
-		long timestamp1 = UuidTimeUtil.toTimestamp(instant1);
+		long timestamp1 = UuidTime.toTimestamp(instant1);
 		UUID uuid = UuidCreator.getDceSecurity(localDomain, localIdentifier);
 		long timestamp2 = extractTimestamp(uuid);
 
@@ -122,8 +122,8 @@ public class UuidUtilTest {
 		Instant instant2 = extractInstant(uuid);
 
 		// The expected Instant is trunked like the DCE Security does internally
-		long expectedTimestamp = UuidTimeUtil.toTimestamp(instant1) & 0xffffffff00000000L;
-		Instant expectedInstant = UuidTimeUtil.toInstant(expectedTimestamp);
+		long expectedTimestamp = UuidTime.toTimestamp(instant1) & 0xffffffff00000000L;
+		Instant expectedInstant = UuidTime.toInstant(expectedTimestamp);
 
 		assertEquals(expectedInstant, instant2);
 	}

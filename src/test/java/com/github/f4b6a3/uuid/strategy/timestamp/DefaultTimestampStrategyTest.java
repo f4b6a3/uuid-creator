@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.strategy.timestamp.DefaultTimestampStrategy;
-import com.github.f4b6a3.uuid.util.UuidTimeUtil;
+import com.github.f4b6a3.uuid.util.UuidTime;
 
 import static org.junit.Assert.*;
 
@@ -14,7 +14,7 @@ public class DefaultTimestampStrategyTest {
 	public void testNextForTheCounterIncrement() {
 
 		// It should increment if the new timestamp is EQUAL TO the old timestamp
-		long oldTimestamp = UuidTimeUtil.getCurrentTimestamp();
+		long oldTimestamp = UuidTime.getCurrentTimestamp();
 		long newTimestamp = oldTimestamp;
 		DefaultTimestampStrategy timestampCounter = new DefaultTimestampStrategy();
 		timestampCounter.getNextCounter(oldTimestamp);
@@ -23,7 +23,7 @@ public class DefaultTimestampStrategyTest {
 		assertEquals(oldCounter + 1, newCounter);
 
 		// It should reset if the new timestamp is LOWER THAN the old timestamp
-		oldTimestamp = UuidTimeUtil.getCurrentTimestamp();
+		oldTimestamp = UuidTime.getCurrentTimestamp();
 		newTimestamp = oldTimestamp - 1;
 		timestampCounter = new DefaultTimestampStrategy();
 		timestampCounter.getNextCounter(oldTimestamp);
@@ -32,7 +32,7 @@ public class DefaultTimestampStrategyTest {
 		assertEquals(oldCounter & 0xff, newCounter & 0xff);
 
 		// It should reset if the new timestamp is GREATER THAN the old timestamp
-		oldTimestamp = UuidTimeUtil.getCurrentTimestamp();
+		oldTimestamp = UuidTime.getCurrentTimestamp();
 		newTimestamp = oldTimestamp + 1;
 		timestampCounter = new DefaultTimestampStrategy();
 		timestampCounter.getNextCounter(oldTimestamp);
@@ -44,7 +44,7 @@ public class DefaultTimestampStrategyTest {
 	@Test
 	public void testNextCounterAnOverrunExceptionShouldBeThrown() {
 
-		long timestamp = UuidTimeUtil.getCurrentTimestamp();
+		long timestamp = UuidTime.getCurrentTimestamp();
 		DefaultTimestampStrategy timestampStrategy = new DefaultTimestampStrategy();
 
 		long offset = timestampStrategy.getNextCounter(timestamp);

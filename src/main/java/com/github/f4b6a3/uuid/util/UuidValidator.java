@@ -87,7 +87,7 @@ public final class UuidValidator {
 	 * 12345678-ABCD-ABCD-ABCD-123456789ABCD   (36 hexadecimal chars, UPPER CASE and with hyphen)
 	 * </pre>
 	 * 
-	 * @param uuid a UUID char array
+	 * @param chars a UUID char array
 	 * @return true if valid, false if invalid
 	 */
 	public static boolean isValid(final char[] chars) {

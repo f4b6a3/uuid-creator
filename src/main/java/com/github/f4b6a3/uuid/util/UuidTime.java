@@ -29,14 +29,14 @@ import java.time.Instant;
 /**
  * Utility that provides methods related to timestamps.
  */
-public final class UuidTimeUtil {
+public final class UuidTime {
 
 	public static final long GREGORIAN_MILLISECONDS = getGregorianMilliseconds();
 
 	public static final long MILLISECONDS_PER_SECOND = 1_000L;
 	public static final long TIMESTAMP_RESOLUTION = 10_000L;
 
-	private UuidTimeUtil() {
+	private UuidTime() {
 	}
 
 	/**

@@ -6,8 +6,8 @@ import org.junit.runners.Suite;
 import com.github.f4b6a3.uuid.strategy.clockseq.ClockSequenceControllerTest;
 import com.github.f4b6a3.uuid.strategy.clockseq.DefaultClockSequenceStrategyTest;
 import com.github.f4b6a3.uuid.strategy.timestamp.DefaultTimestampStrategyTest;
-import com.github.f4b6a3.uuid.util.SettingsUtilTest;
-import com.github.f4b6a3.uuid.util.UuidTimeUtilTest;
+import com.github.f4b6a3.uuid.util.UuidSettingsTest;
+import com.github.f4b6a3.uuid.util.UuidTimeTest;
 import com.github.f4b6a3.uuid.util.UuidUtilTest;
 import com.github.f4b6a3.uuid.util.sequence.AbstractSequenceTest;
 import com.github.f4b6a3.uuid.util.UuidValidatorTest;
@@ -29,9 +29,9 @@ import com.github.f4b6a3.uuid.creator.rfc4122.TimeOrderedUuidCreatorTest;
    AbstractSequenceTest.class,
    DefaultClockSequenceStrategyTest.class,
    DefaultTimestampStrategyTest.class,
-   UuidTimeUtilTest.class,
+   UuidTimeTest.class,
    UuidUtilTest.class,
-   SettingsUtilTest.class,
+   UuidSettingsTest.class,
    ClockSequenceControllerTest.class,
    UuidValidatorTest.class,
    UuidConverterTest.class,

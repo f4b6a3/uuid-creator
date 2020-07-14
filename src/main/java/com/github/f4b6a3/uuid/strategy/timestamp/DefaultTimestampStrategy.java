@@ -27,7 +27,7 @@ package com.github.f4b6a3.uuid.strategy.timestamp;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
 import com.github.f4b6a3.uuid.util.TlsSecureRandom;
-import com.github.f4b6a3.uuid.util.UuidTimeUtil;
+import com.github.f4b6a3.uuid.util.UuidTime;
 import com.github.f4b6a3.uuid.util.sequence.AbstractSequence;
 
 /**
@@ -71,7 +71,7 @@ public final class DefaultTimestampStrategy implements TimestampStrategy {
 	@Override
 	public long getTimestamp() {
 
-		final long timestamp = UuidTimeUtil.getCurrentTimestamp();
+		final long timestamp = UuidTime.getCurrentTimestamp();
 		final long counter = getNextCounter(timestamp);
 
 		// (4a) simulate a high resolution timestamp

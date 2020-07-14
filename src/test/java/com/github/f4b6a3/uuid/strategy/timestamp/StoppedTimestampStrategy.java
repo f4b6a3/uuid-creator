@@ -28,7 +28,7 @@ import java.time.Instant;
 
 import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
 import com.github.f4b6a3.uuid.strategy.timestamp.DefaultTimestampStrategy;
-import com.github.f4b6a3.uuid.util.UuidTimeUtil;
+import com.github.f4b6a3.uuid.util.UuidTime;
 
 /**
  * This is an implementation of {@link TimestampStrategy} that always returns
@@ -55,7 +55,7 @@ public final class StoppedTimestampStrategy implements TimestampStrategy {
 	@Override
 	public long getTimestamp() {
 
-		final long timestamp = UuidTimeUtil.toTimestamp(STOPPED_MILLISECONDS);
+		final long timestamp = UuidTime.toTimestamp(STOPPED_MILLISECONDS);
 		final long counter = this.strategy.getNextCounter(timestamp);
 
 		return timestamp + counter;

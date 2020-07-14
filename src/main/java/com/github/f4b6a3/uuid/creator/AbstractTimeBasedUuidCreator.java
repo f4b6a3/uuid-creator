@@ -39,7 +39,7 @@ import com.github.f4b6a3.uuid.strategy.nodeid.FixedNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.HashNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.MacNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.timestamp.DefaultTimestampStrategy;
-import com.github.f4b6a3.uuid.util.UuidTimeUtil;
+import com.github.f4b6a3.uuid.util.UuidTime;
 
 public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator implements NoArgumentsUuidCreator {
 
@@ -192,7 +192,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 
 		// (3a) get the timestamp
 		if (instant != null) {
-			timestamp = UuidTimeUtil.toTimestamp(instant);
+			timestamp = UuidTime.toTimestamp(instant);
 		} else {
 			timestamp = this.timestampStrategy.getTimestamp();
 		}

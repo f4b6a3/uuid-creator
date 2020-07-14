@@ -24,19 +24,41 @@
 
 package com.github.f4b6a3.uuid.util;
 
-public final class SettingsUtil {
+public final class UuidSettings {
 
 	protected static final String PROPERTY_PREFIX = "uuidcreator";
-	protected static final String PROPERTY_NODEID = "nodeid";
 
-	protected SettingsUtil() {
+	@Deprecated
+	protected static final String PROPERTY_NODEID = "nodeid";
+	protected static final String PROPERTY_NODE = "node";
+
+	protected UuidSettings() {
 	}
 
 	public static long getNodeIdentifier() {
+		String value = getProperty(PROPERTY_NODE);
+		if (value == null || value.isEmpty()) {
+			return -1;
+		}
+
+		try {
+			return Long.decode(value);
+		} catch (NumberFormatException e) {
+			return -1;
+		}
+	}
+
+	public static void setNodeIdentifier(long nodeid) {
+		String value = Long.toString(nodeid);
+		setProperty(PROPERTY_NODE, value);
+	}
+
+	@Deprecated
+	protected static long getNodeIdentifierDeprecated() {
 		String value = getProperty(PROPERTY_NODEID);
 
 		if (value == null || !value.matches("^(0x|0X)?[0-9A-Fa-f]+$")) {
-			return 0;
+			return -1;
 		}
 
 		if (!value.toLowerCase().startsWith("0x")) {
@@ -44,14 +66,15 @@ public final class SettingsUtil {
 		}
 
 		try {
-			return Long.decode(value) & 0x0000FFFFFFFFFFFFL;
+			return Long.decode(value);
 		} catch (NumberFormatException e) {
-			return 0;
+			return -1;
 		}
 	}
 
-	public static void setNodeIdentifier(long nodeid) {
-		String value = Long.toHexString(nodeid & 0x0000FFFFFFFFFFFFL);
+	@Deprecated
+	protected static void setNodeIdentifierDeprecated(long nodeid) {
+		String value = Long.toHexString(nodeid);
 		setProperty(PROPERTY_NODEID, value);
 	}
 

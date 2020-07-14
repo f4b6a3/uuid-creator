@@ -24,7 +24,7 @@
 
 package com.github.f4b6a3.uuid.strategy.nodeid;
 
-import com.github.f4b6a3.uuid.util.FingerprintUtil;
+import com.github.f4b6a3.uuid.util.Fingerprint;
 import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
 
 /**
@@ -67,7 +67,7 @@ public class HashNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * locale and timezone.
 	 */
 	public HashNodeIdentifierStrategy() {
-		final long fingerprint = FingerprintUtil.getFingerprint();
+		final long fingerprint = Fingerprint.getFingerprint();
 		this.nodeIdentifier = NodeIdentifierStrategy.setMulticastNodeIdentifier(fingerprint);
 	}
 
@@ -77,7 +77,7 @@ public class HashNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * The node identifier is calculated using system data. The resulting node
 	 * identifier is as unique and mutable as the host machine.
 	 * 
-	 * See {@link FingerprintUtil#getFingerprint()}.
+	 * See {@link Fingerprint#getFingerprint()}.
 	 */
 	@Override
 	public long getNodeIdentifier() {

@@ -12,7 +12,7 @@ import com.github.f4b6a3.uuid.strategy.clockseq.DefaultClockSequenceStrategy;
 import com.github.f4b6a3.uuid.strategy.clockseq.FixedClockSequenceStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.FixedNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.timestamp.FixedTimestampStretegy;
-import com.github.f4b6a3.uuid.util.UuidTimeUtil;
+import com.github.f4b6a3.uuid.util.UuidTime;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 import static org.junit.Assert.assertEquals;
@@ -97,8 +97,8 @@ public class TimeBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 			UUID uuid = creator.withTimestampStrategy(new FixedTimestampStretegy(instant1)).create();
 			Instant instant2 = UuidUtil.extractInstant(uuid);
 
-			long timestamp1 = UuidTimeUtil.toTimestamp(instant1);
-			long timestamp2 = UuidTimeUtil.toTimestamp(instant2);
+			long timestamp1 = UuidTime.toTimestamp(instant1);
+			long timestamp2 = UuidTime.toTimestamp(instant2);
 
 			assertEquals(timestamp1, timestamp2);
 		}
@@ -149,7 +149,7 @@ public class TimeBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 		// time
 		long timestamp0 = 0x0fffffffffffffffL;
 		Instant instant0 = Instant.parse("5236-03-31T21:21:00.684697500Z");
-		assertEquals(UuidTimeUtil.toInstant(timestamp0), instant0);
+		assertEquals(UuidTime.toInstant(timestamp0), instant0);
 
 		// Test the extraction of the maximum 60 bit timestamp
 		long timestamp1 = 0x0fffffffffffffffL;

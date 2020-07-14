@@ -3,7 +3,7 @@ package com.github.f4b6a3.uuid.strategy.clockseq;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.strategy.clockseq.DefaultClockSequenceStrategy;
-import com.github.f4b6a3.uuid.util.UuidTimeUtil;
+import com.github.f4b6a3.uuid.util.UuidTime;
 
 import static org.junit.Assert.*;
 
@@ -46,7 +46,7 @@ public class DefaultClockSequenceStrategyTest {
 
 		long first = 0;
 		long last = 0;
-		long timestamp = UuidTimeUtil.getCurrentTimestamp();
+		long timestamp = UuidTime.getCurrentTimestamp();
 		
 		// Reset the static ClockSequenceController
 		// It could affect this test case

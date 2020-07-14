@@ -27,7 +27,7 @@ package com.github.f4b6a3.uuid.strategy.nodeid;
 import java.security.SecureRandom;
 
 import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
-import com.github.f4b6a3.uuid.util.SettingsUtil;
+import com.github.f4b6a3.uuid.util.UuidSettings;
 
 /**
  * Strategy that always provides the same node identifier.
@@ -76,8 +76,8 @@ public final class DefaultNodeIdentifierStrategy implements NodeIdentifierStrate
 	 */
 	public DefaultNodeIdentifierStrategy() {
 
-		final long preferedNodeIdentifier = SettingsUtil.getNodeIdentifier();
-		if (preferedNodeIdentifier != 0) {
+		final long preferedNodeIdentifier = UuidSettings.getNodeIdentifier();
+		if (preferedNodeIdentifier > 0) {
 			this.nodeIdentifier = preferedNodeIdentifier;
 		} else {
 			this.nodeIdentifier = NodeIdentifierStrategy.getRandomNodeIdentifier();

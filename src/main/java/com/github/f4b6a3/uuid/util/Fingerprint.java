@@ -34,11 +34,11 @@ import java.util.TimeZone;
 /**
  * Utility class to generate host fingerprint.
  */
-public final class FingerprintUtil {
+public final class Fingerprint {
 
 	private static MessageDigest messageDigest;
 
-	private FingerprintUtil() {
+	private Fingerprint() {
 	}
 
 	/**

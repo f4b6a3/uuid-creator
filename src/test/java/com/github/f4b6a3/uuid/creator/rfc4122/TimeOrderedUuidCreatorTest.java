@@ -12,7 +12,7 @@ import com.github.f4b6a3.uuid.strategy.clockseq.DefaultClockSequenceStrategy;
 import com.github.f4b6a3.uuid.strategy.clockseq.FixedClockSequenceStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.FixedNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.timestamp.FixedTimestampStretegy;
-import com.github.f4b6a3.uuid.util.UuidTimeUtil;
+import com.github.f4b6a3.uuid.util.UuidTime;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 import static org.junit.Assert.assertEquals;
@@ -137,8 +137,8 @@ public class TimeOrderedUuidCreatorTest extends AbstractUuidCreatorTest {
 			UUID uuid = creator.withTimestampStrategy(new FixedTimestampStretegy(instant1)).create();
 			Instant instant2 = UuidUtil.extractInstant(uuid);
 
-			long timestamp1 = UuidTimeUtil.toTimestamp(instant1);
-			long timestamp2 = UuidTimeUtil.toTimestamp(instant2);
+			long timestamp1 = UuidTime.toTimestamp(instant1);
+			long timestamp2 = UuidTime.toTimestamp(instant2);
 
 			assertEquals(timestamp1, timestamp2);
 		}

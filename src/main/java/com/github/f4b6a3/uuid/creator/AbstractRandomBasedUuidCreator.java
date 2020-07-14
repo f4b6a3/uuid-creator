@@ -80,7 +80,7 @@ public abstract class AbstractRandomBasedUuidCreator extends AbstractUuidCreator
 	 * 
 	 * See {@link Random}.
 	 * 
-	 * @param random a random generator
+	 * @param randomStrategy a random strategy
 	 * @param <T>    the type parameter
 	 * @return {@link AbstractRandomBasedUuidCreator}
 	 */

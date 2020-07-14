@@ -231,7 +231,7 @@ public final class UuidUtil {
 	 */
 	public static Instant extractInstant(UUID uuid) {
 		long timestamp = extractTimestamp(uuid);
-		return UuidTimeUtil.toInstant(timestamp);
+		return UuidTime.toInstant(timestamp);
 	}
 
 	/**
@@ -248,7 +248,7 @@ public final class UuidUtil {
 	 */
 	public static long extractUnixMilliseconds(UUID uuid) {
 		long timestamp = extractTimestamp(uuid);
-		return UuidTimeUtil.toUnixMilliseconds(timestamp);
+		return UuidTime.toUnixMilliseconds(timestamp);
 	}
 
 	/**

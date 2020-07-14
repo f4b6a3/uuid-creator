@@ -27,7 +27,7 @@ package com.github.f4b6a3.uuid.strategy.timestamp;
 import java.time.Instant;
 
 import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
-import com.github.f4b6a3.uuid.util.UuidTimeUtil;
+import com.github.f4b6a3.uuid.util.UuidTime;
 
 /**
  * Strategy that always provides the same timestamp.
@@ -43,7 +43,7 @@ public class FixedTimestampStretegy implements TimestampStrategy {
 	}
 
 	public FixedTimestampStretegy(Instant instant) {
-		this.timestamp = UuidTimeUtil.toTimestamp(instant);
+		this.timestamp = UuidTime.toTimestamp(instant);
 	}
 
 	@Override

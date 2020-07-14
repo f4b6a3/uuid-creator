@@ -81,7 +81,7 @@ public final class ByteUtil {
 	/**
 	 * Get an array of bytes from a given number.
 	 *
-	 * @param number a long value
+	 * @param number a number
 	 * @return a byte array
 	 */
 	public static byte[] toBytes(final long number) {
@@ -100,7 +100,7 @@ public final class ByteUtil {
 	/**
 	 * Get an array of bytes from a given array of numbers.
 	 *
-	 * @param number a long value
+	 * @param numbers an array of numbers
 	 * @return a byte array
 	 */
 	public static byte[] toBytes(final long... numbers) {
@@ -164,7 +164,7 @@ public final class ByteUtil {
 	/**
 	 * Get a hexadecimal char array from given array of numbers.
 	 *
-	 * @param bytes byte array
+	 * @param numbers an array of numbers
 	 * @return a char array
 	 */
 	public static char[] toHexadecimalChars(final long... numbers) {
@@ -174,7 +174,7 @@ public final class ByteUtil {
 	/**
 	 * Get a hexadecimal string from given number.
 	 * 
-	 * @param number an integer
+	 * @param numbers an array of numbers
 	 * @return a string
 	 */
 	public static String toHexadecimal(final long... numbers) {
@@ -184,7 +184,7 @@ public final class ByteUtil {
 	/**
 	 * Get a hexadecimal string from given number.
 	 * 
-	 * @param number an integer
+	 * @param number a number
 	 * @return a string
 	 */
 	public static String toHexadecimal(final long number) {
@@ -216,7 +216,7 @@ public final class ByteUtil {
 	/**
 	 * Get a hexadecimal from a number value.
 	 * 
-	 * @param number an integer
+	 * @param number a number
 	 * @return a char
 	 */
 	private static char toHexChar(final int number) {
