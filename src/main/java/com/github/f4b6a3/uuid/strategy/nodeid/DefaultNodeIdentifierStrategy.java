@@ -77,7 +77,7 @@ public final class DefaultNodeIdentifierStrategy implements NodeIdentifierStrate
 	public DefaultNodeIdentifierStrategy() {
 
 		final long preferedNodeIdentifier = UuidSettings.getNodeIdentifier();
-		if (preferedNodeIdentifier > 0) {
+		if (preferedNodeIdentifier >= 0) {
 			this.nodeIdentifier = preferedNodeIdentifier;
 		} else {
 			this.nodeIdentifier = NodeIdentifierStrategy.getRandomNodeIdentifier();
