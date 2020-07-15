@@ -199,7 +199,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 
 		// (4a)(5a) get the node identifier
 		if (nodeid != null) {
-			nodeIdentifier = NodeIdentifierStrategy.setMulticastNodeIdentifier(nodeid);
+			nodeIdentifier = NodeIdentifierStrategy.setNodeIdentifier(nodeid);
 		} else {
 			nodeIdentifier = this.nodeIdentifierStrategy.getNodeIdentifier();
 		}

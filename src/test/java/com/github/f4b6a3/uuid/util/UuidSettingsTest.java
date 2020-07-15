@@ -80,55 +80,55 @@ public class UuidSettingsTest {
 	public void testSetPropertyInvalid() {
 		String string = "0xx112233445566"; // typo
 		UuidSettings.setProperty(UuidSettings.PROPERTY_NODE, string);
-		long result = UuidSettings.getNodeIdentifier();
-		assertEquals(-1, result);
+		Long result = UuidSettings.getNodeIdentifier();
+		assertNull(result);
 
 		string = " 0x112233445566"; // space
 		UuidSettings.setProperty(UuidSettings.PROPERTY_NODE, string);
 		result = UuidSettings.getNodeIdentifier();
-		assertEquals(-1, result);
+		assertNull(result);
 
 		string = " 0x1122334455zz"; // non hexadecimal
 		UuidSettings.setProperty(UuidSettings.PROPERTY_NODE, string);
 		result = UuidSettings.getNodeIdentifier();
-		assertEquals(-1, result);
+		assertNull(result);
 
 		string = ""; // empty
 		UuidSettings.setProperty(UuidSettings.PROPERTY_NODE, string);
 		result = UuidSettings.getNodeIdentifier();
-		assertEquals(-1, result);
+		assertNull(result);
 
 		string = " "; // blank
 		UuidSettings.setProperty(UuidSettings.PROPERTY_NODE, string);
 		result = UuidSettings.getNodeIdentifier();
-		assertEquals(-1, result);
+		assertNull(result);
 	}
 	
 	@Test
 	public void testSetPropertyInvalidDeprecated() {
 		String string = "0xx112233445566"; // typo
 		UuidSettings.setProperty(UuidSettings.PROPERTY_NODEID, string);
-		long result = UuidSettings.getNodeIdentifierDeprecated();
-		assertEquals(-1, result);
+		Long result = UuidSettings.getNodeIdentifierDeprecated();
+		assertNull(result);
 
 		string = " 0x112233445566"; // space
 		UuidSettings.setProperty(UuidSettings.PROPERTY_NODEID, string);
 		result = UuidSettings.getNodeIdentifierDeprecated();
-		assertEquals(-1, result);
+		assertNull(result);
 
 		string = " 0x1122334455zz"; // non hexadecimal
 		UuidSettings.setProperty(UuidSettings.PROPERTY_NODEID, string);
 		result = UuidSettings.getNodeIdentifierDeprecated();
-		assertEquals(-1, result);
+		assertNull(result);
 
 		string = ""; // empty
 		UuidSettings.setProperty(UuidSettings.PROPERTY_NODEID, string);
 		result = UuidSettings.getNodeIdentifierDeprecated();
-		assertEquals(-1, result);
+		assertNull(result);
 
 		string = " "; // blank
 		UuidSettings.setProperty(UuidSettings.PROPERTY_NODEID, string);
 		result = UuidSettings.getNodeIdentifierDeprecated();
-		assertEquals(-1, result);
+		assertNull(result);
 	}
 }

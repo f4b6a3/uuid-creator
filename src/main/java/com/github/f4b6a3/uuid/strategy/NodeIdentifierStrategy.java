@@ -45,6 +45,16 @@ public interface NodeIdentifierStrategy {
 	}
 
 	/**
+	 * The output is truncated to fit the node identifier bit length.
+	 * 
+	 * @param nodeIdentifier a node identifier
+	 * @return a node identifier
+	 */
+	public static long setNodeIdentifier(long nodeIdentifier) {
+		return nodeIdentifier & 0x0000ffffffffffffL;
+	}
+
+	/**
 	 * Sets the the multicast bit ON to indicate that it's NOT a real MAC address.
 	 * 
 	 * The output is truncated to fit the node identifier bit length.
@@ -53,7 +63,7 @@ public interface NodeIdentifierStrategy {
 	 * @return a multicast node identifier
 	 */
 	public static long setMulticastNodeIdentifier(long nodeIdentifier) {
-		return (nodeIdentifier & 0x0000ffffffffffffL) | 0x0000010000000000L;
+		return setNodeIdentifier(nodeIdentifier) | 0x0000010000000000L;
 	}
 
 	/**

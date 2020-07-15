@@ -24,41 +24,52 @@
 
 package com.github.f4b6a3.uuid.util;
 
+/**
+ * Reads system properties and environment variables.
+ * 
+ * The system properties has prevalence over environment variables.
+ * 
+ * Available properties and variables:
+ * 
+ * - uuidcreator.node
+ * 
+ * - UUIDCREATOR_NODE
+ */
 public final class UuidSettings {
 
 	protected static final String PROPERTY_PREFIX = "uuidcreator";
 
+	protected static final String PROPERTY_NODE = "node";
 	@Deprecated
 	protected static final String PROPERTY_NODEID = "nodeid";
-	protected static final String PROPERTY_NODE = "node";
 
 	protected UuidSettings() {
 	}
 
-	public static long getNodeIdentifier() {
+	public static Long getNodeIdentifier() {
 		String value = getProperty(PROPERTY_NODE);
 		if (value == null || value.isEmpty()) {
-			return -1;
+			return null;
 		}
 
 		try {
 			return Long.decode(value);
 		} catch (NumberFormatException e) {
-			return -1;
+			return null;
 		}
 	}
 
-	public static void setNodeIdentifier(long nodeid) {
+	public static void setNodeIdentifier(Long nodeid) {
 		String value = Long.toString(nodeid);
 		setProperty(PROPERTY_NODE, value);
 	}
 
 	@Deprecated
-	protected static long getNodeIdentifierDeprecated() {
+	public static Long getNodeIdentifierDeprecated() {
 		String value = getProperty(PROPERTY_NODEID);
 
 		if (value == null || !value.matches("^(0x|0X)?[0-9A-Fa-f]+$")) {
-			return -1;
+			return null;
 		}
 
 		if (!value.toLowerCase().startsWith("0x")) {
@@ -68,12 +79,12 @@ public final class UuidSettings {
 		try {
 			return Long.decode(value);
 		} catch (NumberFormatException e) {
-			return -1;
+			return null;
 		}
 	}
 
 	@Deprecated
-	protected static void setNodeIdentifierDeprecated(long nodeid) {
+	public static void setNodeIdentifierDeprecated(Long nodeid) {
 		String value = Long.toHexString(nodeid);
 		setProperty(PROPERTY_NODEID, value);
 	}

@@ -29,20 +29,18 @@ import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
 
 /**
  * Strategy that always provides the same node identifier.
- * 
- * The node identifier passed to the constructor is converted to multicast.
  */
 public final class FixedNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
 	private final long nodeIdentifier;
 
 	public FixedNodeIdentifierStrategy(long nodeIdentifier) {
-		this.nodeIdentifier = NodeIdentifierStrategy.setMulticastNodeIdentifier(nodeIdentifier);
+		this.nodeIdentifier = NodeIdentifierStrategy.setNodeIdentifier(nodeIdentifier);
 	}
 
 	public FixedNodeIdentifierStrategy(byte[] nodeIdentifier) {
 		long nodeid = ByteUtil.toNumber(nodeIdentifier);
-		this.nodeIdentifier = NodeIdentifierStrategy.setMulticastNodeIdentifier(nodeid);
+		this.nodeIdentifier = NodeIdentifierStrategy.setNodeIdentifier(nodeid);
 	}
 
 	@Override

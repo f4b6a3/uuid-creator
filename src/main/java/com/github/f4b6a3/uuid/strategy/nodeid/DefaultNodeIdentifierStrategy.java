@@ -71,17 +71,26 @@ public final class DefaultNodeIdentifierStrategy implements NodeIdentifierStrate
 	 * 1. Check if there's a preferred node identifier set in a system property or
 	 * environment variable;
 	 * 
+	 * - System property: `uuidcreator.node`
+	 * 
+	 * - Environment variable: `UUIDCREATOR_NODE`
+	 * 
 	 * 2. If no preferred node identifier exists, use a random node identifier.
 	 * 
 	 */
 	public DefaultNodeIdentifierStrategy() {
 
-		final long preferedNodeIdentifier = UuidSettings.getNodeIdentifier();
-		if (preferedNodeIdentifier >= 0) {
-			this.nodeIdentifier = preferedNodeIdentifier;
-		} else {
-			this.nodeIdentifier = NodeIdentifierStrategy.getRandomNodeIdentifier();
+		Long nodeid = UuidSettings.getNodeIdentifier();
+
+		if (nodeid == null) {
+			nodeid = UuidSettings.getNodeIdentifierDeprecated();
 		}
+
+		if (nodeid == null) {
+			nodeid = NodeIdentifierStrategy.getRandomNodeIdentifier();
+		}
+
+		this.nodeIdentifier = nodeid;
 	}
 
 	/**
