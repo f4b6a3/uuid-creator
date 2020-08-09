@@ -63,19 +63,6 @@ public final class UuidConverter {
 	}
 
 	/**
-	 * Get a UUID from an array of bytes and applies a version number to it.
-	 * 
-	 * @param bytes   an array of bytes
-	 * @param version a version
-	 * @return a UUID
-	 * @throws InvalidUuidException if invalid
-	 */
-	public static UUID fromBytes(byte[] bytes, int version) {
-		UUID uuid = fromBytes(bytes);
-		return UuidUtil.applyVersion(uuid, version);
-	}
-
-	/**
 	 * Get a string from a UUID.
 	 * 
 	 * It's an alternative to {@link java.util.UUID#toString()}.
@@ -117,23 +104,6 @@ public final class UuidConverter {
 		char[] input = string.toCharArray();
 		char[] output = UuidUtil.removeHyphens(input);
 		return fromBytes(ByteUtil.toBytes(output));
-	}
-
-	/**
-	 * Get a UUID from a string and applies a version number to it.
-	 * 
-	 * It also accepts UUID strings without hyphens.
-	 * 
-	 * It's an alternative to {@link java.util.UUID#fromString(String)}.
-	 * 
-	 * @param uuid    a UUID string
-	 * @param version a version
-	 * @return a UUID
-	 * @throws InvalidUuidException if invalid
-	 */
-	public static UUID fromString(String string, int version) {
-		UUID uuid = fromString(string);
-		return UuidUtil.applyVersion(uuid, version);
 	}
 	
 	/**
@@ -187,6 +157,8 @@ public final class UuidConverter {
 
 	/**
 	 * Convert a UUID to and from a MS GUID.
+	 * 
+	 * This method is only useful for MS SQL Server.
 	 * 
 	 * It rearranges the most significant bytes from big-endian to little-endian,
 	 * and vice-versa.

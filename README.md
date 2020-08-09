@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>2.7.5</version>
+  <version>2.7.6</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -960,12 +960,7 @@ UuidValidator.validate("033D4881F0594171BC832FE89E5A2BED");
 
 ```java
 // Convert a string into a UUID
-UUID uuid1 = UuidConverter.fromString("53ab5fd3-31ee-4cb9-8779-2fe8a887b3be");
-```
-
-```java
-// Convert a string into a UUID with a given version number
-UUID uuid1 = UuidConverter.fromString("384df3b4-36b7-4154-961a-2fe87bbbe5f4", 5);
+UUID uuid = UuidConverter.fromString("53ab5fd3-31ee-4cb9-8779-2fe8a887b3be");
 ```
 
 ```java
@@ -977,20 +972,18 @@ UUID uuid = UuidConverter.fromBytes(bytes);
 ```
 
 ```java
-// Convert an array of bytes into a UUID with a given version number
-Random random = new Random();
-byte[] bytes = new byte[16];
-random.nextBytes(bytes);
-UUID uuid = UuidConverter.fromBytes(bytes, 4);
+// Convert time-based (version 1) to time-ordered (version 6)
+UUID uuid = UuidCreator.fromString("0edd764a-8eff-11e9-8649-972f32b091a1");
+uuid = UuidConverter.toTimeOrderedUuid(uuid);
+```
+
+```java
+// Convert time-ordered (version 6) to time-based (version 1)
+UUID uuid = UuidCreator.fromString("1e98eff0-eddc-647f-a649-ad1cde652e10");
+uuid = UuidConverter.toTimeBasedUuid(uuid);
 ```
 
 ##### UuidUtil
-
-```java
-// Apply a given version number to a UUID
-UUID uuid = UuidCreator.fromString("ad0a704a-0d03-48b5-a7eb-2fe8e01165d7");
-uuid = UuidUtil.applyVersion(uuid, 3);
-```
 
 ```java
 // Returns true if UUID is NIL
@@ -1025,6 +1018,15 @@ int clocksq = UuidUtil.extractClockSequence(uuid);
 long nodeid = UuidUtil.extractNodeIdentifier(uuid);
 UuidVersion version = UuidUtil.getVersion(uuid);
 UuidVariant variant = UuidUtil.getVariant(uuid);
+```
+
+```java
+// Apply a given version number to a UUID
+Random random = new Random();
+byte[] bytes = new byte[16];
+random.nextBytes(bytes);
+UUID uuid = UuidConverter.fromBytes(bytes);
+uuid = UuidUtil.applyVersion(uuid, 4);
 ```
 
 Benchmark
