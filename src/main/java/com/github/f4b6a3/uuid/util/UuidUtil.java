@@ -69,6 +69,21 @@ public final class UuidUtil {
 	}
 
 	/**
+	 * Applies UUID version bits into the UUID
+	 * 
+	 * @param uuid    a UUID
+	 * @param version a version
+	 * @return a UUID
+	 */
+	public static UUID applyVersion(UUID uuid, int version) {
+		long msb = uuid.getMostSignificantBits();
+		long lsb = uuid.getLeastSignificantBits();
+		msb = (msb & 0xffffffffffff0fffL) | ((version & 0x0000000f) << 12); // apply version
+		lsb = (lsb & 0x3fffffffffffffffL) | 0x8000000000000000L; // apply variant
+		return new UUID(msb, lsb);
+	}
+	
+	/**
 	 * Checks whether the UUID is equal to the Nil UUID.
 	 * 
 	 * The nil UUID is special UUID that has all 128 bits set to zero.

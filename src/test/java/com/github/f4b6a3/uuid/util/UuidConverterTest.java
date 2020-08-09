@@ -54,6 +54,16 @@ public class UuidConverterTest {
 			assertEquals(string, uuid.toString());
 		}
 	}
+	
+	@Test
+	public void testFromStringWithVersion() {
+		// Lower case with hyphens
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			String string = UUID.randomUUID().toString();
+			UUID uuid = UuidConverter.fromString(string, 3); // uuid3 (md5)
+			assertTrue(UuidUtil.isNameBasedMd5(uuid));
+		}
+	}
 
 	@Test
 	public void testToBytes() {
@@ -74,6 +84,16 @@ public class UuidConverterTest {
 			byte[] bytes = UuidConverter.toBytes(uuid1);
 			UUID uuid2 = UuidConverter.fromBytes(bytes);
 			assertEquals(uuid1, uuid2);
+		}
+	}
+	
+	@Test
+	public void testFromBytesWithVersion() {
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			UUID uuid1 = UUID.randomUUID();
+			byte[] bytes = UuidConverter.toBytes(uuid1);
+			UUID uuid2 = UuidConverter.fromBytes(bytes, 5); // uuid5 (sha1)
+			assertTrue(UuidUtil.isNameBasedSha1(uuid2));
 		}
 	}
 

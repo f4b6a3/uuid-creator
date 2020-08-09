@@ -63,6 +63,19 @@ public final class UuidConverter {
 	}
 
 	/**
+	 * Get a UUID from an array of bytes and applies a version number to it.
+	 * 
+	 * @param bytes   an array of bytes
+	 * @param version a version
+	 * @return a UUID
+	 * @throws InvalidUuidException if invalid
+	 */
+	public static UUID fromBytes(byte[] bytes, int version) {
+		UUID uuid = fromBytes(bytes);
+		return UuidUtil.applyVersion(uuid, version);
+	}
+
+	/**
 	 * Get a string from a UUID.
 	 * 
 	 * It's an alternative to {@link java.util.UUID#toString()}.
@@ -95,17 +108,34 @@ public final class UuidConverter {
 	 * 
 	 * It's an alternative to {@link java.util.UUID#fromString(String)}.
 	 * 
-	 * @param uuid a UUID string
+	 * @param string a UUID string
 	 * @return a UUID
 	 * @throws InvalidUuidException if invalid
 	 */
-	public static UUID fromString(String uuid) {
-		UuidValidator.validate(uuid);
-		char[] input = uuid.toCharArray();
+	public static UUID fromString(String string) {
+		UuidValidator.validate(string);
+		char[] input = string.toCharArray();
 		char[] output = UuidUtil.removeHyphens(input);
 		return fromBytes(ByteUtil.toBytes(output));
 	}
 
+	/**
+	 * Get a UUID from a string and applies a version number to it.
+	 * 
+	 * It also accepts UUID strings without hyphens.
+	 * 
+	 * It's an alternative to {@link java.util.UUID#fromString(String)}.
+	 * 
+	 * @param uuid    a UUID string
+	 * @param version a version
+	 * @return a UUID
+	 * @throws InvalidUuidException if invalid
+	 */
+	public static UUID fromString(String string, int version) {
+		UUID uuid = fromString(string);
+		return UuidUtil.applyVersion(uuid, version);
+	}
+	
 	/**
 	 * Convert a time-ordered UUID to a time-based UUID.
 	 * 
