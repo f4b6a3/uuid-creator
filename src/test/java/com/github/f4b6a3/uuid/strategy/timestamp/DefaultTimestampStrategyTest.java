@@ -26,7 +26,6 @@ public class DefaultTimestampStrategyTest {
 		oldTimestamp = UuidTime.getCurrentTimestamp();
 		newTimestamp = oldTimestamp - 1;
 		timestampCounter = new DefaultTimestampStrategy();
-		timestampCounter.getNextCounter(oldTimestamp);
 		oldCounter = timestampCounter.getNextCounter(oldTimestamp);
 		newCounter = timestampCounter.getNextCounter(newTimestamp);
 		assertEquals(oldCounter & 0xff, newCounter & 0xff);
@@ -35,7 +34,6 @@ public class DefaultTimestampStrategyTest {
 		oldTimestamp = UuidTime.getCurrentTimestamp();
 		newTimestamp = oldTimestamp + 1;
 		timestampCounter = new DefaultTimestampStrategy();
-		timestampCounter.getNextCounter(oldTimestamp);
 		oldCounter = timestampCounter.getNextCounter(oldTimestamp);
 		newCounter = timestampCounter.getNextCounter(newTimestamp);
 		assertEquals(oldCounter & 0xff, newCounter & 0xff);
@@ -48,7 +46,7 @@ public class DefaultTimestampStrategyTest {
 		DefaultTimestampStrategy timestampStrategy = new DefaultTimestampStrategy();
 
 		long offset = timestampStrategy.getNextCounter(timestamp);
-		long max = DefaultTimestampStrategy.TimestampCounter.COUNTER_MAX - offset;
+		long max = DefaultTimestampStrategy.COUNTER_MAX - offset;
 
 		// Generate MAX values
 		for (int i = 0; i < max; i++) {

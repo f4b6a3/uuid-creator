@@ -24,8 +24,6 @@
 
 package com.github.f4b6a3.uuid.strategy.timestamp;
 
-import java.time.Instant;
-
 import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
 import com.github.f4b6a3.uuid.strategy.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.util.UuidTime;
@@ -50,14 +48,14 @@ public final class StoppedTimestampStrategy implements TimestampStrategy {
 	// Borrow logic from the default strategy instead of inheriting it
 	private final DefaultTimestampStrategy strategy = new DefaultTimestampStrategy();
 
-	private static final long STOPPED_MILLISECONDS = System.currentTimeMillis();
+	private final long timestamp;
+	
+	public StoppedTimestampStrategy(long timestamp) {
+		this.timestamp = timestamp;
+	}
 
 	@Override
 	public long getTimestamp() {
-
-		final long timestamp = UuidTime.toTimestamp(STOPPED_MILLISECONDS);
-		final long counter = this.strategy.getNextCounter(timestamp);
-
-		return timestamp + counter;
+		return this.timestamp + this.strategy.getNextCounter(timestamp);
 	}
 }

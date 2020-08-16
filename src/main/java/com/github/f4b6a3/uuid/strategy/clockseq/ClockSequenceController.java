@@ -33,13 +33,12 @@ package com.github.f4b6a3.uuid.strategy.clockseq;
 public final class ClockSequenceController {
 
 	private final byte[] pool = new byte[2048];
-	private static final int POOL_MAX = 0x3fff + 1; // 16384
-
+	private static final int POOL_MAX = 16384; // 2^16
+	
 	/**
-	 * Borrow a value from the pool and give back another value to the same
-	 * pool.
+	 * Take a value from the pool.
 	 * 
-	 * If the value to be borrowed is already in use, it is incremented until a
+	 * If the value to be taken is already in use, it is incremented until a
 	 * free value is found and returned.
 	 * 
 	 * In the case that all pool values are in use, the pool is cleared and the
@@ -47,17 +46,14 @@ public final class ClockSequenceController {
 	 * 
 	 * It does nothing to negative arguments.
 	 * 
-	 * @param give
-	 *            value to be given back to the pool
 	 * @param take
 	 *            value to be taken from the pool
 	 * @return the value to be borrowed if not used.
 	 */
-	public synchronized int borrow(int give, int take) {
+	public synchronized int take(int take) {
 
 		for (int i = 0; i < POOL_MAX; i++) {
 			if (setBit(take)) {
-				clearBit(give);
 				return take;
 			}
 			take = ++take % POOL_MAX;
@@ -101,37 +97,13 @@ public final class ClockSequenceController {
 	}
 
 	/**
-	 * Clear a bit from the byte array that represents the pool.
-	 * 
-	 * This operation corresponds to setting a value as free.
-	 * 
-	 * It does nothing to negative arguments.
-	 * 
-	 * @param value
-	 *            the value to be taken up from the pool.
-	 */
-	private synchronized void clearBit(int value) {
-
-		if (value < 0) {
-			return;
-		}
-
-		final int byteIndex = value / 8;
-		final int bitIndex = value % 8;
-
-		final int mask = (~(1 << bitIndex));
-
-		pool[byteIndex] = (byte) (pool[byteIndex] & mask);
-	}
-
-	/**
 	 * Check if a value is used out of the pool.
 	 * 
 	 * @param value
 	 *            a value to be checked in the pool.
 	 * @return true if the value is used.
 	 */
-	public boolean isUsed(int value) {
+	public synchronized boolean isUsed(int value) {
 
 		final int byteIndex = value / 8;
 		final int bitIndex = value % 8;
@@ -149,7 +121,7 @@ public final class ClockSequenceController {
 	 *            a value to be checked in the pool.
 	 * @return true if the value is free.
 	 */
-	public boolean isFree(int value) {
+	public synchronized boolean isFree(int value) {
 		return !this.isUsed(value);
 	}
 
@@ -158,7 +130,7 @@ public final class ClockSequenceController {
 	 * 
 	 * @return the count of used values.
 	 */
-	public int countUsed() {
+	public synchronized int countUsed() {
 		int counter = 0;
 		for (int i = 0; i < POOL_MAX; i++) {
 			if (this.isUsed(i)) {
@@ -173,7 +145,7 @@ public final class ClockSequenceController {
 	 * 
 	 * @return the count of free values.
 	 */
-	public int countFree() {
+	public synchronized int countFree() {
 		return POOL_MAX - this.countUsed();
 	}
 

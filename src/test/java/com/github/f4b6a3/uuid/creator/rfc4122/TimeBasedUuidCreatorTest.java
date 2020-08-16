@@ -8,10 +8,12 @@ import com.github.f4b6a3.uuid.creator.AbstractUuidCreatorTest;
 import com.github.f4b6a3.uuid.creator.rfc4122.TimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.strategy.ClockSequenceStrategy;
 import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
 import com.github.f4b6a3.uuid.strategy.clockseq.DefaultClockSequenceStrategy;
 import com.github.f4b6a3.uuid.strategy.clockseq.FixedClockSequenceStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.FixedNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.timestamp.FixedTimestampStretegy;
+import com.github.f4b6a3.uuid.strategy.timestamp.StoppedTimestampStrategy;
 import com.github.f4b6a3.uuid.util.UuidTime;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
@@ -177,7 +179,7 @@ public class TimeBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 
 			// Get 14 random bits random to generate the clock sequence
 			final int clockseq = random.nextInt() & 0x000003ff;
-			
+
 			// Get 48 random bits for the node identifier, and set the multicast bit to ONE
 			final long nodeid = random.nextLong() & 0x0000ffffffffffffL | 0x0000010000000000L;
 
@@ -192,7 +194,8 @@ public class TimeBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 			assertEquals("The node identifier is incorrect", nodeid, UuidUtil.extractNodeIdentifier(uuid));
 			assertEquals("The clock sequence is incorrect", clockseq, UuidUtil.extractClockSequence(uuid));
 
-			// Repeat the same tests to time-based UUIDs with hardware address, ignoring the node identifier
+			// Repeat the same tests to time-based UUIDs with hardware address, ignoring the
+			// node identifier
 
 			// Create a time-based UUID with those random values
 			uuid = UuidCreator.getTimeBasedWithMac(instant, clockseq);
@@ -204,7 +207,8 @@ public class TimeBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 			assertEquals("The timestamp is incorrect.", instant, UuidUtil.extractInstant(uuid));
 			assertEquals("The clock sequence is incorrect", clockseq, UuidUtil.extractClockSequence(uuid));
 
-			// Repeat the same tests to time-based UUIDs with system data hash, ignoring the node identifier
+			// Repeat the same tests to time-based UUIDs with system data hash, ignoring the
+			// node identifier
 
 			// Create a time-based UUID with those random values
 			uuid = UuidCreator.getTimeBasedWithHash(instant, clockseq);
@@ -217,16 +221,21 @@ public class TimeBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 			assertEquals("The clock sequence is incorrect", clockseq, UuidUtil.extractClockSequence(uuid));
 		}
 	}
-	
+
 	@Test
 	public void testGetTimeBasedParallelGeneratorsShouldCreateUniqueUuids() throws InterruptedException {
 
 		Thread[] threads = new Thread[THREAD_TOTAL];
 		TestThread.clearHashSet();
 
+		// Simulate a loop faster than the clock tick
+		TimestampStrategy strategy = new StoppedTimestampStrategy(UuidTime.getCurrentTimestamp());
+
 		// Instantiate and start many threads
 		for (int i = 0; i < THREAD_TOTAL; i++) {
-			threads[i] = new TestThread(UuidCreator.getTimeBasedCreator(), DEFAULT_LOOP_MAX);
+			TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator().withHashNodeIdentifier()
+					.withTimestampStrategy(strategy);
+			threads[i] = new TestThread(creator, DEFAULT_LOOP_MAX);
 			threads[i].start();
 		}
 
@@ -236,6 +245,6 @@ public class TimeBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 		}
 
 		// Check if the quantity of unique UUIDs is correct
-		assertEquals(DUPLICATE_UUID_MSG, TestThread.hashSet.size(), (DEFAULT_LOOP_MAX * THREAD_TOTAL));
+		assertEquals(DUPLICATE_UUID_MSG, (DEFAULT_LOOP_MAX * THREAD_TOTAL), TestThread.hashSet.size());
 	}
 }

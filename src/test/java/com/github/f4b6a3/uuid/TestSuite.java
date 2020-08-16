@@ -9,7 +9,6 @@ import com.github.f4b6a3.uuid.strategy.timestamp.DefaultTimestampStrategyTest;
 import com.github.f4b6a3.uuid.util.UuidSettingsTest;
 import com.github.f4b6a3.uuid.util.UuidTimeTest;
 import com.github.f4b6a3.uuid.util.UuidUtilTest;
-import com.github.f4b6a3.uuid.util.sequence.AbstractSequenceTest;
 import com.github.f4b6a3.uuid.util.UuidValidatorTest;
 import com.github.f4b6a3.uuid.util.UuidConverterTest;
 import com.github.f4b6a3.uuid.util.ByteUtilTest;
@@ -26,7 +25,6 @@ import com.github.f4b6a3.uuid.creator.rfc4122.TimeOrderedUuidCreatorTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-   AbstractSequenceTest.class,
    DefaultClockSequenceStrategyTest.class,
    DefaultTimestampStrategyTest.class,
    UuidTimeTest.class,

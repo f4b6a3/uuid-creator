@@ -26,12 +26,12 @@ package com.github.f4b6a3.uuid.creator.rfc4122;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.f4b6a3.uuid.creator.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidLocalDomain;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
-import com.github.f4b6a3.uuid.util.sequence.AbstractSequence;
 
 /**
  * 
@@ -62,13 +62,13 @@ import com.github.f4b6a3.uuid.util.sequence.AbstractSequence;
  */
 public final class DceSecurityUuidCreator extends AbstractTimeBasedUuidCreator {
 
-	private DceSecurityCounter timestampCounter;
+	private AtomicInteger counter;
 
 	private UuidLocalDomain localDomain;
 
 	public DceSecurityUuidCreator() {
 		super(UuidVersion.VERSION_DCE_SECURITY);
-		this.timestampCounter = new DceSecurityCounter();
+		this.counter = new AtomicInteger();
 	}
 
 	/**
@@ -154,8 +154,7 @@ public final class DceSecurityUuidCreator extends AbstractTimeBasedUuidCreator {
 		long msb = setLocalIdentifierBits(uuid.getMostSignificantBits(), localIdentifier);
 
 		// (3a) Insert the local domain bits
-		long counter = timestampCounter.next();
-		long lsb = setLocalDomainBits(uuid.getLeastSignificantBits(), localDomain, counter);
+		long lsb = setLocalDomainBits(uuid.getLeastSignificantBits(), localDomain, this.counter.incrementAndGet());
 
 		// (1b) set version 2
 		return new UUID(applyVersionBits(msb), applyVariantBits(lsb));
@@ -273,16 +272,5 @@ public final class DceSecurityUuidCreator extends AbstractTimeBasedUuidCreator {
 	public synchronized DceSecurityUuidCreator withLocalDomain(UuidLocalDomain localDomain) {
 		this.localDomain = localDomain;
 		return this;
-	}
-
-	private class DceSecurityCounter extends AbstractSequence {
-
-		// COUNTER_MAX: 2^6
-		private static final int COUNTER_MIN = 0;
-		private static final int COUNTER_MAX = 63;
-
-		private DceSecurityCounter() {
-			super(COUNTER_MIN, COUNTER_MAX);
-		}
 	}
 }

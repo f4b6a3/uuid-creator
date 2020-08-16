@@ -24,11 +24,12 @@
 
 package com.github.f4b6a3.uuid.strategy.timestamp;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
 import com.github.f4b6a3.uuid.util.TlsSecureRandom;
 import com.github.f4b6a3.uuid.util.UuidTime;
-import com.github.f4b6a3.uuid.util.sequence.AbstractSequence;
 
 /**
  * Strategy that provides the current timestamp.
@@ -46,36 +47,66 @@ import com.github.f4b6a3.uuid.util.sequence.AbstractSequence;
  * 
  * ### RFC-4122 - 4.2.1.2. System Clock Resolution
  * 
- * (4a) A high resolution timestamp can be simulated by keeping a count of the
- * number of UUIDs that have been generated with the same value of the system
- * time, and using it to construct the low order bits of the timestamp. The
- * count will range between zero and the number of 100-nanosecond intervals per
- * system time interval.
- *
- * ### RFC-4122 - 4.2.1.2. System Clock Resolution
+ * (P1) The timestamp is generated from the system time, whose resolution may be
+ * less than the resolution of the UUID timestamp.
  * 
- * (3b) If a system overruns the generator by requesting too many UUIDs within a
+ * (P2) If UUIDs do not need to be frequently generated, the timestamp can
+ * simply be the system time multiplied by the number of 100-nanosecond
+ * intervals per system time interval.
+ * 
+ * (P3) If a system overruns the generator by requesting too many UUIDs within a
  * single system time interval, the UUID service MUST either return an error, or
  * stall the UUID generator until the system clock catches up.
  * 
+ * (P4) A high resolution timestamp can be simulated by keeping a COUNT of the
+ * number of UUIDs that have been generated with the same value of the system
+ * time, and using it to construct the low order bits of the timestamp. The
+ * COUNT will range between zero and the number of 100-nanosecond intervals per
+ * system time interval.
+ * 
+ * (P5) Note: If the processors overrun the UUID generation frequently,
+ * additional node identifiers can be allocated to the system, which will permit
+ * higher speed allocation by making multiple UUIDs potentially available for
+ * each time stamp value.
  */
 public final class DefaultTimestampStrategy implements TimestampStrategy {
 
+	private AtomicInteger counter;
 	private long previousTimestamp = 0;
-	private final TimestampCounter timestampCounter;
+
+	// RFC-4122 - 4.2.1.2 (P2):
+	// the number of 100-nanosecond intervals per system interval
+	protected static final int COUNTER_MIN = 0;
+	protected static final int COUNTER_MAX = 9_999;
+
+	private static final int COUNTER_INITIAL_MASK = 0xff; // 255
+	private static final String OVERRUN_MESSAGE = "The system overran the generator by requesting too many UUIDs.";
 
 	public DefaultTimestampStrategy() {
-		this.timestampCounter = new TimestampCounter();
+		// Initiate the counter with a number between 0 and 255
+		int initial = TlsSecureRandom.get().nextInt() & COUNTER_INITIAL_MASK;
+		this.counter = new AtomicInteger(initial);
 	}
 
+	/**
+	 * Get the next current timestamp.
+	 * 
+	 * The timestamp has millisecond accuracy. An internal counter is added to the
+	 * timestamp to simulate the resolution of 100-nanoseconds.
+	 * 
+	 * @return the current timestamp
+	 * @throws UuidCreatorException an overrun exception if more than 10 thousand
+	 *                              UUIDs are requested within the same millisecond
+	 */
 	@Override
 	public long getTimestamp() {
 
 		final long timestamp = UuidTime.getCurrentTimestamp();
-		final long counter = getNextCounter(timestamp);
+		final long count = getNextCounter(timestamp);
 
-		// (4a) simulate a high resolution timestamp
-		return timestamp + counter;
+		// RFC-4122 - 4.2.1.2 (P4):
+		// simulate high resolution timestamp
+		return timestamp + count;
 	}
 
 	/**
@@ -83,47 +114,41 @@ public final class DefaultTimestampStrategy implements TimestampStrategy {
 	 * 
 	 * @param timestamp a timestamp
 	 * @return the next counter value
-	 * 
 	 * @throws UuidCreatorException an overrun exception if more than 10 thousand
 	 *                              UUIDs are requested within the same millisecond
 	 */
 	protected long getNextCounter(final long timestamp) {
 		if (timestamp == this.previousTimestamp) {
 			this.previousTimestamp = timestamp;
-			return this.timestampCounter.next();
+			return this.next();
 		}
 		this.previousTimestamp = timestamp;
-		return this.timestampCounter.reset();
+		return this.reset();
 	}
 
-	protected class TimestampCounter extends AbstractSequence {
-
-		protected static final int COUNTER_MIN = 0;
-		protected static final int COUNTER_MAX = 9_999;
-
-		private static final int COUNTER_INITIAL_MASK = 0xff; // 255
-
-		private static final String OVERRUN_MESSAGE = "The system overran the generator by requesting too many UUIDs.";
-
-		protected TimestampCounter() {
-			super(COUNTER_MIN, COUNTER_MAX);
-			this.value = TlsSecureRandom.get().nextInt() & COUNTER_INITIAL_MASK;
+	/**
+	 * Increments the counter value.
+	 * 
+	 * @return the next counter value.
+	 * @throws UuidCreatorException an overrun exception if more than 10 thousand
+	 *                              UUIDs are requested within the same millisecond
+	 */
+	private int next() {
+		if (this.counter.incrementAndGet() > COUNTER_MAX) {
+			// RFC-4122 - 4.2.1.2 (P3):
+			// Too many UUIDs within a single system time interval
+			this.counter.set(COUNTER_MIN);
+			throw new UuidCreatorException(OVERRUN_MESSAGE);
 		}
+		return this.counter.get();
+	}
 
-		@Override
-		public int next() {
-			if (this.value >= maxValue) {
-				this.value = minValue;
-				// (3b) Too many requests!
-				throw new UuidCreatorException(OVERRUN_MESSAGE);
-			}
-			return ++this.value;
-		}
-
-		@Override
-		public int reset() {
-			this.value = this.value & COUNTER_INITIAL_MASK;
-			return this.value;
-		}
+	/**
+	 * Resets and returns the counter value to a number between 0 and 255.
+	 * 
+	 * @return the a value between 0 and 255.
+	 */
+	private int reset() {
+		return this.counter.updateAndGet(x -> x & COUNTER_INITIAL_MASK);
 	}
 }

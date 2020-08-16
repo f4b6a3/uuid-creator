@@ -24,9 +24,10 @@
 
 package com.github.f4b6a3.uuid.strategy.clockseq;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.github.f4b6a3.uuid.strategy.ClockSequenceStrategy;
 import com.github.f4b6a3.uuid.util.TlsSecureRandom;
-import com.github.f4b6a3.uuid.util.sequence.AbstractSequence;
 
 /**
  * Strategy that provides the current clock sequence.
@@ -41,43 +42,44 @@ import com.github.f4b6a3.uuid.util.sequence.AbstractSequence;
  * 
  * ### RFC-4122 - 4.1.5. Clock Sequence
  * 
- * (1) For UUID version 1, the clock sequence is used to help avoid duplicates
+ * (P1) For UUID version 1, the clock sequence is used to help avoid duplicates
  * that could arise when the clock is set backwards in time or if the node ID
  * changes.
  * 
- * (2) If the clock is set backwards, or might have been set backwards (e.g.,
+ * (P2) If the clock is set backwards, or might have been set backwards (e.g.,
  * while the system was powered off), and the UUID generator can not be sure
  * that no UUIDs were generated with timestamps larger than the value to which
  * the clock was set, then the clock sequence has to be changed. If the previous
  * value of the clock sequence is known, it can just be incremented; otherwise
  * it should be set to a random or high-quality pseudo-random value.
  * 
- * (3) Similarly, if the node ID changes (e.g., because a network card has been
+ * (P3) Similarly, if the node ID changes (e.g., because a network card has been
  * moved between machines), setting the clock sequence to a random number
  * minimizes the probability of a duplicate due to slight differences in the
  * clock settings of the machines. If the value of clock sequence associated
  * with the changed node ID were known, then the clock sequence could just be
  * incremented, but that is unlikely.
  * 
- * (4) The clock sequence MUST be originally (i.e., once in the lifetime of a
+ * (P4) The clock sequence MUST be originally (i.e., once in the lifetime of a
  * system) initialized to a random number to minimize the correlation across
  * systems. This provides maximum protection against node identifiers that may
  * move or switch from system to system rapidly. The initial value MUST NOT be
  * correlated to the node identifier.
  */
-public final class DefaultClockSequenceStrategy extends AbstractSequence implements ClockSequenceStrategy {
+public final class DefaultClockSequenceStrategy implements ClockSequenceStrategy {
 
+	private AtomicInteger sequence;
 	private long previousTimestamp = 0;
 
 	protected static final int SEQUENCE_MIN = 0x00000000;
-	protected static final int SEQUENCE_MAX = 0x00003fff;
+	protected static final int SEQUENCE_MAX = 0x00003fff; // 16384
 
 	public static final ClockSequenceController CONTROLLER = new ClockSequenceController();
 
 	public DefaultClockSequenceStrategy() {
-		super(SEQUENCE_MIN, SEQUENCE_MAX);
-		this.value = -1; // set an out of range value before calling reset()
-		this.reset();
+		this.sequence = new AtomicInteger();
+		int initial = TlsSecureRandom.get().nextInt() & SEQUENCE_MAX;
+		this.sequence.updateAndGet(x -> CONTROLLER.take(initial));
 	}
 
 	/**
@@ -85,7 +87,7 @@ public final class DefaultClockSequenceStrategy extends AbstractSequence impleme
 	 * 
 	 * ### RFC-4122 - 4.1.5. Clock Sequence
 	 * 
-	 * (2) If the clock is set backwards, or might have been set backwards (e.g.,
+	 * (P2) If the clock is set backwards, or might have been set backwards (e.g.,
 	 * while the system was powered off), and the UUID generator can not be sure
 	 * that no UUIDs were generated with timestamps larger than the value to which
 	 * the clock was set, then the clock sequence has to be changed. If the previous
@@ -97,29 +99,18 @@ public final class DefaultClockSequenceStrategy extends AbstractSequence impleme
 	 */
 	@Override
 	public int getClockSequence(final long timestamp) {
-
 		if (timestamp > this.previousTimestamp) {
 			this.previousTimestamp = timestamp;
-			return this.current();
+			return this.sequence.get();
 		}
-
 		this.previousTimestamp = timestamp;
 		return this.next();
 	}
 
-	@Override
 	public int next() {
-		final int give = this.current();
-		final int take = super.next();
-		this.value = CONTROLLER.borrow(give, take);
-		return this.value;
-	}
-
-	@Override
-	public int reset() {
-		final int give = this.current();
-		final int take = TlsSecureRandom.get().nextInt() & SEQUENCE_MAX;
-		this.value = CONTROLLER.borrow(give, take);
-		return this.value;
+		if (this.sequence.incrementAndGet() > SEQUENCE_MAX) {
+			this.sequence.set(SEQUENCE_MIN);
+		}
+		return this.sequence.updateAndGet(CONTROLLER::take);
 	}
 }
