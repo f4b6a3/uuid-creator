@@ -125,7 +125,7 @@ public final class UuidValidator {
 	 */
 	public static void validate(final char[] uuid) {
 		if (!isValid(uuid)) {
-			throw new InvalidUuidException("Invalid UUID char array.");
+			throw new InvalidUuidException("Invalid UUID string.");
 		}
 	}
 

@@ -35,6 +35,8 @@ import com.github.f4b6a3.uuid.exception.InvalidUuidException;
  */
 public final class UuidConverter {
 
+	private static final String URN_PREFIX = "urn:uuid:";
+	
 	private UuidConverter() {
 	}
 
@@ -91,21 +93,43 @@ public final class UuidConverter {
 	/**
 	 * Get a UUID from a string.
 	 * 
-	 * It also accepts UUID strings without hyphens.
+	 * It accepts strings:
 	 * 
-	 * It's an alternative to {@link java.util.UUID#fromString(String)}.
+	 * - With URN prefix: "urn:uuid:";
+	 * 
+	 * - With curly braces: '{' and '}';
+	 * 
+	 * - With upper or lower case;
+	 * 
+	 * - With or without hyphens.
+	 * 
+	 * It's a better alternative to {@link java.util.UUID#fromString(String)}.
 	 * 
 	 * @param string a UUID string
 	 * @return a UUID
 	 * @throws InvalidUuidException if invalid
 	 */
 	public static UUID fromString(String string) {
-		UuidValidator.validate(string);
+
 		char[] input = string.toCharArray();
-		char[] output = UuidUtil.removeHyphens(input);
-		return fromBytes(ByteUtil.toBytes(output));
+
+		if (input[0] == 'u' && string.indexOf(URN_PREFIX) == 0) {
+			// Remove URN prefix: "urn:uuid:"
+			char[] substring = new char[input.length - 9];
+			System.arraycopy(input, 9, substring, 0, substring.length);
+			input = substring;
+		} else if (input[0] == '{' && input[input.length - 1] == '}') {
+			// Remove curly braces: '{' and '}'
+			char[] substring = new char[input.length - 2];
+			System.arraycopy(input, 1, substring, 0, substring.length);
+			input = substring;
+		}
+
+		UuidValidator.validate(input);
+		input = UuidUtil.removeHyphens(input);
+		return fromBytes(ByteUtil.toBytes(input));
 	}
-	
+
 	/**
 	 * Convert a time-ordered UUID to a time-based UUID.
 	 * 

@@ -13,6 +13,8 @@ import com.github.f4b6a3.uuid.util.UuidConverter;
 public class UuidConverterTest {
 
 	private static final int DEFAULT_LOOP_LIMIT = 100;
+	
+	private static final String URN_PREFIX = "urn:uuid:";
 
 	@Test
 	public void testToString() {
@@ -51,6 +53,20 @@ public class UuidConverterTest {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			String string = UUID.randomUUID().toString();
 			UUID uuid = UuidConverter.fromString(string.toUpperCase().replace("-", ""));
+			assertEquals(string, uuid.toString());
+		}
+		
+		// With URN prefix: "urn:uuid:"
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			String string = UUID.randomUUID().toString();
+			UUID uuid = UuidConverter.fromString(URN_PREFIX + string);
+			assertEquals(string, uuid.toString());
+		}
+		
+		// With curly braces: '{' and '}'
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			String string = UUID.randomUUID().toString();
+			UUID uuid = UuidConverter.fromString("{" + string + "}");
 			assertEquals(string, uuid.toString());
 		}
 	}

@@ -79,18 +79,24 @@ public final class UuidCreator {
 	/**
 	 * Returns a UUID from a string.
 	 * 
-	 * It validates the input string.
+	 * It accepts strings:
 	 * 
-	 * It also accepts UUID strings without hyphens.
+	 * - With URN prefix: "urn:uuid:";
 	 * 
-	 * It's an alternative to {@link java.util.UUID#fromString(String)}.
+	 * - With curly braces: '{' and '}';
 	 * 
-	 * @param uuid a string
+	 * - With upper or lower case;
+	 * 
+	 * - With or without hyphens.
+	 * 
+	 * It's a better alternative to {@link java.util.UUID#fromString(String)}.
+	 * 
+	 * @param string a UUID string
 	 * @return a UUID
 	 * @throws InvalidUuidException if invalid
 	 */
-	public static UUID fromString(String uuid) {
-		return UuidConverter.fromString(uuid);
+	public static UUID fromString(String string) {
+		return UuidConverter.fromString(string);
 	}
 
 	/**
@@ -180,7 +186,7 @@ public final class UuidCreator {
 	 * - Node identifier: random
 	 * </pre>
 	 * 
-	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Long, Integer)}
+	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Integer, Long)}
 	 * 
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
@@ -202,7 +208,7 @@ public final class UuidCreator {
 	 * - Node identifier: MAC
 	 * </pre>
 	 * 
-	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Long, Integer)}
+	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Integer, Long)}
 	 * 
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
@@ -220,10 +226,10 @@ public final class UuidCreator {
 	 * <pre>
 	 * Details: 
 	 * - Version number: 1
-	 * - Node identifier: hash
+	 * - Node identifier: system data hash
 	 * </pre>
 	 * 
-	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Long, Integer)}
+	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Integer, Long)}
 	 * 
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
@@ -295,7 +301,7 @@ public final class UuidCreator {
 	 * - Node identifier: random
 	 * </pre>
 	 * 
-	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Long, Integer)}
+	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Integer, Long)}
 	 * 
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
@@ -317,7 +323,7 @@ public final class UuidCreator {
 	 * - Node identifier: MAC
 	 * </pre>
 	 * 
-	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Long, Integer)}
+	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Integer, Long)}
 	 * 
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
@@ -335,10 +341,10 @@ public final class UuidCreator {
 	 * <pre>
 	 * Details: 
 	 * - Version number: 6
-	 * - Node identifier: hash
+	 * - Node identifier: system data hash
 	 * </pre>
 	 * 
-	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Long, Integer)}
+	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Integer, Long)}
 	 * 
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
