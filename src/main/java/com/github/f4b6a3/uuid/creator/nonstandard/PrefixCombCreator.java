@@ -55,7 +55,7 @@ public final class PrefixCombCreator extends AbstractRandomBasedUuidCreator {
 	 * The creation millisecond is a PREFIX at the MOST significant bits.
 	 */
 	@Override
-	public synchronized UUID create() {
+	public UUID create() {
 
 		final long timestamp = System.currentTimeMillis();
 

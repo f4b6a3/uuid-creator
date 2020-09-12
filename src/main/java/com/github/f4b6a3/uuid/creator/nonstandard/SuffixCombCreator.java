@@ -55,7 +55,7 @@ public final class SuffixCombCreator extends AbstractRandomBasedUuidCreator {
 	 * The creation millisecond is a SUFFIX at the LEAST significant bits.
 	 */
 	@Override
-	public synchronized UUID create() {
+	public UUID create() {
 
 		final long timestamp = System.currentTimeMillis();
 

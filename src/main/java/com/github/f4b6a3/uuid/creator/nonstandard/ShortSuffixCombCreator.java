@@ -61,7 +61,7 @@ public final class ShortSuffixCombCreator extends AbstractRandomBasedUuidCreator
 	 * The suffix wraps around every ~45 days (2^16/60/24 = ~45).
 	 */
 	@Override
-	public synchronized UUID create() {
+	public UUID create() {
 
 		final long timestamp = System.currentTimeMillis() / ONE_MINUTE;
 

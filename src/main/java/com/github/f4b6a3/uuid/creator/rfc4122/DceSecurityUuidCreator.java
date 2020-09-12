@@ -64,7 +64,7 @@ public final class DceSecurityUuidCreator extends AbstractTimeBasedUuidCreator {
 
 	private AtomicInteger counter;
 
-	private UuidLocalDomain localDomain;
+	private byte localDomain;
 
 	public DceSecurityUuidCreator() {
 		super(UuidVersion.VERSION_DCE_SECURITY);
@@ -270,6 +270,17 @@ public final class DceSecurityUuidCreator extends AbstractTimeBasedUuidCreator {
 	 * @return {@link DceSecurityUuidCreator}
 	 */
 	public synchronized DceSecurityUuidCreator withLocalDomain(UuidLocalDomain localDomain) {
+		this.localDomain = localDomain.getValue();
+		return this;
+	}
+	
+	/**
+	 * Set a default local domain do be used.
+	 * 
+	 * @param localDomain a local domain
+	 * @return {@link DceSecurityUuidCreator}
+	 */
+	public synchronized DceSecurityUuidCreator withLocalDomain(byte localDomain) {
 		this.localDomain = localDomain;
 		return this;
 	}
