@@ -33,7 +33,9 @@ import java.util.UUID;
 
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
+import com.github.f4b6a3.uuid.util.UuidConverter;
 
 /**
  * Factory that creates name-based UUIDs.
@@ -164,6 +166,38 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * 
 	 * See: {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
 	 * 
+	 * @param namespace a name space UUID in string format
+	 * @param name      a byte array of the name
+	 * @return a name-based UUID
+	 * @throws InvalidUuidException if the namespace is invalid
+	 */
+	public UUID create(String namespace, byte[] name) {
+		return create(UuidConverter.fromString(namespace), name);
+	}
+
+	/**
+	 * Returns a name-based UUID.
+	 * 
+	 * See: {@link UuidNamespace}.
+	 * 
+	 * See: {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
+	 * 
+	 * @param namespace a name space UUID in string format
+	 * @param name      a name string
+	 * @return a name-based UUID
+	 * @throws InvalidUuidException if the namespace is invalid
+	 */
+	public UUID create(String namespace, String name) {
+		return create(UuidConverter.fromString(namespace), name.getBytes(StandardCharsets.UTF_8));
+	}
+	
+	/**
+	 * Returns a name-based UUID.
+	 * 
+	 * See: {@link UuidNamespace}.
+	 * 
+	 * See: {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
+	 * 
 	 * @param namespace a name space enumeration
 	 * @param name      a byte array of the name
 	 * @return a name-based UUID
@@ -242,6 +276,20 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends AbstractNameBasedUuidCreator> T withNamespace(UUID namespace) {
 		this.namespace = namespace;
+		return (T) this;
+	}
+	
+	/**
+	 * Sets a fixed name space to be used by default.
+	 * 
+	 * @param namespace a namespace UUID in string format
+	 * @param <T>       the type parameter
+	 * @return {@link AbstractNameBasedUuidCreator}
+	 * @throws InvalidUuidException if the namespace is invalid
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized <T extends AbstractNameBasedUuidCreator> T withNamespace(String namespace) {
+		this.namespace = UuidConverter.fromString(namespace);
 		return (T) this;
 	}
 }

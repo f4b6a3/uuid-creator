@@ -47,7 +47,7 @@ UUID uuid = UuidCreator.getTimeOrdered();
 
 All UUID types can be generated from the [facade](https://en.wikipedia.org/wiki/Facade_pattern) `UuidCreator`. If you have a special requirement that is not covered by the facade, you can read the rest of this document or check the source code.
 
-The generators here are [thread-safe](https://en.wikipedia.org/wiki/Thread_safety).
+The generators are [thread-safe](https://en.wikipedia.org/wiki/Thread_safety).
 
 ### Maven dependency
 
@@ -58,31 +58,35 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>2.7.8</version>
+  <version>2.7.9</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
 
 ### Version 1: Time-based
 
-The Time-based UUID has a timestamp and may have a hardware address.
+The Time-based UUID has a timestamp and a node identifier. These two information represent WHEN and WHERE the UUID was created.
 
-The versions 1 and 6 use the same basic algorithm: both are based on date and time. The only difference is that the version 1 changes the timestamp byte order in a special layout.
+The timestamp is the count of 100 nanosecond intervals since 1582-10-15, the beginning of Gregorian calendar.
 
-If you need to define the node identifiers for your machines, see the section [Node identifier](#node-identifier) to know how to use the environment variable `UUIDCREATOR_NODE`.
+The timestamp bytes in this version are __rearranged__ in a special layout, unlike the time-ordered UUID (version 6). This is the only difference between version 1 and version 6.
+
+The node identifier can be a MAC address, a hash of system information, a random number or a user defined number.
+
+If you need to define the node identifiers for your machines, see the section [Node identifier](#node-identifier) to know how to use the environment variable `UUIDCREATOR_NODE` and the system property `uuidcreator.node`. If node of these variable or property are found, a random number is used as default.
 
 ```java
-// Time-based
+// Time-based with a random or user defined node identifier
 UUID uuid = UuidCreator.getTimeBased();
 ```
 
 ```java
-// Time-based with hardware address
+// Time-based with hardware address as node identifier
 UUID uuid = UuidCreator.getTimeBasedWithMac();
 ```
 
 ```java
-// Time-based with system data hash
+// Time-based with system data hash as node identifier
 UUID uuid = UuidCreator.getTimeBasedWithHash();
 ```
 
@@ -243,24 +247,28 @@ List of predefined [name spaces](https://en.wikipedia.org/wiki/Namespace):
 
 ### Version 6: Time-ordered (proposed)
 
-The Time-ordered<sup>[4]</sup> <sup>[5]</sup> UUID has a timestamp and may have a hardware address.
+The Time-ordered<sup>[4]</sup> <sup>[5]</sup> UUID has a timestamp and a node identifier. These two information represent WHEN and WHERE the UUID was created.
 
-The timestamp bits are kept in the original order, unlike the time-based UUID.
+The timestamp is the count of 100 nanosecond intervals since 1582-10-15, the beginning of Gregorian calendar.
 
-If you need to define the node identifiers for your machines, see the section [Node identifier](#node-identifier) to know how to use the environment variable `UUIDCREATOR_NODE`.
+The timestamp bytes are __kept__ in the original order, unlike the time-based UUID (version 1). This is the only difference between version 1 and version 6.
+
+The node identifier can be a MAC address, a hash of system information, a random number or a user defined number.
+
+If you need to define the node identifiers for your machines, see the section [Node identifier](#node-identifier) to know how to use the environment variable `UUIDCREATOR_NODE` and the system property `uuidcreator.node`. If node of these variable or property are found, a random number is used as default.
 
 ```java
-// Time-ordered
+// Time-ordered with a random or user defined node identifier
 UUID uuid = UuidCreator.getTimeOrdered();
 ```
 
 ```java
-// Time-ordered with hardware address
+// Time-ordered with hardware address as node identifier
 UUID uuid = UuidCreator.getTimeOrderedWithMac();
 ```
 
 ```java
-// Time-ordered with system data hash
+// Time-ordered with system data hash as node identifier
 UUID uuid = UuidCreator.getTimeOrderedWithHash();
 ```
 
@@ -774,11 +782,13 @@ UUID uuid = timebased.create();
 try {
 	byte[] ip = InetAddress.getLocalHost().getAddress();
 	TimeBasedUuidCreator timebased = UuidCreator.getTimeBasedCreator()
-      .withNodeIdentifier(ip);
-	UUID uuid = timebased.create();
+		.withNodeIdentifier(ip);
 } catch (UnknownHostException | SocketException e) {
 	// treat exception
 }
+
+UUID uuid = timebased.create();
+
 ```
 
 ##### Node identifier strategy
@@ -1031,8 +1041,8 @@ Throughput.UuidCreator_PrefixComb       thrpt    5   2750,621 ±  14,206  ops/ms
 Throughput.UuidCreator_ShortPrefixComb  thrpt    5   2149,540 ±   2,840  ops/ms
 Throughput.UuidCreator_NameBasedMd5     thrpt    5   3888,460 ±  18,874  ops/ms
 Throughput.UuidCreator_NameBasedSha1    thrpt    5   2950,550 ±   4,524  ops/ms
-Throughput.UuidCreator_TimeBased        thrpt    5   14885,586 ± 64,514  ops/ms
-Throughput.UuidCreator_TimeOrdered      thrpt    5   14989,216 ± 54,646  ops/ms
+Throughput.UuidCreator_TimeBased        thrpt    5  14885,586 ±  64,514  ops/ms
+Throughput.UuidCreator_TimeOrdered      thrpt    5  14989,216 ±  54,646  ops/ms
 -----------------------------------------------------------------------------------
 Total time: 00:12:00
 -----------------------------------------------------------------------------------

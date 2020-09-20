@@ -24,6 +24,8 @@
 
 package com.github.f4b6a3.uuid.strategy.clockseq;
 
+import com.github.f4b6a3.uuid.util.TlsSecureRandom;
+
 /**
  * Class that controls the usage of clock sequence values from 0 to 16383.
  * 
@@ -61,6 +63,18 @@ public final class ClockSequenceController {
 		clearPool();
 		setBit(take);
 		return take;
+	}
+	
+	/**
+	 * Take a random value from the pool.
+	 * 
+	 * @see {@link ClockSequenceController#take(int)}
+	 * 
+	 * @return the random value to be borrowed if not used.
+	 */
+	public synchronized int random() {
+		int random = TlsSecureRandom.get().nextInt(POOL_MAX);
+		return this.take(random);
 	}
 
 	/**

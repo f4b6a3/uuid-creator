@@ -27,7 +27,6 @@ package com.github.f4b6a3.uuid.strategy.clockseq;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.f4b6a3.uuid.strategy.ClockSequenceStrategy;
-import com.github.f4b6a3.uuid.util.TlsSecureRandom;
 
 /**
  * Strategy that provides the current clock sequence.
@@ -77,9 +76,8 @@ public final class DefaultClockSequenceStrategy implements ClockSequenceStrategy
 	public static final ClockSequenceController CONTROLLER = new ClockSequenceController();
 
 	public DefaultClockSequenceStrategy() {
-		this.sequence = new AtomicInteger();
-		int initial = TlsSecureRandom.get().nextInt() & SEQUENCE_MAX;
-		this.sequence.updateAndGet(x -> CONTROLLER.take(initial));
+		final int initial = CONTROLLER.random();
+		this.sequence = new AtomicInteger(initial);
 	}
 
 	/**

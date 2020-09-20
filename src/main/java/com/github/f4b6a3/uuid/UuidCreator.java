@@ -62,7 +62,7 @@ public final class UuidCreator {
 
 	private UuidCreator() {
 	}
-
+	
 	/**
 	 * Returns a UUID from a byte array.
 	 * 
@@ -132,8 +132,11 @@ public final class UuidCreator {
 	 * <pre>
 	 * Details: 
 	 * - Version number: 1
-	 * - Node identifier: random
+	 * - Node identifier: random (default) or user defined
 	 * </pre>
+	 * 
+	 * A user defined node identifier can be provided by the system property
+	 * 'uuidcreator.node' or the environment variable 'UUIDCREATOR_NODE'.
 	 * 
 	 * @return a version 1 UUID
 	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
@@ -190,7 +193,7 @@ public final class UuidCreator {
 	 * 
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
-	 * @param nodeid   an alternate node (0 to 2^48)
+	 * @param nodeid   an alternate node (0 to 2^48-1)
 	 * @return a version 1 UUID
 	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
 	 *                              requested within the same millisecond
@@ -247,8 +250,11 @@ public final class UuidCreator {
 	 * <pre>
 	 * Details: 
 	 * - Version number: 6
-	 * - Node identifier: random
+	 * - Node identifier: random (default) or user defined
 	 * </pre>
+	 * 
+	 * A user defined node identifier can be provided by the system property
+	 * 'uuidcreator.node' or the environment variable 'UUIDCREATOR_NODE'.
 	 * 
 	 * @return a version 6 UUID
 	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
@@ -305,7 +311,7 @@ public final class UuidCreator {
 	 * 
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
-	 * @param nodeid   an alternate node (0 to 2^48)
+	 * @param nodeid   an alternate node (0 to 2^48-1)
 	 * @return a version 6 UUID
 	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
 	 *                              requested within the same millisecond
@@ -423,6 +429,44 @@ public final class UuidCreator {
 	 * @return a version 3 UUID
 	 */
 	public static UUID getNameBasedMd5(UUID namespace, byte[] name) {
+		return NameBasedMd5CreatorHolder.INSTANCE.create(namespace, name);
+	}
+	
+	/**
+	 * Returns a name-based UUID (MD5).
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 3 
+	 * - Hash Algorithm: MD5 
+	 * - Name Space: YES (custom)
+	 * </pre>
+	 * 
+	 * @param namespace a custom name space UUID in string format
+	 * @param name      a name string
+	 * @return a version 3 UUID
+	 * @throws InvalidUuidException if the namespace is invalid
+	 */
+	public static UUID getNameBasedMd5(String namespace, String name) {
+		return NameBasedMd5CreatorHolder.INSTANCE.create(namespace, name);
+	}
+
+	/**
+	 * Returns a name-based UUID (MD5).
+	 * 
+	 * <pre>
+	 * Details: 
+	 * - Version number: 3 
+	 * - Hash Algorithm: MD5 
+	 * - Name Space: YES (custom)
+	 * </pre>
+	 * 
+	 * @param namespace a custom name space UUID in string format
+	 * @param name      a byte array
+	 * @return a version 3 UUID
+	 * @throws InvalidUuidException if the namespace is invalid
+	 */
+	public static UUID getNameBasedMd5(String namespace, byte[] name) {
 		return NameBasedMd5CreatorHolder.INSTANCE.create(namespace, name);
 	}
 
@@ -554,6 +598,44 @@ public final class UuidCreator {
 		return NameBasedSha1CreatorHolder.INSTANCE.create(namespace, name);
 	}
 
+	/**
+	 * Returns a name-based UUID (SHA1).
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 5 
+	 * - Hash Algorithm: SHA1 
+	 * - Name Space: YES (custom)
+	 * </pre>
+	 * 
+	 * @param namespace a custom name space UUID in string format
+	 * @param name      a name string
+	 * @return a version 5 UUID
+	 * @throws InvalidUuidException if the namespace is invalid
+	 */
+	public static UUID getNameBasedSha1(String namespace, String name) {
+		return NameBasedSha1CreatorHolder.INSTANCE.create(namespace, name);
+	}
+
+	/**
+	 * Returns a name-based UUID (SHA1).
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 5 
+	 * - Hash Algorithm: SHA1 
+	 * - Name Space: YES (custom)
+	 * </pre>
+	 * 
+	 * @param namespace a custom name space UUID in string format
+	 * @param name      a byte array
+	 * @return a version 5 UUID
+	 * @throws InvalidUuidException if the namespace is invalid
+	 */
+	public static UUID getNameBasedSha1(String namespace, byte[] name) {
+		return NameBasedSha1CreatorHolder.INSTANCE.create(namespace, name);
+	}
+	
 	/**
 	 * Returns a name-based UUID (SHA1).
 	 *
