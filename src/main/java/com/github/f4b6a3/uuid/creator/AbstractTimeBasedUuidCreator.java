@@ -168,7 +168,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * 
 	 * The node identifier range is from 0 to 281474976710655 (2^48 - 1). If the
 	 * value passed by argument is out of range, the result of MOD 2^48 is used
-	 * instead. The multicast bit is set to ONE automatically.
+	 * instead.
 	 * 
 	 * The clock sequence range is from 0 to 16383 (2^14 - 1). If the value passed
 	 * by argument is out of range, the result of MOD 2^14 is used instead.
@@ -272,8 +272,6 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * Replaces the default {@link NodeIdentifierStrategy} with the
 	 * {@link FixedNodeIdentifierStrategy}.
 	 * 
-	 * The input node identifier has it's multicast bit set to 1 automatically.
-	 * 
 	 * @param nodeIdentifier a node identifier
 	 * @param <T>            type parameter
 	 * @return {@link AbstractTimeBasedUuidCreator}
@@ -287,8 +285,6 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	/**
 	 * Replaces the default {@link NodeIdentifierStrategy} with the
 	 * {@link FixedNodeIdentifierStrategy}.
-	 * 
-	 * The input node identifier has it's multicast bit set to 1 automatically.
 	 * 
 	 * @param nodeIdentifier a node identifier
 	 * @param <T>            type parameter

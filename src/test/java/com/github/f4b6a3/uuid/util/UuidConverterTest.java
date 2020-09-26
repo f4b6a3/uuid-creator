@@ -15,13 +15,18 @@ public class UuidConverterTest {
 	private static final int DEFAULT_LOOP_LIMIT = 100;
 	
 	private static final String URN_PREFIX = "urn:uuid:";
+	
+	private static final String RFC4122_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-6][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
 
 	@Test
 	public void testToString() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUID.randomUUID();
-			String string = UuidConverter.toString(uuid);
-			assertEquals(uuid.toString(), string);
+			UUID random = UUID.randomUUID();
+			String expected = random.toString();
+			String actual = UuidConverter.toString(random);
+			
+			checkPattern(actual);
+			assertEquals(expected, actual);
 		}
 	}
 
@@ -193,5 +198,9 @@ public class UuidConverterTest {
 		UUID result = UuidConverter.toAndFromMsGuid(guid);
 
 		assertEquals(uuid, result);
+	}
+	
+	private void checkPattern(String string) {
+		assertTrue(string.toString().matches(RFC4122_PATTERN));
 	}
 }

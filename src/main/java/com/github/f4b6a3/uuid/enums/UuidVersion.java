@@ -33,7 +33,7 @@ public enum UuidVersion {
 	VERSION_DCE_SECURITY(2), //
 	VERSION_NAME_BASED_MD5(3), //
 	VERSION_RANDOM_BASED(4), //
-	VERSION_NAMBE_BASED_SHA1(5), //
+	VERSION_NAME_BASED_SHA1(5), //
 	VERSION_TIME_ORDERED(6); // proposal
 
 	private final int value;

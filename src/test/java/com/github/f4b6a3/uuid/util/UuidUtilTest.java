@@ -20,6 +20,12 @@ import com.github.f4b6a3.uuid.util.UuidTime;
 public class UuidUtilTest {
 
 	@Test
+	public void testIsNil() {
+		UUID uuid = new UUID(0, 0);
+		assertTrue(isNil(uuid));
+	}
+	
+	@Test
 	public void testIsNameBasedMd5() {
 		UUID uuid = UUID.nameUUIDFromBytes("test".getBytes());
 		assertTrue(isNameBasedMd5(uuid));
@@ -41,7 +47,6 @@ public class UuidUtilTest {
 
 	@Test
 	public void testExtractTimestamp() {
-
 		Instant instant1 = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 		long timestamp1 = UuidTime.toTimestamp(instant1);
 		TimestampStrategy strategy = new FixedTimestampStretegy(instant1);
@@ -67,6 +72,20 @@ public class UuidUtilTest {
 		uuid = UuidCreator.getTimeOrderedCreator().withTimestampStrategy(strategy).create();
 		instant2 = extractInstant(uuid);
 		assertEquals(instant1, instant2);
+	}
+	
+	@Test
+	public void testExtractUnixMilliseconds() {
+		long milliseconds1 = Instant.now().toEpochMilli();
+		TimestampStrategy strategy = new FixedTimestampStretegy(UuidTime.toTimestamp(milliseconds1));
+
+		UUID uuid = UuidCreator.getTimeBasedCreator().withTimestampStrategy(strategy).create();
+		long milliseconds2 = extractUnixMilliseconds(uuid);
+		assertEquals(milliseconds1, milliseconds2);
+
+		uuid = UuidCreator.getTimeOrderedCreator().withTimestampStrategy(strategy).create();
+		milliseconds2 = extractUnixMilliseconds(uuid);
+		assertEquals(milliseconds1, milliseconds2);
 	}
 
 	@Test

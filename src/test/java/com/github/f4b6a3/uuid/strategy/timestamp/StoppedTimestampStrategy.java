@@ -26,7 +26,6 @@ package com.github.f4b6a3.uuid.strategy.timestamp;
 
 import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
 import com.github.f4b6a3.uuid.strategy.timestamp.DefaultTimestampStrategy;
-import com.github.f4b6a3.uuid.util.UuidTime;
 
 /**
  * This is an implementation of {@link TimestampStrategy} that always returns

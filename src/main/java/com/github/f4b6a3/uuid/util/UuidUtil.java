@@ -165,7 +165,7 @@ public final class UuidUtil {
 	 * @return boolean true if it is a name-based UUID
 	 */
 	public static boolean isNameBasedSha1(UUID uuid) {
-		return isVersion(uuid, UuidVersion.VERSION_NAMBE_BASED_SHA1);
+		return isVersion(uuid, UuidVersion.VERSION_NAME_BASED_SHA1);
 	}
 
 	/**

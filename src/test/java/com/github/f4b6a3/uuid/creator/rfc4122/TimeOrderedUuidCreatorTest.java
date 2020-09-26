@@ -3,7 +3,6 @@ package com.github.f4b6a3.uuid.creator.rfc4122;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import com.github.f4b6a3.uuid.creator.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.creator.AbstractUuidCreatorTest;
 import com.github.f4b6a3.uuid.creator.rfc4122.TimeOrderedUuidCreator;
 import com.github.f4b6a3.uuid.strategy.ClockSequenceStrategy;
@@ -22,46 +21,37 @@ import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.UUID;
 
 public class TimeOrderedUuidCreatorTest extends AbstractUuidCreatorTest {
 
 	@Test
-	public void testTimeOrderedUuid() {
+	public void testTimeOrdered() {
 		boolean multicast = true;
-		testCreateAbstractTimeBasedUuid(UuidCreator.getTimeOrderedCreator(), multicast);
+		testGetAbstractTimeBased(UuidCreator.getTimeOrderedCreator(), multicast);
 	}
 
 	@Test
-	public void testTimeOrderedUuidWithMac() {
+	public void testTimeOrderedWithMac() {
 		boolean multicast = false;
-		testCreateAbstractTimeBasedUuid(UuidCreator.getTimeOrderedCreator().withMacNodeIdentifier(), multicast);
+		testGetAbstractTimeBased(UuidCreator.getTimeOrderedCreator().withMacNodeIdentifier(), multicast);
+	}
+	
+	@Test
+	public void testTimeOrderedWithHash() {
+		boolean multicast = true;
+		testGetAbstractTimeBased(UuidCreator.getTimeOrderedCreator().withHashNodeIdentifier(), multicast);
 	}
 
 	@Test
-	public void testGetTimeOrderedUuidStringIsValid() {
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			UUID uuid = UuidCreator.getTimeOrdered();
-			checkIfStringIsValid(uuid);
-		}
-	}
+	public void testGetTimeOrderedWithNodeIdentifierStrategy() {
 
-	@Test
-	public void testGetTimeOrderedWithMacStringIsValid() {
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			UUID uuid = UuidCreator.getTimeOrderedWithMac();
-			checkIfStringIsValid(uuid);
-		}
-	}
+		NodeIdentifierStrategy strategy = new FixedNodeIdentifierStrategy(System.nanoTime());
+		long nodeIdentifier1 = strategy.getNodeIdentifier();
 
-	@Test
-	public void testGetTimeOrderedWithCustomNodeIdentifierStrategy() {
-
-		NodeIdentifierStrategy customStrategy = new FixedNodeIdentifierStrategy(System.nanoTime());
-		long nodeIdentifier1 = customStrategy.getNodeIdentifier();
-
-		AbstractTimeBasedUuidCreator creator = UuidCreator.getTimeOrderedCreator()
-				.withNodeIdentifierStrategy(customStrategy);
+		TimeOrderedUuidCreator creator = UuidCreator.getTimeOrderedCreator()
+				.withNodeIdentifierStrategy(strategy);
 
 		UUID uuid = creator.create();
 		long nodeIdentifier2 = UuidUtil.extractNodeIdentifier(uuid);
@@ -70,13 +60,13 @@ public class TimeOrderedUuidCreatorTest extends AbstractUuidCreatorTest {
 	}
 
 	@Test
-	public void testGetTimeOrderedWithCustomClockSequenceStrategy() {
+	public void testGetTimeOrderedWithClockSequenceStrategy() {
 
-		ClockSequenceStrategy customStrategy = new FixedClockSequenceStrategy((int) System.nanoTime());
-		long clockseq1 = customStrategy.getClockSequence(0);
+		ClockSequenceStrategy strategy = new FixedClockSequenceStrategy((int) System.nanoTime());
+		long clockseq1 = strategy.getClockSequence(0);
 
-		AbstractTimeBasedUuidCreator creator = UuidCreator.getTimeOrderedCreator()
-				.withClockSequenceStrategy(customStrategy);
+		TimeOrderedUuidCreator creator = UuidCreator.getTimeOrderedCreator()
+				.withClockSequenceStrategy(strategy);
 
 		UUID uuid = creator.create();
 		long clockseq2 = UuidUtil.extractClockSequence(uuid);
@@ -104,31 +94,9 @@ public class TimeOrderedUuidCreatorTest extends AbstractUuidCreatorTest {
 			oldTimestemp = newTimestamp;
 		}
 	}
-
+	
 	@Test
-	public void testGetTimeOrderedMostSignificantBitsAreTimeOrdered() {
-
-		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		TimeOrderedUuidCreator creator = UuidCreator.getTimeOrderedCreator();
-
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = creator.create();
-		}
-
-		long oldMsb = 0;
-
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			long newMsb = list[i].getMostSignificantBits();
-
-			if (i > 0) {
-				assertTrue(newMsb >= oldMsb);
-			}
-			oldMsb = newMsb;
-		}
-	}
-
-	@Test
-	public void testGetTimeOrderedTimestampIsCorrect() {
+	public void testGetTimeOrderedCheckTimestamp() {
 
 		TimeOrderedUuidCreator creator = UuidCreator.getTimeOrderedCreator();
 
@@ -145,9 +113,32 @@ public class TimeOrderedUuidCreatorTest extends AbstractUuidCreatorTest {
 			assertEquals(timestamp1, timestamp2);
 		}
 	}
+	
+	@Test
+	public void testGetTimeOrderedCheckOrder() {
+
+		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+		TimeOrderedUuidCreator creator = UuidCreator.getTimeOrderedCreator();
+
+		// Create list of UUIDs
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			list[i] = creator.create();
+		}
+
+		// Check if the MSBs are ordered
+		long old = 0;
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			long msb = list[i].getMostSignificantBits();
+
+			if (i > 0) {
+				assertTrue(msb > old);
+			}
+			old = msb;
+		}
+	}
 
 	@Test
-	public void testGetTimeOrderedShouldCreateAlmostSixteenThousandUniqueUuidsWithTheTimeStopped() {
+	public void testGetTimeOrderedCheckClockSequence() {
 
 		int max = 0x3fff + 1; // 16,384
 		Instant instant = Instant.now();
@@ -182,9 +173,33 @@ public class TimeOrderedUuidCreatorTest extends AbstractUuidCreatorTest {
 		assertEquals("The last clock sequence should be equal to the first clock sequence minus 1",
 				(lastClockSeq % max), ((firstClockSeq % max) - 1));
 	}
+	
+	@Test
+	public void testGetTimeOrderedCheckGreatestTimestamp() {
+
+		// Check if the greatest 60 bit timestamp corresponds to the date
+		long timestamp0 = 0x0fffffffffffffffL;
+		Instant instant0 = Instant.parse("5236-03-31T21:21:00.684697500Z");
+		assertEquals(UuidTime.toInstant(timestamp0), instant0);
+
+		// Test the extraction of the maximum 60 bit timestamp
+		long timestamp1 = 0x0fffffffffffffffL;
+		TimeOrderedUuidCreator creator1 = UuidCreator.getTimeOrderedCreator()
+				.withTimestampStrategy(new FixedTimestampStretegy(timestamp1));
+		UUID uuid1 = creator1.create();
+		long timestamp2 = UuidUtil.extractTimestamp(uuid1);
+		assertEquals(timestamp1, timestamp2);
+
+		// Test the extraction of the maximum date and time
+		TimeOrderedUuidCreator creator2 = UuidCreator.getTimeOrderedCreator()
+				.withTimestampStrategy(new FixedTimestampStretegy(timestamp0));
+		UUID uuid2 = creator2.create();
+		Instant instant2 = UuidUtil.extractInstant(uuid2);
+		assertEquals(instant0, instant2);
+	}
 
 	@Test
-	public void testGetTimeOrderedParallelGeneratorsShouldCreateUniqueUuids() throws InterruptedException {
+	public void testGetTimeOrderedInParallel() throws InterruptedException {
 
 		Thread[] threads = new Thread[THREAD_TOTAL];
 		TestThread.clearHashSet();
@@ -208,5 +223,60 @@ public class TimeOrderedUuidCreatorTest extends AbstractUuidCreatorTest {
 		// Check if the quantity of unique UUIDs is correct
 		assertEquals(DUPLICATE_UUID_MSG, (DEFAULT_LOOP_MAX * THREAD_TOTAL), TestThread.hashSet.size());
 	}
+	
+	@Test
+	public void testGetTimeOrderedWithOptionalArguments() {
+		
+		Random random = new Random();
+		
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
+			// Get 46 random bits to generate a date from the year 1970 to 2193.
+			// (2^46 / 10000 / 60 / 60 / 24 / 365.25 + 1970 A.D. = ~2193 A.D.)
+			final Instant instant = Instant.ofEpochMilli(random.nextLong() >>> 24);
+
+			// Get 14 random bits random to generate the clock sequence
+			final int clockseq = random.nextInt() & 0x000003ff;
+
+			// Get 48 random bits for the node identifier, and set the multicast bit to ONE
+			final long nodeid = random.nextLong() & 0x0000ffffffffffffL | 0x0000010000000000L;
+
+			// Create a time-based UUID with those random values
+			UUID uuid = UuidCreator.getTimeOrdered(instant, clockseq, nodeid);
+
+			// Check if it is valid
+			assertTrue(UuidUtil.isRfc4122(uuid));
+
+			// Check if the embedded values are correct.
+			assertEquals("The timestamp is incorrect.", instant, UuidUtil.extractInstant(uuid));
+			assertEquals("The node identifier is incorrect", nodeid, UuidUtil.extractNodeIdentifier(uuid));
+			assertEquals("The clock sequence is incorrect", clockseq, UuidUtil.extractClockSequence(uuid));
+
+			// Repeat the same tests to time-based UUIDs with hardware address, ignoring the
+			// node identifier
+
+			// Create a time-based UUID with those random values
+			uuid = UuidCreator.getTimeOrderedWithMac(instant, clockseq);
+
+			// Check if it is valid
+			assertTrue(UuidUtil.isRfc4122(uuid));
+
+			// Check if the embedded values are correct.
+			assertEquals("The timestamp is incorrect.", instant, UuidUtil.extractInstant(uuid));
+			assertEquals("The clock sequence is incorrect", clockseq, UuidUtil.extractClockSequence(uuid));
+
+			// Repeat the same tests to time-based UUIDs with system data hash, ignoring the
+			// node identifier
+
+			// Create a time-based UUID with those random values
+			uuid = UuidCreator.getTimeOrderedWithHash(instant, clockseq);
+
+			// Check if it is valid
+			assertTrue(UuidUtil.isRfc4122(uuid));
+
+			// Check if the embedded values are correct.
+			assertEquals("The timestamp is incorrect.", instant, UuidUtil.extractInstant(uuid));
+			assertEquals("The clock sequence is incorrect", clockseq, UuidUtil.extractClockSequence(uuid));
+		}
+	}
 }

@@ -5,34 +5,52 @@ import org.junit.Test;
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.creator.AbstractUuidCreatorTest;
 import com.github.f4b6a3.uuid.creator.nonstandard.SuffixCombCreator;
+import com.github.f4b6a3.uuid.strategy.RandomStrategy;
+import com.github.f4b6a3.uuid.strategy.random.OtherRandomStrategy;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.security.SecureRandom;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Random;
 import java.util.UUID;
 
 public class SuffixCombCreatorTest extends AbstractUuidCreatorTest {
 
 	@Test
-	public void testCompGuid() {
+	public void testGetSuffixComb() {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		long startTime = System.currentTimeMillis();
+		SuffixCombCreator creator = UuidCreator.getSuffixCombCreator();
 
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			list[i] = creator.create();
+		}
+
+		checkNotNull(list);
+		checkOrdering(list);
+		checkUniqueness(list);
+	}
+	
+	@Test
+	public void testGetSuffixCombCheckTime() {
+
+		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+		
+		long startTime = System.currentTimeMillis() & 0x0000ffffffffffffL;
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = UuidCreator.getSuffixComb();
 		}
+		long endTime = System.currentTimeMillis() & 0x0000ffffffffffffL;
 
-		long endTime = System.currentTimeMillis();
-
+		checkNotNull(list);
+		checkOrdering(list);
 		checkUniqueness(list);
 
 		long previous = 0;
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			long creationTime = list[i].getLeastSignificantBits() & 0x0000ffffffffffffL;
+			long creationTime = extractSuffix(list[i]);
 			assertTrue("Comb Guid creation time before start time", startTime <= creationTime);
 			assertTrue("Comb Guid creation time after end time", creationTime <= endTime);
 			assertTrue("Comb Guid sequence is not sorted " + previous + " " + creationTime, previous <= creationTime);
@@ -41,21 +59,7 @@ public class SuffixCombCreatorTest extends AbstractUuidCreatorTest {
 	}
 
 	@Test
-	public void testCombGuid() {
-
-		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		SuffixCombCreator creator = UuidCreator.getSuffixCombCreator();
-
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = creator.create();
-			assertNotNull("UUID is null", list[i]);
-		}
-
-		checkUniqueness(list);
-	}
-
-	@Test
-	public void testCombGuidWithCustomRandomGenerator() {
+	public void testGetSuffixCombWithRandomGenerator() {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
 		Random random = new Random();
@@ -64,29 +68,32 @@ public class SuffixCombCreatorTest extends AbstractUuidCreatorTest {
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = creator.create();
-			assertNotNull("UUID is null", list[i]);
 		}
 
+		checkNotNull(list);
+		checkOrdering(list);
 		checkUniqueness(list);
 	}
 
 	@Test
-	public void testCombGuidWithCustomRandomGeneratorSecure() {
+	public void testGetSuffixCombWithRandomStrategy() {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		Random random = new SecureRandom();
-		SuffixCombCreator creator = UuidCreator.getSuffixCombCreator().withRandomGenerator(random);
+		Random random = new Random();
+		RandomStrategy strategy = new OtherRandomStrategy(random);
+		SuffixCombCreator creator = UuidCreator.getSuffixCombCreator().withRandomStrategy(strategy);
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = creator.create();
-			assertNotNull("UUID is null", list[i]);
 		}
 
+		checkNotNull(list);
+		checkOrdering(list);
 		checkUniqueness(list);
 	}
 	
 	@Test
-	public void testGetSuffixCombParallelGeneratorsShouldCreateUniqueUuids() throws InterruptedException {
+	public void testGetSuffixCombInParallel() throws InterruptedException {
 
 		Thread[] threads = new Thread[THREAD_TOTAL];
 		TestThread.clearHashSet();
@@ -104,5 +111,21 @@ public class SuffixCombCreatorTest extends AbstractUuidCreatorTest {
 
 		// Check if the quantity of unique UUIDs is correct
 		assertEquals(DUPLICATE_UUID_MSG, TestThread.hashSet.size(), (DEFAULT_LOOP_MAX * THREAD_TOTAL));
+	}
+	
+	@Override
+	protected void checkOrdering(UUID[] list) {
+		UUID[] other = Arrays.copyOf(list, list.length);
+		Arrays.sort(other, Comparator.comparing(x -> extractSuffix(x)));
+
+		for (int i = 0; i < list.length; i++) {
+			long x = extractSuffix(list[i]);
+			long y = extractSuffix(other[i]);
+			assertEquals("The UUID list is not ordered", x, y);
+		}
+	}
+	
+	private long extractSuffix(UUID uuid) {
+		return uuid.getLeastSignificantBits() & 0x0000ffffffffffffL;
 	}
 }

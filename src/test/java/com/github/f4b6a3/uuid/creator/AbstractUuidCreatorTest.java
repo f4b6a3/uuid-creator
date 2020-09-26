@@ -16,8 +16,6 @@ public abstract class AbstractUuidCreatorTest {
 	// The timestamp counter starts with a random value between 0 and 255
 	protected static final int DEFAULT_LOOP_MAX = 9744; // 10_000 - 256
 
-	protected static final String RFC4122_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-6][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
-
 	protected static final String DUPLICATE_UUID_MSG = "A duplicate UUID was created";
 
 	protected static final String GITHUB_URL = "www.github.com";
@@ -32,19 +30,15 @@ public abstract class AbstractUuidCreatorTest {
 		return processors;
 	}
 
-	protected void checkIfStringIsValid(UUID uuid) {
-		assertTrue(uuid.toString().matches(AbstractUuidCreatorTest.RFC4122_PATTERN));
-	}
-
-	protected void checkNullOrInvalid(UUID[] list) {
+	protected void checkNotNull(UUID[] list) {
 		for (UUID uuid : list) {
 			assertNotNull("UUID is null", uuid);
-			assertTrue("UUID is not RFC-4122 variant", UuidUtil.isRfc4122(uuid));
 		}
 	}
 
 	protected void checkVersion(UUID[] list, int version) {
 		for (UUID uuid : list) {
+			assertTrue("UUID is not RFC-4122 variant", UuidUtil.isRfc4122(uuid));
 			assertEquals(String.format("UUID is not version %s", version), uuid.version(), version);
 		}
 	}
@@ -93,7 +87,7 @@ public abstract class AbstractUuidCreatorTest {
 		assertEquals("There are duplicated UUIDs", set.size(), list.length);
 	}
 
-	protected void testCreateAbstractTimeBasedUuid(AbstractTimeBasedUuidCreator creator, boolean multicast) {
+	protected void testGetAbstractTimeBased(AbstractTimeBasedUuidCreator creator, boolean multicast) {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
 
@@ -105,7 +99,7 @@ public abstract class AbstractUuidCreatorTest {
 
 		long endTime = System.currentTimeMillis();
 
-		checkNullOrInvalid(list);
+		checkNotNull(list);
 		checkVersion(list, creator.getVersion());
 		checkCreationTime(list, startTime, endTime);
 		checkNodeIdentifier(list, multicast);

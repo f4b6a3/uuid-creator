@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>2.7.9</version>
+  <version>2.7.10</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -73,7 +73,7 @@ The timestamp bytes in this version are __rearranged__ in a special layout, unli
 
 The node identifier can be a MAC address, a hash of system information, a random number or a user defined number.
 
-If you need to define the node identifiers for your machines, see the section [Node identifier](#node-identifier) to know how to use the environment variable `UUIDCREATOR_NODE` and the system property `uuidcreator.node`. If node of these variable or property are found, a random number is used as default.
+If you need to define the node identifiers for your machines, see the section [Node identifier](#node-identifier) to know how to use the environment variable `UUIDCREATOR_NODE` and the system property `uuidcreator.node`. If none of these variable or property are found, a random number is used as default.
 
 ```java
 // Time-based with a random or user defined node identifier
