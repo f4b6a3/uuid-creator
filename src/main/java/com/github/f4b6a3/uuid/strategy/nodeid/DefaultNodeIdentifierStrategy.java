@@ -24,18 +24,10 @@
 
 package com.github.f4b6a3.uuid.strategy.nodeid;
 
-import java.security.SecureRandom;
-
 import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
-import com.github.f4b6a3.uuid.util.UuidSettings;
 
 /**
- * Strategy that always provides the same node identifier.
- * 
- * By default it provides a random node identifier.
- * 
- * A preferred node identifier may be passed by system property or environment
- * variable. The default node identifier is replaced with the preferred one.
+ * Strategy that provides a random node identifier.
  * 
  * It uses {@link SecureRandom} by default to generate 'cryptographic quality
  * random number'. The first generated number is returned for all calls.
@@ -66,31 +58,10 @@ public final class DefaultNodeIdentifierStrategy implements NodeIdentifierStrate
 	private final long nodeIdentifier;
 
 	/**
-	 * This constructor works in two steps:
-	 * 
-	 * 1. Check if there's a preferred node identifier set in a system property or
-	 * environment variable;
-	 * 
-	 * - System property: `uuidcreator.node`
-	 * 
-	 * - Environment variable: `UUIDCREATOR_NODE`
-	 * 
-	 * 2. If no preferred node identifier exists, use a random node identifier.
-	 * 
+	 * This constructor sets a random node identifier to the new strategy.
 	 */
 	public DefaultNodeIdentifierStrategy() {
-
-		Long nodeid = UuidSettings.getNodeIdentifier();
-
-		if (nodeid == null) {
-			nodeid = UuidSettings.getNodeIdentifierDeprecated();
-		}
-
-		if (nodeid == null) {
-			nodeid = NodeIdentifierStrategy.getRandomNodeIdentifier();
-		}
-
-		this.nodeIdentifier = nodeid;
+		this.nodeIdentifier = NodeIdentifierStrategy.getRandomNodeIdentifier();
 	}
 
 	/**

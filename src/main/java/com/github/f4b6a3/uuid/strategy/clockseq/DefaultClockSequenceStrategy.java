@@ -73,7 +73,7 @@ public final class DefaultClockSequenceStrategy implements ClockSequenceStrategy
 	protected static final int SEQUENCE_MIN = 0x00000000;
 	protected static final int SEQUENCE_MAX = 0x00003fff; // 16384
 
-	public static final ClockSequenceController CONTROLLER = new ClockSequenceController();
+	protected static final ClockSequenceController CONTROLLER = new ClockSequenceController();
 
 	public DefaultClockSequenceStrategy() {
 		final int initial = CONTROLLER.random();

@@ -12,6 +12,7 @@ import com.github.f4b6a3.uuid.util.UuidUtilTest;
 import com.github.f4b6a3.uuid.util.UuidValidatorTest;
 import com.github.f4b6a3.uuid.util.UuidConverterTest;
 import com.github.f4b6a3.uuid.util.ByteUtilTest;
+import com.github.f4b6a3.uuid.creator.AbstractTimeBasedUuidCreatorTest;
 import com.github.f4b6a3.uuid.creator.nonstandard.PrefixCombCreatorTest;
 import com.github.f4b6a3.uuid.creator.nonstandard.SuffixCombCreatorTest;
 import com.github.f4b6a3.uuid.creator.nonstandard.ShortPrefixCombCreatorTest;
@@ -41,6 +42,7 @@ import com.github.f4b6a3.uuid.creator.rfc4122.TimeOrderedUuidCreatorTest;
    RandomBasedUuidCreatorTest.class,
    NameBasedMd5UuidCreatorTest.class,
    NameBasedSha1UuidCreatorTest.class,
+   AbstractTimeBasedUuidCreatorTest.class,
    TimeBasedUuidCreatorTest.class,
    TimeOrderedUuidCreatorTest.class,
    ByteUtilTest.class,

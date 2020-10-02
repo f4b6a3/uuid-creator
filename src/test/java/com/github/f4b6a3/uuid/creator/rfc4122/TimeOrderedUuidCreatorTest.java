@@ -136,43 +136,6 @@ public class TimeOrderedUuidCreatorTest extends AbstractUuidCreatorTest {
 			old = msb;
 		}
 	}
-
-	@Test
-	public void testGetTimeOrderedCheckClockSequence() {
-
-		int max = 0x3fff + 1; // 16,384
-		Instant instant = Instant.now();
-		HashSet<UUID> set = new HashSet<>();
-
-		// Reset the static ClockSequenceController
-		// It could affect this test case
-		DefaultClockSequenceStrategy.CONTROLLER.clearPool();
-
-		// Instantiate a factory with a fixed timestamp, to simulate a request
-		// rate greater than 16,384 per 100-nanosecond interval.
-		TimeOrderedUuidCreator creator = UuidCreator.getTimeOrderedCreator()
-				.withTimestampStrategy(new FixedTimestampStretegy(instant));
-
-		int firstClockSeq = 0;
-		int lastClockSeq = 0;
-
-		// Try to create 16,384 unique UUIDs
-		for (int i = 0; i < max; i++) {
-			UUID uuid = creator.create();
-			if (i == 0) {
-				firstClockSeq = UuidUtil.extractClockSequence(uuid);
-			} else if (i == max - 1) {
-				lastClockSeq = UuidUtil.extractClockSequence(uuid);
-			}
-			// Fail if the insertion into the hash set returns false, indicating
-			// that there's a duplicate UUID.
-			assertTrue(DUPLICATE_UUID_MSG, set.add(uuid));
-		}
-
-		assertEquals(DUPLICATE_UUID_MSG, set.size(), max);
-		assertEquals("The last clock sequence should be equal to the first clock sequence minus 1",
-				(lastClockSeq % max), ((firstClockSeq % max) - 1));
-	}
 	
 	@Test
 	public void testGetTimeOrderedCheckGreatestTimestamp() {

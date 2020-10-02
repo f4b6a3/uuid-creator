@@ -39,6 +39,7 @@ import com.github.f4b6a3.uuid.strategy.nodeid.FixedNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.HashNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.MacNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.timestamp.DefaultTimestampStrategy;
+import com.github.f4b6a3.uuid.util.UuidSettings;
 import com.github.f4b6a3.uuid.util.UuidTime;
 
 public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator implements NoArgumentsUuidCreator {
@@ -46,12 +47,15 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	protected TimestampStrategy timestampStrategy;
 	protected ClockSequenceStrategy clockSequenceStrategy;
 	protected NodeIdentifierStrategy nodeIdentifierStrategy;
+	
+	private static final String NODE_MAC = "mac";
+	private static final String NODE_HASH = "hash";
 
 	protected AbstractTimeBasedUuidCreator(UuidVersion version) {
 		super(version);
 		this.timestampStrategy = new DefaultTimestampStrategy();
-		this.nodeIdentifierStrategy = new DefaultNodeIdentifierStrategy();
 		this.clockSequenceStrategy = new DefaultClockSequenceStrategy();
+		this.nodeIdentifierStrategy = selectNodeIdentifierStrategy();
 	}
 
 	/**
@@ -73,6 +77,28 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 *   3653 + 1582 = 5235
 	 * </pre>
 	 * 
+	 * The node identifier can be:
+	 * 
+	 * - The host MAC address;
+	 * 
+	 * - The hash of system data;
+	 * 
+	 * - A user defined number;
+	 * 
+	 * - A random number.
+	 * 
+	 * The node identifier can be controlled by defining a system property
+	 * 'uuidcreator.node' or an environment variable 'UUIDCREATOR_NODE'. Both
+	 * property and variable accept one of three options:
+	 * 
+	 * - The string "mac" for using the MAC address;
+	 * 
+	 * - The string "hash" for using the system data hash;
+	 * 
+	 * - The string representation of a number between 0 and 2^48-1.
+	 * 
+	 * If no property or variable is defined, the node identifier is randomly
+	 * chosen.
 	 * 
 	 * ### RFC-4122 - 4.1.4. Timestamp
 	 * 
@@ -419,5 +445,45 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 				| (nodeIdentifier & 0x0000ffffffffffffL)) //
 				& 0x3fffffffffffffffL // clear variant bits
 				| 0x8000000000000000L); // apply variant bits
+	}
+
+	/**
+	 * Select the node identifier strategy.
+	 * 
+	 * This method reads the system property 'uuidcreator.node' and the environment
+	 * variable 'UUIDCREATOR_NODE' to decide what node identifier strategy must be
+	 * used.
+	 * 
+	 * 1. If it finds the string "mac", the generator will use the MAC address.
+	 * 
+	 * 2. If it finds the string "hash", the generator will use the system data
+	 * hash.
+	 * 
+	 * 3. If it finds the string representation of a number in octal, hexadecimal or
+	 * decimal format, the generator will use the number represented.
+	 * 
+	 * 4. Else, a random number will be used by the generator.
+	 */
+	protected static NodeIdentifierStrategy selectNodeIdentifierStrategy() {
+
+		String string = UuidSettings.getProperty(UuidSettings.PROPERTY_NODE);
+
+		if (NODE_MAC.equalsIgnoreCase(string)) {
+			return new MacNodeIdentifierStrategy();
+		}
+
+		if (NODE_HASH.equalsIgnoreCase(string)) {
+			return new HashNodeIdentifierStrategy();
+		}
+
+		Long number = UuidSettings.getNodeIdentifier() != null //
+				? UuidSettings.getNodeIdentifier() //
+				: UuidSettings.getNodeIdentifierDeprecated();
+
+		if (number != null) {
+			return new FixedNodeIdentifierStrategy(number);
+		}
+
+		return new DefaultNodeIdentifierStrategy();
 	}
 }

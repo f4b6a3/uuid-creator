@@ -39,9 +39,9 @@ public final class UuidSettings {
 
 	protected static final String PROPERTY_PREFIX = "uuidcreator";
 
-	protected static final String PROPERTY_NODE = "node";
+	public static final String PROPERTY_NODE = "node";
 	@Deprecated
-	protected static final String PROPERTY_NODEID = "nodeid";
+	public static final String PROPERTY_NODEID = "nodeid";
 
 	protected UuidSettings() {
 	}
@@ -89,7 +89,7 @@ public final class UuidSettings {
 		setProperty(PROPERTY_NODEID, value);
 	}
 
-	protected static String getProperty(String name) {
+	public static String getProperty(String name) {
 
 		String fullName = getPropertyName(name);
 		String value = System.getProperty(fullName);
@@ -106,11 +106,11 @@ public final class UuidSettings {
 		return null;
 	}
 
-	protected static void setProperty(String key, String value) {
+	public static void setProperty(String key, String value) {
 		System.setProperty(getPropertyName(key), value);
 	}
 
-	protected static void clearProperty(String key) {
+	public static void clearProperty(String key) {
 		System.clearProperty(getPropertyName(key));
 	}
 
