@@ -55,38 +55,67 @@ public final class Fingerprint {
 	 * 
 	 * It returns the last 8 bytes of the resulting hash as long value.
 	 * 
+	 * This method uses the return of {@link Fingerprint#getHashBytes()}.
+	 * 
 	 * Read: https://en.wikipedia.org/wiki/Device_fingerprint
 	 * 
 	 * @return a fingerprint as long value
 	 */
 	public static long getFingerprint() {
-		String hash = getSystemDataHash();
-		return ByteUtil.toNumber(hash);
+		final byte[] hash = getHashBytes();
+		return ByteUtil.toNumber(hash, hash.length - 8, hash.length);
 	}
 
 	/**
-	 * Returns a SHA-256 hash string generated from all the system data: OS + JVM +
-	 * network details + system resources + locale + timezone.
+	 * Returns a hexadecimal representation of the SHA-256 hash string generated
+	 * from all the system data: OS + JVM + network details + system resources +
+	 * locale + timezone.
+	 * 
+	 * This method uses the return of {@link Fingerprint#getHashBytes()}.
 	 * 
 	 * @return a string
 	 */
-	public static String getSystemDataHash() {
+	public static String getHashString() {
+		final byte[] hash = getHashBytes();
+		return ByteUtil.toHexadecimal(hash);
+	}
+
+	/**
+	 * Returns a SHA-256 hash byte array generated from all the system data: OS +
+	 * JVM + network details + system resources + locale + timezone.
+	 * 
+	 * This method uses the return of {@link Fingerprint#getSystemData()}.
+	 * 
+	 * @return a byte array
+	 */
+	public static byte[] getHashBytes() {
 
 		if (messageDigest == null) {
 			messageDigest = getMessageDigest();
 		}
 
+		final String string = getSystemData();
+		return messageDigest.digest(string.getBytes());
+	}
+
+	/**
+	 * Returns a string of all the system data: OS + JVM + network details + system
+	 * resources + locale + timezone.
+	 * 
+	 * The returning string is a list of system properties separated by spaces.
+	 * 
+	 * It's return is used by {@link Fingerprint#getHashBytes()} to calculate the
+	 * SHA-256 hash.
+	 * 
+	 * @return a string
+	 */
+	public static String getSystemData() {
 		String os = getOperatingSystem();
 		String jvm = getJavaVirtualMachine();
 		String net = getNetwork();
 		String loc = getLocalization();
 		String res = getResources();
-		String string = String.join(" ", os, jvm, net, loc, res);
-
-		byte[] bytes = string.getBytes();
-		byte[] hash = messageDigest.digest(bytes);
-
-		return ByteUtil.toHexadecimal(hash);
+		return String.join(" ", os, jvm, net, loc, res);
 	}
 
 	/**

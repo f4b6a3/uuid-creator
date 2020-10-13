@@ -162,6 +162,8 @@ The parameter `name` can be any string or any byte array.
 
 According to the RFC-4122, "the concept of name and name space should be broadly construed, and not limited to textual names".
 
+The SHA-1 hash algorithm is preferred over MD5.
+
 ```java
 // Name-based MD5
 String name = "https://github.com/";
@@ -224,6 +226,8 @@ The parameter `namespace` is optional.
 The parameter `name` can be any string or any byte array.
 
 According to the RFC-4122, "the concept of name and name space should be broadly construed, and not limited to textual names".
+
+The SHA-1 hash algorithm is preferred over MD5.
 
 ```java
 // Name-based SHA-1
@@ -319,7 +323,7 @@ UUID uuid = UuidCreator.getTimeOrdered(null, myClockSeq, null);
 
 ### Prefix COMB (non-standard)
 
-The Prefix COMB<sup>[7]</sup> is a modified random-based UUID that replaces the FIRST 6 bytes of the MOST significant bits.
+The Prefix COMB<sup>[7]</sup> is a modified random-based UUID that replaces the FIRST 6 bytes of the UUID with a prefix.
 
 The PREFIX is the creation millisecond (Unix epoch).
 
@@ -356,7 +360,7 @@ Sequence of Prefix COMBs:
 
 ### Suffix COMB (non-standard)
 
-The Suffix COMB<sup>[7]</sup> is a modified random-based UUID that replaces the LAST 6 bytes of the LEAST significant bits.
+The Suffix COMB<sup>[7]</sup> is a modified random-based UUID that replaces the LAST 6 bytes of the UUID with a suffix.
 
 The SUFFIX is the creation millisecond (Unix epoch).
 
@@ -395,7 +399,7 @@ adb7f7eb-760f-427d-ba6e-01720b5cbf0d
 
 ### Short Prefix COMB (non-standard)
 
-The Short Prefix COMB<sup>[10]</sup> is a modified random-based UUID that replaces 2 bytes of the MOST significant bits.
+The Short Prefix COMB<sup>[10]</sup> is a modified random-based UUID that replaces the FIRST 2 bytes of the UUID with a prefix.
 
 The PREFIX is the creation minute (Unix epoch). It wraps around every 45 days (2^16/60/24 = \~45).
 
@@ -424,13 +428,13 @@ Sequence of Short Prefix COMBs:
 2fe8da35-ce9d-4d4a-90e5-c2a4c89f18c7
 2fe8...
 
-|---|------------------------------|
+|--|-------------------------------|
 prefix         randomness
 ```
 
 ### Short Suffix COMB (non-standard)
 
-The Short Suffix COMB GUID<sup>[10]</sup> is a modified random-based UUID that replaces 2 bytes of the LEAST significant bits.
+The Short Suffix COMB GUID<sup>[10]</sup> is a modified random-based UUID that replaces 2 bytes near to the end of the UUID with a suffix.
 
 The SUFFIX is the creation minute (Unix epoch). It wraps around every 45 days (2^16/60/24 = \~45).
 
@@ -461,14 +465,14 @@ ad0a704a-0d03-48b5-a7eb-2fe8e01165d7
 53ab5fd3-31ee-4cb9-8779-2fe8a887b3be
                      ...2fe8...
 
-|----------------------|---|-------|
+|-----------------------|--|-------|
        randomness      suffix
 ```
 
 Implementation
 ------------------------------------------------------
 
-### Format
+### Canonical format
 
 The canonical format is a hexadecimal string that contains 5 groups separated by dashes.
 
@@ -488,12 +492,12 @@ v: version number
 m: variant number (sharing bits with the clock-sequence)
 ```
 
-### Representation
+### Java implementation
 
-The `java.util.UUID`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/util/UUID.html) class represents a UUID with two `long` fields, called most significant bits (MSB) and least significant bits (LSB).
+The `java.util.UUID`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/util/UUID.html) class implements a UUID with two `long` fields, called most significant bits (MSB) and least significant bits (LSB).
 
 ```
-Representation in java.util.UUID
+Implementation in java.util.UUID
 
  00000000-0000-v000-m000-000000000000
 |msb---------------|lsb--------------|
@@ -505,9 +509,9 @@ v: version number
 m: variant number (sharing bits with clock-sequence)
 ```
 
-###  Time-based
+###  Time-based structure
 
-The Time-based UUID has three main parts: timestamp, clock-sequence and node identifier.
+The Time-based UUID has three parts: timestamp, clock-sequence and node identifier.
 
 ```
 Time-based UUID structure
@@ -522,7 +526,7 @@ Time-based UUID structure
 
 #### Timestamp
 
-The timestamp is a value that represents date and time. It has 4 subparts: low timestamp, middle timestamp, high timestamp and version number.
+The timestamp is a value that represents date and time. It has 3 subparts: low timestamp, middle timestamp, high timestamp.
 
 ```
 Standard timestamp arrangement
@@ -660,7 +664,7 @@ Time-ordered timestamp arrangement
 
 The RFC-4122 splits the timestamp bits into three parts: high, middle, and low. Then it reverses the order of these three parts to create a time-based UUID. The reason for this layout is not documented in the RFC-4122.
 
-In the time-ordered, the timestamp bits are kept in the original layout. See the example below.
+In the time-ordered, the timestamp bits are kept in the original layout. See the comparison below.
 
 Instant:
 
@@ -680,22 +684,22 @@ Timestamp split into high, middle and low bits:
  _1e9 dd61 ce117e90
  _aaa bbbb cccccccc
 
-a: high bits
-b: middle bits
-c: low bit
-_: placeholder for version bits
+a: time high bits
+b: time middle bits
+c: time low bit
+_: version
 ```
 
 Timestamp in time-based layout (version 1):
 
 ```
  ce117e90-dd61-11e9-8080-39d701ba2e7c
- cccccccc-bbbb-vaaa-dddd-eeeeeeeeeeee
+ cccccccc-bbbb-_aaa-dddd-eeeeeeeeeeee
 
-c: low bits
-b: middle bits
-a: high bits
-v: version
+c: time low bits
+b: time middle bits
+a: time high bits
+_: version
 d: clock sequence bits
 e: node id bits
 ```
@@ -703,13 +707,13 @@ e: node id bits
 Timestamp in time-ordered layout (version 6):
 
 ```
- 1e9dd61c-e117-0e90-8080-39d701ba2e7c
- aaabbbbc-cccc-vccc-dddd-eeeeeeeeeeee
+ 1e9dd61c-e117-6e90-8080-39d701ba2e7c
+ aaabbbbc-cccc-_ccc-dddd-eeeeeeeeeeee
 
-a: high bits
-b: middle bits
-c: low bits
-v: version
+a: time high bits
+b: time middle bits
+c: time low bits
+_: version
 d: clock sequence bits
 e: node id bits
 ```
@@ -732,9 +736,9 @@ There are two types of name-based UUIDs: version 3 (MD5) and version 5 (SHA-1).
 
 Two arguments are needed to generate a name-based UUID: a name space and a name.
 
-The name space is an optional UUID object.
+The name space is an optional `UUID` object.
 
-The name argument may be a string or a byte array.
+The name argument may be a `String` or a `byte` array.
 
 ### DCE Security
 

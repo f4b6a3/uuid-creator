@@ -84,6 +84,36 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	/**
 	 * Returns a name-based UUID.
 	 * 
+	 * The (optional) namespace to be used is set by
+	 * {@link AbstractNameBasedUuidCreator#withNamespace(UUID)}
+	 * 
+	 * See: {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
+	 * 
+	 * @param name a byte array of the name
+	 * @return a name-based UUID
+	 */
+	public UUID create(byte[] name) {
+		return create(this.namespace, name);
+	}
+
+	/**
+	 * Returns a name-based UUID.
+	 *
+	 * The (optional) namespace to be used is set by
+	 * {@link AbstractNameBasedUuidCreator#withNamespace(UUID)}
+	 * 
+	 * See: {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
+	 * 
+	 * @param name a name string
+	 * @return a name-based UUID
+	 */
+	public UUID create(String name) {
+		return create(this.namespace, name.getBytes(StandardCharsets.UTF_8));
+	}
+
+	/**
+	 * Returns a name-based UUID.
+	 * 
 	 * ### RFC-4122 - 4.3. Algorithm for Creating a Name-Based UUID
 	 * 
 	 * (1) Allocate a UUID to use as a "name space ID" for all UUIDs generated from
@@ -136,7 +166,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * 
 	 * See: {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
 	 * 
-	 * @param namespace a name space UUID
+	 * @param namespace a name space UUID (optional)
 	 * @param name      a name string
 	 * @return a name-based UUID
 	 */
@@ -147,11 +177,9 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	/**
 	 * Returns a name-based UUID.
 	 * 
-	 * See: {@link UuidNamespace}.
-	 * 
 	 * See: {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
 	 * 
-	 * @param namespace a name space UUID in string format
+	 * @param namespace a name space UUID in string format (optional)
 	 * @param name      a byte array of the name
 	 * @return a name-based UUID
 	 * @throws InvalidUuidException if the namespace is invalid
@@ -163,11 +191,9 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	/**
 	 * Returns a name-based UUID.
 	 * 
-	 * See: {@link UuidNamespace}.
-	 * 
 	 * See: {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
 	 * 
-	 * @param namespace a name space UUID in string format
+	 * @param namespace a name space UUID in string format (optional)
 	 * @param name      a name string
 	 * @return a name-based UUID
 	 * @throws InvalidUuidException if the namespace is invalid
@@ -175,7 +201,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	public UUID create(String namespace, String name) {
 		return create(UuidConverter.fromString(namespace), name.getBytes(StandardCharsets.UTF_8));
 	}
-	
+
 	/**
 	 * Returns a name-based UUID.
 	 * 
@@ -183,7 +209,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * 
 	 * See: {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
 	 * 
-	 * @param namespace a name space enumeration
+	 * @param namespace a name space enumeration (optional)
 	 * @param name      a byte array of the name
 	 * @return a name-based UUID
 	 */
@@ -198,7 +224,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * 
 	 * See: {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
 	 * 
-	 * @param namespace a name space enumeration
+	 * @param namespace a name space enumeration (optional)
 	 * @param name      a name string
 	 * @return a name-based UUID
 	 */
@@ -209,37 +235,9 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	/**
 	 * Returns a name-based UUID.
 	 * 
-	 * The namespace to be used set by
-	 * {@link AbstractNameBasedUuidCreator#withNamespace(UUID)}
-	 * 
 	 * See: {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
 	 * 
-	 * @param name a byte array of the name
-	 * @return a name-based UUID
-	 */
-	public UUID create(byte[] name) {
-		return create(this.namespace, name);
-	}
-
-	/**
-	 * Returns a name-based UUID.
-	 *
-	 * The namespace to be used set by
-	 * {@link AbstractNameBasedUuidCreator#withNamespace(UUID)}
-	 * 
-	 * See: {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
-	 * 
-	 * @param name a name string
-	 * @return a name-based UUID
-	 */
-	public UUID create(String name) {
-		return create(this.namespace, name.getBytes(StandardCharsets.UTF_8));
-	}
-	
-	/**
-	 * Returns a name-based UUID.
-	 * 
-	 * @param namespace a byte array of the name space
+	 * @param namespace a byte array of the name space (optional)
 	 * @param name      a byte array of the name
 	 * @return a name-based UUID
 	 */
@@ -263,21 +261,9 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 
 	/**
 	 * Sets a fixed name space to be used by default.
-	 * 
-	 * See: {@link UuidNamespace}.
-	 * 
-	 * @param namespace a namespace enumeration
-	 * @param <T>       the type parameter
-	 * @return {@link AbstractNameBasedUuidCreator}
-	 */
-	@SuppressWarnings("unchecked")
-	public synchronized <T extends AbstractNameBasedUuidCreator> T withNamespace(UuidNamespace namespace) {
-		this.namespace = UuidConverter.toBytes(namespace.getValue());
-		return (T) this;
-	}
-
-	/**
-	 * Sets a fixed name space to be used by default.
+	 *
+	 * The namespace provided will be used by the method
+	 * {@link AbstractNameBasedUuidCreator#create(String)}
 	 * 
 	 * @param namespace a namespace UUID
 	 * @param <T>       the type parameter
@@ -288,9 +274,12 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 		this.namespace = UuidConverter.toBytes(namespace);
 		return (T) this;
 	}
-	
+
 	/**
 	 * Sets a fixed name space to be used by default.
+	 * 
+	 * The namespace provided will be used by the method
+	 * {@link AbstractNameBasedUuidCreator#create(String)}
 	 * 
 	 * @param namespace a namespace UUID in string format
 	 * @param <T>       the type parameter
@@ -300,6 +289,24 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends AbstractNameBasedUuidCreator> T withNamespace(String namespace) {
 		this.namespace = UuidConverter.toBytes(UuidConverter.fromString(namespace));
+		return (T) this;
+	}
+
+	/**
+	 * Sets a fixed name space to be used by default.
+	 * 
+	 * See: {@link UuidNamespace}.
+	 * 
+	 * The namespace provided will be used by the method
+	 * {@link AbstractNameBasedUuidCreator#create(String)}
+	 * 
+	 * @param namespace a namespace enumeration
+	 * @param <T>       the type parameter
+	 * @return {@link AbstractNameBasedUuidCreator}
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized <T extends AbstractNameBasedUuidCreator> T withNamespace(UuidNamespace namespace) {
+		this.namespace = UuidConverter.toBytes(namespace.getValue());
 		return (T) this;
 	}
 }
