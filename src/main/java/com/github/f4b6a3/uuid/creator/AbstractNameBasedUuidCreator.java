@@ -246,7 +246,6 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 		final byte[] hash;
 
 		synchronized (md) {
-			md.reset();
 			if (namespace != null) {
 				md.update(namespace);
 			}

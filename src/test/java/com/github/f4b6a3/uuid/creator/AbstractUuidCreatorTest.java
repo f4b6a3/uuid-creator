@@ -1,11 +1,14 @@
 package com.github.f4b6a3.uuid.creator;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.util.UuidConverter;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 import static org.junit.Assert.*;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -123,10 +126,9 @@ public abstract class AbstractUuidCreatorTest {
 			hashSet = new HashSet<>();
 		}
 
-		
 		@Override
 		public void run() {
-			
+
 			UUID uuid;
 			for (int i = 0; i < loopLimit; i++) {
 				synchronized (hashSet) {
@@ -138,6 +140,61 @@ public abstract class AbstractUuidCreatorTest {
 					hashSet.add(uuid);
 				}
 			}
+		}
+	}
+
+	public static class NameBasedTestThread extends Thread {
+
+		public static Set<UUID> hashSet = new HashSet<>();
+		private AbstractNameBasedUuidCreator creator;
+		private int loopLimit;
+
+		public NameBasedTestThread(AbstractNameBasedUuidCreator creator, int loopLimit) {
+			this.creator = creator;
+			this.loopLimit = loopLimit;
+		}
+
+		// TODO: call it after run() ?
+		public static void clearHashSet() {
+			hashSet = new HashSet<>();
+		}
+
+		@Override
+		public void run() {
+			UUID namespace = UuidCreator.getRandomBased();
+			UUID uuid;
+			for (int i = 0; i < loopLimit; i++) {
+				synchronized (hashSet) {
+					String name = ("name" + i);
+					uuid = creator.create(namespace, name);
+					if (UuidUtil.isNameBasedMd5(uuid)) {
+						// Check if it's compatible with `UUID#nameUUIDFromBytes()`
+						byte[] bytes = getBytes(namespace, name);
+						UUID expected = UUID.nameUUIDFromBytes(bytes);
+						if (uuid.equals(expected)) {
+							hashSet.add(uuid);
+						}
+					} else {
+						hashSet.add(uuid);
+					}
+				}
+			}
+		}
+
+		/**
+		 * Method that prepares the input for UUID#nameUUIDFromBytes()
+		 * 
+		 * @param namespace a UUID
+		 * @param name      a string
+		 * @return a byte array
+		 */
+		private byte[] getBytes(UUID namespace, String name) {
+			byte[] ns = UuidConverter.toBytes(namespace);
+			byte[] nm = name.getBytes();
+			byte[] bytes = new byte[ns.length + nm.length];
+			System.arraycopy(ns, 0, bytes, 0, ns.length);
+			System.arraycopy(nm, 0, bytes, ns.length, nm.length);
+			return bytes;
 		}
 	}
 }

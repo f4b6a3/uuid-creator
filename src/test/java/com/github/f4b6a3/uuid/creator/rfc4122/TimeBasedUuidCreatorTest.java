@@ -8,7 +8,6 @@ import com.github.f4b6a3.uuid.creator.rfc4122.TimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.strategy.ClockSequenceStrategy;
 import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
-import com.github.f4b6a3.uuid.strategy.clockseq.DefaultClockSequenceStrategy;
 import com.github.f4b6a3.uuid.strategy.clockseq.FixedClockSequenceStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.FixedNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.timestamp.FixedTimestampStretegy;
@@ -20,7 +19,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.Random;
 import java.util.UUID;
 
@@ -37,7 +35,7 @@ public class TimeBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 		boolean multicast = false;
 		testGetAbstractTimeBased(UuidCreator.getTimeBasedCreator().withMacNodeIdentifier(), multicast);
 	}
-	
+
 	@Test
 	public void testCreateTimeBasedWithHash() {
 		boolean multicast = true;
@@ -50,8 +48,7 @@ public class TimeBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 		NodeIdentifierStrategy strategy = new FixedNodeIdentifierStrategy(System.nanoTime());
 		long nodeIdentifier1 = strategy.getNodeIdentifier();
 
-		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator()
-				.withNodeIdentifierStrategy(strategy);
+		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator().withNodeIdentifierStrategy(strategy);
 
 		UUID uuid = creator.create();
 		long nodeIdentifier2 = UuidUtil.extractNodeIdentifier(uuid);
@@ -65,8 +62,7 @@ public class TimeBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 		ClockSequenceStrategy strategy = new FixedClockSequenceStrategy((int) System.nanoTime());
 		long clockseq1 = strategy.getClockSequence(0);
 
-		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator()
-				.withClockSequenceStrategy(strategy);
+		TimeBasedUuidCreator creator = UuidCreator.getTimeBasedCreator().withClockSequenceStrategy(strategy);
 
 		UUID uuid = creator.create();
 		long clockseq2 = UuidUtil.extractClockSequence(uuid);
@@ -142,13 +138,12 @@ public class TimeBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 		// Check if the quantity of unique UUIDs is correct
 		assertEquals(DUPLICATE_UUID_MSG, (DEFAULT_LOOP_MAX * THREAD_TOTAL), TestThread.hashSet.size());
 	}
-	
 
 	@Test
 	public void testGetTimeBasedWithOptionalArguments() {
-		
+
 		Random random = new Random();
-		
+
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
 			// Get 46 random bits to generate a date from the year 1970 to 2193.

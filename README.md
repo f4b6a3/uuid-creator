@@ -76,7 +76,7 @@ The node identifier can be a MAC address, a hash of system information, a user d
 See the section [Node identifier](#node-identifier) to know how to use the environment variable `UUIDCREATOR_NODE` and the system property `uuidcreator.node`.
 
 ```java
-// Time-based with a random or user defined node identifier
+// Time-based with a random node identifier (default)
 UUID uuid = UuidCreator.getTimeBased();
 ```
 
@@ -262,7 +262,7 @@ The node identifier can be a MAC address, a hash of system information, a user d
 See the section [Node identifier](#node-identifier) to know how to use the environment variable `UUIDCREATOR_NODE` and the system property `uuidcreator.node`.
 
 ```java
-// Time-ordered with a random or user defined node identifier
+// Time-ordered with a random node identifier (default)
 UUID uuid = UuidCreator.getTimeOrdered();
 ```
 
@@ -596,7 +596,7 @@ The system data hash is calculated from a list of system properties: OS + JVM + 
 
 ##### System property and environment variable
 
-It's possible to manage the node identifier for each machine by defining the system property `uuidcreator.node` or the environment variable`UUIDCREATOR_NODE`. The system property has priority over the environment variable. If no property or variable is defined, the node identifier is randomly chosen.
+It's possible to manage the node identifier for each machine by defining the system property `uuidcreator.node` or the environment variable `UUIDCREATOR_NODE`. The system property has priority over the environment variable. If no property or variable is defined, the node identifier is randomly chosen.
 
 These options are accepted:
 
@@ -636,11 +636,16 @@ export UUIDCREATOR_NODE="hash"
 export UUIDCREATOR_NODE="0xC0DA0615BB23"
 ```
 
-As a suggestion, on Linux systems you can define an environment variable based on the SHA-256 hash of `/etc/machine-id` and `/etc/hostname`:
+These are more examples of how to define the environment variable based on hostname:
 
 ```bash
-# SHA-256 hash of `/etc/machine-id` and `/etc/hostname` (with multicast bit required by RFC-4122)
-export UUIDCREATOR_NODE=$(HASH=0x`cat /etc/machine-id /etc/hostname | sha256sum | cut -c-12`; printf "0x%x" $(($HASH | 0x010000000000)))
+# Append one of these examples to /etc/environment or ~/.profile
+
+# Use the first 12 chars of the hostname hash
+export UUIDCREATOR_NODE=0x`hostname | sha256sum | cut -c-12`
+
+# Use the first 12 chars of the hostname hash (with multicast bit required by RFC-4122)
+export UUIDCREATOR_NODE=$(printf "0x%x" $(( 0x`hostname | sha256sum | cut -c-12` | 0x010000000000 )))
 ```
 
 DEPRECATION WARNING: The old property `uuidcreator.nodeid` and the old variable `UUIDCREATOR_NODEID` are _deprecated_ because they only accept hexadecimal numbers (without 0x).

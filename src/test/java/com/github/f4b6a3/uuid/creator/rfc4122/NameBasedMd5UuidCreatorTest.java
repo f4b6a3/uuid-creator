@@ -315,6 +315,28 @@ public class NameBasedMd5UuidCreatorTest extends AbstractUuidCreatorTest {
 	}
 
 	@Test
+	public void testGetNameBasedMd5InParallel() throws InterruptedException {
+
+		Thread[] threads = new Thread[THREAD_TOTAL];
+		NameBasedTestThread.clearHashSet();
+
+		// Instantiate and start many threads
+		for (int i = 0; i < THREAD_TOTAL; i++) {
+			NameBasedMd5UuidCreator creator = UuidCreator.getNameBasedMd5Creator();
+			threads[i] = new NameBasedTestThread(creator, DEFAULT_LOOP_MAX);
+			threads[i].start();
+		}
+
+		// Wait all the threads to finish
+		for (Thread thread : threads) {
+			thread.join();
+		}
+
+		// Check if the quantity of unique UUIDs is correct
+		assertEquals(DUPLICATE_UUID_MSG, (DEFAULT_LOOP_MAX * THREAD_TOTAL), NameBasedTestThread.hashSet.size());
+	}
+
+	@Test
 	public void testGetNameBasedMd5CheckCompatibility() {
 
 		NameBasedMd5UuidCreator creator = UuidCreator.getNameBasedMd5Creator();
