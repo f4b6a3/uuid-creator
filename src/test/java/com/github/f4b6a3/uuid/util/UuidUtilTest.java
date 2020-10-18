@@ -12,7 +12,6 @@ import org.junit.Test;
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidLocalDomain;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
-import com.github.f4b6a3.uuid.exception.IllegalUuidException;
 import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
 import com.github.f4b6a3.uuid.strategy.timestamp.FixedTimestampStretegy;
 import com.github.f4b6a3.uuid.util.UuidTime;
@@ -24,7 +23,7 @@ public class UuidUtilTest {
 		UUID uuid = new UUID(0, 0);
 		assertTrue(isNil(uuid));
 	}
-	
+
 	@Test
 	public void testIsNameBasedMd5() {
 		UUID uuid = UUID.nameUUIDFromBytes("test".getBytes());
@@ -73,7 +72,7 @@ public class UuidUtilTest {
 		instant2 = extractInstant(uuid);
 		assertEquals(instant1, instant2);
 	}
-	
+
 	@Test
 	public void testExtractUnixMilliseconds() {
 		long milliseconds1 = Instant.now().toEpochMilli();
@@ -154,49 +153,49 @@ public class UuidUtilTest {
 		try {
 			extractInstant(uuid);
 			fail();
-		} catch (IllegalUuidException e) {
+		} catch (IllegalArgumentException e) {
 			// Success
 		}
 
 		try {
 			extractTimestamp(uuid);
 			fail();
-		} catch (IllegalUuidException e) {
+		} catch (IllegalArgumentException e) {
 			// Success
 		}
 
 		try {
 			extractNodeIdentifier(uuid);
 			fail();
-		} catch (IllegalUuidException e) {
+		} catch (IllegalArgumentException e) {
 			// Success
 		}
 
 		try {
 			extractInstant(uuid);
 			fail();
-		} catch (IllegalUuidException e) {
+		} catch (IllegalArgumentException e) {
 			// Success
 		}
 
 		try {
 			extractTimestamp(uuid);
 			fail();
-		} catch (IllegalUuidException e) {
+		} catch (IllegalArgumentException e) {
 			// Success
 		}
 
 		try {
 			extractLocalDomain(uuid);
 			fail();
-		} catch (IllegalUuidException e) {
+		} catch (IllegalArgumentException e) {
 			// Success
 		}
 
 		try {
 			extractLocalIdentifier(uuid);
 			fail();
-		} catch (IllegalUuidException e) {
+		} catch (IllegalArgumentException e) {
 			// Success
 		}
 	}

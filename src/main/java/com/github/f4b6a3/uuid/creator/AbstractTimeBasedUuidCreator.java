@@ -28,7 +28,6 @@ import java.time.Instant;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
-import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.strategy.ClockSequenceStrategy;
 import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
@@ -39,7 +38,7 @@ import com.github.f4b6a3.uuid.strategy.nodeid.FixedNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.HashNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.MacNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.timestamp.DefaultTimestampStrategy;
-import com.github.f4b6a3.uuid.util.UuidSettings;
+import com.github.f4b6a3.uuid.util.UuidCreatorSettings;
 import com.github.f4b6a3.uuid.util.UuidTime;
 
 public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator implements NoArgumentsUuidCreator {
@@ -47,7 +46,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	protected TimestampStrategy timestampStrategy;
 	protected ClockSequenceStrategy clockSequenceStrategy;
 	protected NodeIdentifierStrategy nodeIdentifierStrategy;
-	
+
 	private static final String NODE_MAC = "mac";
 	private static final String NODE_HASH = "hash";
 
@@ -65,17 +64,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * 
 	 * The timestamp has 100-nanoseconds resolution, starting from 1582-10-15. It
 	 * uses 60 bits from the most significant bits. The the time value rolls over
-	 * around AD 5235.
-	 * 
-	 * <pre>
-	 *   s = 10_000_000
-	 *   m = 60 * s
-	 *   h = 60 * m
-	 *   d = 24 * h
-	 *   y = 365.25 * d
-	 *   2^60 / y = ~3653
-	 *   3653 + 1582 = 5235
-	 * </pre>
+	 * around AD 5235 (1582 + 2^60 / 365.25 / 24 / 60 / 60 / 10000000).
 	 * 
 	 * The node identifier can be:
 	 * 
@@ -155,9 +144,6 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * values according to the steps in Section 4.2.2.
 	 * 
 	 * @return {@link UUID} a UUID value
-	 * 
-	 * @throws UuidCreatorException an overrun exception if more than 10 thousand
-	 *                              UUIDs are requested within the same millisecond
 	 */
 	public synchronized UUID create() {
 
@@ -206,9 +192,6 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
 	 * @param nodeid   an alternate node (0 to 2^48)
 	 * @return {@link UUID} a UUID value
-	 * 
-	 * @throws UuidCreatorException an overrun exception if more than 10 thousand
-	 *                              UUIDs are requested within the same millisecond
 	 */
 	public UUID create(final Instant instant, final Integer clockseq, final Long nodeid) {
 
@@ -334,7 +317,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 		this.nodeIdentifierStrategy = new MacNodeIdentifierStrategy();
 		return (T) this;
 	}
-	
+
 	/**
 	 * Replaces the default {@link NodeIdentifierStrategy} with the
 	 * {@link HashNodeIdentifierStrategy}.
@@ -466,7 +449,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 */
 	protected static NodeIdentifierStrategy selectNodeIdentifierStrategy() {
 
-		String string = UuidSettings.getProperty(UuidSettings.PROPERTY_NODE);
+		String string = UuidCreatorSettings.getProperty(UuidCreatorSettings.PROPERTY_NODE);
 
 		if (NODE_MAC.equalsIgnoreCase(string)) {
 			return new MacNodeIdentifierStrategy();
@@ -476,10 +459,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 			return new HashNodeIdentifierStrategy();
 		}
 
-		Long number = UuidSettings.getNodeIdentifier() != null //
-				? UuidSettings.getNodeIdentifier() //
-				: UuidSettings.getNodeIdentifierDeprecated();
-
+		Long number = UuidCreatorSettings.getNodeIdentifier();
 		if (number != null) {
 			return new FixedNodeIdentifierStrategy(number);
 		}

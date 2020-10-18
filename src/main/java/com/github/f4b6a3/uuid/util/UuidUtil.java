@@ -29,7 +29,6 @@ import java.util.UUID;
 
 import com.github.f4b6a3.uuid.enums.UuidVariant;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
-import com.github.f4b6a3.uuid.exception.IllegalUuidException;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
 /**
@@ -82,7 +81,7 @@ public final class UuidUtil {
 		lsb = (lsb & 0x3fffffffffffffffL) | 0x8000000000000000L; // apply variant
 		return new UUID(msb, lsb);
 	}
-	
+
 	/**
 	 * Checks whether the UUID is equal to the Nil UUID.
 	 * 
@@ -203,13 +202,13 @@ public final class UuidUtil {
 	 *
 	 * @param uuid a UUID
 	 * @return long the node identifier
-	 * @throws IllegalUuidException if the input is not a time-based, time-ordered
-	 *                              or DCE Security UUID.
+	 * @throws IllegalArgumentException if the input is not a time-based,
+	 *                                  time-ordered or DCE Security UUID.
 	 */
 	public static long extractNodeIdentifier(UUID uuid) {
 
 		if (!(UuidUtil.isTimeBased(uuid) || UuidUtil.isTimeOrdered(uuid) || UuidUtil.isDceSecurity(uuid))) {
-			throw new IllegalUuidException(String.format(MESSAGE_NOT_A_TIME_BASED_UUID, uuid.toString()));
+			throw new IllegalArgumentException(String.format(MESSAGE_NOT_A_TIME_BASED_UUID, uuid.toString()));
 		}
 
 		return uuid.getLeastSignificantBits() & 0x0000ffffffffffffL;
@@ -220,13 +219,13 @@ public final class UuidUtil {
 	 *
 	 * @param uuid a UUID
 	 * @return int the clock sequence
-	 * @throws IllegalUuidException if the input is not a time-based, time-ordered
-	 *                              or DCE Security UUID.
+	 * @throws IllegalArgumentException if the input is not a time-based,
+	 *                                  time-ordered or DCE Security UUID.
 	 */
 	public static int extractClockSequence(UUID uuid) {
 
 		if (!(UuidUtil.isTimeBased(uuid) || UuidUtil.isTimeOrdered(uuid)) || UuidUtil.isDceSecurity(uuid)) {
-			throw new IllegalUuidException(String.format(MESSAGE_NOT_A_TIME_BASED_UUID, uuid.toString()));
+			throw new IllegalArgumentException(String.format(MESSAGE_NOT_A_TIME_BASED_UUID, uuid.toString()));
 		}
 
 		if (UuidUtil.isDceSecurity(uuid)) {
@@ -241,8 +240,8 @@ public final class UuidUtil {
 	 *
 	 * @param uuid a UUID
 	 * @return {@link Instant}
-	 * @throws IllegalUuidException if the input is not a time-based, time-ordered
-	 *                              or DCE Security UUID.
+	 * @throws IllegalArgumentException if the input is not a time-based,
+	 *                                  time-ordered or DCE Security UUID.
 	 */
 	public static Instant extractInstant(UUID uuid) {
 		long timestamp = extractTimestamp(uuid);
@@ -258,8 +257,8 @@ public final class UuidUtil {
 	 * 
 	 * @param uuid a UUID
 	 * @return Unix milliseconds
-	 * @throws IllegalUuidException if the input is not a time-based, time-ordered
-	 *                              or DCE Security UUID.
+	 * @throws IllegalArgumentException if the input is not a time-based,
+	 *                                  time-ordered or DCE Security UUID.
 	 */
 	public static long extractUnixMilliseconds(UUID uuid) {
 		long timestamp = extractTimestamp(uuid);
@@ -274,8 +273,8 @@ public final class UuidUtil {
 	 *
 	 * @param uuid a UUID
 	 * @return long the timestamp
-	 * @throws IllegalUuidException if the input is not a time-based, time-ordered
-	 *                              or DCE Security UUID.
+	 * @throws IllegalArgumentException if the input is not a time-based,
+	 *                                  time-ordered or DCE Security UUID.
 	 */
 	public static long extractTimestamp(UUID uuid) {
 		if (UuidUtil.isTimeBased(uuid)) {
@@ -285,7 +284,7 @@ public final class UuidUtil {
 		} else if (UuidUtil.isDceSecurity(uuid)) {
 			return extractDceSecurityTimestamp(uuid.getMostSignificantBits());
 		} else {
-			throw new IllegalUuidException(String.format(MESSAGE_NOT_A_TIME_BASED_UUID, uuid.toString()));
+			throw new IllegalArgumentException(String.format(MESSAGE_NOT_A_TIME_BASED_UUID, uuid.toString()));
 		}
 	}
 
@@ -294,12 +293,12 @@ public final class UuidUtil {
 	 *
 	 * @param uuid a UUID
 	 * @return the local domain
-	 * @throws IllegalUuidException if the input is not a DCE Security UUID.
+	 * @throws IllegalArgumentException if the input is not a DCE Security UUID.
 	 */
 	public static byte extractLocalDomain(UUID uuid) {
 
 		if (!UuidUtil.isDceSecurity(uuid)) {
-			throw new IllegalUuidException(String.format(MESSAGE_NOT_A_DCE_SECURITY_UUID, uuid.toString()));
+			throw new IllegalArgumentException(String.format(MESSAGE_NOT_A_DCE_SECURITY_UUID, uuid.toString()));
 		}
 
 		return (byte) ((uuid.getLeastSignificantBits() & 0x00ff000000000000L) >>> 48);
@@ -310,12 +309,12 @@ public final class UuidUtil {
 	 *
 	 * @param uuid a UUID
 	 * @return the local identifier
-	 * @throws IllegalUuidException if the input is not a DCE Security UUID.
+	 * @throws IllegalArgumentException if the input is not a DCE Security UUID.
 	 */
 	public static int extractLocalIdentifier(UUID uuid) {
 
 		if (!UuidUtil.isDceSecurity(uuid)) {
-			throw new IllegalUuidException(String.format(MESSAGE_NOT_A_DCE_SECURITY_UUID, uuid.toString()));
+			throw new IllegalArgumentException(String.format(MESSAGE_NOT_A_DCE_SECURITY_UUID, uuid.toString()));
 		}
 
 		return (int) (uuid.getMostSignificantBits() >>> 32);
@@ -373,7 +372,7 @@ public final class UuidUtil {
 	private static long extractDceSecurityTimestamp(long msb) {
 		return extractTimeBasedTimestamp((msb & 0x00000000ffffffffL));
 	}
-	
+
 	protected static char[] removeHyphens(final char[] input) {
 
 		int count = 0;

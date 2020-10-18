@@ -35,15 +35,13 @@ package com.github.f4b6a3.uuid.util;
  * 
  * - UUIDCREATOR_NODE
  */
-public final class UuidSettings {
+public final class UuidCreatorSettings {
 
 	protected static final String PROPERTY_PREFIX = "uuidcreator";
 
 	public static final String PROPERTY_NODE = "node";
-	@Deprecated
-	public static final String PROPERTY_NODEID = "nodeid";
 
-	protected UuidSettings() {
+	protected UuidCreatorSettings() {
 	}
 
 	public static Long getNodeIdentifier() {
@@ -62,31 +60,6 @@ public final class UuidSettings {
 	public static void setNodeIdentifier(Long nodeid) {
 		String value = Long.toString(nodeid);
 		setProperty(PROPERTY_NODE, value);
-	}
-
-	@Deprecated
-	public static Long getNodeIdentifierDeprecated() {
-		String value = getProperty(PROPERTY_NODEID);
-
-		if (value == null || !value.matches("^(0x|0X)?[0-9A-Fa-f]+$")) {
-			return null;
-		}
-
-		if (!value.toLowerCase().startsWith("0x")) {
-			value = "0x" + value;
-		}
-
-		try {
-			return Long.decode(value);
-		} catch (NumberFormatException e) {
-			return null;
-		}
-	}
-
-	@Deprecated
-	public static void setNodeIdentifierDeprecated(Long nodeid) {
-		String value = Long.toHexString(nodeid);
-		setProperty(PROPERTY_NODEID, value);
 	}
 
 	public static String getProperty(String name) {

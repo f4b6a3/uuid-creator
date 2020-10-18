@@ -31,7 +31,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.github.f4b6a3.uuid.creator.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidLocalDomain;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
-import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 
 /**
  * 
@@ -170,9 +169,6 @@ public final class DceSecurityUuidCreator extends AbstractTimeBasedUuidCreator {
 	 * @return a DCE Security UUID
 	 */
 	public synchronized UUID create(UuidLocalDomain localDomain, int localIdentifier) {
-		if (localDomain == null) {
-			throw new UuidCreatorException("Null local domain");
-		}
 		return create(localDomain.getValue(), localIdentifier);
 	}
 

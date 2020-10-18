@@ -63,7 +63,7 @@ public final class UuidTime {
 	 * @return the current timestamp
 	 */
 	public static long getCurrentTimestamp() {
-		return toTimestamp(System.currentTimeMillis());
+		return (System.currentTimeMillis() - GREGORIAN_MILLISECONDS) * TIMESTAMP_RESOLUTION;
 	}
 
 	/**

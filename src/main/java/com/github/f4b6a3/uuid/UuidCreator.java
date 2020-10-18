@@ -41,7 +41,6 @@ import com.github.f4b6a3.uuid.creator.rfc4122.TimeOrderedUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidLocalDomain;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
-import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.util.UuidConverter;
 
 /**
@@ -139,8 +138,6 @@ public final class UuidCreator {
 	 * 'uuidcreator.node' or the environment variable 'UUIDCREATOR_NODE'.
 	 * 
 	 * @return a version 1 UUID
-	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
-	 *                              requested within the same millisecond
 	 */
 	public static UUID getTimeBased() {
 		return TimeBasedCreatorHolder.INSTANCE.create();
@@ -156,8 +153,6 @@ public final class UuidCreator {
 	 * </pre>
 	 * 
 	 * @return a version 1 UUID
-	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
-	 *                              requested within the same millisecond
 	 */
 	public static UUID getTimeBasedWithMac() {
 		return TimeBasedWithMacCreatorHolder.INSTANCE.create();
@@ -173,8 +168,6 @@ public final class UuidCreator {
 	 * </pre>
 	 * 
 	 * @return a version 1 UUID
-	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
-	 *                              requested within the same millisecond
 	 */
 	public static UUID getTimeBasedWithHash() {
 		return TimeBasedWithHashCreatorHolder.INSTANCE.create();
@@ -195,8 +188,6 @@ public final class UuidCreator {
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
 	 * @param nodeid   an alternate node (0 to 2^48-1)
 	 * @return a version 1 UUID
-	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
-	 *                              requested within the same millisecond
 	 */
 	public static UUID getTimeBased(Instant instant, Integer clockseq, Long nodeid) {
 		return TimeBasedCreatorHolder.INSTANCE.create(instant, clockseq, nodeid);
@@ -216,8 +207,6 @@ public final class UuidCreator {
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
 	 * @return a version 1 UUID
-	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
-	 *                              requested within the same millisecond
 	 */
 	public static UUID getTimeBasedWithMac(Instant instant, Integer clockseq) {
 		return TimeBasedWithMacCreatorHolder.INSTANCE.create(instant, clockseq, null);
@@ -237,8 +226,6 @@ public final class UuidCreator {
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
 	 * @return a version 1 UUID
-	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
-	 *                              requested within the same millisecond
 	 */
 	public static UUID getTimeBasedWithHash(Instant instant, Integer clockseq) {
 		return TimeBasedWithHashCreatorHolder.INSTANCE.create(instant, clockseq, null);
@@ -257,8 +244,6 @@ public final class UuidCreator {
 	 * 'uuidcreator.node' or the environment variable 'UUIDCREATOR_NODE'.
 	 * 
 	 * @return a version 6 UUID
-	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
-	 *                              requested within the same millisecond
 	 */
 	public static UUID getTimeOrdered() {
 		return TimeOrderedCreatorHolder.INSTANCE.create();
@@ -274,8 +259,6 @@ public final class UuidCreator {
 	 * </pre>
 	 * 
 	 * @return a version 6 UUID
-	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
-	 *                              requested within the same millisecond
 	 */
 	public static UUID getTimeOrderedWithMac() {
 		return TimeOrderedWithMacCreatorHolder.INSTANCE.create();
@@ -291,8 +274,6 @@ public final class UuidCreator {
 	 * </pre>
 	 * 
 	 * @return a version 6 UUID
-	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
-	 *                              requested within the same millisecond
 	 */
 	public static UUID getTimeOrderedWithHash() {
 		return TimeOrderedWithHashCreatorHolder.INSTANCE.create();
@@ -313,8 +294,6 @@ public final class UuidCreator {
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
 	 * @param nodeid   an alternate node (0 to 2^48-1)
 	 * @return a version 6 UUID
-	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
-	 *                              requested within the same millisecond
 	 */
 	public static UUID getTimeOrdered(Instant instant, Integer clockseq, Long nodeid) {
 		return TimeOrderedCreatorHolder.INSTANCE.create(instant, clockseq, nodeid);
@@ -334,8 +313,6 @@ public final class UuidCreator {
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
 	 * @return a version 6 UUID
-	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
-	 *                              requested within the same millisecond
 	 */
 	public static UUID getTimeOrderedWithMac(Instant instant, Integer clockseq) {
 		return TimeOrderedWithMacCreatorHolder.INSTANCE.create(instant, clockseq, null);
@@ -355,8 +332,6 @@ public final class UuidCreator {
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
 	 * @return a version 6 UUID
-	 * @throws UuidCreatorException an overrun exception if too many UUIDs are
-	 *                              requested within the same millisecond
 	 */
 	public static UUID getTimeOrderedWithHash(Instant instant, Integer clockseq) {
 		return TimeOrderedWithHashCreatorHolder.INSTANCE.create(instant, clockseq, null);

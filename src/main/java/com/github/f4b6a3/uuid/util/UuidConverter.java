@@ -26,7 +26,6 @@ package com.github.f4b6a3.uuid.util;
 
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.exception.IllegalUuidException;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
 /**
@@ -36,7 +35,7 @@ import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 public final class UuidConverter {
 
 	private static final String URN_PREFIX = "urn:uuid:";
-	
+
 	private UuidConverter() {
 	}
 
@@ -135,12 +134,12 @@ public final class UuidConverter {
 	 * 
 	 * @param uuid a UUID
 	 * @return another UUID
-	 * @throws IllegalUuidException if the input is not a time-ordered UUID
+	 * @throws IllegalArgumentException if the input is not a time-ordered UUID
 	 */
 	public static UUID toTimeBasedUuid(UUID uuid) {
 
 		if (!UuidUtil.isTimeOrdered(uuid)) {
-			throw new IllegalUuidException(String.format("Not a time-ordered UUID: %s.", uuid.toString()));
+			throw new IllegalArgumentException(String.format("Not a time-ordered UUID: %s.", uuid.toString()));
 		}
 
 		long timestamp = UuidUtil.extractTimestamp(uuid);
@@ -160,12 +159,12 @@ public final class UuidConverter {
 	 * 
 	 * @param uuid a UUID
 	 * @return another UUID
-	 * @throws IllegalUuidException if the input is not a time-based UUID
+	 * @throws IllegalArgumentException if the input is not a time-based UUID
 	 */
 	public static UUID toTimeOrderedUuid(UUID uuid) {
 
 		if (!UuidUtil.isTimeBased(uuid)) {
-			throw new IllegalUuidException(String.format("Not a time-based UUID: %s.", uuid.toString()));
+			throw new IllegalArgumentException(String.format("Not a time-based UUID: %s.", uuid.toString()));
 		}
 
 		long timestamp = UuidUtil.extractTimestamp(uuid);

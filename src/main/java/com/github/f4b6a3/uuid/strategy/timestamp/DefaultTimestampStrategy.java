@@ -26,7 +26,6 @@ package com.github.f4b6a3.uuid.strategy.timestamp;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
 import com.github.f4b6a3.uuid.util.TlsSecureRandom;
 import com.github.f4b6a3.uuid.util.UuidTime;
@@ -72,15 +71,13 @@ import com.github.f4b6a3.uuid.util.UuidTime;
 public final class DefaultTimestampStrategy implements TimestampStrategy {
 
 	private AtomicInteger counter;
-	private long previousTimestamp = 0;
+	private long lastTimestamp = 0;
 
 	// RFC-4122 - 4.2.1.2 (P2):
 	// the number of 100-nanosecond intervals per system interval
-	protected static final int COUNTER_MIN = 0;
-	protected static final int COUNTER_MAX = 9_999;
+	protected static final int COUNTER_MAX = 10_000;
 
 	private static final int COUNTER_INITIAL_MASK = 0xff; // 255
-	private static final String OVERRUN_MESSAGE = "The system overran the generator by requesting too many UUIDs.";
 
 	public DefaultTimestampStrategy() {
 		// Initiate the counter with a number between 0 and 255
@@ -95,52 +92,37 @@ public final class DefaultTimestampStrategy implements TimestampStrategy {
 	 * timestamp to simulate the resolution of 100-nanoseconds.
 	 * 
 	 * @return the current timestamp
-	 * @throws UuidCreatorException an overrun exception if more than 10 thousand
-	 *                              UUIDs are requested within the same millisecond
 	 */
 	@Override
 	public long getTimestamp() {
 
-		final long timestamp = UuidTime.getCurrentTimestamp();
-		final long count = getNextCounter(timestamp);
+		long timestamp = UuidTime.getCurrentTimestamp();
 
+		if (timestamp == this.lastTimestamp) {
+			if (this.counter.incrementAndGet() >= COUNTER_MAX) {
+				this.resetCounter();
+				// RFC-4122 - 4.2.1.2 (P3):
+				// Too many UUIDs within a single system time interval
+				timestamp = nextTimestamp(timestamp);
+			}
+		} else {
+			this.resetCounter();
+		}
+
+		this.lastTimestamp = timestamp;
 		// RFC-4122 - 4.2.1.2 (P4):
 		// simulate high resolution timestamp
-		return timestamp + count;
+		return timestamp + this.counter.get();
 	}
 
 	/**
-	 * Get the next counter value.
-	 * 
-	 * @param timestamp a timestamp
-	 * @return the next counter value
-	 * @throws UuidCreatorException an overrun exception if more than 10 thousand
-	 *                              UUIDs are requested within the same millisecond
+	 * Stall the creator until the system clock catches up.
 	 */
-	protected long getNextCounter(final long timestamp) {
-		if (timestamp == this.previousTimestamp) {
-			this.previousTimestamp = timestamp;
-			return this.next();
+	private long nextTimestamp(long timestamp) {
+		while (timestamp <= this.lastTimestamp) {
+			timestamp = UuidTime.getCurrentTimestamp();
 		}
-		this.previousTimestamp = timestamp;
-		return this.reset();
-	}
-
-	/**
-	 * Increments the counter value.
-	 * 
-	 * @return the next counter value.
-	 * @throws UuidCreatorException an overrun exception if more than 10 thousand
-	 *                              UUIDs are requested within the same millisecond
-	 */
-	private int next() {
-		if (this.counter.incrementAndGet() > COUNTER_MAX) {
-			// RFC-4122 - 4.2.1.2 (P3):
-			// Too many UUIDs within a single system time interval
-			this.counter.set(COUNTER_MIN);
-			throw new UuidCreatorException(OVERRUN_MESSAGE);
-		}
-		return this.counter.get();
+		return timestamp;
 	}
 
 	/**
@@ -148,7 +130,7 @@ public final class DefaultTimestampStrategy implements TimestampStrategy {
 	 * 
 	 * @return the a value between 0 and 255.
 	 */
-	private int reset() {
-		return this.counter.updateAndGet(x -> x & COUNTER_INITIAL_MASK);
+	private void resetCounter() {
+		this.counter.updateAndGet(x -> ++x & COUNTER_INITIAL_MASK);
 	}
 }

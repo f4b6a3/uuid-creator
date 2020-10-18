@@ -34,7 +34,6 @@ import java.util.UUID;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
-import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.util.UuidConverter;
 
 /**
@@ -73,11 +72,11 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	public AbstractNameBasedUuidCreator(UuidVersion version, String messageDigest) {
 		super(version);
-
 		try {
 			this.md = MessageDigest.getInstance(messageDigest);
 		} catch (NoSuchAlgorithmException e) {
-			throw new UuidCreatorException("Message digest algorithm not supported.");
+			final String message = "Message digest algorithm not supported: %s";
+			throw new IllegalArgumentException(String.format(message, messageDigest));
 		}
 	}
 

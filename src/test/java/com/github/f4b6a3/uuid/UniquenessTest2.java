@@ -5,9 +5,6 @@ import java.util.UUID;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.creator.rfc4122.TimeBasedUuidCreator;
-import com.github.f4b6a3.uuid.exception.UuidCreatorException;
-import com.github.f4b6a3.uuid.strategy.timestamp.StoppedTimestampStrategy;
-import com.github.f4b6a3.uuid.util.UuidTime;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 /**
@@ -28,8 +25,6 @@ public class UniquenessTest2 {
 
 	// Abstract time-based UUID creator
 	private TimeBasedUuidCreator creator;
-
-	private static final long FIXED_TIMESTAMP = UuidTime.toTimestamp(System.currentTimeMillis());
 
 	/**
 	 * Initialize the test.
@@ -115,13 +110,7 @@ public class UniquenessTest2 {
 			for (int i = 0; i < max; i++) {
 
 				// Request a UUID
-				UUID uuid = null;
-				try {
-					uuid = creator.create();
-				} catch (UuidCreatorException e) {
-					// Ignore the overrun exception and try again
-					uuid = creator.create();
-				}
+				UUID uuid = creator.create();
 
 				msb = UuidUtil.extractTimestamp(uuid) << 16;
 				lsb = UuidUtil.extractClockSequence(uuid);
@@ -166,8 +155,7 @@ public class UniquenessTest2 {
 		// a new generator that creates time-based UUIDs (v1),
 		// that uses a hash instead of a random node identifier,
 		// and that uses a fixed millisecond to simulate a loop faster than the clock
-		return UuidCreator.getTimeBasedCreator().withHashNodeIdentifier()
-				.withTimestampStrategy(new StoppedTimestampStrategy(FIXED_TIMESTAMP));
+		return UuidCreator.getTimeBasedCreator().withHashNodeIdentifier();
 	}
 
 	public static void main(String[] args) {

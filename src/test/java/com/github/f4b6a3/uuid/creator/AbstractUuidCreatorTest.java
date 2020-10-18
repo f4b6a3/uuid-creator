@@ -1,14 +1,12 @@
 package com.github.f4b6a3.uuid.creator;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import com.github.f4b6a3.uuid.exception.UuidCreatorException;
 import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.util.UuidConverter;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 import static org.junit.Assert.*;
 
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -128,15 +126,9 @@ public abstract class AbstractUuidCreatorTest {
 
 		@Override
 		public void run() {
-
-			UUID uuid;
 			for (int i = 0; i < loopLimit; i++) {
 				synchronized (hashSet) {
-					try {
-						uuid = creator.create();
-					} catch (UuidCreatorException e) {
-						uuid = creator.create();
-					}
+					UUID uuid = creator.create();
 					hashSet.add(uuid);
 				}
 			}

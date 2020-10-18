@@ -7,12 +7,9 @@ import com.github.f4b6a3.uuid.creator.AbstractUuidCreatorTest;
 import com.github.f4b6a3.uuid.creator.rfc4122.TimeOrderedUuidCreator;
 import com.github.f4b6a3.uuid.strategy.ClockSequenceStrategy;
 import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
-import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
-import com.github.f4b6a3.uuid.strategy.clockseq.DefaultClockSequenceStrategy;
 import com.github.f4b6a3.uuid.strategy.clockseq.FixedClockSequenceStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.FixedNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.timestamp.FixedTimestampStretegy;
-import com.github.f4b6a3.uuid.strategy.timestamp.StoppedTimestampStrategy;
 import com.github.f4b6a3.uuid.util.UuidTime;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
@@ -20,7 +17,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.Random;
 import java.util.UUID;
 
@@ -167,13 +163,9 @@ public class TimeOrderedUuidCreatorTest extends AbstractUuidCreatorTest {
 		Thread[] threads = new Thread[THREAD_TOTAL];
 		TestThread.clearHashSet();
 
-		// Simulate a loop faster than the clock tick
-		TimestampStrategy strategy = new StoppedTimestampStrategy(UuidTime.getCurrentTimestamp());
-
 		// Instantiate and start many threads
 		for (int i = 0; i < THREAD_TOTAL; i++) {
-			TimeOrderedUuidCreator creator = UuidCreator.getTimeOrderedCreator().withHashNodeIdentifier()
-					.withTimestampStrategy(strategy);
+			TimeOrderedUuidCreator creator = UuidCreator.getTimeOrderedCreator().withHashNodeIdentifier();
 			threads[i] = new TestThread(creator, DEFAULT_LOOP_MAX);
 			threads[i].start();
 		}
