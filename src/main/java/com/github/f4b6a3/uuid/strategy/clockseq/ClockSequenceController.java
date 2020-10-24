@@ -24,7 +24,7 @@
 
 package com.github.f4b6a3.uuid.strategy.clockseq;
 
-import com.github.f4b6a3.uuid.util.TlsSecureRandom;
+import com.github.f4b6a3.uuid.util.internal.SharedRandom;
 
 /**
  * Class that controls the usage of clock sequence values from 0 to 16383.
@@ -35,36 +35,35 @@ import com.github.f4b6a3.uuid.util.TlsSecureRandom;
 public final class ClockSequenceController {
 
 	private final byte[] pool = new byte[2048];
-	private static final int POOL_MAX = 16384; // 2^16
-	
+	private static final int POOL_SIZE = 16384; // 2^14
+
 	/**
 	 * Take a value from the pool.
 	 * 
-	 * If the value to be taken is already in use, it is incremented until a
-	 * free value is found and returned.
+	 * If the value to be taken is already in use, it is incremented until a free
+	 * value is found and returned.
 	 * 
-	 * In the case that all pool values are in use, the pool is cleared and the
-	 * last incremented value is returned.
+	 * In the case that all pool values are in use, the pool is cleared and the last
+	 * incremented value is returned.
 	 * 
 	 * It does nothing to negative arguments.
 	 * 
-	 * @param take
-	 *            value to be taken from the pool
+	 * @param take value to be taken from the pool
 	 * @return the value to be borrowed if not used.
 	 */
 	public synchronized int take(int take) {
 
-		for (int i = 0; i < POOL_MAX; i++) {
+		for (int i = 0; i < POOL_SIZE; i++) {
 			if (setBit(take)) {
 				return take;
 			}
-			take = ++take % POOL_MAX;
+			take = ++take % POOL_SIZE;
 		}
 		clearPool();
 		setBit(take);
 		return take;
 	}
-	
+
 	/**
 	 * Take a random value from the pool.
 	 * 
@@ -73,7 +72,8 @@ public final class ClockSequenceController {
 	 * @return the random value to be borrowed if not used.
 	 */
 	public synchronized int random() {
-		int random = TlsSecureRandom.get().nextInt(POOL_MAX);
+		// Choose a random number between 0 and 16383
+		int random = (SharedRandom.nextInt() & 0x7fffffff) % POOL_SIZE;
 		return this.take(random);
 	}
 
@@ -86,8 +86,7 @@ public final class ClockSequenceController {
 	 * 
 	 * It does nothing to negative arguments.
 	 * 
-	 * @param value
-	 *            the value to be taken from the pool
+	 * @param value the value to be taken from the pool
 	 * @return true if success.
 	 */
 	private synchronized boolean setBit(int value) {
@@ -113,8 +112,7 @@ public final class ClockSequenceController {
 	/**
 	 * Check if a value is used out of the pool.
 	 * 
-	 * @param value
-	 *            a value to be checked in the pool.
+	 * @param value a value to be checked in the pool.
 	 * @return true if the value is used.
 	 */
 	public synchronized boolean isUsed(int value) {
@@ -131,8 +129,7 @@ public final class ClockSequenceController {
 	/**
 	 * Check if a value is free in the pool.
 	 * 
-	 * @param value
-	 *            a value to be checked in the pool.
+	 * @param value a value to be checked in the pool.
 	 * @return true if the value is free.
 	 */
 	public synchronized boolean isFree(int value) {
@@ -146,7 +143,7 @@ public final class ClockSequenceController {
 	 */
 	public synchronized int countUsed() {
 		int counter = 0;
-		for (int i = 0; i < POOL_MAX; i++) {
+		for (int i = 0; i < POOL_SIZE; i++) {
 			if (this.isUsed(i)) {
 				counter++;
 			}
@@ -160,7 +157,7 @@ public final class ClockSequenceController {
 	 * @return the count of free values.
 	 */
 	public synchronized int countFree() {
-		return POOL_MAX - this.countUsed();
+		return POOL_SIZE - this.countUsed();
 	}
 
 	/**

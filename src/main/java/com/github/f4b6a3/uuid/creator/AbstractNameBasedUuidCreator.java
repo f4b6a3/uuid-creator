@@ -24,7 +24,7 @@
 
 package com.github.f4b6a3.uuid.creator;
 
-import static com.github.f4b6a3.uuid.util.ByteUtil.toNumber;
+import static com.github.f4b6a3.uuid.util.internal.ByteUtil.toNumber;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

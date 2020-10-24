@@ -1,8 +1,8 @@
-package com.github.f4b6a3.uuid.util;
+package com.github.f4b6a3.uuid.util.internal;
 
 import org.junit.Test;
 
-import static com.github.f4b6a3.uuid.util.ByteUtil.*;
+import static com.github.f4b6a3.uuid.util.internal.ByteUtil.*;
 import static org.junit.Assert.*;
 
 public class ByteUtilTest {

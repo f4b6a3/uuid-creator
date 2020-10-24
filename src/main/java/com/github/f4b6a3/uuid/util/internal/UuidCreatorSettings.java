@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.util;
+package com.github.f4b6a3.uuid.util.internal;
 
 /**
  * Reads system properties and environment variables.

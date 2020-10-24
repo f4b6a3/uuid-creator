@@ -14,12 +14,9 @@ import java.util.UUID;
 
 public abstract class AbstractUuidCreatorTest {
 
-	// The timestamp counter starts with a random value between 0 and 255
-	protected static final int DEFAULT_LOOP_MAX = 9744; // 10_000 - 256
+	protected static final int DEFAULT_LOOP_MAX = 10_000;
 
 	protected static final String DUPLICATE_UUID_MSG = "A duplicate UUID was created";
-
-	protected static final String GITHUB_URL = "www.github.com";
 
 	protected static final int THREAD_TOTAL = availableProcessors();
 

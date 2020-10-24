@@ -22,23 +22,26 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.util;
+package com.github.f4b6a3.uuid.util.internal;
 
 import java.security.SecureRandom;
 import java.util.Random;
 
 /**
- * A utility class that provides a thread local instance of
- * {@link java.security.SecureRandom}.
+ * A utility class that wraps a shared {@link java.security.SecureRandom}.
  */
-public final class TlsSecureRandom {
+public final class SharedRandom {
 
-	protected static final ThreadLocal<Random> THREAD_LOCAL_RANDOM = ThreadLocal.withInitial(SecureRandom::new);
+	protected static final Random SHARED_RANDOM = new SecureRandom();
 
-	private TlsSecureRandom() {
+	private SharedRandom() {
 	}
 
-	public static Random get() {
-		return THREAD_LOCAL_RANDOM.get();
+	public static int nextInt() {
+		return SHARED_RANDOM.nextInt();
+	}
+
+	public static long nextLong() {
+		return SHARED_RANDOM.nextLong();
 	}
 }

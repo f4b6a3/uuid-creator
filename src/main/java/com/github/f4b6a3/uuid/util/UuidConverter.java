@@ -27,6 +27,7 @@ package com.github.f4b6a3.uuid.util;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
+import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
  * Utility that converts UUIDs to and from strings, byte arrays or other UUID

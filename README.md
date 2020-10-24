@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>3.0.0</version>
+  <version>3.1.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -590,11 +590,11 @@ You can also create your own strategy that implements the `NodeIdentifierStrateg
 
 ##### Hardware address
 
-The hardware address node identifier is the MAC address associated with the host name. If that MAC address can't be found, it is the first MAC address that is up and running. If no MAC is found, it is a random number.
+The hardware address node identifier is the MAC address associated with the hostname. If that MAC address can't be found, it is the first MAC address that is up and running. If no MAC is found, it is a random number.
 
 ##### System data hash
 
-The system data hash is calculated from a list of system properties: OS + JVM + network details + system resources + locale + timezone. All these information are collected and passed to a SHA-256 message digest. The node identifier is the last 6 bytes of the resulting SHA-256 hash.
+The system data hash is calculated from a list of system properties: hostname, MAC and IP. These information are collected and passed to a SHA-256 message digest. The node identifier is the first 6 bytes of the resulting hash.
 
 ##### System property and environment variable
 
@@ -603,7 +603,7 @@ It's possible to manage the node identifier for each machine by defining the sys
 These options are accepted:
 
 - The string "mac" to use the MAC address;
-- The string "hash" to use the hash of system data;
+- The string "hash" to use the hash of hostname, MAC and IP;
 - The string representation of a number between 0 and 2^48-1.
 
 The number formats are: decimal, hexadecimal, and octal.
@@ -786,7 +786,7 @@ UUID uuid = timebased.create();
 ```
 
 ```java
-// with system data hash (SHA-256 hash of OS + JVM + Network + Resources + locale + timezone)
+// with system data hash (SHA-256 hash of hostname, MAC and IP)
 TimeBasedUuidCreator timebased = UuidCreator.getTimeBasedCreator()
     .withHashNodeIdentifier();
 UUID uuid = timebased.create();
@@ -1055,6 +1055,18 @@ UUID uuid = UuidConverter.fromBytes(bytes);
 uuid = UuidUtil.applyVersion(uuid, 4);
 ```
 
+##### MachineId
+
+```java
+// Get the machine ID (SHA-256 hash of hostname, MAC and IP)
+long id = MachineId.getMachineId();
+```
+
+```java
+// Get the machine UUID (SHA-256 hash of hostname, MAC and IP)
+UUID uuid = MachineId.getMachineUuid();
+```
+
 Benchmark
 ------------------------------------------------------
 
@@ -1066,16 +1078,16 @@ THROUGHPUT (operations/millis)
 -------------------------------------------------------------------------------
 Benchmark                                Mode  Cnt     Score    Error   Units
 -------------------------------------------------------------------------------
-Throughput.Java_RandomBased             thrpt    5  2228,201 ± 16,477  ops/ms
-Throughput.UuidCreator_RandomBased      thrpt    5  2198,416 ± 17,005  ops/ms
-Throughput.UuidCreator_PrefixComb       thrpt    5  2912,400 ± 15,704  ops/ms
-Throughput.UuidCreator_ShortPrefixComb  thrpt    5  2257,665 ±  6,196  ops/ms
-Throughput.UuidCreator_NameBasedMd5     thrpt    5  3878,685 ±  8,166  ops/ms
-Throughput.UuidCreator_NameBasedSha1    thrpt    5  2868,776 ± 24,525  ops/ms
-Throughput.UuidCreator_TimeBased        thrpt    5  9972,324 ±  4,696  ops/ms
-Throughput.UuidCreator_TimeOrdered      thrpt    5  9969,687 ±  6,470  ops/ms
+Throughput.Java_RandomBased             thrpt    5  2227,349 ±  8,686  ops/ms
+Throughput.UuidCreator_RandomBased      thrpt    5  2202,033 ±  7,216  ops/ms
+Throughput.UuidCreator_PrefixComb       thrpt    5  2918,436 ± 32,096  ops/ms
+Throughput.UuidCreator_ShortPrefixComb  thrpt    5  2255,738 ± 26,230  ops/ms
+Throughput.UuidCreator_NameBasedMd5     thrpt    5  4056,898 ± 22,714  ops/ms
+Throughput.UuidCreator_NameBasedSha1    thrpt    5  3019,011 ± 33,238  ops/ms
+Throughput.UuidCreator_TimeBased        thrpt    5  9972,546 ±  8,102  ops/ms
+Throughput.UuidCreator_TimeOrdered      thrpt    5  9968,769 ±  4,012  ops/ms
 -------------------------------------------------------------------------------
-Total time: 00:10:40
+Total time: 00:10:42
 -------------------------------------------------------------------------------
 ```
 

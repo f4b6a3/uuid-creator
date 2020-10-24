@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.util;
+package com.github.f4b6a3.uuid.util.internal;
 
 /**
  * Class that contains many static methods for byte handling.

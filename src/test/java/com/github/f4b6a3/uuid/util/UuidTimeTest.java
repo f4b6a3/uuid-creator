@@ -25,7 +25,7 @@ public class UuidTimeTest {
 		Instant instant = UuidTime.toInstant(timestamp);
 		assertEquals(milliseconds, instant.toEpochMilli());
 	}
-	
+
 	@Test
 	public void testFromCurrentTimestampToUnixMilliseconds() {
 		long timestamp = UuidTime.getCurrentTimestamp();
@@ -33,7 +33,7 @@ public class UuidTimeTest {
 		Instant instant = UuidTime.toInstant(timestamp);
 		assertEquals(milliseconds, instant.toEpochMilli());
 	}
-	
+
 	@Test
 	public void testFromTimestampToUnixMilliseconds() {
 		long milliseconds1 = System.currentTimeMillis();

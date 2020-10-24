@@ -33,8 +33,7 @@ public final class UuidTime {
 
 	public static final long GREGORIAN_MILLISECONDS = getGregorianMilliseconds();
 
-	public static final long MILLISECONDS_PER_SECOND = 1_000L;
-	public static final long TIMESTAMP_RESOLUTION = 10_000L;
+	public static final long TICKS_PER_MILLISECOND = 10_000L; // 1 tick = 100ns
 
 	private UuidTime() {
 	}
@@ -63,7 +62,7 @@ public final class UuidTime {
 	 * @return the current timestamp
 	 */
 	public static long getCurrentTimestamp() {
-		return (System.currentTimeMillis() - GREGORIAN_MILLISECONDS) * TIMESTAMP_RESOLUTION;
+		return (System.currentTimeMillis() - GREGORIAN_MILLISECONDS) * TICKS_PER_MILLISECOND;
 	}
 
 	/**
@@ -76,7 +75,7 @@ public final class UuidTime {
 	 * @return the timestamp
 	 */
 	public static long toTimestamp(final long unixMilliseconds) {
-		return (unixMilliseconds - GREGORIAN_MILLISECONDS) * TIMESTAMP_RESOLUTION;
+		return (unixMilliseconds - GREGORIAN_MILLISECONDS) * TICKS_PER_MILLISECOND;
 	}
 
 	/**
@@ -89,7 +88,7 @@ public final class UuidTime {
 	 * @return the Unix milliseconds
 	 */
 	public static long toUnixMilliseconds(final long timestamp) {
-		return (timestamp / TIMESTAMP_RESOLUTION) + GREGORIAN_MILLISECONDS;
+		return (timestamp / TICKS_PER_MILLISECOND) + GREGORIAN_MILLISECONDS;
 	}
 
 	/**
@@ -102,9 +101,9 @@ public final class UuidTime {
 	 * @return the timestamp
 	 */
 	public static long toTimestamp(final Instant instant) {
-		final long a = (instant.toEpochMilli() - GREGORIAN_MILLISECONDS) * 10_000;
-		final long b = (instant.getNano() / 100) % 10_000;
-		return a + b;
+		final long millis = (instant.toEpochMilli() - GREGORIAN_MILLISECONDS) * TICKS_PER_MILLISECOND;
+		final long ticks = (instant.getNano() / 100) % TICKS_PER_MILLISECOND;
+		return millis + ticks;
 	}
 
 	/**
@@ -114,8 +113,8 @@ public final class UuidTime {
 	 * @return the instant
 	 */
 	public static Instant toInstant(final long timestamp) {
-		final long millis = ((timestamp / 10_000) + GREGORIAN_MILLISECONDS);
-		final long nanos = (timestamp % 10_000) * 100;
+		final long millis = ((timestamp / TICKS_PER_MILLISECOND) + GREGORIAN_MILLISECONDS);
+		final long nanos = (timestamp % TICKS_PER_MILLISECOND) * 100;
 		return Instant.ofEpochMilli(millis).plusNanos(nanos);
 	}
 
@@ -130,6 +129,6 @@ public final class UuidTime {
 	 * @return the milliseconds since gregorian epoch
 	 */
 	private static long getGregorianMilliseconds() {
-		return Instant.parse("1582-10-15T00:00:00.000Z").getEpochSecond() * MILLISECONDS_PER_SECOND;
+		return Instant.parse("1582-10-15T00:00:00.000Z").getEpochSecond() * 1_000L;
 	}
 }

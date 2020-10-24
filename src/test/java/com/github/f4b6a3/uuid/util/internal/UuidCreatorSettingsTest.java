@@ -1,4 +1,4 @@
-package com.github.f4b6a3.uuid.util;
+package com.github.f4b6a3.uuid.util.internal;
 
 import static org.junit.Assert.*;
 
@@ -8,7 +8,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.util.UuidCreatorSettings;
+import com.github.f4b6a3.uuid.util.internal.UuidCreatorSettings;
 
 public class UuidCreatorSettingsTest {
 

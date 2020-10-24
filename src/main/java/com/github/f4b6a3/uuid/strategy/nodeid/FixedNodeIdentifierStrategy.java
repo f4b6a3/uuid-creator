@@ -24,8 +24,8 @@
 
 package com.github.f4b6a3.uuid.strategy.nodeid;
 
-import com.github.f4b6a3.uuid.util.ByteUtil;
 import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
  * Strategy that always provides the same node identifier.

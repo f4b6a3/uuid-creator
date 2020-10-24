@@ -28,7 +28,7 @@ import java.util.UUID;
 
 import com.github.f4b6a3.uuid.creator.AbstractRandomBasedUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
-import com.github.f4b6a3.uuid.util.ByteUtil;
+import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
  * Factory that creates Suffix COMB GUIDs.

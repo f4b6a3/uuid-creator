@@ -24,25 +24,14 @@
 
 package com.github.f4b6a3.uuid.strategy.nodeid;
 
-import com.github.f4b6a3.uuid.util.Fingerprint;
 import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.util.MachineId;
+import com.github.f4b6a3.uuid.util.internal.ByteUtil;
+
+import static com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy.setMulticastNodeIdentifier;
 
 /**
- * Strategy that calculates a node identifier based on system data like:
- * operating system, java virtual machine, network details, system resources,
- * locale and timezone.
- * 
- * The resulting node identifier is as unique and mutable as the host machine
- * data.
- * 
- * Read: https://en.wikipedia.org/wiki/Device_fingerprint
- * 
- * ### RFC-4122 - 4.1.6. Node
- * 
- * For systems with no IEEE address, a randomly or pseudo-randomly generated
- * value may be used; see Section 4.5. The multicast bit must be set in such
- * addresses, in order that they will never conflict with addresses obtained
- * from network cards.
+ * Strategy that generates a hash-based node identifier.
  * 
  * ### RFC-4122 - 4.5. Node IDs that Do Not Identify the Host
  * 
@@ -62,22 +51,21 @@ public class HashNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	protected long nodeIdentifier;
 
 	/**
-	 * This constructor calculates a node identifier based on system data like:
-	 * operating system, java virtual machine, network details, system resources,
-	 * locale and timezone.
+	 * This constructor generates a hash-based node identifier.
+	 * 
+	 * @see {@link MachineId}
 	 */
 	public HashNodeIdentifierStrategy() {
-		final long fingerprint = Fingerprint.getFingerprint();
-		this.nodeIdentifier = NodeIdentifierStrategy.setMulticastNodeIdentifier(fingerprint);
+		// Use the first 6 bytes of the machine ID
+		final byte[] hash = MachineId.getMachineHash();
+		final long number = ByteUtil.toNumber(hash, 0, 6);
+		this.nodeIdentifier = setMulticastNodeIdentifier(number);
 	}
 
 	/**
 	 * Get the node identifier.
 	 * 
-	 * The node identifier is calculated using system data. The resulting node
-	 * identifier is as unique and mutable as the host machine.
-	 * 
-	 * See {@link Fingerprint#getFingerprint()}.
+	 * @return a node identifier
 	 */
 	@Override
 	public long getNodeIdentifier() {

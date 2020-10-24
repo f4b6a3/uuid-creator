@@ -7,7 +7,7 @@ public class DemoTest {
 	private static final String HORIZONTAL_LINE = "----------------------------------------";
 
 	public static void printList() {
-		
+
 		int max = 100;
 
 		System.out.println();
@@ -62,7 +62,7 @@ public class DemoTest {
 		for (int i = 0; i < max; i++) {
 			System.out.println(UuidCreator.getRandomBased());
 		}
-		
+
 		System.out.println(HORIZONTAL_LINE);
 		System.out.println("### Prefix COMB GUID");
 

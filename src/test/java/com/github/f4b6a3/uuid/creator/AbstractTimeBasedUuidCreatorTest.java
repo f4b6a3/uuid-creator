@@ -5,7 +5,7 @@ import com.github.f4b6a3.uuid.strategy.nodeid.DefaultNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.FixedNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.HashNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.MacNodeIdentifierStrategy;
-import com.github.f4b6a3.uuid.util.UuidCreatorSettings;
+import com.github.f4b6a3.uuid.util.internal.UuidCreatorSettings;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;

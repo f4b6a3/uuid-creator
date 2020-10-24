@@ -71,7 +71,7 @@ public final class DefaultClockSequenceStrategy implements ClockSequenceStrategy
 	private long previousTimestamp = 0;
 
 	protected static final int SEQUENCE_MIN = 0x00000000;
-	protected static final int SEQUENCE_MAX = 0x00003fff; // 16384
+	protected static final int SEQUENCE_MAX = 0x00003fff; // 16383
 
 	protected static final ClockSequenceController CONTROLLER = new ClockSequenceController();
 

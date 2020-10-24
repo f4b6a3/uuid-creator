@@ -27,8 +27,8 @@ package com.github.f4b6a3.uuid.strategy.timestamp;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
-import com.github.f4b6a3.uuid.util.TlsSecureRandom;
 import com.github.f4b6a3.uuid.util.UuidTime;
+import com.github.f4b6a3.uuid.util.internal.SharedRandom;
 
 /**
  * Strategy that provides the current timestamp.
@@ -81,7 +81,7 @@ public final class DefaultTimestampStrategy implements TimestampStrategy {
 
 	public DefaultTimestampStrategy() {
 		// Initiate the counter with a number between 0 and 255
-		int initial = TlsSecureRandom.get().nextInt() & COUNTER_INITIAL_MASK;
+		int initial = SharedRandom.nextInt() & COUNTER_INITIAL_MASK;
 		this.counter = new AtomicInteger(initial);
 	}
 

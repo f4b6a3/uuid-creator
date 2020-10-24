@@ -24,9 +24,9 @@
 
 package com.github.f4b6a3.uuid.strategy.clockseq;
 
-import com.github.f4b6a3.uuid.strategy.ClockSequenceStrategy;
+import static com.github.f4b6a3.uuid.util.internal.ByteUtil.*;
 
-import static com.github.f4b6a3.uuid.util.ByteUtil.*;
+import com.github.f4b6a3.uuid.strategy.ClockSequenceStrategy;
 
 /**
  * Strategy that always provides the same clock sequence.

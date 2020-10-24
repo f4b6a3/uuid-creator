@@ -24,11 +24,16 @@
 
 package com.github.f4b6a3.uuid.strategy.nodeid;
 
-import java.util.List;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
 
-import com.github.f4b6a3.uuid.util.ByteUtil;
-import com.github.f4b6a3.uuid.util.NetworkData;
 import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
+
+import static com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy.getRandomNodeIdentifier;
+import static com.github.f4b6a3.uuid.util.internal.ByteUtil.toNumber;
 
 /**
  * Strategy that provides the current machine address (MAC), if available.
@@ -74,7 +79,7 @@ public final class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	}
 
 	/**
-	 * Get the current node identifier.
+	 * Get the node identifier.
 	 * 
 	 * @return a node identifier
 	 */
@@ -91,27 +96,34 @@ public final class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 	 * @return a hardware address
 	 */
 	private long getHardwareAddress() {
+		try {
 
-		// first try
-		NetworkData networkData = NetworkData.getNetworkData();
-
-		// second try, if the first one failed
-		if (networkData == null) {
-			List<NetworkData> networkDataList = NetworkData.getNetworkDataList();
-			if (networkDataList != null && !networkDataList.isEmpty()) {
-				networkData = networkDataList.get(0);
+			// first try: return the MAC associated to the host name
+			InetAddress ip = InetAddress.getLocalHost();
+			NetworkInterface nic = NetworkInterface.getByInetAddress(ip);
+			if (nic != null) {
+				byte[] mac = nic.getHardwareAddress();
+				if (!nic.isLoopback() && mac != null && mac.length == 6) {
+					return toNumber(mac);
+				}
 			}
-		}
 
-		// Return the hardware address if found
-		if (networkData != null) {
-			String hardwareAddress = networkData.getInterfaceHardwareAddress();
-			if (hardwareAddress != null && !hardwareAddress.isEmpty()) {
-				return ByteUtil.toNumber(networkData.getInterfaceHardwareAddress());
+			// second try: return the first MAC found
+			Enumeration<NetworkInterface> nics = NetworkInterface.getNetworkInterfaces();
+			while (nics.hasMoreElements()) {
+				NetworkInterface next = nics.nextElement();
+				if (next != null && !next.isLoopback()) {
+					byte[] mac = next.getHardwareAddress();
+					if (mac != null && mac.length == 6) {
+						return toNumber(mac);
+					}
+				}
 			}
+		} catch (UnknownHostException | SocketException e) {
+			// do nothing
 		}
 
 		// Return a random node identifier
-		return NodeIdentifierStrategy.getRandomNodeIdentifier();
+		return getRandomNodeIdentifier();
 	}
 }
