@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>3.1.0</version>
+  <version>3.1.1</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -1078,16 +1078,17 @@ THROUGHPUT (operations/millis)
 -------------------------------------------------------------------------------
 Benchmark                                Mode  Cnt     Score    Error   Units
 -------------------------------------------------------------------------------
-Throughput.Java_RandomBased             thrpt    5  2227,349 ±  8,686  ops/ms
-Throughput.UuidCreator_RandomBased      thrpt    5  2202,033 ±  7,216  ops/ms
-Throughput.UuidCreator_PrefixComb       thrpt    5  2918,436 ± 32,096  ops/ms
-Throughput.UuidCreator_ShortPrefixComb  thrpt    5  2255,738 ± 26,230  ops/ms
-Throughput.UuidCreator_NameBasedMd5     thrpt    5  4056,898 ± 22,714  ops/ms
-Throughput.UuidCreator_NameBasedSha1    thrpt    5  3019,011 ± 33,238  ops/ms
-Throughput.UuidCreator_TimeBased        thrpt    5  9972,546 ±  8,102  ops/ms
-Throughput.UuidCreator_TimeOrdered      thrpt    5  9968,769 ±  4,012  ops/ms
+Throughput.JDK_RandomBased              thrpt    5  2177,034 ± 12,483  ops/ms
+Throughput.JDK_NameBasedMd5             thrpt    5  3238,463 ± 54,932  ops/ms
+Throughput.UuidCreator_RandomBased      thrpt    5  2172,602 ± 12,425  ops/ms
+Throughput.UuidCreator_NameBasedMd5     thrpt    5  3197,579 ± 18,163  ops/ms
+Throughput.UuidCreator_NameBasedSha1    thrpt    5  2475,547 ± 31,032  ops/ms
+Throughput.UuidCreator_PrefixComb       thrpt    5  2876,617 ± 25,612  ops/ms
+Throughput.UuidCreator_ShortPrefixComb  thrpt    5  2227,698 ± 12,688  ops/ms
+Throughput.UuidCreator_TimeBased        thrpt    5  9971,924 ±  9,817  ops/ms
+Throughput.UuidCreator_TimeOrdered      thrpt    5  9972,807 ±  3,678  ops/ms
 -------------------------------------------------------------------------------
-Total time: 00:10:42
+Total time: 00:12:02
 -------------------------------------------------------------------------------
 ```
 

@@ -156,7 +156,7 @@ public final class DceSecurityUuidCreator extends AbstractTimeBasedUuidCreator {
 		long lsb = setLocalDomainBits(uuid.getLeastSignificantBits(), localDomain, this.counter.incrementAndGet());
 
 		// (1b) set version 2
-		return new UUID(applyVersionBits(msb), applyVariantBits(lsb));
+		return getUuid(msb, lsb);
 	}
 
 	/**

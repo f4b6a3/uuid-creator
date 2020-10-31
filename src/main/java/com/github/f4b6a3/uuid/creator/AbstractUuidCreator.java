@@ -63,22 +63,54 @@ public abstract class AbstractUuidCreator {
 	}
 
 	/**
-	 * Applies UUID version bits into the "Most Significant Bits".
+	 * Creates a UUID from a byte array of 16 bytes.
 	 * 
-	 * @param msb the MSB
-	 * @return the MSB
+	 * It applies the version number to the resulting UUID.
+	 * 
+	 * @param bytes a byte array
+	 * @return a UUID
 	 */
-	protected long applyVersionBits(final long msb) {
-		return (msb & 0xffffffffffff0fffL) | this.versionBits;
+	protected UUID getUuid(byte[] bytes) {
+
+		long msb = 0;
+		long lsb = 0;
+
+		msb = (bytes[0] & 0xff);
+		msb = (bytes[1] & 0xff) | (msb << 8);
+		msb = (bytes[2] & 0xff) | (msb << 8);
+		msb = (bytes[3] & 0xff) | (msb << 8);
+		msb = (bytes[4] & 0xff) | (msb << 8);
+		msb = (bytes[5] & 0xff) | (msb << 8);
+		msb = (bytes[6] & 0xff) | (msb << 8);
+		msb = (bytes[7] & 0xff) | (msb << 8);
+
+		lsb = (bytes[8] & 0xff);
+		lsb = (bytes[9] & 0xff) | (lsb << 8);
+		lsb = (bytes[10] & 0xff) | (lsb << 8);
+		lsb = (bytes[11] & 0xff) | (lsb << 8);
+		lsb = (bytes[12] & 0xff) | (lsb << 8);
+		lsb = (bytes[13] & 0xff) | (lsb << 8);
+		lsb = (bytes[14] & 0xff) | (lsb << 8);
+		lsb = (bytes[15] & 0xff) | (lsb << 8);
+
+		msb = (msb & 0xffffffffffff0fffL) | this.versionBits; // set version
+		lsb = (lsb & 0x3fffffffffffffffL) | 0x8000000000000000L; // set variant
+
+		return new UUID(msb, lsb);
 	}
 
 	/**
-	 * Applies UUID variant bits into the "Least Significant Bits".
+	 * Creates a UUID from a pair of numbers.
 	 * 
-	 * @param lsb the LSB
-	 * @return the LSB with the correct variant bits
+	 * It applies the version number to the resulting UUID.
+	 * 
+	 * @param msb the most significant bits
+	 * @param lsb the least significant bits
+	 * @return a UUID
 	 */
-	protected long applyVariantBits(final long lsb) {
-		return (lsb & 0x3fffffffffffffffL) | 0x8000000000000000L;
+	protected UUID getUuid(long msb, long lsb) {
+		msb = (msb & 0xffffffffffff0fffL) | this.versionBits; // set version
+		lsb = (lsb & 0x3fffffffffffffffL) | 0x8000000000000000L; // set variant
+		return new UUID(msb, lsb);
 	}
 }

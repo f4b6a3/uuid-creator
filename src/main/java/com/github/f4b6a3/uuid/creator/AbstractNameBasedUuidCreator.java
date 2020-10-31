@@ -24,8 +24,6 @@
 
 package com.github.f4b6a3.uuid.creator;
 
-import static com.github.f4b6a3.uuid.util.internal.ByteUtil.toNumber;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -59,7 +57,7 @@ import com.github.f4b6a3.uuid.util.UuidConverter;
 public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 
 	protected byte[] namespace = null;
-	protected MessageDigest md = null;
+	protected final String algorithm; // MD5 or SHA-1
 
 	protected static final String MESSAGE_DIGEST_MD5 = "MD5";
 	protected static final String MESSAGE_DIGEST_SHA1 = "SHA-1";
@@ -67,17 +65,12 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	/**
 	 * This constructor receives the name of a message digest.
 	 * 
-	 * @param version       the version number
-	 * @param messageDigest a message digest
+	 * @param version   the version number
+	 * @param algorithm a message digest algorithm
 	 */
-	public AbstractNameBasedUuidCreator(UuidVersion version, String messageDigest) {
+	public AbstractNameBasedUuidCreator(UuidVersion version, String algorithm) {
 		super(version);
-		try {
-			this.md = MessageDigest.getInstance(messageDigest);
-		} catch (NoSuchAlgorithmException e) {
-			final String message = "Message digest algorithm not supported: %s";
-			throw new IllegalArgumentException(String.format(message, messageDigest));
-		}
+		this.algorithm = algorithm;
 	}
 
 	/**
@@ -242,19 +235,23 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	private UUID create(final byte[] namespace, final byte[] name) {
 
-		final byte[] hash;
+		byte[] hash;
+		MessageDigest hasher;
 
-		synchronized (md) {
-			if (namespace != null) {
-				md.update(namespace);
-			}
-			hash = md.digest(name);
+		try {
+			hasher = MessageDigest.getInstance(this.algorithm);
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalArgumentException("Message digest algorithm not available", e);
 		}
 
-		final long msb = toNumber(hash, 0, 8);
-		final long lsb = toNumber(hash, 8, 16);
+		// Compute the hash of the name space concatenated with the name
+		if (namespace != null) {
+			hasher.update(namespace);
+		}
+		hash = hasher.digest(name);
 
-		return new UUID(applyVersionBits(msb), applyVariantBits(lsb));
+		// Set the version and variant bits
+		return getUuid(hash);
 	}
 
 	/**

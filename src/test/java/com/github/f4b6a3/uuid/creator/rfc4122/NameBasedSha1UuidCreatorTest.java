@@ -3,6 +3,7 @@ package com.github.f4b6a3.uuid.creator.rfc4122;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.UuidCreator;
+import com.github.f4b6a3.uuid.creator.AbstractNameBasedUuidCreator;
 import com.github.f4b6a3.uuid.creator.AbstractUuidCreatorTest;
 import com.github.f4b6a3.uuid.creator.rfc4122.NameBasedSha1UuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
@@ -314,7 +315,7 @@ public class NameBasedSha1UuidCreatorTest extends AbstractUuidCreatorTest {
 	}
 
 	@Test
-	public void testGetNameBasedSha1InParallel() throws InterruptedException {
+	public void testGetNameBasedSha1InParallel1() throws InterruptedException {
 
 		Thread[] threads = new Thread[THREAD_TOTAL];
 		NameBasedTestThread.clearHashSet();
@@ -333,5 +334,87 @@ public class NameBasedSha1UuidCreatorTest extends AbstractUuidCreatorTest {
 
 		// Check if the quantity of unique UUIDs is correct
 		assertEquals(DUPLICATE_UUID_MSG, (DEFAULT_LOOP_MAX * THREAD_TOTAL), NameBasedTestThread.hashSet.size());
+	}
+
+	@Test
+	public void testGetNameBasedMd5InParallel2() throws InterruptedException {
+
+		UUID[][][] list = new UUID[THREAD_TOTAL][3][LIST_DNS.length];
+		Thread[] threads = new Thread[THREAD_TOTAL];
+
+		// Instantiate and start many threads
+		for (int t = 0; t < THREAD_TOTAL; t++) {
+			final int threadId = t;
+			threads[t] = new Thread(new Runnable() {
+
+				AbstractNameBasedUuidCreator crator = UuidCreator.getNameBasedSha1Creator();
+
+				@Override
+				public void run() {
+					// Add DNS list
+					for (int i = 0; i < LIST_DNS.length; i++) {
+						String uuid = LIST_DNS[i][0];
+						String name = LIST_DNS[i][1];
+						UUID expected = UUID.fromString(uuid);
+						UUID actual = crator.create(UuidCreator.NAMESPACE_DNS, name);
+						if (actual.equals(expected)) {
+							list[threadId][0][i] = actual;
+						}
+					}
+
+					// Add URL list
+					for (int i = 0; i < LIST_URL.length; i++) {
+						String uuid = LIST_URL[i][0];
+						String name = LIST_URL[i][1];
+						UUID expected = UUID.fromString(uuid);
+						UUID actual = crator.create(UuidCreator.NAMESPACE_URL, name);
+						if (actual.equals(expected)) {
+							list[threadId][1][i] = actual;
+						}
+					}
+
+					// Add movies list
+					for (int i = 0; i < LIST_MOVIES.length; i++) {
+						String uuid = LIST_MOVIES[i][0];
+						String name = LIST_MOVIES[i][1];
+						UUID expected = UUID.fromString(uuid);
+						UUID actual = crator.create(NAMESPACE_MOVIES, name);
+						if (actual.equals(expected)) {
+							list[threadId][2][i] = actual;
+						}
+					}
+				}
+			});
+			threads[t].start();
+		}
+
+		// Wait all the threads to finish
+		for (Thread thread : threads) {
+			thread.join();
+		}
+
+		for (int t = 0; t < THREAD_TOTAL; t++) {
+			final int threadId = t;
+			// Check DNS list
+			for (int i = 0; i < LIST_DNS.length; i++) {
+				String uuid = LIST_DNS[i][0];
+				UUID expected = UUID.fromString(uuid);
+				assertEquals(expected, list[threadId][0][i]);
+			}
+
+			// Check URL list
+			for (int i = 0; i < LIST_URL.length; i++) {
+				String uuid = LIST_URL[i][0];
+				UUID expected = UUID.fromString(uuid);
+				assertEquals(expected, list[threadId][1][i]);
+			}
+
+			// Check movies list
+			for (int i = 0; i < LIST_MOVIES.length; i++) {
+				String uuid = LIST_MOVIES[i][0];
+				UUID expected = UUID.fromString(uuid);
+				assertEquals(expected, list[threadId][2][i]);
+			}
+		}
 	}
 }

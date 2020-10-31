@@ -69,6 +69,6 @@ public final class PrefixCombCreator extends AbstractRandomBasedUuidCreator {
 		msb = (msb & 0x000000000000ffffL) | ((timestamp & 0x0000ffffffffffffL) << 16);
 
 		// Set the version and variant bits
-		return new UUID(applyVersionBits(msb), applyVariantBits(lsb));
+		return getUuid(msb, lsb);
 	}
 }

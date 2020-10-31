@@ -75,6 +75,6 @@ public final class ShortPrefixCombCreator extends AbstractRandomBasedUuidCreator
 		msb = (msb & 0x0000ffffffffffffL) | ((timestamp & 0x000000000000ffffL) << 48);
 
 		// Set the version and variant bits
-		return new UUID(applyVersionBits(msb), applyVariantBits(lsb));
+		return getUuid(msb, lsb);
 	}
 }

@@ -69,6 +69,6 @@ public final class SuffixCombCreator extends AbstractRandomBasedUuidCreator {
 		lsb = (lsb << 48) | (timestamp & 0x0000ffffffffffffL);
 
 		// Set the version and variant bits
-		return new UUID(applyVersionBits(msb), applyVariantBits(lsb));
+		return getUuid(msb, lsb);
 	}
 }

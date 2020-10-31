@@ -24,8 +24,6 @@
 
 package com.github.f4b6a3.uuid.creator;
 
-import static com.github.f4b6a3.uuid.util.internal.ByteUtil.toNumber;
-
 import java.util.Random;
 import java.util.UUID;
 
@@ -68,11 +66,8 @@ public abstract class AbstractRandomBasedUuidCreator extends AbstractUuidCreator
 		final byte[] bytes = new byte[16];
 		this.randomStrategy.nextBytes(bytes);
 		
-		final long msb = toNumber(bytes, 0, 8);
-		final long lsb = toNumber(bytes, 8, 16);
-
 		// (1)(2) Set the version and variant bits
-		return new UUID(applyVersionBits(msb), applyVariantBits(lsb));
+		return getUuid(bytes);
 	}
 
 	/**

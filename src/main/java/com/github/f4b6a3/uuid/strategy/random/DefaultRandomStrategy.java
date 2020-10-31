@@ -25,7 +25,6 @@
 package com.github.f4b6a3.uuid.strategy.random;
 
 import java.security.SecureRandom;
-import java.util.Random;
 
 import com.github.f4b6a3.uuid.strategy.RandomStrategy;
 
@@ -36,7 +35,7 @@ import com.github.f4b6a3.uuid.strategy.RandomStrategy;
  */
 public final class DefaultRandomStrategy implements RandomStrategy {
 
-	protected static final ThreadLocal<Random> THREAD_LOCAL_RANDOM = ThreadLocal.withInitial(SecureRandom::new);
+	protected static final ThreadLocal<SecureRandom> THREAD_LOCAL_RANDOM = ThreadLocal.withInitial(SecureRandom::new);
 
 	@Override
 	public void nextBytes(byte[] bytes) {
