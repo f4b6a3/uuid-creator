@@ -51,7 +51,7 @@ public final class UuidValidator {
 	 * @throws InvalidUuidException if invalid
 	 */
 	public static void validate(final byte[] uuid) {
-		if (!isValid(uuid)) {
+		if (uuid == null || uuid.length != 16) {
 			throw new InvalidUuidException("Invalid UUID byte array.");
 		}
 	}
@@ -72,7 +72,7 @@ public final class UuidValidator {
 	 * @return true if valid, false if invalid
 	 */
 	public static boolean isValid(final String uuid) {
-		return (uuid != null && isValid(uuid.toCharArray()));
+		return uuid != null && isUuidString(uuid.toCharArray());
 	}
 
 	/**
@@ -87,22 +87,11 @@ public final class UuidValidator {
 	 * 12345678-ABCD-ABCD-ABCD-123456789ABCD   (36 hexadecimal chars, UPPER CASE and with hyphen)
 	 * </pre>
 	 * 
-	 * @param chars a UUID char array
+	 * @param uuid a UUID char array
 	 * @return true if valid, false if invalid
 	 */
-	public static boolean isValid(final char[] chars) {
-
-		if (chars == null) {
-			return false;
-		}
-
-		if (chars.length == 36) {
-			return isUuidWithHyphens(chars);
-		} else if (chars.length == 32) {
-			return isUuidWithoutHyphens(chars);
-		}
-
-		return false;
+	public static boolean isValid(final char[] uuid) {
+		return uuid != null && isUuidString(uuid);
 	}
 
 	/**
@@ -112,8 +101,8 @@ public final class UuidValidator {
 	 * @throws InvalidUuidException if invalid
 	 */
 	public static void validate(final String uuid) {
-		if (!isValid(uuid)) {
-			throw new InvalidUuidException("Invalid UUID string.");
+		if (uuid == null || !isUuidString(uuid.toCharArray())) {
+			throw new InvalidUuidException("Invalid UUID string: \"" + uuid + "\"");
 		}
 	}
 
@@ -124,37 +113,42 @@ public final class UuidValidator {
 	 * @throws InvalidUuidException if invalid
 	 */
 	public static void validate(final char[] uuid) {
-		if (!isValid(uuid)) {
-			throw new InvalidUuidException("Invalid UUID string.");
+		if (uuid == null || !isUuidString(uuid)) {
+			throw new InvalidUuidException("Invalid UUID string: \"" + (uuid == null ? null : new String(uuid)) + "\"");
 		}
 	}
 
-	private static boolean isUuidWithHyphens(final char[] chars) {
-		int i = 0;
-		// Firstly, check hexadecimal chars
-		while (i < chars.length) {
-			// Skip hyphen positions for now
-			if (i == 8 || i == 13 || i == 18 || i == 23) {
-				i++;
-			}
-			final int c = chars[i++];
-			if (!((c >= 0x30 && c <= 0x39) || (c >= 0x61 && c <= 0x66) || (c >= 0x41 && c <= 0x46))) {
-				// ASCII codes: 0-9, a-f, A-F
-				return false;
-			}
-		}
-		// Finally, check hyphens
-		return (chars[8] == '-' && chars[13] == '-' && chars[18] == '-' && chars[23] == '-');
-	}
+	/**
+	 * Checks if the UUID char array in the standard format.
+	 * 
+	 * <pre>
+	 * Examples of accepted formats:
+	 * 
+	 * 12345678abcdabcdabcd123456789abcd       (32 hexadecimal chars, lower case and without hyphen)
+	 * 12345678ABCDABCDABCD123456789ABCD       (32 hexadecimal chars, UPPER CASE and without hyphen)
+	 * 12345678-abcd-abcd-abcd-123456789abcd   (36 hexadecimal chars, lower case and with hyphen)
+	 * 12345678-ABCD-ABCD-ABCD-123456789ABCD   (36 hexadecimal chars, UPPER CASE and with hyphen)
+	 * </pre>
+	 * 
+	 * @param c a char array
+	 * @return true if valid, false if invalid
+	 */
+	protected static boolean isUuidString(final char[] c) {
 
-	private static boolean isUuidWithoutHyphens(final char[] chars) {
-		for (int i = 0; i < chars.length; i++) {
-			final int c = chars[i];
-			if (!((c >= 0x30 && c <= 0x39) || (c >= 0x61 && c <= 0x66) || (c >= 0x41 && c <= 0x46))) {
-				// ASCII codes: 0-9, a-f, A-F
+		int hyphens = 0;
+
+		for (int i = 0; i < c.length; i++) {
+			// Count hyphens in their standard positions
+			if ((c[i] == '-') && (i == 8 || i == 13 || i == 18 || i == 23)) {
+				hyphens++;
+				continue;
+			}
+			// ASCII codes: 0-9, a-f, A-F
+			if (!((c[i] >= 0x30 && c[i] <= 0x39) || (c[i] >= 0x61 && c[i] <= 0x66) || (c[i] >= 0x41 && c[i] <= 0x46))) {
 				return false;
 			}
 		}
-		return true;
+
+		return (c.length == 36 && hyphens == 4) || (c.length == 32 && hyphens == 0);
 	}
 }

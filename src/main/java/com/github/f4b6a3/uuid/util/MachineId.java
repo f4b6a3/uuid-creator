@@ -54,6 +54,12 @@ import static com.github.f4b6a3.uuid.util.internal.ByteUtil.toNumber;
  */
 public final class MachineId {
 
+	private static Long id;
+	private static UUID uuid;
+	private static String hexa;
+	private static byte[] hash;
+	private static String string;
+
 	private MachineId() {
 	}
 
@@ -65,8 +71,11 @@ public final class MachineId {
 	 * @return a number
 	 */
 	public static long getMachineId() {
-		final byte[] bytes = getMachineHash();
-		return toNumber(bytes, 0, 8);
+		if (id == null) {
+			final byte[] bytes = getMachineHash();
+			id = toNumber(bytes, 0, 8);
+		}
+		return id;
 	}
 
 	/**
@@ -79,11 +88,14 @@ public final class MachineId {
 	 * @return a UUID
 	 */
 	public static UUID getMachineUuid() {
-		final byte[] bytes = getMachineHash();
-		final long msb = toNumber(bytes, 0, 8);
-		final long lsb = toNumber(bytes, 8, 16);
-		final UUID uuid = new UUID(msb, lsb);
-		return applyVersion(uuid, 4);
+		if (uuid == null) {
+			final byte[] bytes = getMachineHash();
+			final long msb = toNumber(bytes, 0, 8);
+			final long lsb = toNumber(bytes, 8, 16);
+			uuid = new UUID(msb, lsb);
+			applyVersion(uuid, 4);
+		}
+		return uuid;
 	}
 
 	/**
@@ -94,8 +106,11 @@ public final class MachineId {
 	 * @return a string
 	 */
 	public static String getMachineHexa() {
-		final byte[] bytes = getMachineHash();
-		return toHexadecimal(bytes);
+		if (hexa == null) {
+			final byte[] bytes = getMachineHash();
+			hexa = toHexadecimal(bytes);
+		}
+		return hexa;
 	}
 
 	/**
@@ -104,8 +119,11 @@ public final class MachineId {
 	 * @return a byte array
 	 */
 	public static byte[] getMachineHash() {
-		final String string = getMachineString();
-		return MessageDigestHolder.digest(string);
+		if (hash == null) {
+			final String string = getMachineString();
+			hash = MessageDigestHolder.digest(string);
+		}
+		return hash;
 	}
 
 	/**
@@ -118,6 +136,10 @@ public final class MachineId {
 	 * @return a string
 	 */
 	public static String getMachineString() {
+
+		if (string != null) {
+			return string;
+		}
 
 		String hostName = null;
 		String nicMac = null;
@@ -154,7 +176,8 @@ public final class MachineId {
 			// do nothing
 		}
 
-		return String.join(" ", hostName, nicMac, nicAddr);
+		string = String.join(" ", hostName, nicMac, nicAddr);
+		return string;
 	}
 
 	/**

@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>3.1.1</version>
+  <version>3.1.2</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -965,36 +965,49 @@ This library provides some utilities for UUID validation, conversion, version ch
 
 ```java
 // Returns true if is valid (these examples are valid)
-UuidValidator.isValid("94d785b2-eb62-4eaa-88e7-2fe8fc5c3478");
-UuidValidator.isValid("94D785B2-EB62-4EAA-88E7-2FE8FC5C3478");
 UuidValidator.isValid("94d785b2eb624eaa88e72fe8fc5c3478");
 UuidValidator.isValid("94D785B2EB624EAA88E72FE8FC5C3478");
+UuidValidator.isValid("94d785b2-eb62-4eaa-88e7-2fe8fc5c3478");
+UuidValidator.isValid("94D785B2-EB62-4EAA-88E7-2FE8FC5C3478");
 ```
 
 ```java
 // Throws an exception if invalid (these examples are valid)
-UuidValidator.validate("033d4881-f059-4171-bc83-2fe89e5a2bed");
-UuidValidator.validate("033D4881-F059-4171-BC83-2FE89E5A2BED");
 UuidValidator.validate("033d4881f0594171bc832fe89e5a2bed");
 UuidValidator.validate("033D4881F0594171BC832FE89E5A2BED");
+UuidValidator.validate("033d4881-f059-4171-bc83-2fe89e5a2bed");
+UuidValidator.validate("033D4881-F059-4171-BC83-2FE89E5A2BED");
 ```
 
 ##### UuidConverter
 
 ```java
-// Convert a string into a UUID (formats that it can parse)
+// Convert a string into a UUID (these examples are valid)
+// It is much faster than `UUID.fromString(String)` in JDK 8 to 11.
 UUID uuid = UuidConverter.fromString("53ab5fd331ee4cb987792fe8a887b3be");
+UUID uuid = UuidConverter.fromString("53AB5FD331EE4CB987792FE8A887B3BE");
 UUID uuid = UuidConverter.fromString("53ab5fd3-31ee-4cb9-8779-2fe8a887b3be");
+UUID uuid = UuidConverter.fromString("53AB5FD3-31EE-4CB9-8779-2FE8A887B3BE");
 UUID uuid = UuidConverter.fromString("{53ab5fd3-31ee-4cb9-8779-2fe8a887b3be}");
+UUID uuid = UuidConverter.fromString("{53AB5FD3-31EE-4CB9-8779-2FE8A887B3BE}");
 UUID uuid = UuidConverter.fromString("urn:uuid:53ab5fd3-31ee-4cb9-8779-2fe8a887b3be");
+UUID uuid = UuidConverter.fromString("urn:uuid:53AB5FD3-31EE-4CB9-8779-2FE8A887B3BE");
+```
+
+```java
+// Convert UUID into a string
+// It is much faster than `UUID.toString(UUID)` in JDK 8.
+String string = UuidConverter.toString(uuid);
 ```
 
 ```java
 // Convert an array of bytes into a UUID
-Random random = new Random();
-byte[] bytes = new byte[16];
-random.nextBytes(bytes);
 UUID uuid = UuidConverter.fromBytes(bytes);
+```
+
+```java
+// Convert a UUID into an array of bytes
+byte[] bytes = UuidConverter.toBytes(uuid);
 ```
 
 ```java
@@ -1048,11 +1061,7 @@ UuidVariant variant = UuidUtil.getVariant(uuid);
 
 ```java
 // Apply a given version number to a UUID
-Random random = new Random();
-byte[] bytes = new byte[16];
-random.nextBytes(bytes);
-UUID uuid = UuidConverter.fromBytes(bytes);
-uuid = UuidUtil.applyVersion(uuid, 4);
+uuid = UuidUtil.applyVersion(uuid, 4); // 00000000-0000-4000-0000-000000000000
 ```
 
 ##### MachineId

@@ -32,7 +32,9 @@ import java.util.UUID;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
-import com.github.f4b6a3.uuid.util.UuidConverter;
+
+import static com.github.f4b6a3.uuid.util.UuidConverter.toBytes;
+import static com.github.f4b6a3.uuid.util.UuidConverter.fromString;
 
 /**
  * Factory that creates name-based UUIDs.
@@ -59,8 +61,8 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	protected byte[] namespace = null;
 	protected final String algorithm; // MD5 or SHA-1
 
-	protected static final String MESSAGE_DIGEST_MD5 = "MD5";
-	protected static final String MESSAGE_DIGEST_SHA1 = "SHA-1";
+	protected static final String ALGORITHM_MD5 = "MD5";
+	protected static final String ALGORITHM_SHA1 = "SHA-1";
 
 	/**
 	 * This constructor receives the name of a message digest.
@@ -79,12 +81,10 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * The (optional) namespace to be used is set by
 	 * {@link AbstractNameBasedUuidCreator#withNamespace(UUID)}
 	 * 
-	 * See: {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
-	 * 
 	 * @param name a byte array of the name
 	 * @return a name-based UUID
 	 */
-	public UUID create(byte[] name) {
+	public UUID create(final byte[] name) {
 		return create(this.namespace, name);
 	}
 
@@ -94,13 +94,16 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * The (optional) namespace to be used is set by
 	 * {@link AbstractNameBasedUuidCreator#withNamespace(UUID)}
 	 * 
-	 * See: {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
+	 * The name string is encoded into a sequence of bytes using the UTF-8
+	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
+	 * use {@link #create(byte[])} instead.
 	 * 
 	 * @param name a name string
 	 * @return a name-based UUID
 	 */
-	public UUID create(String name) {
-		return create(this.namespace, name.getBytes(StandardCharsets.UTF_8));
+	public UUID create(final String name) {
+		final byte[] n = name.getBytes(StandardCharsets.UTF_8);
+		return create(this.namespace, n);
 	}
 
 	/**
@@ -145,89 +148,94 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * 
 	 * (13) Convert the resulting UUID to local byte order.
 	 * 
-	 * @param namespace a name space UUID
+	 * @param namespace a name space UUID (optional)
 	 * @param name      a byte array of the name
 	 * @return a name-based UUID
 	 */
-	public UUID create(UUID namespace, byte[] name) {
-		return create(UuidConverter.toBytes(namespace), name);
+	public UUID create(final UUID namespace, final byte[] name) {
+		final byte[] ns = namespace == null ? null : toBytes(namespace);
+		return create(ns, name);
 	}
 
 	/**
 	 * Returns a name-based UUID.
 	 * 
-	 * See: {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
+	 * The name string is encoded into a sequence of bytes using the UTF-8
+	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
+	 * use {@link #create(UUID, byte[])} instead.
 	 * 
 	 * @param namespace a name space UUID (optional)
 	 * @param name      a name string
 	 * @return a name-based UUID
 	 */
-	public UUID create(UUID namespace, String name) {
-		return create(UuidConverter.toBytes(namespace), name.getBytes(StandardCharsets.UTF_8));
+	public UUID create(final UUID namespace, final String name) {
+		final byte[] ns = namespace == null ? null : toBytes(namespace);
+		final byte[] n = name.getBytes(StandardCharsets.UTF_8);
+		return create(ns, n);
 	}
 
 	/**
 	 * Returns a name-based UUID.
-	 * 
-	 * See: {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
 	 * 
 	 * @param namespace a name space UUID in string format (optional)
 	 * @param name      a byte array of the name
 	 * @return a name-based UUID
 	 * @throws InvalidUuidException if the namespace is invalid
 	 */
-	public UUID create(String namespace, byte[] name) {
-		return create(UuidConverter.fromString(namespace), name);
+	public UUID create(final String namespace, final byte[] name) {
+		final byte[] ns = namespace == null ? null : toBytes(fromString(namespace));
+		return create(ns, name);
 	}
 
 	/**
 	 * Returns a name-based UUID.
 	 * 
-	 * See: {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
+	 * The name string is encoded into a sequence of bytes using the UTF-8
+	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
+	 * use {@link #create(String, byte[])} instead.
 	 * 
 	 * @param namespace a name space UUID in string format (optional)
 	 * @param name      a name string
 	 * @return a name-based UUID
 	 * @throws InvalidUuidException if the namespace is invalid
 	 */
-	public UUID create(String namespace, String name) {
-		return create(UuidConverter.fromString(namespace), name.getBytes(StandardCharsets.UTF_8));
+	public UUID create(final String namespace, final String name) {
+		final byte[] ns = namespace == null ? null : toBytes(fromString(namespace));
+		final byte[] n = name.getBytes(StandardCharsets.UTF_8);
+		return create(ns, n);
 	}
 
 	/**
 	 * Returns a name-based UUID.
-	 * 
-	 * See: {@link UuidNamespace}.
-	 * 
-	 * See: {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
 	 * 
 	 * @param namespace a name space enumeration (optional)
 	 * @param name      a byte array of the name
 	 * @return a name-based UUID
 	 */
-	public UUID create(UuidNamespace namespace, byte[] name) {
-		return create(namespace.getValue(), name);
+	public UUID create(final UuidNamespace namespace, final byte[] name) {
+		final byte[] ns = namespace == null ? null : toBytes(namespace.getValue());
+		return create(ns, name);
 	}
 
 	/**
 	 * Returns a name-based UUID.
 	 * 
-	 * See: {@link UuidNamespace}.
-	 * 
-	 * See: {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
+	 * The name string is encoded into a sequence of bytes using the UTF-8
+	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
+	 * use {@link #create(UuidNamespace, byte[])} instead.
 	 * 
 	 * @param namespace a name space enumeration (optional)
 	 * @param name      a name string
 	 * @return a name-based UUID
 	 */
-	public UUID create(UuidNamespace namespace, String name) {
-		return create(namespace.getValue(), name.getBytes(StandardCharsets.UTF_8));
+	public UUID create(final UuidNamespace namespace, final String name) {
+		final byte[] ns = namespace == null ? null : toBytes(namespace.getValue());
+		final byte[] n = name.getBytes(StandardCharsets.UTF_8);
+		return create(ns, n);
 	}
 
 	/**
 	 * Returns a name-based UUID.
-	 * 
-	 * See: {@link AbstractNameBasedUuidCreator#create(UUID, byte[])}
 	 * 
 	 * @param namespace a byte array of the name space (optional)
 	 * @param name      a byte array of the name
@@ -235,13 +243,13 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	private UUID create(final byte[] namespace, final byte[] name) {
 
-		byte[] hash;
+		byte[] hash = null;
 		MessageDigest hasher;
 
 		try {
 			hasher = MessageDigest.getInstance(this.algorithm);
 		} catch (NoSuchAlgorithmException e) {
-			throw new IllegalArgumentException("Message digest algorithm not available", e);
+			throw new IllegalArgumentException("Message digest algorithm not available: " + this.algorithm, e);
 		}
 
 		// Compute the hash of the name space concatenated with the name
@@ -266,7 +274,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends AbstractNameBasedUuidCreator> T withNamespace(UUID namespace) {
-		this.namespace = UuidConverter.toBytes(namespace);
+		this.namespace = toBytes(namespace);
 		return (T) this;
 	}
 
@@ -283,14 +291,12 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends AbstractNameBasedUuidCreator> T withNamespace(String namespace) {
-		this.namespace = UuidConverter.toBytes(UuidConverter.fromString(namespace));
+		this.namespace = toBytes(fromString(namespace));
 		return (T) this;
 	}
 
 	/**
 	 * Sets a fixed name space to be used by default.
-	 * 
-	 * See: {@link UuidNamespace}.
 	 * 
 	 * The namespace provided will be used by the method
 	 * {@link AbstractNameBasedUuidCreator#create(String)}
@@ -301,7 +307,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized <T extends AbstractNameBasedUuidCreator> T withNamespace(UuidNamespace namespace) {
-		this.namespace = UuidConverter.toBytes(namespace.getValue());
+		this.namespace = toBytes(namespace.getValue());
 		return (T) this;
 	}
 }

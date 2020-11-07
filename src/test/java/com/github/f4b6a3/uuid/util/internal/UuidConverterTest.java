@@ -4,15 +4,15 @@ import static com.github.f4b6a3.uuid.util.UuidUtil.*;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import java.nio.ByteBuffer;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.util.UuidConverter;
-import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 public class UuidConverterTest {
 
-	private static final int DEFAULT_LOOP_LIMIT = 100;
+	private static final int DEFAULT_LOOP_LIMIT = 10_000;
 	
 	private static final String URN_PREFIX = "urn:uuid:";
 	
@@ -23,7 +23,7 @@ public class UuidConverterTest {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID random = UUID.randomUUID();
 			String expected = random.toString();
-			String actual = UuidConverter.toString(random);
+			String actual = UuidCreator.toString(random);
 			
 			checkPattern(actual);
 			assertEquals(expected, actual);
@@ -36,42 +36,42 @@ public class UuidConverterTest {
 		// Lower case with hyphens
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			String string = UUID.randomUUID().toString();
-			UUID uuid = UuidConverter.fromString(string);
+			UUID uuid = UuidCreator.fromString(string);
 			assertEquals(string, uuid.toString());
 		}
 
 		// Lower case without hyphens
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			String string = UUID.randomUUID().toString();
-			UUID uuid = UuidConverter.fromString(string.replace("-", ""));
+			UUID uuid = UuidCreator.fromString(string.replace("-", ""));
 			assertEquals(string, uuid.toString());
 		}
 
 		// Upper case with hyphens
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			String string = UUID.randomUUID().toString();
-			UUID uuid = UuidConverter.fromString(string.toUpperCase());
+			UUID uuid = UuidCreator.fromString(string.toUpperCase());
 			assertEquals(string, uuid.toString());
 		}
 
 		// Upper case without hyphens
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			String string = UUID.randomUUID().toString();
-			UUID uuid = UuidConverter.fromString(string.toUpperCase().replace("-", ""));
+			UUID uuid = UuidCreator.fromString(string.toUpperCase().replace("-", ""));
 			assertEquals(string, uuid.toString());
 		}
 		
 		// With URN prefix: "urn:uuid:"
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			String string = UUID.randomUUID().toString();
-			UUID uuid = UuidConverter.fromString(URN_PREFIX + string);
+			UUID uuid = UuidCreator.fromString(URN_PREFIX + string);
 			assertEquals(string, uuid.toString());
 		}
 		
 		// With curly braces: '{' and '}'
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			String string = UUID.randomUUID().toString();
-			UUID uuid = UuidConverter.fromString("{" + string + "}");
+			UUID uuid = UuidCreator.fromString("{" + string + "}");
 			assertEquals(string, uuid.toString());
 		}
 	}
@@ -80,9 +80,10 @@ public class UuidConverterTest {
 	public void testToBytes() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid1 = UUID.randomUUID();
-			byte[] bytes = UuidConverter.toBytes(uuid1);
-			long msb = ByteUtil.toNumber(bytes, 0, 8);
-			long lsb = ByteUtil.toNumber(bytes, 8, 16);
+			byte[] bytes = UuidCreator.toBytes(uuid1);
+			ByteBuffer buffer = ByteBuffer.wrap(bytes);
+			long msb = buffer.getLong(0);
+			long lsb = buffer.getLong(8);
 			UUID uuid2 = new UUID(msb, lsb);
 			assertEquals(uuid1, uuid2);
 		}
@@ -92,8 +93,11 @@ public class UuidConverterTest {
 	public void testFromBytes() {
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid1 = UUID.randomUUID();
-			byte[] bytes = UuidConverter.toBytes(uuid1);
-			UUID uuid2 = UuidConverter.fromBytes(bytes);
+			ByteBuffer buffer = ByteBuffer.allocate(16);
+			buffer.putLong(uuid1.getMostSignificantBits());
+			buffer.putLong(uuid1.getLeastSignificantBits());
+			byte[] bytes = buffer.array();
+			UUID uuid2 = UuidCreator.fromBytes(bytes);
 			assertEquals(uuid1, uuid2);
 		}
 	}
@@ -201,6 +205,6 @@ public class UuidConverterTest {
 	}
 	
 	private void checkPattern(String string) {
-		assertTrue(string.toString().matches(RFC4122_PATTERN));
+		assertTrue("Doesn't match the pattern: " + string, string.toString().matches(RFC4122_PATTERN));
 	}
 }

@@ -61,7 +61,17 @@ public final class UuidCreator {
 
 	private UuidCreator() {
 	}
-	
+
+	/**
+	 * Get the array of bytes from a UUID.
+	 * 
+	 * @param uuid a UUID
+	 * @return an array of bytes
+	 */
+	public static byte[] toBytes(final UUID uuid) {
+		return UuidConverter.toBytes(uuid);
+	}
+
 	/**
 	 * Returns a UUID from a byte array.
 	 * 
@@ -73,6 +83,20 @@ public final class UuidCreator {
 	 */
 	public static UUID fromBytes(byte[] uuid) {
 		return UuidConverter.fromBytes(uuid);
+	}
+
+	/**
+	 * Get a string from a UUID.
+	 * 
+	 * It is much faster than {@link UUID#toString()} in JDK 8.
+	 * 
+	 * In JDK9+ prefer {@link UUID#toString()}.
+	 * 
+	 * @param uuid a UUID
+	 * @return a UUID string
+	 */
+	public static String toString(UUID uuid) {
+		return UuidConverter.toString(uuid);
 	}
 
 	/**
@@ -88,7 +112,7 @@ public final class UuidCreator {
 	 * 
 	 * - With or without hyphens.
 	 * 
-	 * It's a better alternative to {@link java.util.UUID#fromString(String)}.
+	 * It is much faster than {@link UUID#fromString(String)} in JDK 8 to 11.
 	 * 
 	 * @param string a UUID string
 	 * @return a UUID
@@ -347,6 +371,10 @@ public final class UuidCreator {
 	 * - Name Space: NO
 	 * </pre>
 	 * 
+	 * The name string is encoded into a sequence of bytes using the UTF-8
+	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
+	 * use {@link #getNameBasedMd5(byte[])} instead.
+	 * 
 	 * @param name a name string
 	 * @return a version 3 UUID
 	 */
@@ -381,6 +409,10 @@ public final class UuidCreator {
 	 * - Name Space: YES (custom)
 	 * </pre>
 	 * 
+	 * The name string is encoded into a sequence of bytes using the UTF-8
+	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
+	 * use {@link #getNameBasedMd5(UUID, byte[])} instead.
+	 * 
 	 * @param namespace a custom name space UUID
 	 * @param name      a name string
 	 * @return a version 3 UUID
@@ -406,7 +438,7 @@ public final class UuidCreator {
 	public static UUID getNameBasedMd5(UUID namespace, byte[] name) {
 		return NameBasedMd5CreatorHolder.INSTANCE.create(namespace, name);
 	}
-	
+
 	/**
 	 * Returns a name-based UUID (MD5).
 	 *
@@ -416,6 +448,10 @@ public final class UuidCreator {
 	 * - Hash Algorithm: MD5 
 	 * - Name Space: YES (custom)
 	 * </pre>
+	 * 
+	 * The name string is encoded into a sequence of bytes using the UTF-8
+	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
+	 * use {@link #getNameBasedMd5(String, byte[])} instead.
 	 * 
 	 * @param namespace a custom name space UUID in string format
 	 * @param name      a name string
@@ -455,6 +491,10 @@ public final class UuidCreator {
 	 * - Name Space: YES (predefined)
 	 * </pre>
 	 * 
+	 * The name string is encoded into a sequence of bytes using the UTF-8
+	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
+	 * use {@link #getNameBasedMd5(UuidNamespace, byte[])} instead.
+	 * 
 	 * <pre>
 	 * Name spaces predefined by RFC-4122 (Appendix C):
 	 * 
@@ -463,6 +503,7 @@ public final class UuidCreator {
 	 * - NAMESPACE_ISO_OID: Name string is an ISO OID;
 	 * - NAMESPACE_X500_DN: Name string is an X.500 DN (in DER or a text format).
 	 * </pre>
+	 * 
 	 * 
 	 * See: {@link UuidNamespace}.
 	 * 
@@ -512,6 +553,10 @@ public final class UuidCreator {
 	 * - Hash Algorithm: SHA1 
 	 * - Name Space: NO
 	 * </pre>
+	 *
+	 * The name string is encoded into a sequence of bytes using the UTF-8
+	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
+	 * use {@link #getNameBasedSha1(byte[])} instead.
 	 * 
 	 * @param name a name string
 	 * @return a version 5 UUID
@@ -546,6 +591,10 @@ public final class UuidCreator {
 	 * - Hash Algorithm: SHA1 
 	 * - Name Space: YES (custom)
 	 * </pre>
+	 * 
+	 * The name string is encoded into a sequence of bytes using the UTF-8
+	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
+	 * use {@link #getNameBasedSha1(UUID, byte[])} instead.
 	 * 
 	 * @param namespace a custom name space UUID
 	 * @param name      a name string
@@ -583,6 +632,10 @@ public final class UuidCreator {
 	 * - Name Space: YES (custom)
 	 * </pre>
 	 * 
+	 * The name string is encoded into a sequence of bytes using the UTF-8
+	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
+	 * use {@link #getNameBasedSha1(String, byte[])} instead.
+	 * 
 	 * @param namespace a custom name space UUID in string format
 	 * @param name      a name string
 	 * @return a version 5 UUID
@@ -610,7 +663,7 @@ public final class UuidCreator {
 	public static UUID getNameBasedSha1(String namespace, byte[] name) {
 		return NameBasedSha1CreatorHolder.INSTANCE.create(namespace, name);
 	}
-	
+
 	/**
 	 * Returns a name-based UUID (SHA1).
 	 *
@@ -620,6 +673,10 @@ public final class UuidCreator {
 	 * - Hash Algorithm: SHA1 
 	 * - Name Space: YES (predefined)
 	 * </pre>
+	 * 
+	 * The name string is encoded into a sequence of bytes using the UTF-8
+	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
+	 * use {@link #getNameBasedSha1(UuidNamespace, byte[])} instead.
 	 * 
 	 * <pre>
 	 * Name spaces predefined by RFC-4122 (Appendix C):

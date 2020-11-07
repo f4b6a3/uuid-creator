@@ -65,14 +65,14 @@ public final class ByteUtil {
 	/**
 	 * Get a number from a given array of bytes.
 	 * 
-	 * @param bytes  a byte array
-	 * @param start  first byte of the number
-	 * @param length byte length of the number
+	 * @param bytes a byte array
+	 * @param start first byte of the array
+	 * @param end   last byte of the array (exclusive)
 	 * @return a long
 	 */
-	public static long toNumber(final byte[] bytes, final int start, final int length) {
+	public static long toNumber(final byte[] bytes, final int start, final int end) {
 		long result = 0;
-		for (int i = start; i < length; i++) {
+		for (int i = start; i < end; i++) {
 			result = (result << 8) | (bytes[i] & 0xff);
 		}
 		return result;
@@ -197,8 +197,7 @@ public final class ByteUtil {
 	 * @param chr a character
 	 * @return an integer
 	 */
-	private static int fromHexChar(final char chr) {
-		final int c = chr;
+	private static int fromHexChar(final char c) {
 		if (c >= 0x30 && c <= 0x39) {
 			// ASCII codes from 0 to 9
 			return c - 0x30;
@@ -209,7 +208,6 @@ public final class ByteUtil {
 			// ASCII codes from 'A' to 'F'
 			return c - 0x37;
 		}
-
 		return 0;
 	}
 

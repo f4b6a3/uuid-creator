@@ -101,9 +101,9 @@ public final class MacNodeIdentifierStrategy implements NodeIdentifierStrategy {
 			// first try: return the MAC associated to the host name
 			InetAddress ip = InetAddress.getLocalHost();
 			NetworkInterface nic = NetworkInterface.getByInetAddress(ip);
-			if (nic != null) {
+			if (nic != null && !nic.isLoopback()) {
 				byte[] mac = nic.getHardwareAddress();
-				if (!nic.isLoopback() && mac != null && mac.length == 6) {
+				if (mac != null && mac.length == 6) {
 					return toNumber(mac);
 				}
 			}

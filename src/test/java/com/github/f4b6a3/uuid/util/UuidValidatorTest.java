@@ -2,12 +2,16 @@ package com.github.f4b6a3.uuid.util;
 
 import static org.junit.Assert.*;
 
+import java.util.UUID;
+
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.UuidValidator;
 
 public class UuidValidatorTest {
+
+	private static final int DEFAULT_LOOP_LIMIT = 10_000;
 
 	@Test
 	public void testIsValidBytes() {
@@ -46,20 +50,22 @@ public class UuidValidatorTest {
 		assertTrue("UUID with length equals to 36 should be valid.", UuidValidator.isValid(uuid));
 
 		uuid = "01234567-89ab-4def-abcd-ef01-3456789"; // String length = 36, but an extra hyphen
-		assertFalse("UUID with length equals to 36 with an extra hyphen should be invalid.", UuidValidator.isValid(uuid));
+		assertFalse("UUID with length equals to 36 with an extra hyphen should be invalid.",
+				UuidValidator.isValid(uuid));
 
 		uuid = "01234567-89ab-4def-abcddef0123456789"; // String length = 36, but a missing hyphen
-		assertFalse("UUID with length equals to 36 with a missing hyphen should be invalid.", UuidValidator.isValid(uuid));
-		
+		assertFalse("UUID with length equals to 36 with a missing hyphen should be invalid.",
+				UuidValidator.isValid(uuid));
+
 		uuid = "0123456789ab4defabcdef0123456789"; // String length = 32
 		assertTrue("UUID with length equals to 32 should be valid.", UuidValidator.isValid(uuid));
-		
+
 		uuid = "0123456789ab4defabcdef012345678"; // String length = 31
 		assertFalse("UUID with length equals to 31 should be invalid.", UuidValidator.isValid(uuid));
 
 		uuid = "0123456789ab4defabcdef01234567899"; // String length = 33
 		assertFalse("UUID with length equals to 33 should be invalid.", UuidValidator.isValid(uuid));
-		
+
 		uuid = "01234567-89ab-4def-abcd-ef0123456789"; // All lower case
 		assertTrue("UUID in lower case should be valid.", UuidValidator.isValid(uuid));
 
@@ -90,6 +96,34 @@ public class UuidValidatorTest {
 			fail();
 		} catch (InvalidUuidException e) {
 			// Success
+		}
+	}
+
+	@Test
+	public void testIsUuidString() {
+
+		// Lower case with hyphens
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			String string = UUID.randomUUID().toString();
+			assertTrue(UuidValidator.isUuidString(string.toCharArray()));
+		}
+
+		// Lower case without hyphens
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			String string = UUID.randomUUID().toString();
+			assertTrue(UuidValidator.isUuidString(string.replace("-", "").toCharArray()));
+		}
+
+		// Upper case with hyphens
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			String string = UUID.randomUUID().toString();
+			assertTrue(UuidValidator.isUuidString(string.toUpperCase().toCharArray()));
+		}
+
+		// Upper case without hyphens
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			String string = UUID.randomUUID().toString();
+			assertTrue(UuidValidator.isUuidString(string.toUpperCase().replace("-", "").toCharArray()));
 		}
 	}
 }

@@ -35,6 +35,6 @@ public final class NameBasedSha1UuidCreator extends AbstractNameBasedUuidCreator
 	 * RFC-4122 version: 5.
 	 */
 	public NameBasedSha1UuidCreator() {
-		super(UuidVersion.VERSION_NAME_BASED_SHA1, MESSAGE_DIGEST_SHA1);
+		super(UuidVersion.VERSION_NAME_BASED_SHA1, ALGORITHM_SHA1);
 	}	
 }

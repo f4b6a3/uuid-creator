@@ -35,6 +35,6 @@ public final class NameBasedMd5UuidCreator extends AbstractNameBasedUuidCreator 
 	 * RFC-4122 version: 3.
 	 */
 	public NameBasedMd5UuidCreator() {
-		super(UuidVersion.VERSION_NAME_BASED_MD5, MESSAGE_DIGEST_MD5);
+		super(UuidVersion.VERSION_NAME_BASED_MD5, ALGORITHM_MD5);
 	}
 }
