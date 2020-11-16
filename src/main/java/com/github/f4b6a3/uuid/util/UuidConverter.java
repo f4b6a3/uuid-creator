@@ -208,7 +208,7 @@ public final class UuidConverter {
 	 * 
 	 * - With or without hyphens.
 	 * 
-	 * It is much faster than {@link UUID#fromString(String)} in JDK 8 to 11.
+	 * It is much faster than {@link UUID#fromString(String)} in JDK 8.
 	 * 
 	 * @param string a UUID string
 	 * @return a UUID
@@ -216,11 +216,9 @@ public final class UuidConverter {
 	 */
 	public static UUID fromString(String string) {
 
-		long msb = 0;
-		long lsb = 0;
-		char[] chars = string.toCharArray();
+		char[] chars = string == null ? new char[0] : string.toCharArray();
 
-		if (chars[0] == 'u' && string.indexOf(URN_PREFIX) == 0) {
+		if (chars[0] == 'u' && string != null && string.indexOf(URN_PREFIX) == 0) {
 			// Remove URN prefix: "urn:uuid:"
 			char[] substring = new char[chars.length - 9];
 			System.arraycopy(chars, 9, substring, 0, substring.length);
@@ -234,6 +232,9 @@ public final class UuidConverter {
 
 		UuidValidator.validate(chars);
 
+		long msb = 0;
+		long lsb = 0;
+		
 		if (chars.length == 32) {
 			// UUID string WITHOUT hyphen
 			msb |= HEX_VALUES[chars[0x00]] << 60;

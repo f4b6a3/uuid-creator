@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>3.1.2</version>
+  <version>3.1.3</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -983,7 +983,7 @@ UuidValidator.validate("033D4881-F059-4171-BC83-2FE89E5A2BED");
 
 ```java
 // Convert a string into a UUID (these examples are valid)
-// It is much faster than `UUID.fromString(String)` in JDK 8 to 11.
+// It is much faster than `UUID.fromString(String)` in JDK 8.
 UUID uuid = UuidConverter.fromString("53ab5fd331ee4cb987792fe8a887b3be");
 UUID uuid = UuidConverter.fromString("53AB5FD331EE4CB987792FE8A887B3BE");
 UUID uuid = UuidConverter.fromString("53ab5fd3-31ee-4cb9-8779-2fe8a887b3be");
@@ -1082,26 +1082,31 @@ Benchmark
 This section shows benchmarks using JMH v1.23.
 
 ```text
--------------------------------------------------------------------------------
-THROUGHPUT (operations/millis)
--------------------------------------------------------------------------------
-Benchmark                                Mode  Cnt     Score    Error   Units
--------------------------------------------------------------------------------
-Throughput.JDK_RandomBased              thrpt    5  2177,034 ± 12,483  ops/ms
-Throughput.JDK_NameBasedMd5             thrpt    5  3238,463 ± 54,932  ops/ms
-Throughput.UuidCreator_RandomBased      thrpt    5  2172,602 ± 12,425  ops/ms
-Throughput.UuidCreator_NameBasedMd5     thrpt    5  3197,579 ± 18,163  ops/ms
-Throughput.UuidCreator_NameBasedSha1    thrpt    5  2475,547 ± 31,032  ops/ms
-Throughput.UuidCreator_PrefixComb       thrpt    5  2876,617 ± 25,612  ops/ms
-Throughput.UuidCreator_ShortPrefixComb  thrpt    5  2227,698 ± 12,688  ops/ms
-Throughput.UuidCreator_TimeBased        thrpt    5  9971,924 ±  9,817  ops/ms
-Throughput.UuidCreator_TimeOrdered      thrpt    5  9972,807 ±  3,678  ops/ms
--------------------------------------------------------------------------------
-Total time: 00:12:02
--------------------------------------------------------------------------------
+================================================================================
+THROUGHPUT (operations/millis)           Mode  Cnt      Score     Error   Units
+================================================================================
+Throughput.JDK_toString                 thrpt    5   2915,524 ±  86,400  ops/ms
+Throughput.JDK_fromString               thrpt    5   1938,784 ±  88,818  ops/ms
+Throughput.JDK_RandomBased              thrpt    5   2050,995 ±  21,636  ops/ms
+Throughput.JDK_NameBasedMd5             thrpt    5   2809,598 ±  73,894  ops/ms
+--------------------------------------------------------------------------------
+Throughput.UuidCreator_toString   (7x)  thrpt    5  20940,350 ± 244,373  ops/ms (*)
+Throughput.UuidCreator_fromString (5x)  thrpt    5  10229,685 ± 286,160  ops/ms
+Throughput.UuidCreator_RandomBased      thrpt    5   2017,299 ±  23,892  ops/ms
+Throughput.UuidCreator_PrefixComb       thrpt    5   2665,831 ±  49,381  ops/ms
+Throughput.UuidCreator_ShortPrefixComb  thrpt    5   2082,030 ±  19,635  ops/ms
+Throughput.UuidCreator_NameBasedMd5     thrpt    5   2847,436 ±  56,548  ops/ms
+Throughput.UuidCreator_NameBasedSha1    thrpt    5   2155,267 ±  48,075  ops/ms
+Throughput.UuidCreator_TimeBased        thrpt    5   9892,718 ±  38,906  ops/ms
+Throughput.UuidCreator_TimeOrdered      thrpt    5   9898,455 ±  24,376  ops/ms
+================================================================================
+Total time: 00:17:20
+================================================================================
 ```
 
-Benchmarks executed in a PC with Ubuntu 20.04, JVM 11, CPU Intel i5-3330 and 8GB RAM.
+(*) The methods `UuidCreator.toString()` and `UuidCreator.fromString()` are much faster only in JDK 8.
+
+Benchmarks executed in a PC with JDK 8, Ubuntu 20.04, CPU Intel i5-3330 and 8GB RAM.
 
 You can find the benchmark source code at [uuid-creator-benchmark](https://github.com/fabiolimace/uuid-creator-benchmark).
 

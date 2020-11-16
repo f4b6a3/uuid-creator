@@ -72,11 +72,11 @@ public final class UuidValidator {
 	 * @return true if valid, false if invalid
 	 */
 	public static boolean isValid(final String uuid) {
-		return uuid != null && isUuidString(uuid.toCharArray());
+		return uuid != null && uuid.length() != 0 && isUuidString(uuid.toCharArray());
 	}
 
 	/**
-	 * Checks if the UUID string is valid.
+	 * Checks if the UUID char array is valid.
 	 * 
 	 * <pre>
 	 * Examples of accepted formats:
@@ -91,7 +91,7 @@ public final class UuidValidator {
 	 * @return true if valid, false if invalid
 	 */
 	public static boolean isValid(final char[] uuid) {
-		return uuid != null && isUuidString(uuid);
+		return uuid != null && uuid.length != 0 && isUuidString(uuid);
 	}
 
 	/**
@@ -101,8 +101,8 @@ public final class UuidValidator {
 	 * @throws InvalidUuidException if invalid
 	 */
 	public static void validate(final String uuid) {
-		if (uuid == null || !isUuidString(uuid.toCharArray())) {
-			throw new InvalidUuidException("Invalid UUID string: \"" + uuid + "\"");
+		if (uuid == null || uuid.length() == 0 || !isUuidString(uuid.toCharArray())) {
+			throw new InvalidUuidException("Invalid UUID: \"" + uuid + "\"");
 		}
 	}
 
@@ -113,8 +113,8 @@ public final class UuidValidator {
 	 * @throws InvalidUuidException if invalid
 	 */
 	public static void validate(final char[] uuid) {
-		if (uuid == null || !isUuidString(uuid)) {
-			throw new InvalidUuidException("Invalid UUID string: \"" + (uuid == null ? null : new String(uuid)) + "\"");
+		if (uuid == null || uuid.length == 0 || !isUuidString(uuid)) {
+			throw new InvalidUuidException("Invalid UUID: \"" + (uuid == null ? null : new String(uuid)) + "\"");
 		}
 	}
 
