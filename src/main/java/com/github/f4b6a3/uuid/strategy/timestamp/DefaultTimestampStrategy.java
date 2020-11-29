@@ -24,8 +24,6 @@
 
 package com.github.f4b6a3.uuid.strategy.timestamp;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
 import com.github.f4b6a3.uuid.util.UuidTime;
 import com.github.f4b6a3.uuid.util.internal.SharedRandom;
@@ -35,7 +33,7 @@ import com.github.f4b6a3.uuid.util.internal.SharedRandom;
  * 
  * This is an implementation of {@link TimestampStrategy} that provides
  * millisecond resolution. The timestamp resolution is simulated by adding the
- * next value of a counter that is incremented at every call to the method
+ * next value of a counter that is calculated at every call to the method
  * {@link TimestampStrategy#getTimestamp()}.
  * 
  * The counter's range is from 0 to 9,999, that is, the number of 100-nanosecond
@@ -70,67 +68,56 @@ import com.github.f4b6a3.uuid.util.internal.SharedRandom;
  */
 public final class DefaultTimestampStrategy implements TimestampStrategy {
 
-	private AtomicInteger counter;
-	private long lastTimestamp = 0;
+	// Initiate the counter with a number between 0 and 255
+	private long counter = SharedRandom.nextLong() & COUNTER_RESET;
+	private long prevTime = UuidTime.getCurrentTimestamp();
+	private long prevTick = System.nanoTime() / TICK_UNIT;
 
 	// RFC-4122 - 4.2.1.2 (P2):
 	// the number of 100-nanosecond intervals per system interval
-	protected static final int COUNTER_MAX = 10_000;
-
-	private static final int COUNTER_INITIAL_MASK = 0xff; // 255
-
-	public DefaultTimestampStrategy() {
-		// Initiate the counter with a number between 0 and 255
-		int initial = SharedRandom.nextInt() & COUNTER_INITIAL_MASK;
-		this.counter = new AtomicInteger(initial);
-	}
-
-	/**
-	 * Get the next current timestamp.
-	 * 
-	 * The timestamp has millisecond accuracy. An internal counter is added to the
-	 * timestamp to simulate the resolution of 100-nanoseconds.
-	 * 
-	 * @return the current timestamp
-	 */
+	private static final long COUNTER_LIMIT = 10_000; // 10,000 ticks = 1ms
+	private static final long COUNTER_RESET = 255; // 255 ticks = 0xff
+	private static final long TICK_UNIT = 100; // 1 tick = 100ns
+	
 	@Override
 	public long getTimestamp() {
 
-		long timestamp = UuidTime.getCurrentTimestamp();
+		// get the current time and tick
+		final long time = UuidTime.getCurrentTimestamp();
+		final long tick = System.nanoTime() / TICK_UNIT;
 
-		if (timestamp == this.lastTimestamp) {
-			if (this.counter.incrementAndGet() >= COUNTER_MAX) {
-				this.resetCounter();
+		if (time == prevTime) {
+			// if the time is the same:
+			// calculate the elapsed ticks since the last call
+			final long elapsed = (tick - prevTick);
+			if (elapsed > 1L && elapsed < (COUNTER_LIMIT - counter)) {
+				// if the elapsed ticks are between the valid range:
+				// add the elapsed ticks to the counter
+				counter += elapsed;
+			} else {
+				// otherwise, increment the counter
+				counter++;
+			}
+
+			if (counter >= COUNTER_LIMIT) {
+				// if the counter goes beyond the limit:
 				// RFC-4122 - 4.2.1.2 (P3):
 				// Too many UUIDs within a single system time interval
-				timestamp = nextTimestamp(timestamp);
+				while (time == UuidTime.getCurrentTimestamp()) {
+					// wait the time change for the next call
+				}
 			}
 		} else {
-			this.resetCounter();
+			// reset the counter to a number between 0 and 255
+			counter = ++counter & COUNTER_RESET;
 		}
 
-		this.lastTimestamp = timestamp;
+		// save time and tick for the next call
+		prevTime = time;
+		prevTick = tick;
+
 		// RFC-4122 - 4.2.1.2 (P4):
-		// simulate high resolution timestamp
-		return timestamp + this.counter.get();
-	}
-
-	/**
-	 * Stall the creator until the system clock catches up.
-	 */
-	private long nextTimestamp(long timestamp) {
-		while (timestamp <= this.lastTimestamp) {
-			timestamp = UuidTime.getCurrentTimestamp();
-		}
-		return timestamp;
-	}
-
-	/**
-	 * Resets and returns the counter value to a number between 0 and 255.
-	 * 
-	 * @return the a value between 0 and 255.
-	 */
-	private void resetCounter() {
-		this.counter.updateAndGet(x -> ++x & COUNTER_INITIAL_MASK);
+		// simulate high resolution
+		return time + counter;
 	}
 }

@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>3.1.3</version>
+  <version>3.2.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -124,7 +124,7 @@ UUID uuid = UuidCreator.getTimeBased(myInstant, null, null);
 ```
 
 ```java
-// Time-ordered with a clock sequence chosen by you
+// Time-based with a clock sequence chosen by you
 Integer myClockSeq = 0xAAAA; // Override the random clock sequence
 UUID uuid = UuidCreator.getTimeBased(null, myClockSeq, null);
 ```
@@ -549,15 +549,13 @@ You can create a strategy that implements the `TimestampStrategy` if you don't l
 
 ##### Counter
 
-The counter range is from 0 to 9,999. It is instantiated with a random number between 0 and 255.
+The counter range is from 0 to 9,999. It is instantiated with a random number between 0 and 255. 
 
-Every time a request is made at the same millisecond, the counter is increased by 1. 
+Every time a request is made within the same millisecond, the elapsed time between two calls is added to the counter.
 
 The timestamp is calculated with this formula: MILLISECONDS * 10,000 + COUNTER.
 
 ###### Overrun
-
-If the counter reaches the maximum of 10,000 within a single millisecond, the generator waits for next millisecond.
 
 The RFC-4122 requires that:
 
@@ -567,6 +565,8 @@ The RFC-4122 requires that:
    return an error, or stall the UUID generator until the system clock
    catches up.
 ```
+
+If the counter reaches the maximum of 10,000 within a single millisecond, the generator waits for next millisecond.
 
 You probably don't have to worry if your application doesn't reach the theoretical limit of **10 million UUIDs per second per node (10k/ms/node)**.
 
@@ -1083,7 +1083,7 @@ This section shows benchmarks using JMH v1.23.
 
 ```text
 ================================================================================
-THROUGHPUT (operations/millis)           Mode  Cnt      Score     Error   Units
+THROUGHPUT (operations/msec)             Mode  Cnt      Score     Error   Units
 ================================================================================
 Throughput.JDK_toString                 thrpt    5   2915,524 ±  86,400  ops/ms
 Throughput.JDK_fromString               thrpt    5   1938,784 ±  88,818  ops/ms
@@ -1097,8 +1097,8 @@ Throughput.UuidCreator_PrefixComb       thrpt    5   2665,831 ±  49,381  ops/ms
 Throughput.UuidCreator_ShortPrefixComb  thrpt    5   2082,030 ±  19,635  ops/ms
 Throughput.UuidCreator_NameBasedMd5     thrpt    5   2847,436 ±  56,548  ops/ms
 Throughput.UuidCreator_NameBasedSha1    thrpt    5   2155,267 ±  48,075  ops/ms
-Throughput.UuidCreator_TimeBased        thrpt    5   9892,718 ±  38,906  ops/ms
-Throughput.UuidCreator_TimeOrdered      thrpt    5   9898,455 ±  24,376  ops/ms
+Throughput.UuidCreator_TimeBased        thrpt    5   9748,507 ±  77,969  ops/ms
+Throughput.UuidCreator_TimeOrdered      thrpt    5   9784,130 ±  74,655  ops/ms
 ================================================================================
 Total time: 00:17:20
 ================================================================================

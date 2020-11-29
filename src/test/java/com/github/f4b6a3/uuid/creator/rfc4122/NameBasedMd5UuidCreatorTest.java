@@ -6,15 +6,31 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.creator.AbstractNameBasedUuidCreator;
 import com.github.f4b6a3.uuid.creator.AbstractUuidCreatorTest;
 import com.github.f4b6a3.uuid.creator.rfc4122.NameBasedMd5UuidCreator;
+import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 
 import static org.junit.Assert.assertEquals;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class NameBasedMd5UuidCreatorTest extends AbstractUuidCreatorTest {
 
 	private static final int DEFAULT_LOOP_MAX = 100;
+
+	private static final Charset UTF8 = StandardCharsets.UTF_8;
+
+	private static final UuidNamespace NAMESPACE_DNS_ENUM = UuidNamespace.NAMESPACE_DNS;
+	private static final UuidNamespace NAMESPACE_URL_ENUM = UuidNamespace.NAMESPACE_URL;
+
+	private static final UUID NAMESPACE_DNS_UUID = UuidNamespace.NAMESPACE_DNS.getValue();
+	private static final UUID NAMESPACE_URL_UUID = UuidNamespace.NAMESPACE_URL.getValue();
+	private static final UUID NAMESPACE_MOVIES_UUID = UUID.fromString("3c20a4dd-157c-4e22-865a-89632154b825");
+
+	private static final String NAMESPACE_DNS_STRING = UuidNamespace.NAMESPACE_DNS.getValue().toString();
+	private static final String NAMESPACE_URL_STRING = UuidNamespace.NAMESPACE_URL.getValue().toString();
+	private static final String NAMESPACE_MOVIES_STRING = "3c20a4dd-157c-4e22-865a-89632154b825";
 
 	/**
 	 * 
@@ -61,7 +77,6 @@ public class NameBasedMd5UuidCreatorTest extends AbstractUuidCreatorTest {
 			{ "556cf76b-3b36-3ae6-85f9-50424b369b50", "http://www.example.com/" }, //
 	};
 
-	private static final UUID NAMESPACE_MOVIES = UUID.fromString("3c20a4dd-157c-4e22-865a-89632154b825");
 	private static final String[][] LIST_MOVIES = { //
 			{ "4c466e80-59cc-3ccb-a5f8-79b80c136261", "Animal Crackers" }, //
 			{ "d1d5c821-ead5-3c08-aab2-0ee89700991d", "Black Water: Abyss" }, //
@@ -104,6 +119,13 @@ public class NameBasedMd5UuidCreatorTest extends AbstractUuidCreatorTest {
 	@Test
 	public void testNameBasedMd5NamespaceDns() {
 
+		NameBasedMd5UuidCreator creator1;
+		NameBasedMd5UuidCreator creator2;
+		NameBasedMd5UuidCreator creator3;
+		NameBasedMd5UuidCreator creator4;
+		NameBasedMd5UuidCreator creator5;
+		NameBasedMd5UuidCreator creator6;
+
 		// Test methods of the facade UuidCreator
 		for (int i = 0; i < LIST_DNS.length; i++) {
 
@@ -111,13 +133,12 @@ public class NameBasedMd5UuidCreatorTest extends AbstractUuidCreatorTest {
 			String name = LIST_DNS[i][1];
 
 			UUID expected = UUID.fromString(uuid);
-			UUID actual1 = UuidCreator.getNameBasedMd5(UuidCreator.NAMESPACE_DNS, name);
-			UUID actual2 = UuidCreator.getNameBasedMd5(UuidCreator.NAMESPACE_DNS, name.getBytes());
-			UUID actual3 = UuidCreator.getNameBasedMd5(UuidCreator.NAMESPACE_DNS.getValue(), name);
-			UUID actual4 = UuidCreator.getNameBasedMd5(UuidCreator.NAMESPACE_DNS.getValue(), name.getBytes());
-			UUID actual5 = UuidCreator.getNameBasedMd5(UuidCreator.NAMESPACE_DNS.getValue().toString(), name);
-			UUID actual6 = UuidCreator.getNameBasedMd5(UuidCreator.NAMESPACE_DNS.getValue().toString(),
-					name.getBytes());
+			UUID actual1 = UuidCreator.getNameBasedMd5(NAMESPACE_DNS_ENUM, name);
+			UUID actual2 = UuidCreator.getNameBasedMd5(NAMESPACE_DNS_ENUM, name.getBytes(UTF8));
+			UUID actual3 = UuidCreator.getNameBasedMd5(NAMESPACE_DNS_UUID, name);
+			UUID actual4 = UuidCreator.getNameBasedMd5(NAMESPACE_DNS_UUID, name.getBytes(UTF8));
+			UUID actual5 = UuidCreator.getNameBasedMd5(NAMESPACE_DNS_STRING, name);
+			UUID actual6 = UuidCreator.getNameBasedMd5(NAMESPACE_DNS_STRING, name.getBytes(UTF8));
 
 			assertEquals(expected, actual1);
 			assertEquals(expected, actual2);
@@ -126,22 +147,27 @@ public class NameBasedMd5UuidCreatorTest extends AbstractUuidCreatorTest {
 			assertEquals(expected, actual5);
 			assertEquals(expected, actual6);
 		}
+
+		creator1 = UuidCreator.getNameBasedMd5Creator();
+		creator2 = UuidCreator.getNameBasedMd5Creator();
+		creator3 = UuidCreator.getNameBasedMd5Creator();
+		creator4 = UuidCreator.getNameBasedMd5Creator();
+		creator5 = UuidCreator.getNameBasedMd5Creator();
+		creator6 = UuidCreator.getNameBasedMd5Creator();
 
 		// Test methods of the factory NameBasedMd5UuidCreator
 		for (int i = 0; i < LIST_DNS.length; i++) {
 
-			NameBasedMd5UuidCreator creator = UuidCreator.getNameBasedMd5Creator();
-
 			String uuid = LIST_DNS[i][0];
 			String name = LIST_DNS[i][1];
 
 			UUID expected = UUID.fromString(uuid);
-			UUID actual1 = creator.create(UuidCreator.NAMESPACE_DNS, name);
-			UUID actual2 = creator.create(UuidCreator.NAMESPACE_DNS, name.getBytes());
-			UUID actual3 = creator.create(UuidCreator.NAMESPACE_DNS.getValue(), name);
-			UUID actual4 = creator.create(UuidCreator.NAMESPACE_DNS.getValue(), name.getBytes());
-			UUID actual5 = creator.create(UuidCreator.NAMESPACE_DNS.getValue().toString(), name);
-			UUID actual6 = creator.create(UuidCreator.NAMESPACE_DNS.getValue().toString(), name.getBytes());
+			UUID actual1 = creator1.create(NAMESPACE_DNS_ENUM, name);
+			UUID actual2 = creator2.create(NAMESPACE_DNS_ENUM, name.getBytes(UTF8));
+			UUID actual3 = creator3.create(NAMESPACE_DNS_UUID, name);
+			UUID actual4 = creator4.create(NAMESPACE_DNS_UUID, name.getBytes(UTF8));
+			UUID actual5 = creator5.create(NAMESPACE_DNS_STRING, name);
+			UUID actual6 = creator6.create(NAMESPACE_DNS_STRING, name.getBytes(UTF8));
 
 			assertEquals(expected, actual1);
 			assertEquals(expected, actual2);
@@ -151,22 +177,26 @@ public class NameBasedMd5UuidCreatorTest extends AbstractUuidCreatorTest {
 			assertEquals(expected, actual6);
 		}
 
+		creator1 = UuidCreator.getNameBasedMd5Creator().withNamespace(NAMESPACE_DNS_ENUM);
+		creator2 = UuidCreator.getNameBasedMd5Creator().withNamespace(NAMESPACE_DNS_ENUM);
+		creator3 = UuidCreator.getNameBasedMd5Creator().withNamespace(NAMESPACE_DNS_UUID);
+		creator4 = UuidCreator.getNameBasedMd5Creator().withNamespace(NAMESPACE_DNS_UUID);
+		creator5 = UuidCreator.getNameBasedMd5Creator().withNamespace(NAMESPACE_DNS_STRING);
+		creator6 = UuidCreator.getNameBasedMd5Creator().withNamespace(NAMESPACE_DNS_STRING);
+
 		// Test methods of the factory NameBasedMd5UuidCreator with fixed namespace
 		for (int i = 0; i < LIST_DNS.length; i++) {
-
-			NameBasedMd5UuidCreator creator = UuidCreator.getNameBasedMd5Creator();
 
 			String uuid = LIST_DNS[i][0];
 			String name = LIST_DNS[i][1];
 
 			UUID expected = UUID.fromString(uuid);
-			UUID actual1 = creator.withNamespace(UuidCreator.NAMESPACE_DNS).create(name);
-			UUID actual2 = creator.withNamespace(UuidCreator.NAMESPACE_DNS).create(name.getBytes());
-			UUID actual3 = creator.withNamespace(UuidCreator.NAMESPACE_DNS.getValue()).create(name);
-			UUID actual4 = creator.withNamespace(UuidCreator.NAMESPACE_DNS.getValue()).create(name.getBytes());
-			UUID actual5 = creator.withNamespace(UuidCreator.NAMESPACE_DNS.getValue().toString()).create(name);
-			UUID actual6 = creator.withNamespace(UuidCreator.NAMESPACE_DNS.getValue().toString())
-					.create(name.getBytes());
+			UUID actual1 = creator1.create(name);
+			UUID actual2 = creator2.create(name.getBytes(UTF8));
+			UUID actual3 = creator3.create(name);
+			UUID actual4 = creator4.create(name.getBytes(UTF8));
+			UUID actual5 = creator5.create(name);
+			UUID actual6 = creator6.create(name.getBytes(UTF8));
 
 			assertEquals(expected, actual1);
 			assertEquals(expected, actual2);
@@ -180,6 +210,13 @@ public class NameBasedMd5UuidCreatorTest extends AbstractUuidCreatorTest {
 	@Test
 	public void testNameBasedMd5NamespaceUrl() {
 
+		NameBasedMd5UuidCreator creator1;
+		NameBasedMd5UuidCreator creator2;
+		NameBasedMd5UuidCreator creator3;
+		NameBasedMd5UuidCreator creator4;
+		NameBasedMd5UuidCreator creator5;
+		NameBasedMd5UuidCreator creator6;
+
 		// Test methods of the facade UuidCreator
 		for (int i = 0; i < LIST_URL.length; i++) {
 
@@ -187,13 +224,12 @@ public class NameBasedMd5UuidCreatorTest extends AbstractUuidCreatorTest {
 			String name = LIST_URL[i][1];
 
 			UUID expected = UUID.fromString(uuid);
-			UUID actual1 = UuidCreator.getNameBasedMd5(UuidCreator.NAMESPACE_URL, name);
-			UUID actual2 = UuidCreator.getNameBasedMd5(UuidCreator.NAMESPACE_URL, name.getBytes());
-			UUID actual3 = UuidCreator.getNameBasedMd5(UuidCreator.NAMESPACE_URL.getValue(), name);
-			UUID actual4 = UuidCreator.getNameBasedMd5(UuidCreator.NAMESPACE_URL.getValue(), name.getBytes());
-			UUID actual5 = UuidCreator.getNameBasedMd5(UuidCreator.NAMESPACE_URL.getValue().toString(), name);
-			UUID actual6 = UuidCreator.getNameBasedMd5(UuidCreator.NAMESPACE_URL.getValue().toString(),
-					name.getBytes());
+			UUID actual1 = UuidCreator.getNameBasedMd5(NAMESPACE_URL_ENUM, name);
+			UUID actual2 = UuidCreator.getNameBasedMd5(NAMESPACE_URL_ENUM, name.getBytes(UTF8));
+			UUID actual3 = UuidCreator.getNameBasedMd5(NAMESPACE_URL_UUID, name);
+			UUID actual4 = UuidCreator.getNameBasedMd5(NAMESPACE_URL_UUID, name.getBytes(UTF8));
+			UUID actual5 = UuidCreator.getNameBasedMd5(NAMESPACE_URL_STRING, name);
+			UUID actual6 = UuidCreator.getNameBasedMd5(NAMESPACE_URL_STRING, name.getBytes(UTF8));
 
 			assertEquals(expected, actual1);
 			assertEquals(expected, actual2);
@@ -202,22 +238,27 @@ public class NameBasedMd5UuidCreatorTest extends AbstractUuidCreatorTest {
 			assertEquals(expected, actual5);
 			assertEquals(expected, actual6);
 		}
+
+		creator1 = UuidCreator.getNameBasedMd5Creator();
+		creator2 = UuidCreator.getNameBasedMd5Creator();
+		creator3 = UuidCreator.getNameBasedMd5Creator();
+		creator4 = UuidCreator.getNameBasedMd5Creator();
+		creator5 = UuidCreator.getNameBasedMd5Creator();
+		creator6 = UuidCreator.getNameBasedMd5Creator();
 
 		// Test methods of the factory NameBasedMd5UuidCreator
 		for (int i = 0; i < LIST_URL.length; i++) {
 
-			NameBasedMd5UuidCreator creator = UuidCreator.getNameBasedMd5Creator();
-
 			String uuid = LIST_URL[i][0];
 			String name = LIST_URL[i][1];
 
 			UUID expected = UUID.fromString(uuid);
-			UUID actual1 = creator.create(UuidCreator.NAMESPACE_URL, name);
-			UUID actual2 = creator.create(UuidCreator.NAMESPACE_URL, name.getBytes());
-			UUID actual3 = creator.create(UuidCreator.NAMESPACE_URL.getValue(), name);
-			UUID actual4 = creator.create(UuidCreator.NAMESPACE_URL.getValue(), name.getBytes());
-			UUID actual5 = creator.create(UuidCreator.NAMESPACE_URL.getValue().toString(), name);
-			UUID actual6 = creator.create(UuidCreator.NAMESPACE_URL.getValue().toString(), name.getBytes());
+			UUID actual1 = creator1.create(NAMESPACE_URL_ENUM, name);
+			UUID actual2 = creator2.create(NAMESPACE_URL_ENUM, name.getBytes(UTF8));
+			UUID actual3 = creator3.create(NAMESPACE_URL_UUID, name);
+			UUID actual4 = creator4.create(NAMESPACE_URL_UUID, name.getBytes(UTF8));
+			UUID actual5 = creator5.create(NAMESPACE_URL_STRING, name);
+			UUID actual6 = creator6.create(NAMESPACE_URL_STRING, name.getBytes(UTF8));
 
 			assertEquals(expected, actual1);
 			assertEquals(expected, actual2);
@@ -227,22 +268,26 @@ public class NameBasedMd5UuidCreatorTest extends AbstractUuidCreatorTest {
 			assertEquals(expected, actual6);
 		}
 
+		creator1 = UuidCreator.getNameBasedMd5Creator().withNamespace(NAMESPACE_URL_ENUM);
+		creator2 = UuidCreator.getNameBasedMd5Creator().withNamespace(NAMESPACE_URL_ENUM);
+		creator3 = UuidCreator.getNameBasedMd5Creator().withNamespace(NAMESPACE_URL_UUID);
+		creator4 = UuidCreator.getNameBasedMd5Creator().withNamespace(NAMESPACE_URL_UUID);
+		creator5 = UuidCreator.getNameBasedMd5Creator().withNamespace(NAMESPACE_URL_STRING);
+		creator6 = UuidCreator.getNameBasedMd5Creator().withNamespace(NAMESPACE_URL_STRING);
+
 		// Test methods of the factory NameBasedMd5UuidCreator with fixed namespace
 		for (int i = 0; i < LIST_URL.length; i++) {
-
-			NameBasedMd5UuidCreator creator = UuidCreator.getNameBasedMd5Creator();
 
 			String uuid = LIST_URL[i][0];
 			String name = LIST_URL[i][1];
 
 			UUID expected = UUID.fromString(uuid);
-			UUID actual1 = creator.withNamespace(UuidCreator.NAMESPACE_URL).create(name);
-			UUID actual2 = creator.withNamespace(UuidCreator.NAMESPACE_URL).create(name.getBytes());
-			UUID actual3 = creator.withNamespace(UuidCreator.NAMESPACE_URL.getValue()).create(name);
-			UUID actual4 = creator.withNamespace(UuidCreator.NAMESPACE_URL.getValue()).create(name.getBytes());
-			UUID actual5 = creator.withNamespace(UuidCreator.NAMESPACE_URL.getValue().toString()).create(name);
-			UUID actual6 = creator.withNamespace(UuidCreator.NAMESPACE_URL.getValue().toString())
-					.create(name.getBytes());
+			UUID actual1 = creator1.create(name);
+			UUID actual2 = creator2.create(name.getBytes(UTF8));
+			UUID actual3 = creator3.create(name);
+			UUID actual4 = creator4.create(name.getBytes(UTF8));
+			UUID actual5 = creator5.create(name);
+			UUID actual6 = creator6.create(name.getBytes(UTF8));
 
 			assertEquals(expected, actual1);
 			assertEquals(expected, actual2);
@@ -256,6 +301,11 @@ public class NameBasedMd5UuidCreatorTest extends AbstractUuidCreatorTest {
 	@Test
 	public void testNameBasedMd5NamespaceMovies() {
 
+		NameBasedMd5UuidCreator creator1;
+		NameBasedMd5UuidCreator creator2;
+		NameBasedMd5UuidCreator creator3;
+		NameBasedMd5UuidCreator creator4;
+
 		// Test methods of the facade UuidCreator
 		for (int i = 0; i < LIST_MOVIES.length; i++) {
 
@@ -263,30 +313,33 @@ public class NameBasedMd5UuidCreatorTest extends AbstractUuidCreatorTest {
 			String name = LIST_MOVIES[i][1];
 
 			UUID expected = UUID.fromString(uuid);
-			UUID actual1 = UuidCreator.getNameBasedMd5(NAMESPACE_MOVIES, name);
-			UUID actual2 = UuidCreator.getNameBasedMd5(NAMESPACE_MOVIES, name.getBytes());
-			UUID actual3 = UuidCreator.getNameBasedMd5(NAMESPACE_MOVIES.toString(), name);
-			UUID actual4 = UuidCreator.getNameBasedMd5(NAMESPACE_MOVIES.toString(), name.getBytes());
+			UUID actual1 = UuidCreator.getNameBasedMd5(NAMESPACE_MOVIES_UUID, name);
+			UUID actual2 = UuidCreator.getNameBasedMd5(NAMESPACE_MOVIES_UUID, name.getBytes(UTF8));
+			UUID actual3 = UuidCreator.getNameBasedMd5(NAMESPACE_MOVIES_STRING, name);
+			UUID actual4 = UuidCreator.getNameBasedMd5(NAMESPACE_MOVIES_STRING, name.getBytes(UTF8));
 
 			assertEquals(expected, actual1);
 			assertEquals(expected, actual2);
 			assertEquals(expected, actual3);
 			assertEquals(expected, actual4);
 		}
+
+		creator1 = UuidCreator.getNameBasedMd5Creator();
+		creator2 = UuidCreator.getNameBasedMd5Creator();
+		creator3 = UuidCreator.getNameBasedMd5Creator();
+		creator4 = UuidCreator.getNameBasedMd5Creator();
 
 		// Test methods of the factory NameBasedMd5UuidCreator
 		for (int i = 0; i < LIST_MOVIES.length; i++) {
 
-			NameBasedMd5UuidCreator creator = UuidCreator.getNameBasedMd5Creator();
-
 			String uuid = LIST_MOVIES[i][0];
 			String name = LIST_MOVIES[i][1];
 
 			UUID expected = UUID.fromString(uuid);
-			UUID actual1 = creator.create(NAMESPACE_MOVIES, name);
-			UUID actual2 = creator.create(NAMESPACE_MOVIES, name.getBytes());
-			UUID actual3 = creator.create(NAMESPACE_MOVIES.toString(), name);
-			UUID actual4 = creator.create(NAMESPACE_MOVIES.toString(), name.getBytes());
+			UUID actual1 = creator1.create(NAMESPACE_MOVIES_UUID, name);
+			UUID actual2 = creator2.create(NAMESPACE_MOVIES_UUID, name.getBytes(UTF8));
+			UUID actual3 = creator3.create(NAMESPACE_MOVIES_STRING, name);
+			UUID actual4 = creator4.create(NAMESPACE_MOVIES_STRING, name.getBytes(UTF8));
 
 			assertEquals(expected, actual1);
 			assertEquals(expected, actual2);
@@ -294,19 +347,22 @@ public class NameBasedMd5UuidCreatorTest extends AbstractUuidCreatorTest {
 			assertEquals(expected, actual4);
 		}
 
+		creator1 = UuidCreator.getNameBasedMd5Creator().withNamespace(NAMESPACE_MOVIES_UUID);
+		creator2 = UuidCreator.getNameBasedMd5Creator().withNamespace(NAMESPACE_MOVIES_UUID);
+		creator3 = UuidCreator.getNameBasedMd5Creator().withNamespace(NAMESPACE_MOVIES_STRING);
+		creator4 = UuidCreator.getNameBasedMd5Creator().withNamespace(NAMESPACE_MOVIES_STRING);
+
 		// Test methods of the factory NameBasedMd5UuidCreator with fixed namespace
 		for (int i = 0; i < LIST_MOVIES.length; i++) {
-
-			NameBasedMd5UuidCreator creator = UuidCreator.getNameBasedMd5Creator();
 
 			String uuid = LIST_MOVIES[i][0];
 			String name = LIST_MOVIES[i][1];
 
 			UUID expected = UUID.fromString(uuid);
-			UUID actual1 = creator.withNamespace(NAMESPACE_MOVIES).create(name);
-			UUID actual2 = creator.withNamespace(NAMESPACE_MOVIES).create(name.getBytes());
-			UUID actual3 = creator.withNamespace(NAMESPACE_MOVIES.toString()).create(name);
-			UUID actual4 = creator.withNamespace(NAMESPACE_MOVIES.toString()).create(name.getBytes());
+			UUID actual1 = creator1.create(name);
+			UUID actual2 = creator2.create(name.getBytes(UTF8));
+			UUID actual3 = creator3.create(name);
+			UUID actual4 = creator4.create(name.getBytes(UTF8));
 
 			assertEquals(expected, actual1);
 			assertEquals(expected, actual2);
@@ -379,7 +435,7 @@ public class NameBasedMd5UuidCreatorTest extends AbstractUuidCreatorTest {
 						String uuid = LIST_MOVIES[i][0];
 						String name = LIST_MOVIES[i][1];
 						UUID expected = UUID.fromString(uuid);
-						UUID actual = crator.create(NAMESPACE_MOVIES, name);
+						UUID actual = crator.create(NAMESPACE_MOVIES_UUID, name);
 						if (actual.equals(expected)) {
 							list[threadId][2][i] = actual;
 						}

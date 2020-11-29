@@ -49,7 +49,7 @@ public class DefaultClockSequenceStrategyTest {
 		DefaultClockSequenceStrategy clockSequence = new DefaultClockSequenceStrategy();
 		long oldSequence = clockSequence.getClockSequence(oldTimestamp);
 		long newSequence = clockSequence.getClockSequence(newTimestamp);
-		assertEquals(oldSequence + 1, newSequence);
+		assertEquals((oldSequence + 1) % CLOCK_SEQUENCE_MAX, newSequence);
 
 		// It should increment if the new timestamp is EQUAL TO the old timestamp
 		oldTimestamp = 1000;
@@ -57,7 +57,7 @@ public class DefaultClockSequenceStrategyTest {
 		clockSequence = new DefaultClockSequenceStrategy();
 		oldSequence = clockSequence.getClockSequence(oldTimestamp);
 		newSequence = clockSequence.getClockSequence(newTimestamp);
-		assertEquals(oldSequence + 1, newSequence);
+		assertEquals((oldSequence + 1) % CLOCK_SEQUENCE_MAX, newSequence);
 	}
 
 	@Test

@@ -64,6 +64,8 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	protected static final String ALGORITHM_MD5 = "MD5";
 	protected static final String ALGORITHM_SHA1 = "SHA-1";
 
+	private static final String EXCEPTION_MESSAGE = "Namespace can not be changed.";
+
 	/**
 	 * This constructor receives the name of a message digest.
 	 * 
@@ -273,7 +275,10 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * @return {@link AbstractNameBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized <T extends AbstractNameBasedUuidCreator> T withNamespace(UUID namespace) {
+	public <T extends AbstractNameBasedUuidCreator> T withNamespace(UUID namespace) {
+		if (this.namespace != null) {
+			throw new IllegalArgumentException(EXCEPTION_MESSAGE);
+		}
 		this.namespace = toBytes(namespace);
 		return (T) this;
 	}
@@ -290,7 +295,10 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * @throws InvalidUuidException if the namespace is invalid
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized <T extends AbstractNameBasedUuidCreator> T withNamespace(String namespace) {
+	public <T extends AbstractNameBasedUuidCreator> T withNamespace(String namespace) {
+		if (this.namespace != null) {
+			throw new IllegalArgumentException(EXCEPTION_MESSAGE);
+		}
 		this.namespace = toBytes(fromString(namespace));
 		return (T) this;
 	}
@@ -306,7 +314,10 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * @return {@link AbstractNameBasedUuidCreator}
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized <T extends AbstractNameBasedUuidCreator> T withNamespace(UuidNamespace namespace) {
+	public <T extends AbstractNameBasedUuidCreator> T withNamespace(UuidNamespace namespace) {
+		if (this.namespace != null) {
+			throw new IllegalArgumentException(EXCEPTION_MESSAGE);
+		}
 		this.namespace = toBytes(namespace.getValue());
 		return (T) this;
 	}

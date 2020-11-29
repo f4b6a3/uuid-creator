@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.creator.rfc4122.TimeBasedUuidCreator;
+import com.github.f4b6a3.uuid.util.UuidUtil;
 
 /**
  * This test runs many threads that request time-based UUIDs in a loop.
@@ -71,31 +72,36 @@ public class UniquenessTest1 {
 			}
 		}
 
-		int dup = duplicates();
-		String msg = String.format("Duplicates found: %s (%s%%)", dup, ((dup * 100) / (threadCount * requestCount)));
-		if (dup > 0) {
-			System.err.println();
-			System.err.println(msg);
-		} else {
-			System.out.println();
-			System.out.println(msg);
-		}
+		findDuplicates();
 	}
 
-	private int duplicates() {
+	private void findDuplicates() {
 		System.out.println();
 		HashSet<UUID> s = new HashSet<>();
+		HashSet<Integer> cs = new HashSet<>();
 		int dup = 0;
 		for (int i = 0; i < values.length; i++) {
 			for (int j = 0; j < values[0].length; j++) {
 				if (!s.add(values[i][j])) {
 					dup++;
 				}
+				cs.add(UuidUtil.extractClockSequence(values[i][j]));
 			}
 			int progress = (((i + 1) * 100) / values.length);
 			System.out.println(String.format("Looking for duplicates (%s%%)", progress));
 		}
-		return dup;
+
+		System.out.println();
+		
+		System.out.println(String.format("Clock sequences used: %s", cs.size()));
+		
+		String msg1 = String.format("Duplicates found: %s (%s%%)", dup, ((dup * 100) / (threadCount * requestCount)));
+		if (dup > 0) {
+			System.err.println(msg1 + " [fail]");
+		} else {
+			System.out.println(msg1 + " [ok]");
+		}
+
 	}
 
 	public class TestThread extends Thread {
