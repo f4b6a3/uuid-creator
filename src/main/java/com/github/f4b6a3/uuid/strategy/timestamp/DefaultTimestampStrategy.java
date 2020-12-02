@@ -33,13 +33,13 @@ import com.github.f4b6a3.uuid.util.internal.SharedRandom;
  * 
  * This is an implementation of {@link TimestampStrategy} that provides
  * millisecond resolution. The timestamp resolution is simulated by adding the
- * next value of a counter that is calculated at every call to the method
+ * next value of a accumulator that is calculated at every call to the method
  * {@link TimestampStrategy#getTimestamp()}.
  * 
- * The counter's range is from 0 to 9,999, that is, the number of 100-nanosecond
- * intervals per millisecond.
+ * The accumulator's range is from 0 to 9,999, that is, the number of
+ * 100-nanosecond intervals per millisecond.
  * 
- * The counter is initialized with a random number between 0 and 255 to void
+ * The accumulator is initialized with a random number between 0 and 255 to void
  * duplicates in the case of multiple time-based generators running in parallel.
  * 
  * ### RFC-4122 - 4.2.1.2. System Clock Resolution
@@ -68,17 +68,22 @@ import com.github.f4b6a3.uuid.util.internal.SharedRandom;
  */
 public final class DefaultTimestampStrategy implements TimestampStrategy {
 
-	// Initiate the counter with a number between 0 and 255
-	private long counter = SharedRandom.nextLong() & COUNTER_RESET;
+	// initiate the previous time and tick
 	private long prevTime = UuidTime.getCurrentTimestamp();
 	private long prevTick = System.nanoTime() / TICK_UNIT;
 
-	// RFC-4122 - 4.2.1.2 (P2):
-	// the number of 100-nanosecond intervals per system interval
-	private static final long COUNTER_LIMIT = 10_000; // 10,000 ticks = 1ms
-	private static final long COUNTER_RESET = 255; // 255 ticks = 0xff
+	// initiate the accumulator with a number between 0 and 255
+	private long accumulator = SharedRandom.nextLong() & ACCUMULATOR_RESET;
+
+	// a tick is equivalent to a 100-nanosecond interval
 	private static final long TICK_UNIT = 100; // 1 tick = 100ns
-	
+
+	// the accumulator can count a maximum of 10,000 ticks
+	private static final long ACCUMULATOR_LIMIT = 10_000; // 10,000 ticks = 1ms
+
+	// the accumulator must be initiated or reset to a number between 0 and 255
+	private static final long ACCUMULATOR_RESET = 255; // 255 ticks = 0xff
+
 	@Override
 	public long getTimestamp() {
 
@@ -90,26 +95,24 @@ public final class DefaultTimestampStrategy implements TimestampStrategy {
 			// if the time is the same:
 			// calculate the elapsed ticks since the last call
 			final long elapsed = (tick - prevTick);
-			if (elapsed > 1L && elapsed < (COUNTER_LIMIT - counter)) {
+			if (elapsed > 1L && elapsed < (ACCUMULATOR_LIMIT - accumulator)) {
 				// if the elapsed ticks are between the valid range:
-				// add the elapsed ticks to the counter
-				counter += elapsed;
+				// add the elapsed ticks to the accumulator
+				accumulator += elapsed;
 			} else {
-				// otherwise, increment the counter
-				counter++;
+				// otherwise, increment the accumulator
+				accumulator++;
 			}
 
-			if (counter >= COUNTER_LIMIT) {
-				// if the counter goes beyond the limit:
-				// RFC-4122 - 4.2.1.2 (P3):
-				// Too many UUIDs within a single system time interval
+			if (accumulator >= ACCUMULATOR_LIMIT) {
+				// if the accumulator goes beyond the limit:
 				while (time == UuidTime.getCurrentTimestamp()) {
 					// wait the time change for the next call
 				}
 			}
 		} else {
-			// reset the counter to a number between 0 and 255
-			counter = ++counter & COUNTER_RESET;
+			// reset the accumulator to a number between 0 and 255
+			accumulator = ++accumulator & ACCUMULATOR_RESET;
 		}
 
 		// save time and tick for the next call
@@ -118,6 +121,6 @@ public final class DefaultTimestampStrategy implements TimestampStrategy {
 
 		// RFC-4122 - 4.2.1.2 (P4):
 		// simulate high resolution
-		return time + counter;
+		return time + accumulator;
 	}
 }

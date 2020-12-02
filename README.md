@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>3.2.0</version>
+  <version>3.2.1</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -543,17 +543,17 @@ In the version 1 UUID the timestamp bytes are rearranged so that the highest bit
 
 The timestamp is the amount of 100 nanoseconds intervals since 1582-10-15. Since the timestamp has 60 bits (unsigned), the greatest date and time that can be represented is 5236-03-31T21:21:00.684Z (2^60/10_000_000/60s/60m/24h/365.25y + 1582 A.D. = \~5235). In the RFC-4122, the time field rolls over around 3400 A.D., maybe because it considers a _signed_ timestamp (2^59/10_000_000/60s/60m/24h/365.25y + 1582 A.D. = \~3408).
 
-In this implementation, the timestamp has milliseconds accuracy, that is, it uses `System.currentTimeMillis()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis()) to get the current milliseconds. An internal _counter_ is used to _simulate_ the standard timestamp resolution of 10 million intervals per second.
+In this implementation, the timestamp has milliseconds accuracy, that is, it uses `System.currentTimeMillis()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis()) to get the current milliseconds. An internal _accumulator_ is used to _simulate_ the standard timestamp resolution of 10 million intervals per second.
 
 You can create a strategy that implements the `TimestampStrategy` if you don't like the default strategy.
 
-##### Counter
+##### Accumulator
 
-The counter range is from 0 to 9,999. It is instantiated with a random number between 0 and 255. 
+The accumulator range is from 0 to 9,999. It is instantiated with a random number between 0 and 255.
 
-Every time a request is made within the same millisecond, the elapsed time between two calls is added to the counter.
+Every time a request is made within the same millisecond, the elapsed 100-nanosecond intervals between two calls is added to the accumulator.
 
-The timestamp is calculated with this formula: MILLISECONDS * 10,000 + COUNTER.
+The timestamp is calculated with this formula: MILLISECONDS * 10,000 + ACCUMULATOR.
 
 ###### Overrun
 
@@ -566,7 +566,7 @@ The RFC-4122 requires that:
    catches up.
 ```
 
-If the counter reaches the maximum of 10,000 within a single millisecond, the generator waits for next millisecond.
+If the accumulator reaches the maximum of 10,000 within a single millisecond, the generator waits for next millisecond.
 
 You probably don't have to worry if your application doesn't reach the theoretical limit of **10 million UUIDs per second per node (10k/ms/node)**.
 
