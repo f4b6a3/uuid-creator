@@ -49,6 +49,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 
 	private static final String NODE_MAC = "mac";
 	private static final String NODE_HASH = "hash";
+	private static final String NODE_RANDOM = "random";
 
 	protected AbstractTimeBasedUuidCreator(UuidVersion version) {
 		super(version);
@@ -84,10 +85,12 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * 
 	 * - The string "hash" for using the system data hash;
 	 * 
+	 * - The string "random" for using a random number explicitly.
+	 * 
 	 * - The string representation of a number between 0 and 2^48-1.
 	 * 
-	 * If no property or variable is defined, the node identifier is randomly
-	 * chosen.
+	 * If no property or variable is defined, the node identifier is randomly chosen
+	 * implicitly.
 	 * 
 	 * ### RFC-4122 - 4.1.4. Timestamp
 	 * 
@@ -442,10 +445,13 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * 2. If it finds the string "hash", the generator will use the system data
 	 * hash.
 	 * 
-	 * 3. If it finds the string representation of a number in octal, hexadecimal or
-	 * decimal format, the generator will use the number represented.
+	 * 3. If it finds the string "random", the generator will use a random number
+	 * explicitly.
 	 * 
-	 * 4. Else, a random number will be used by the generator.
+	 * 4. If it finds the string representation of a specific number in octal,
+	 * hexadecimal or decimal format, the generator will use the number represented.
+	 * 
+	 * 5. Else, a random number will be used implicitly by the generator.
 	 */
 	protected static NodeIdentifierStrategy selectNodeIdentifierStrategy() {
 
@@ -457,6 +463,10 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 
 		if (NODE_HASH.equalsIgnoreCase(string)) {
 			return new HashNodeIdentifierStrategy();
+		}
+
+		if (NODE_RANDOM.equalsIgnoreCase(string)) {
+			return new DefaultNodeIdentifierStrategy();
 		}
 
 		Long number = UuidCreatorSettings.getNodeIdentifier();

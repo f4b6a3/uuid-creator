@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>3.2.2</version>
+  <version>3.2.3</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -598,13 +598,14 @@ The system data hash is calculated from a list of system properties: hostname, M
 
 ##### System property and environment variable
 
-It's possible to manage the node identifier for each machine by defining the system property `uuidcreator.node` or the environment variable `UUIDCREATOR_NODE`. The system property has priority over the environment variable. If no property or variable is defined, the node identifier is randomly chosen.
+It's possible to manage the node identifier for each machine by defining the system property `uuidcreator.node` or the environment variable `UUIDCREATOR_NODE`. The system property has priority over the environment variable. If no property or variable is defined, the node identifier is randomly chosen implicitly.
 
 These options are accepted:
 
 - The string "mac" to use the MAC address;
 - The string "hash" to use the hash of hostname, MAC and IP;
-- The string representation of a number between 0 and 2^48-1.
+- The string "random" to use a random number explicitly;
+- The string representation of a specific number between 0 and 2^48-1.
 
 The number formats are: decimal, hexadecimal, and octal.
 
@@ -619,7 +620,10 @@ The number formats are: decimal, hexadecimal, and octal.
 # Use the hash of system data as node identifier
 -Duuidcreator.node="hash"
 
-# Use a number as node identifier
+# Use a random value as node identifier explicitly
+-Duuidcreator.node="random"
+
+# Use a specific number as node identifier
 -Duuidcreator.node="0xC0DA0615BB23"
 ```
 
@@ -634,7 +638,10 @@ export UUIDCREATOR_NODE="mac"
 # Use the hash of system data as node identifier
 export UUIDCREATOR_NODE="hash"
 
-# Use a number as node identifier
+# Use a random value as node identifier explicitly
+export UUIDCREATOR_NODE="random"
+
+# Use a specific number as node identifier
 export UUIDCREATOR_NODE="0xC0DA0615BB23"
 ```
 
