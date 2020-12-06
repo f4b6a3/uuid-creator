@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>3.2.3</version>
+  <version>3.3.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -71,7 +71,7 @@ The timestamp is the count of 100 nanosecond intervals since 1582-10-15, the beg
 
 The timestamp bytes in this version are __rearranged__ in a special layout, unlike the time-ordered UUID (version 6). This is the only difference between version 1 and version 6.
 
-The node identifier can be a MAC address, a hash of system information, a user defined number or a random number (default).
+The node identifier can be a MAC address, a hash of system information, a specific number or a random number (default).
 
 See the section [Node identifier](#node-identifier) to know how to use the environment variable `UUIDCREATOR_NODE` and the system property `uuidcreator.node`.
 
@@ -257,7 +257,7 @@ The timestamp is the count of 100 nanosecond intervals since 1582-10-15, the beg
 
 The timestamp bytes are __kept__ in the original order, unlike the time-based UUID (version 1). This is the only difference between version 1 and version 6.
 
-The node identifier can be a MAC address, a hash of system information, a user defined number or a random number (default).
+The node identifier can be a MAC address, a hash of system information, a specific number or a random number (default).
 
 See the section [Node identifier](#node-identifier) to know how to use the environment variable `UUIDCREATOR_NODE` and the system property `uuidcreator.node`.
 
@@ -541,7 +541,7 @@ Standard timestamp arrangement
 
 In the version 1 UUID the timestamp bytes are rearranged so that the highest bits are put in the end of the array of bits and the lowest ones in the beginning. The standard _timestamp resolution_ is 1 second divided by 10,000,000.
 
-The timestamp is the amount of 100 nanoseconds intervals since 1582-10-15. Since the timestamp has 60 bits (unsigned), the greatest date and time that can be represented is 5236-03-31T21:21:00.684Z (2^60/10_000_000/60s/60m/24h/365.25y + 1582 A.D. = \~5235). In the RFC-4122, the time field rolls over around 3400 A.D., maybe because it considers a _signed_ timestamp (2^59/10_000_000/60s/60m/24h/365.25y + 1582 A.D. = \~3408).
+The timestamp is the amount of 100 nanoseconds intervals since 1582-10-15. Since the timestamp has 60 bits (unsigned), the greatest date and time that can be represented is 5236-03-31T21:21:00.684Z (2^60/10_000_000/60s/60m/24h/365.25y + 1582 A.D. = \~5235).
 
 In this implementation, the timestamp has milliseconds accuracy, that is, it uses `System.currentTimeMillis()`[<sup>&#x2197;</sup>](https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis()) to get the current milliseconds. An internal _accumulator_ is used to _simulate_ the standard timestamp resolution of 10 million intervals per second.
 
@@ -555,7 +555,7 @@ Every time a request is made within the same millisecond, the elapsed 100-nanose
 
 The timestamp is calculated with this formula: MILLISECONDS * 10,000 + ACCUMULATOR.
 
-###### Overrun
+##### Overrun
 
 The RFC-4122 requires that:
 
@@ -783,6 +783,13 @@ TimeBasedUuidCreator timebased = UuidCreator.getTimeBasedCreator()
 UUID uuid = timebased.create();
 ```
 
+```java
+// with timestamp provided by a method reference or lambda expression
+TimeBasedUuidCreator timebased = UuidCreator.getTimeBasedCreator()
+    .withTimestampStrategy(System::currentTimeMillis);
+UUID uuid = timebased.create();
+```
+
 ##### Node identifier
 
 ```java
@@ -840,6 +847,14 @@ TimeBasedUuidCreator timebased = UuidCreator.getTimeBasedCreator()
 UUID uuid = timebased.create();
 ```
 
+```java
+// with node identifier provided by a method reference or lambda expression
+Random random = new Random();
+TimeBasedUuidCreator timebased = UuidCreator.getTimeBasedCreator()
+    .withNodeIdentifierStrategy(random::nextLong);
+UUID uuid = timebased.create();
+```
+
 ##### Clock sequence
 
 ```java
@@ -865,6 +880,14 @@ UUID uuid = timebased.create();
 ClockSequenceStrategy customStrategy = new CustomClockSequenceStrategy();
 TimeBasedUuidCreator timebased = UuidCreator.getTimeBasedCreator()
     .withClockSequenceStrategy(customStrategy);
+UUID uuid = timebased.create();
+```
+
+```java
+// with clock sequence provided by a lambda expression
+Random random = new Random();
+TimeBasedUuidCreator timebased = UuidCreator.getTimeBasedCreator()
+    .withClockSequenceStrategy((timestamp) -> random.nextInt()); // ignoring the input
 UUID uuid = timebased.create();
 ```
 
@@ -902,15 +925,11 @@ UUID uuid = randombased.create();
 ```
 
 ```java
-// with an ANONYMOUS strategy that wraps any random generator you like
+// with random values provided by a method reference or lambda expression
 import com.github.niceguy.random.AwesomeRandom;
+AwesomeRandom awesomeRandom = new AwesomeRandom();
 RandomBasedUuidCreator randombased = UuidCreator.getRandomBasedCreator()
-		.withRandomStrategy(new RandomStrategy() {
-			private final AwesomeRandom awesomeRandom = new AwesomeRandom();
-			@Override public void nextBytes(byte[] bytes) {
-				this.awesomeRandom.nextBytes(bytes);
-			}
-		});
+		.withRandomStrategy(awesomeRandom::nextBytes);
 UUID uuid = randombased.create();
 ```
 

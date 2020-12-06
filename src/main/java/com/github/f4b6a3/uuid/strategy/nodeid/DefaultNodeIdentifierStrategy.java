@@ -24,13 +24,15 @@
 
 package com.github.f4b6a3.uuid.strategy.nodeid;
 
+import java.security.SecureRandom;
+
 import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
 
 /**
  * Strategy that provides a random node identifier.
  * 
- * It uses {@link SecureRandom} by default to generate 'cryptographic quality
- * random number'. The first generated number is returned for all calls.
+ * It uses {@link SecureRandom} to generate a 'cryptographic quality random
+ * number'. The first generated number is returned for all calls.
  * 
  * ### RFC-4122 - 4.1.6. Node
  * 

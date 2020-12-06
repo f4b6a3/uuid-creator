@@ -27,6 +27,7 @@ package com.github.f4b6a3.uuid.strategy;
 /**
  * Strategy that provides timestamps for time-based UUIDs.
  */
+@FunctionalInterface
 public interface TimestampStrategy {
 	long getTimestamp();
 }

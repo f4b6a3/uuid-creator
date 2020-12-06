@@ -33,7 +33,7 @@ import com.github.f4b6a3.uuid.util.internal.SharedRandom;
  * 
  * This is an implementation of {@link TimestampStrategy} that provides
  * millisecond resolution. The timestamp resolution is simulated by adding the
- * next value of a accumulator that is calculated at every call to the method
+ * next value of an accumulator that is calculated at every call to the method
  * {@link TimestampStrategy#getTimestamp()}.
  * 
  * The accumulator's range is from 0 to 9,999, that is, the number of
@@ -96,7 +96,7 @@ public final class DefaultTimestampStrategy implements TimestampStrategy {
 			// calculate the elapsed ticks since the last call
 			final long elapsed = (tick - prevTick);
 			if (elapsed > 1L && elapsed < (ACCUMULATOR_LIMIT - accumulator)) {
-				// if the elapsed ticks are between the valid range:
+				// if the elapsed ticks are within the valid range:
 				// add the elapsed ticks to the accumulator
 				accumulator += elapsed;
 			} else {

@@ -31,6 +31,7 @@ import com.github.f4b6a3.uuid.util.internal.SharedRandom;
  * 
  * It also provides static helper methods.
  */
+@FunctionalInterface
 public interface NodeIdentifierStrategy {
 	long getNodeIdentifier();
 

@@ -73,9 +73,9 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * 
 	 * - The hash of system data;
 	 * 
-	 * - A user defined number;
+	 * - A random number;
 	 * 
-	 * - A random number.
+	 * - A specific number.
 	 * 
 	 * The node identifier can be controlled by defining a system property
 	 * 'uuidcreator.node' or an environment variable 'UUIDCREATOR_NODE'. Both

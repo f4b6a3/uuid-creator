@@ -27,7 +27,7 @@ package com.github.f4b6a3.uuid.strategy;
 /**
  * Strategy that provides random values for random-based UUIDs.
  */
+@FunctionalInterface
 public interface RandomStrategy {
-	
 	void nextBytes(byte[] bytes);
 }

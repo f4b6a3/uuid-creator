@@ -27,6 +27,7 @@ package com.github.f4b6a3.uuid.strategy;
 /**
  * Strategy that provides clock sequences for time-based UUIDs.
  */
+@FunctionalInterface
 public interface ClockSequenceStrategy {
 	int getClockSequence(long timestamp);
 }
