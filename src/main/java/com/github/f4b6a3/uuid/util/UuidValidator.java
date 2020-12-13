@@ -44,6 +44,12 @@ public final class UuidValidator {
 		return uuid != null && uuid.length == 16;
 	}
 
+	// TODO: test
+	// TODO: javadoc
+	public static boolean isValid(final byte[] uuid, int version) {
+		return uuid != null && uuid.length == 16 && isVersion(uuid, version);
+	}
+
 	/**
 	 * Checks if the UUID byte array is valid.
 	 * 
@@ -52,6 +58,14 @@ public final class UuidValidator {
 	 */
 	public static void validate(final byte[] uuid) {
 		if (uuid == null || uuid.length != 16) {
+			throw new InvalidUuidException("Invalid UUID byte array.");
+		}
+	}
+
+	// TODO: test
+	// TODO: javadoc
+	public static void validate(final byte[] uuid, int version) {
+		if (uuid == null || uuid.length != 16 || !isVersion(uuid, version)) {
 			throw new InvalidUuidException("Invalid UUID byte array.");
 		}
 	}
@@ -75,6 +89,12 @@ public final class UuidValidator {
 		return uuid != null && uuid.length() != 0 && isUuidString(uuid.toCharArray());
 	}
 
+	// TODO: javadoc
+	// TODO: test
+	public static boolean isValid(final String uuid, int version) {
+		return uuid != null && uuid.length() != 0 && isUuidString(uuid.toCharArray(), version);
+	}
+
 	/**
 	 * Checks if the UUID char array is valid.
 	 * 
@@ -94,6 +114,12 @@ public final class UuidValidator {
 		return uuid != null && uuid.length != 0 && isUuidString(uuid);
 	}
 
+	// TODO: javadoc
+	// TODO: test
+	public static boolean isValid(final char[] uuid, int version) {
+		return uuid != null && uuid.length != 0 && isUuidString(uuid, version);
+	}
+
 	/**
 	 * Checks if the UUID string is a valid.
 	 * 
@@ -102,7 +128,15 @@ public final class UuidValidator {
 	 */
 	public static void validate(final String uuid) {
 		if (uuid == null || uuid.length() == 0 || !isUuidString(uuid.toCharArray())) {
-			throw new InvalidUuidException("Invalid UUID: \"" + uuid + "\"");
+			throwInvalidUuidException(uuid);
+		}
+	}
+
+	// TODO: javadoc
+	// TODO: test
+	public static void validate(final String uuid, int version) {
+		if (uuid == null || uuid.length() == 0 || !isUuidString(uuid.toCharArray(), version)) {
+			throwInvalidUuidException(uuid);
 		}
 	}
 
@@ -114,8 +148,46 @@ public final class UuidValidator {
 	 */
 	public static void validate(final char[] uuid) {
 		if (uuid == null || uuid.length == 0 || !isUuidString(uuid)) {
-			throw new InvalidUuidException("Invalid UUID: \"" + (uuid == null ? null : new String(uuid)) + "\"");
+			throwInvalidUuidException(uuid);
 		}
+	}
+
+	// TODO: javadoc
+	// TODO: test
+	public static void validate(final char[] uuid, int version) {
+		if (uuid == null || uuid.length == 0 || !isUuidString(uuid, version)) {
+			throwInvalidUuidException(uuid);
+		}
+	}
+
+	private static void throwInvalidUuidException(char[] chars) {
+		String string = chars == null ? null : new String(chars);
+		throw new InvalidUuidException("Invalid UUID: " + string);
+	}
+
+	private static void throwInvalidUuidException(String string) {
+		throw new InvalidUuidException("Invalid UUID: " + string);
+	}
+
+	private static boolean isVersion(byte[] bytes, int version) {
+		boolean versionOk = ((version & ~0xf) == 0) && (((bytes[6] & 0xff) >>> 4) == version);
+		boolean variantOk = ((bytes[8] & 0xff) >>> 6) == 2; // RFC-4122
+		return versionOk && variantOk;
+	}
+
+	private static boolean isVersion(char[] chars, int version) {
+		final char[] lower = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+		final char[] upper = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+		boolean versionOk = (version & ~0xf) == 0 && chars[12] == lower[version] || chars[12] == upper[version];
+		boolean variantOk = chars[16] == '8' || chars[16] == '9' //
+				|| chars[16] == 'a' || chars[16] == 'b' || chars[16] == 'A' || chars[16] == 'B';
+		return versionOk && variantOk;
+	}
+
+	// TODO: javadoc
+	// TODO: test
+	protected static boolean isUuidString(final char[] chars, int version) {
+		return isVersion(chars, version) && isUuidString(chars);
 	}
 
 	/**

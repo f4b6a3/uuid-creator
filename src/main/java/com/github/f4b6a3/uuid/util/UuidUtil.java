@@ -372,21 +372,4 @@ public final class UuidUtil {
 	private static long extractDceSecurityTimestamp(long msb) {
 		return extractTimeBasedTimestamp((msb & 0x00000000ffffffffL));
 	}
-
-	protected static char[] removeHyphens(final char[] input) {
-
-		int count = 0;
-		char[] buffer = new char[input.length];
-
-		for (int i = 0; i < input.length; i++) {
-			if ((input[i] != '-')) {
-				buffer[count++] = input[i];
-			}
-		}
-
-		char[] output = new char[count];
-		System.arraycopy(buffer, 0, output, 0, count);
-
-		return output;
-	}
 }

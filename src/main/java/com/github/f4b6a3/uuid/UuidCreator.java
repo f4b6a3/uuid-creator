@@ -27,6 +27,9 @@ package com.github.f4b6a3.uuid;
 import java.time.Instant;
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.codec.UuidBytesCodec;
+import com.github.f4b6a3.uuid.codec.UuidCodec;
+import com.github.f4b6a3.uuid.codec.UuidStringCodec;
 import com.github.f4b6a3.uuid.creator.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.creator.nonstandard.PrefixCombCreator;
 import com.github.f4b6a3.uuid.creator.nonstandard.ShortPrefixCombCreator;
@@ -41,7 +44,6 @@ import com.github.f4b6a3.uuid.creator.rfc4122.TimeOrderedUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidLocalDomain;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
-import com.github.f4b6a3.uuid.util.UuidConverter;
 
 /**
  * Facade to all the UUID generators.
@@ -69,7 +71,7 @@ public final class UuidCreator {
 	 * @return an array of bytes
 	 */
 	public static byte[] toBytes(final UUID uuid) {
-		return UuidConverter.toBytes(uuid);
+		return UuidBytesCodecLazyHolder.CODEC.encode(uuid);
 	}
 
 	/**
@@ -82,21 +84,21 @@ public final class UuidCreator {
 	 * @throws InvalidUuidException if invalid
 	 */
 	public static UUID fromBytes(byte[] uuid) {
-		return UuidConverter.fromBytes(uuid);
+		return UuidBytesCodecLazyHolder.CODEC.decode(uuid);
 	}
 
 	/**
 	 * Get a string from a UUID.
 	 * 
-	 * It is much faster than {@link UUID#toString()} in JDK 8.
+	 * It may be much faster than {@link UUID#toString()} in JDK 8.
 	 * 
-	 * In JDK9+ prefer {@link UUID#toString()}.
+	 * In JDK9+ it uses {@link UUID#toString()}.
 	 * 
 	 * @param uuid a UUID
 	 * @return a UUID string
 	 */
 	public static String toString(UUID uuid) {
-		return UuidConverter.toString(uuid);
+		return UuidStringCodecLazyHolder.CODEC.encode(uuid);
 	}
 
 	/**
@@ -112,14 +114,16 @@ public final class UuidCreator {
 	 * 
 	 * - With or without hyphens.
 	 * 
-	 * It is much faster than {@link UUID#fromString(String)} in JDK 8.
+	 * It may be much faster than {@link UUID#fromString(String)} in JDK 8.
 	 * 
-	 * @param string a UUID string
+	 * In JDK9+ it may be slightly faster.
+	 * 
+	 * @param uuid a UUID string
 	 * @return a UUID
 	 * @throws InvalidUuidException if invalid
 	 */
-	public static UUID fromString(String string) {
-		return UuidConverter.fromString(string);
+	public static UUID fromString(String uuid) {
+		return UuidStringCodecLazyHolder.CODEC.decode(uuid);
 	}
 
 	/**
@@ -1026,6 +1030,14 @@ public final class UuidCreator {
 	/*
 	 * Private classes for lazy holders
 	 */
+
+	private static class UuidBytesCodecLazyHolder {
+		private static final UuidCodec<byte[]> CODEC = new UuidBytesCodec();
+	}
+
+	private static class UuidStringCodecLazyHolder {
+		private static final UuidCodec<String> CODEC = new UuidStringCodec();
+	}
 
 	private static class RandomCreatorHolder {
 		static final RandomBasedUuidCreator INSTANCE = getRandomBasedCreator();

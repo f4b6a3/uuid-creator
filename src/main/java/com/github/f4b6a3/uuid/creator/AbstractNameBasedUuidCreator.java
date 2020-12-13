@@ -29,12 +29,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.codec.UuidBytesCodec;
+import com.github.f4b6a3.uuid.codec.UuidCodec;
+import com.github.f4b6a3.uuid.codec.UuidStringCodec;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
-
-import static com.github.f4b6a3.uuid.util.UuidConverter.toBytes;
-import static com.github.f4b6a3.uuid.util.UuidConverter.fromString;
 
 /**
  * Factory that creates name-based UUIDs.
@@ -61,10 +61,15 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	protected byte[] namespace = null;
 	protected final String algorithm; // MD5 or SHA-1
 
+	protected boolean locked = false; // namespace lock
+
 	protected static final String ALGORITHM_MD5 = "MD5";
 	protected static final String ALGORITHM_SHA1 = "SHA-1";
 
 	private static final String EXCEPTION_MESSAGE = "Namespace can not be changed.";
+
+	private static final UuidCodec<byte[]> CODEC_BYTES = new UuidBytesCodec();
+	private static final UuidCodec<String> CODEC_STRING = new UuidStringCodec();
 
 	/**
 	 * This constructor receives the name of a message digest.
@@ -87,6 +92,9 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * @return a name-based UUID
 	 */
 	public UUID create(final byte[] name) {
+		if (!this.locked) {
+			this.locked = true;
+		}
 		return create(this.namespace, name);
 	}
 
@@ -104,6 +112,9 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * @return a name-based UUID
 	 */
 	public UUID create(final String name) {
+		if (!this.locked) {
+			this.locked = true;
+		}
 		final byte[] n = name.getBytes(StandardCharsets.UTF_8);
 		return create(this.namespace, n);
 	}
@@ -155,7 +166,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * @return a name-based UUID
 	 */
 	public UUID create(final UUID namespace, final byte[] name) {
-		final byte[] ns = namespace == null ? null : toBytes(namespace);
+		final byte[] ns = namespace == null ? null : CODEC_BYTES.encode(namespace);
 		return create(ns, name);
 	}
 
@@ -171,7 +182,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * @return a name-based UUID
 	 */
 	public UUID create(final UUID namespace, final String name) {
-		final byte[] ns = namespace == null ? null : toBytes(namespace);
+		final byte[] ns = namespace == null ? null : CODEC_BYTES.encode(namespace);
 		final byte[] n = name.getBytes(StandardCharsets.UTF_8);
 		return create(ns, n);
 	}
@@ -185,7 +196,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * @throws InvalidUuidException if the namespace is invalid
 	 */
 	public UUID create(final String namespace, final byte[] name) {
-		final byte[] ns = namespace == null ? null : toBytes(fromString(namespace));
+		final byte[] ns = namespace == null ? null : CODEC_BYTES.encode(CODEC_STRING.decode(namespace));
 		return create(ns, name);
 	}
 
@@ -202,7 +213,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * @throws InvalidUuidException if the namespace is invalid
 	 */
 	public UUID create(final String namespace, final String name) {
-		final byte[] ns = namespace == null ? null : toBytes(fromString(namespace));
+		final byte[] ns = namespace == null ? null : CODEC_BYTES.encode(CODEC_STRING.decode(namespace));
 		final byte[] n = name.getBytes(StandardCharsets.UTF_8);
 		return create(ns, n);
 	}
@@ -215,7 +226,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * @return a name-based UUID
 	 */
 	public UUID create(final UuidNamespace namespace, final byte[] name) {
-		final byte[] ns = namespace == null ? null : toBytes(namespace.getValue());
+		final byte[] ns = namespace == null ? null : CODEC_BYTES.encode(namespace.getValue());
 		return create(ns, name);
 	}
 
@@ -231,7 +242,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * @return a name-based UUID
 	 */
 	public UUID create(final UuidNamespace namespace, final String name) {
-		final byte[] ns = namespace == null ? null : toBytes(namespace.getValue());
+		final byte[] ns = namespace == null ? null : CODEC_BYTES.encode(namespace.getValue());
 		final byte[] n = name.getBytes(StandardCharsets.UTF_8);
 		return create(ns, n);
 	}
@@ -276,10 +287,10 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractNameBasedUuidCreator> T withNamespace(UUID namespace) {
-		if (this.namespace != null) {
+		if (this.locked) {
 			throw new IllegalArgumentException(EXCEPTION_MESSAGE);
 		}
-		this.namespace = toBytes(namespace);
+		this.namespace = CODEC_BYTES.encode(namespace);
 		return (T) this;
 	}
 
@@ -296,10 +307,10 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractNameBasedUuidCreator> T withNamespace(String namespace) {
-		if (this.namespace != null) {
+		if (this.locked) {
 			throw new IllegalArgumentException(EXCEPTION_MESSAGE);
 		}
-		this.namespace = toBytes(fromString(namespace));
+		this.namespace = CODEC_BYTES.encode(CODEC_STRING.decode(namespace));
 		return (T) this;
 	}
 
@@ -315,10 +326,10 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractNameBasedUuidCreator> T withNamespace(UuidNamespace namespace) {
-		if (this.namespace != null) {
+		if (this.locked) {
 			throw new IllegalArgumentException(EXCEPTION_MESSAGE);
 		}
-		this.namespace = toBytes(namespace.getValue());
+		this.namespace = CODEC_BYTES.encode(namespace.getValue());
 		return (T) this;
 	}
 }

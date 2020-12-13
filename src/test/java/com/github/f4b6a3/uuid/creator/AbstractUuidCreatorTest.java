@@ -1,8 +1,9 @@
 package com.github.f4b6a3.uuid.creator;
 
 import com.github.f4b6a3.uuid.UuidCreator;
+import com.github.f4b6a3.uuid.codec.UuidBytesCodec;
+import com.github.f4b6a3.uuid.codec.UuidCodec;
 import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
-import com.github.f4b6a3.uuid.util.UuidConverter;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 import static org.junit.Assert.*;
@@ -17,6 +18,8 @@ public abstract class AbstractUuidCreatorTest {
 	protected static final int DEFAULT_LOOP_MAX = 10_000;
 
 	protected static final String DUPLICATE_UUID_MSG = "A duplicate UUID was created";
+
+	private static final UuidCodec<byte[]> bytesCodec = new UuidBytesCodec();
 
 	protected static final int THREAD_TOTAL = availableProcessors();
 
@@ -178,7 +181,7 @@ public abstract class AbstractUuidCreatorTest {
 		 * @return a byte array
 		 */
 		private byte[] getBytes(UUID namespace, String name) {
-			byte[] ns = UuidConverter.toBytes(namespace);
+			byte[] ns = bytesCodec.encode(namespace);
 			byte[] nm = name.getBytes();
 			byte[] bytes = new byte[ns.length + nm.length];
 			System.arraycopy(ns, 0, bytes, 0, ns.length);
