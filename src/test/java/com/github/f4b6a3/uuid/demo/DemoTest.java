@@ -7,8 +7,6 @@ import com.github.f4b6a3.uuid.codec.UuidCodec;
 import com.github.f4b6a3.uuid.codec.base.UuidBase16Codec;
 import com.github.f4b6a3.uuid.codec.base.UuidBase32Codec;
 import com.github.f4b6a3.uuid.codec.base.UuidBase32HexCodec;
-import com.github.f4b6a3.uuid.codec.base.UuidBase62Codec;
-import com.github.f4b6a3.uuid.codec.base.UuidBase62HexCodec;
 import com.github.f4b6a3.uuid.codec.base.UuidBase64Codec;
 import com.github.f4b6a3.uuid.codec.base.UuidBase64UrlCodec;
 import com.github.f4b6a3.uuid.codec.base.UuidBaseNCodec;

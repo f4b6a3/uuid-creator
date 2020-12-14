@@ -8,8 +8,6 @@ import com.github.f4b6a3.uuid.codec.base.function.UuidBase16Decoder;
 import com.github.f4b6a3.uuid.codec.base.function.UuidBase16Encoder;
 import com.github.f4b6a3.uuid.codec.base.function.UuidBase32Decoder;
 import com.github.f4b6a3.uuid.codec.base.function.UuidBase32Encoder;
-import com.github.f4b6a3.uuid.codec.base.function.UuidBase62Decoder;
-import com.github.f4b6a3.uuid.codec.base.function.UuidBase62Encoder;
 import com.github.f4b6a3.uuid.codec.base.function.UuidBase64Decoder;
 import com.github.f4b6a3.uuid.codec.base.function.UuidBase64Encoder;
 import com.github.f4b6a3.uuid.exception.UuidCodecException;
@@ -50,10 +48,6 @@ public abstract class UuidBaseNCodec implements UuidCodec<String> {
 		case BASE_32:
 			encoder = new UuidBase32Encoder(alphabet);
 			decoder = new UuidBase32Decoder(alphabet);
-			break;
-		case BASE_62:
-			encoder = new UuidBase62Encoder(alphabet);
-			decoder = new UuidBase62Decoder(alphabet);
 			break;
 		case BASE_64:
 			encoder = new UuidBase64Encoder(alphabet);
