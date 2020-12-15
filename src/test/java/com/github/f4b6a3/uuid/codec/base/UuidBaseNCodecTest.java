@@ -32,7 +32,7 @@ public class UuidBaseNCodecTest {
 			UUID uuid = UUID.randomUUID();
 			byte[] bytes = CODEC_BYTES.encode(uuid);
 			BigInteger n = new BigInteger(1, bytes);
-			String string = zerofill(n.toString(16), 32).toUpperCase();
+			String string = zerofill(n.toString(16), 32);
 			String actual = codec.encode(uuid);
 			assertEquals(string, actual);
 		}
@@ -46,7 +46,7 @@ public class UuidBaseNCodecTest {
 			UUID uuid = UUID.randomUUID();
 			byte[] bytes = CODEC_BYTES.encode(uuid);
 			BigInteger n = new BigInteger(1, bytes);
-			String string = zerofill(n.toString(16), 32).toUpperCase();
+			String string = zerofill(n.toString(16), 32);
 			UUID actual = codec.decode(string);
 			assertEquals(uuid.toString().replace("-", ""), actual.toString().replace("-", ""));
 		}
@@ -393,11 +393,11 @@ public class UuidBaseNCodecTest {
 		return lpad(chars, length, '0');
 	}
 
-	public static String replace(String string, char[] from, char[] to) {
+	private static String replace(String string, char[] from, char[] to) {
 		return new String(replace(string.toCharArray(), from, to));
 	}
 
-	public static char[] replace(char[] chars, char[] from, char[] to) {
+	private static char[] replace(char[] chars, char[] from, char[] to) {
 
 		char[] output = chars.clone();
 		for (int i = 0; i < output.length; i++) {

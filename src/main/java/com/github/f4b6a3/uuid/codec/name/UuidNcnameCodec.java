@@ -40,29 +40,53 @@ public class UuidNcnameCodec implements UuidCodec<String> {
 
 	private static final UuidCodec<byte[]> CODEC_BYTES = new UuidBytesCodec();
 
-	protected static final char[] VERSION_CHARS = //
-			{ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P' };
+	// array 0: lower case for base-16 and base-32
+	// array 1: upper case base-64
+	protected static final char[][] VERSION_CHARS = { //
+			{ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p' }, //
+			{ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P' } //
+	};
 
-	protected static final long[] VERSION_VALUES = new long[128];
+	protected static final long[] VERSION_MAP = new long[128];
 	static {
-		initArrayValues(VERSION_VALUES);
-		// Numbers
-		VERSION_VALUES['A'] = 0x0;
-		VERSION_VALUES['B'] = 0x1;
-		VERSION_VALUES['C'] = 0x2;
-		VERSION_VALUES['D'] = 0x3;
-		VERSION_VALUES['E'] = 0x4;
-		VERSION_VALUES['F'] = 0x5;
-		VERSION_VALUES['G'] = 0x6;
-		VERSION_VALUES['H'] = 0x7;
-		VERSION_VALUES['I'] = 0x8;
-		VERSION_VALUES['J'] = 0x9;
-		VERSION_VALUES['K'] = 0xa;
-		VERSION_VALUES['L'] = 0xb;
-		VERSION_VALUES['M'] = 0xc;
-		VERSION_VALUES['N'] = 0xd;
-		VERSION_VALUES['O'] = 0xe;
-		VERSION_VALUES['P'] = 0xf;
+		// initialize the array with -1
+		for (int i = 0; i < VERSION_MAP.length; i++) {
+			VERSION_MAP[i] = -1;
+		}
+		// upper case for base-16 and base-32
+		VERSION_MAP['A'] = 0x0;
+		VERSION_MAP['B'] = 0x1;
+		VERSION_MAP['C'] = 0x2;
+		VERSION_MAP['D'] = 0x3;
+		VERSION_MAP['E'] = 0x4;
+		VERSION_MAP['F'] = 0x5;
+		VERSION_MAP['G'] = 0x6;
+		VERSION_MAP['H'] = 0x7;
+		VERSION_MAP['I'] = 0x8;
+		VERSION_MAP['J'] = 0x9;
+		VERSION_MAP['K'] = 0xa;
+		VERSION_MAP['L'] = 0xb;
+		VERSION_MAP['M'] = 0xc;
+		VERSION_MAP['N'] = 0xd;
+		VERSION_MAP['O'] = 0xe;
+		VERSION_MAP['P'] = 0xf;
+		// lower case for base-64
+		VERSION_MAP['a'] = 0x0;
+		VERSION_MAP['b'] = 0x1;
+		VERSION_MAP['c'] = 0x2;
+		VERSION_MAP['d'] = 0x3;
+		VERSION_MAP['e'] = 0x4;
+		VERSION_MAP['f'] = 0x5;
+		VERSION_MAP['g'] = 0x6;
+		VERSION_MAP['h'] = 0x7;
+		VERSION_MAP['i'] = 0x8;
+		VERSION_MAP['j'] = 0x9;
+		VERSION_MAP['k'] = 0xa;
+		VERSION_MAP['l'] = 0xb;
+		VERSION_MAP['m'] = 0xc;
+		VERSION_MAP['n'] = 0xd;
+		VERSION_MAP['o'] = 0xe;
+		VERSION_MAP['p'] = 0xf;
 	}
 
 	// padding used to circumvent the decoder's length validation
@@ -108,13 +132,17 @@ public class UuidNcnameCodec implements UuidCodec<String> {
 
 		UUID uuuu = CODEC_BYTES.decode(bytes);
 		String encoded = this.codec.encode(uuuu).substring(0, this.length - 1);
-		return VERSION_CHARS[version] + encoded;
+
+		// if base is 64, use upper case version, else use lower case
+		char v = this.base == 64 ? VERSION_CHARS[1][version] : VERSION_CHARS[0][version];
+
+		return v + encoded;
 	}
 
 	@Override
 	public UUID decode(String ncname) {
 
-		int version = (int) VERSION_VALUES[ncname.charAt(0)];
+		int version = (int) VERSION_MAP[ncname.charAt(0)];
 		String substring = ncname.substring(1, ncname.length());
 		UUID uuid = this.codec.decode(substring + DECODER_PADDING);
 
@@ -178,16 +206,5 @@ public class UuidNcnameCodec implements UuidCodec<String> {
 		bytes[0xe] = (byte) (ints[3] >>> 8);
 		bytes[0xf] = (byte) (ints[3]);
 		return bytes;
-	}
-
-	/**
-	 * Method used to initiate array values with -1.
-	 * 
-	 * @param array an array of values
-	 */
-	private static void initArrayValues(long[] array) {
-		for (int i = 0; i < array.length; i++) {
-			array[i] = -1;
-		}
 	}
 }

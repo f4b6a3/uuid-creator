@@ -34,22 +34,46 @@ public abstract class UuidBaseNDecoder implements Function<String, UUID> {
 
 	protected final UuidBaseN base;
 
-	protected final char[] alphabet;
-	protected final long[] alphabetValues = new long[128];
+	// if case insensitive:
+	// alphabet 0 is lower case
+	// alphabet 1 is upper case
+	protected final char[][] alphabets = new char[2][];
+
+	// ASCII map:
+	// each char is mapped to a value
+	protected final long[] map = new long[128];
+
+	private static final char[] UPPER_CASE = { //
+			'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', //
+			'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', //
+			'U', 'V', 'W', 'X', 'Y', 'Z' };
+	private static final char[] LOWER_CASE = { //
+			'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', //
+			'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', //
+			'u', 'v', 'w', 'x', 'y', 'z' };
 
 	public UuidBaseNDecoder(UuidBaseN base, char[] alphabet) {
 
 		this.base = base;
-		this.alphabet = alphabet;
 
-		// Initiate all alphabet values with -1
-		for (int i = 0; i < this.alphabetValues.length; i++) {
-			this.alphabetValues[i] = -1;
+		if (base.isInsensitive()) {
+			// if case insensitive...
+			this.alphabets[0] = replace(alphabet, UPPER_CASE, LOWER_CASE); // to lower case
+			this.alphabets[1] = replace(alphabet, LOWER_CASE, UPPER_CASE); // to upper case
+		} else {
+			// else: the alphabets are equal
+			this.alphabets[0] = alphabet.clone();
+			this.alphabets[1] = alphabet.clone();
 		}
 
-		// Set the alphabet values
-		for (int i = 0; i < alphabet.length; i++) {
-			this.alphabetValues[alphabet[i]] = i;
+		// initialize the map with -1
+		for (int i = 0; i < this.map.length; i++) {
+			this.map[i] = -1;
+		}
+		// map the alphabets chars to values
+		for (int i = 0; i < this.alphabets[0].length; i++) {
+			this.map[this.alphabets[0][i]] = i;
+			this.map[this.alphabets[1][i]] = i;
 		}
 	}
 
@@ -65,8 +89,9 @@ public abstract class UuidBaseNDecoder implements Function<String, UUID> {
 		}
 		for (int i = 0; i < chars.length; i++) {
 			boolean found = false;
-			for (int j = 0; j < alphabet.length; j++) {
-				if (chars[i] == alphabet[j]) {
+			for (int j = 0; j < alphabets[0].length; j++) {
+				// check if the char is in one of the lower and upper alphabets
+				if (chars[i] == alphabets[0][j] || chars[i] == alphabets[1][j]) {
 					found = true;
 				}
 			}
@@ -74,5 +99,18 @@ public abstract class UuidBaseNDecoder implements Function<String, UUID> {
 				throw new UuidCodecException("Invalid string: \"" + (new String(chars)) + "\"");
 			}
 		}
+	}
+
+	protected char[] replace(char[] chars, char[] from, char[] to) {
+		char[] output = chars.clone();
+		for (int i = 0; i < output.length; i++) {
+			for (int j = 0; j < from.length; j++) {
+				if (output[i] == from[j]) {
+					output[i] = to[j];
+					break;
+				}
+			}
+		}
+		return output;
 	}
 }

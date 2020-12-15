@@ -40,7 +40,6 @@ public abstract class UuidBaseNCodec implements UuidCodec<String> {
 
 	protected final UuidBaseN base;
 	protected final char[] alphabet;
-	protected final long[] alphabetValues = new long[128];
 
 	protected final Function<UUID, String> encoder;
 	protected final Function<String, UUID> decoder;
@@ -48,37 +47,27 @@ public abstract class UuidBaseNCodec implements UuidCodec<String> {
 	public UuidBaseNCodec(UuidBaseNAlphabet input) {
 		this(input.getBase(), input.getAlphabet());
 	}
-	
+
 	public UuidBaseNCodec(UuidBaseN base, char[] alphabet) {
 
 		this.base = base;
-		this.alphabet = alphabet;
-
-		// Initiate all alphabet values with -1
-		for (int i = 0; i < this.alphabetValues.length; i++) {
-			this.alphabetValues[i] = -1;
-		}
-
-		// Set the alphabet values
-		for (int i = 0; i < alphabet.length; i++) {
-			this.alphabetValues[alphabet[i]] = i;
-		}
+		this.alphabet = alphabet.clone();
 
 		switch (base) {
 		case BASE_16:
-			encoder = new UuidBase16Encoder(alphabet);
-			decoder = new UuidBase16Decoder(alphabet);
+			encoder = new UuidBase16Encoder(this.alphabet);
+			decoder = new UuidBase16Decoder(this.alphabet);
 			break;
 		case BASE_32:
-			encoder = new UuidBase32Encoder(alphabet);
-			decoder = new UuidBase32Decoder(alphabet);
+			encoder = new UuidBase32Encoder(this.alphabet);
+			decoder = new UuidBase32Decoder(this.alphabet);
 			break;
 		case BASE_64:
-			encoder = new UuidBase64Encoder(alphabet);
-			decoder = new UuidBase64Decoder(alphabet);
+			encoder = new UuidBase64Encoder(this.alphabet);
+			decoder = new UuidBase64Decoder(this.alphabet);
 			break;
 		default:
-			throw new UuidCodecException("Unsupported base");
+			throw new UuidCodecException("Unsupported base-n");
 		}
 	}
 

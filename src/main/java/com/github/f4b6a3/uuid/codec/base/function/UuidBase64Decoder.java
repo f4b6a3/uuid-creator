@@ -42,31 +42,31 @@ public class UuidBase64Decoder extends UuidBaseNDecoder {
 		long msb = 0;
 		long lsb = 0;
 
-		msb |= alphabetValues[chars[0x00]] << 58;
-		msb |= alphabetValues[chars[0x01]] << 52;
-		msb |= alphabetValues[chars[0x02]] << 46;
-		msb |= alphabetValues[chars[0x03]] << 40;
-		msb |= alphabetValues[chars[0x04]] << 34;
-		msb |= alphabetValues[chars[0x05]] << 28;
-		msb |= alphabetValues[chars[0x06]] << 22;
-		msb |= alphabetValues[chars[0x07]] << 16;
-		msb |= alphabetValues[chars[0x08]] << 10;
-		msb |= alphabetValues[chars[0x09]] << 4;
+		msb |= map[chars[0x00]] << 58;
+		msb |= map[chars[0x01]] << 52;
+		msb |= map[chars[0x02]] << 46;
+		msb |= map[chars[0x03]] << 40;
+		msb |= map[chars[0x04]] << 34;
+		msb |= map[chars[0x05]] << 28;
+		msb |= map[chars[0x06]] << 22;
+		msb |= map[chars[0x07]] << 16;
+		msb |= map[chars[0x08]] << 10;
+		msb |= map[chars[0x09]] << 4;
 
-		msb |= alphabetValues[chars[0x0a]] >>> 2;
-		lsb |= alphabetValues[chars[0x0a]] << 62;
+		msb |= map[chars[0x0a]] >>> 2;
+		lsb |= map[chars[0x0a]] << 62;
 
-		lsb |= alphabetValues[chars[0x0b]] << 56;
-		lsb |= alphabetValues[chars[0x0c]] << 50;
-		lsb |= alphabetValues[chars[0x0d]] << 44;
-		lsb |= alphabetValues[chars[0x0e]] << 38;
-		lsb |= alphabetValues[chars[0x0f]] << 32;
-		lsb |= alphabetValues[chars[0x10]] << 26;
-		lsb |= alphabetValues[chars[0x11]] << 20;
-		lsb |= alphabetValues[chars[0x12]] << 14;
-		lsb |= alphabetValues[chars[0x13]] << 8;
-		lsb |= alphabetValues[chars[0x14]] << 2;
-		lsb |= alphabetValues[chars[0x15]] >>> 4;
+		lsb |= map[chars[0x0b]] << 56;
+		lsb |= map[chars[0x0c]] << 50;
+		lsb |= map[chars[0x0d]] << 44;
+		lsb |= map[chars[0x0e]] << 38;
+		lsb |= map[chars[0x0f]] << 32;
+		lsb |= map[chars[0x10]] << 26;
+		lsb |= map[chars[0x11]] << 20;
+		lsb |= map[chars[0x12]] << 14;
+		lsb |= map[chars[0x13]] << 8;
+		lsb |= map[chars[0x14]] << 2;
+		lsb |= map[chars[0x15]] >>> 4;
 
 		return new UUID(msb, lsb);
 	}

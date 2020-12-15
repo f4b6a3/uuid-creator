@@ -26,14 +26,16 @@ package com.github.f4b6a3.uuid.codec.base;
 
 public enum UuidBaseN {
 
-	BASE_16(16, 32), BASE_32(32, 26), BASE_64(64, 22);
+	BASE_16(16, 32, true), BASE_32(32, 26, true), BASE_64(64, 22, false);
 
 	private int number;
 	private int length;
+	private boolean insensitive;
 
-	UuidBaseN(final int number, final int length) {
+	UuidBaseN(int number, int length, boolean insensitive) {
 		this.number = number;
 		this.length = length;
+		this.insensitive = insensitive;
 	}
 
 	public int getNumber() {
@@ -42,5 +44,9 @@ public enum UuidBaseN {
 
 	public int getLength() {
 		return length;
+	}
+
+	public boolean isInsensitive() {
+		return insensitive;
 	}
 }

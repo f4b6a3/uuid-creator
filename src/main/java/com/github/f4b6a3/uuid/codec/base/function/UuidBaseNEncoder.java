@@ -36,6 +36,6 @@ public abstract class UuidBaseNEncoder implements Function<UUID, String> {
 
 	public UuidBaseNEncoder(UuidBaseN base, char[] alphabet) {
 		this.base = base;
-		this.alphabet = alphabet;
+		this.alphabet = alphabet.clone();
 	}
 }

@@ -1,16 +1,6 @@
 package com.github.f4b6a3.uuid.demo;
 
-import java.util.UUID;
-
 import com.github.f4b6a3.uuid.UuidCreator;
-import com.github.f4b6a3.uuid.codec.UuidCodec;
-import com.github.f4b6a3.uuid.codec.base.UuidBase16Codec;
-import com.github.f4b6a3.uuid.codec.base.UuidBase32Codec;
-import com.github.f4b6a3.uuid.codec.base.UuidBase32HexCodec;
-import com.github.f4b6a3.uuid.codec.base.UuidBase64Codec;
-import com.github.f4b6a3.uuid.codec.base.UuidBase64UrlCodec;
-import com.github.f4b6a3.uuid.codec.base.UuidBaseNCodec;
-import com.github.f4b6a3.uuid.codec.slug.UuidSlugCodec;
 
 public class DemoTest {
 
@@ -104,53 +94,7 @@ public class DemoTest {
 		System.out.println(HORIZONTAL_LINE);
 	}
 
-	// temporary
-	public static void listBlankSlugs() {
-
-		UuidSlugCodec codec = new UuidSlugCodec(new UuidBase64UrlCodec(), /* bit shift = */ true);
-
-		String[] list = { //
-				"00000000-0000-0000-8000-000000000000", //
-				"00000000-0000-1000-8000-000000000000", //
-				"00000000-0000-2000-8000-000000000000", //
-				"00000000-0000-3000-8000-000000000000", //
-				"00000000-0000-4000-8000-000000000000", //
-				"00000000-0000-5000-8000-000000000000", //
-				"00000000-0000-6000-8000-000000000000", //
-				"00000000-0000-7000-8000-000000000000", //
-				"00000000-0000-8000-8000-000000000000", //
-				"00000000-0000-9000-8000-000000000000", //
-				"00000000-0000-a000-8000-000000000000", //
-				"00000000-0000-b000-8000-000000000000", //
-				"00000000-0000-c000-8000-000000000000", //
-				"00000000-0000-d000-8000-000000000000", //
-				"00000000-0000-e000-8000-000000000000", //
-				"00000000-0000-f000-8000-000000000000", //
-		};
-		System.out.println();
-		for (int i = 0; i < list.length; i++) {
-			UUID uuid = UuidCreator.fromString(list[i]);
-			String slug = codec.encode(uuid);
-			System.out.println(list[i] + " " + slug);
-		}
-	}
-
-	// temporary
-	public static void listRandomSlugs() {
-		System.out.println();
-
-		boolean bitshift = true;
-		UuidBaseNCodec baseCodec = new UuidBase64UrlCodec();
-		UuidSlugCodec slugCodec = new UuidSlugCodec(baseCodec, bitshift);
-		for (int i = 0; i < 16; i++) {
-			UUID uuid = UuidCreator.getRandomBased();
-			String slug = slugCodec.encode(uuid);
-			System.out.println(uuid + " " + slug);
-		}
-	}
-
 	public static void main(String[] args) {
-		listBlankSlugs();
-		listRandomSlugs();
+		printList();
 	}
 }

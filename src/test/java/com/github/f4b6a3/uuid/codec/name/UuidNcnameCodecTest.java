@@ -44,7 +44,7 @@ public class UuidNcnameCodecTest {
 		UuidCodec<String> codec = new UuidNcnameCodec(new UuidBase32Codec());
 		for (int i = 0; i < SAMPLES_UUID.length; i++) {
 			String actual = codec.encode(SAMPLES_UUID[i]);
-			assertEquals(SAMPLES_BASE_32[i].toUpperCase(), actual);
+			assertEquals(SAMPLES_BASE_32[i], actual);
 		}
 	}
 
@@ -52,7 +52,7 @@ public class UuidNcnameCodecTest {
 	public void testDecode32() {
 		UuidCodec<String> codec = new UuidNcnameCodec(new UuidBase32Codec());
 		for (int i = 0; i < SAMPLES_UUID.length; i++) {
-			UUID actual = codec.decode(SAMPLES_BASE_32[i].toUpperCase());
+			UUID actual = codec.decode(SAMPLES_BASE_32[i]);
 			assertEquals(SAMPLES_UUID[i], actual);
 		}
 	}

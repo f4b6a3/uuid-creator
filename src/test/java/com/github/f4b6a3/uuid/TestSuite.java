@@ -4,9 +4,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 import com.github.f4b6a3.uuid.codec.base.UuidBaseNCodecTest;
-// import com.github.f4b6a3.uuid.codec.name.UuidNcnameCodecTest;
+import com.github.f4b6a3.uuid.codec.name.UuidNcnameCodecTest;
 import com.github.f4b6a3.uuid.codec.slug.UuidSlugCodecTest;
-// import com.github.f4b6a3.uuid.codec.uri.UuidUriCodecTest;
+import com.github.f4b6a3.uuid.codec.uri.UuidUriCodecTest;
 import com.github.f4b6a3.uuid.codec.UuidBytesCodecTest;
 import com.github.f4b6a3.uuid.codec.UuidStringCodecTest;
 import com.github.f4b6a3.uuid.creator.AbstractTimeBasedUuidCreatorTest;
@@ -49,11 +49,11 @@ import com.github.f4b6a3.uuid.util.UuidValidatorTest;
 	UuidBaseNCodecTest.class,
 	UuidBytesCodecTest.class,
 	UuidCreatorSettingsTest.class,
-//	UuidNcnameCodecTest.class,
+	UuidNcnameCodecTest.class,
 	UuidSlugCodecTest.class,
 	UuidStringCodecTest.class,
 	UuidTimeTest.class,
-//	UuidUriCodecTest.class,
+	UuidUriCodecTest.class,
 	UuidUtilTest.class,
 	UuidValidatorTest.class,
 })
