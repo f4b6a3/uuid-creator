@@ -22,17 +22,18 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.codec;
-
-import java.util.UUID;
+package com.github.f4b6a3.uuid.codec.base;
 
 /**
- * Interface to be implemented by all codecs of this package.
+ * Codec for base-64 as defined in RFC-4648.
  * 
- * @param <T> the type encoded to and decoded from.
+ * It is case sensitive.
+ * 
+ * See: https://tools.ietf.org/html/rfc4648
  */
-public interface UuidCodec<T> {
-	public T encode(UUID uuid);
+public final class Base64Codec extends BaseNCodec {
 
-	public UUID decode(T item);
+	public Base64Codec() {
+		super(BaseNAlphabet.ALPHABET_BASE_64);
+	}
 }

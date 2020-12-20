@@ -22,17 +22,31 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.codec;
+package com.github.f4b6a3.uuid.codec.base.function;
 
 import java.util.UUID;
+import java.util.function.Function;
+
+import com.github.f4b6a3.uuid.codec.base.BaseN;
 
 /**
- * Interface to be implemented by all codecs of this package.
+ * Abstract function to be extended by all encoder functions of this package.
  * 
- * @param <T> the type encoded to and decoded from.
+ * If the base-n is case insensitive, it encodes in lower case only.
+ * 
+ * See: https://tools.ietf.org/html/rfc4648
  */
-public interface UuidCodec<T> {
-	public T encode(UUID uuid);
+public abstract class BaseNEncoder implements Function<UUID, String> {
 
-	public UUID decode(T item);
+	protected final BaseN base;
+	protected final char[] alphabet;
+
+	/**
+	 * @param base     an enumeration that represents the base-n encoding
+	 * @param alphabet a string that contains the base-n alphabet
+	 */
+	public BaseNEncoder(BaseN base, String alphabet) {
+		this.base = base;
+		this.alphabet = alphabet.toCharArray();
+	}
 }

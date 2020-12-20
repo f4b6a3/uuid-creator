@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>3.3.0</version>
+  <version>3.4.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -88,6 +88,11 @@ UUID uuid = UuidCreator.getTimeBasedWithMac();
 ```java
 // Time-based with system data hash as node identifier
 UUID uuid = UuidCreator.getTimeBasedWithHash();
+```
+
+```java
+// Time-based with random node identifier that always changes
+UUID uuid = UuidCreator.getTimeBasedWithRandom();
 ```
 
 Sequence of time-based UUIDs:
@@ -274,6 +279,11 @@ UUID uuid = UuidCreator.getTimeOrderedWithMac();
 ```java
 // Time-ordered with system data hash as node identifier
 UUID uuid = UuidCreator.getTimeOrderedWithHash();
+```
+
+```java
+// Time-ordered with random node identifier that always changes
+UUID uuid = UuidCreator.getTimeOrderedWithRandom();
 ```
 
 Sequence of time-ordered UUIDs:
@@ -598,13 +608,13 @@ The system data hash is calculated from a list of system properties: hostname, M
 
 ##### System property and environment variable
 
-It's possible to manage the node identifier for each machine by defining the system property `uuidcreator.node` or the environment variable `UUIDCREATOR_NODE`. The system property has priority over the environment variable. If no property or variable is defined, the node identifier is randomly chosen implicitly.
+It's possible to manage the node identifier for each machine by defining the system property `uuidcreator.node` or the environment variable `UUIDCREATOR_NODE`. The system property has priority over the environment variable. If no property or variable is defined, the node identifier is randomly chosen.
 
 These options are accepted:
 
 - The string "mac" to use the MAC address;
 - The string "hash" to use the hash of hostname, MAC and IP;
-- The string "random" to use a random number explicitly;
+- The string "random" to use a random number that always changes;
 - The string representation of a specific number between 0 and 2^48-1.
 
 The number formats are: decimal, hexadecimal, and octal.
@@ -620,7 +630,7 @@ The number formats are: decimal, hexadecimal, and octal.
 # Use the hash of system data as node identifier
 -Duuidcreator.node="hash"
 
-# Use a random value as node identifier explicitly
+# Use a random value as node identifier that always changes
 -Duuidcreator.node="random"
 
 # Use a specific number as node identifier
@@ -638,7 +648,7 @@ export UUIDCREATOR_NODE="mac"
 # Use the hash of system data as node identifier
 export UUIDCREATOR_NODE="hash"
 
-# Use a random value as node identifier explicitly
+# Use a random value as node identifier that always changes
 export UUIDCREATOR_NODE="random"
 
 # Use a specific number as node identifier
@@ -985,9 +995,15 @@ UUID uuid = dcesecurity.create(localIdentifier);
 
 ### Library utilities
 
-This library provides some utilities for UUID validation, conversion, version checking etc.
+This library provides many utilities for UUID validation, version checking, information extraction, etc.
 
 ##### UuidValidador
+
+The `UuidValidator` is used to check if the UUID string representation is correct.
+
+Using `UuidValidator` is much faster than using regular expression.
+
+The methods below have variants that check the UUID version.
 
 ```java
 // Returns true if is valid (these examples are valid)
@@ -1005,50 +1021,9 @@ UuidValidator.validate("033d4881-f059-4171-bc83-2fe89e5a2bed");
 UuidValidator.validate("033D4881-F059-4171-BC83-2FE89E5A2BED");
 ```
 
-##### UuidConverter
-
-```java
-// Convert a string into a UUID (these examples are valid)
-// It is much faster than `UUID.fromString(String)` in JDK 8.
-UUID uuid = UuidConverter.fromString("53ab5fd331ee4cb987792fe8a887b3be");
-UUID uuid = UuidConverter.fromString("53AB5FD331EE4CB987792FE8A887B3BE");
-UUID uuid = UuidConverter.fromString("53ab5fd3-31ee-4cb9-8779-2fe8a887b3be");
-UUID uuid = UuidConverter.fromString("53AB5FD3-31EE-4CB9-8779-2FE8A887B3BE");
-UUID uuid = UuidConverter.fromString("{53ab5fd3-31ee-4cb9-8779-2fe8a887b3be}");
-UUID uuid = UuidConverter.fromString("{53AB5FD3-31EE-4CB9-8779-2FE8A887B3BE}");
-UUID uuid = UuidConverter.fromString("urn:uuid:53ab5fd3-31ee-4cb9-8779-2fe8a887b3be");
-UUID uuid = UuidConverter.fromString("urn:uuid:53AB5FD3-31EE-4CB9-8779-2FE8A887B3BE");
-```
-
-```java
-// Convert UUID into a string
-// It is much faster than `UUID.toString(UUID)` in JDK 8.
-String string = UuidConverter.toString(uuid);
-```
-
-```java
-// Convert an array of bytes into a UUID
-UUID uuid = UuidConverter.fromBytes(bytes);
-```
-
-```java
-// Convert a UUID into an array of bytes
-byte[] bytes = UuidConverter.toBytes(uuid);
-```
-
-```java
-// Convert time-based (version 1) to time-ordered (version 6)
-UUID uuid = UuidCreator.fromString("0edd764a-8eff-11e9-8649-972f32b091a1");
-uuid = UuidConverter.toTimeOrderedUuid(uuid);
-```
-
-```java
-// Convert time-ordered (version 6) to time-based (version 1)
-UUID uuid = UuidCreator.fromString("1e98eff0-eddc-647f-a649-ad1cde652e10");
-uuid = UuidConverter.toTimeBasedUuid(uuid);
-```
-
 ##### UuidUtil
+
+This utility class provides methods for checking UUID version, extracting information from UUIDs, etc.
 
 ```java
 // Returns true if UUID is NIL
@@ -1092,14 +1067,258 @@ uuid = UuidUtil.applyVersion(uuid, 4); // 00000000-0000-4000-0000-000000000000
 
 ##### MachineId
 
+The `MachineId` collects the hostname, the MAC address and the IP address and then generates a SHA-256 hash of these data. The resulting hash is truncated to generate a machine ID or UUID.
+
 ```java
-// Get the machine ID (SHA-256 hash of hostname, MAC and IP)
+// Get the machine ID
 long id = MachineId.getMachineId();
 ```
 
 ```java
-// Get the machine UUID (SHA-256 hash of hostname, MAC and IP)
+// Get the machine UUID
 UUID uuid = MachineId.getMachineUuid();
+```
+
+### Library codecs
+
+This library also provides many codecs for canonical string, byte array, base-n, slugs etc.
+
+##### BinaryCodec
+
+A UUID is an array of 16 bytes. The `BinaryCodec` converts a UUID to and from an array of bytes.
+
+```java
+// Convert a UUID into an array of bytes
+UuidCodec<byte[]> codec = new BinaryCodec();
+byte[] bytes = codec.encode(uuid);
+```
+
+```java
+// Convert an array of bytes into a UUID
+UuidCodec<byte[]> codec = new BinaryCodec();
+UUID uuid = codec.decode(bytes);
+```
+
+##### StringCodec
+
+The RFC-4122 defines a standard string representation, also referred as [canonical textual representation](https://en.wikipedia.org/wiki/Universally_unique_identifier#Format). The `StringCodec` converts a UUID to and from a string representation.
+
+The string representation is a string of 32 hexadecimal (base-16) digits, displayed in five groups separated by hyphens, in the form 8-4-4-4-12 for a total of 36 characters (32 hexadecimal characters and 4 hyphens).
+
+This codec decodes (parses) strings in these formats, with/without hyphens:
+
+- 00000000-0000-V000-0000-000000000000 (canonical string);
+- {00000000-0000-V000-0000-000000000000} (MS GUID string).
+- urn:uuid:00000000-0000-V000-0000-000000000000 (URN UUID string);
+
+The encoding and decoding processes may be much faster (5 to 7x) than `UUID#toString()` and `UUID#fromString(String)` in JDK 8.
+
+If you prefer a string representation without hyphens, use the `Base16Codec` instead of `StringCodec`. This other codec may be much faster (10x) than doing `uuid.toString().replaceAll("-", "")`.
+
+```java
+// Convert UUID into a string
+// It is much faster than `UUID.toString(UUID)` in JDK 8.
+UuidCodec<String> codec = new StringCodec();
+String string = codec.encode(uuid);
+```
+
+```java
+// Convert a string into a UUID (these examples are valid)
+// It is much faster than `UUID.fromString(String)` in JDK 8.
+UuidCodec<String> codec = new StringCodec();
+UUID uuid = codec.decode("53ab5fd331ee4cb987792fe8a887b3be");
+UUID uuid = codec.decode("53AB5FD331EE4CB987792FE8A887B3BE");
+UUID uuid = codec.decode("53ab5fd3-31ee-4cb9-8779-2fe8a887b3be");
+UUID uuid = codec.decode("53AB5FD3-31EE-4CB9-8779-2FE8A887B3BE");
+UUID uuid = codec.decode("{53ab5fd3-31ee-4cb9-8779-2fe8a887b3be}");
+UUID uuid = codec.decode("{53AB5FD3-31EE-4CB9-8779-2FE8A887B3BE}");
+UUID uuid = codec.decode("urn:uuid:53ab5fd3-31ee-4cb9-8779-2fe8a887b3be");
+UUID uuid = codec.decode("urn:uuid:53AB5FD3-31EE-4CB9-8779-2FE8A887B3BE");
+```
+
+##### SlugCodec
+
+A UUID Slug is a short string representation that can be safely included in URLs and file names.
+
+The `SlugCodec` turns a UUID into a string that does not start with digits (0-9). Due to the default base-64-url alphabet, it is *case sensitive* and may contain '-' and '_'.
+
+The `Base32Codec` can be passed to the `SlugCodec` constructor to generate base-32 slugs. Due to the base-32 alphabet, it is *case insensitive* and it contains only letters (a-zA-Z) and digits (2-7). This encoding substitution can be done to avoid the characters '-' and '_' of the base-64-url encoding, but it makes the slug case insensitive.
+
+To turn a UUID into a slug, the version and variant [nibbles](https://en.wikipedia.org/wiki/Nibble) are are moved to the first position of the UUID byte array. The slugs generated of the same UUID version show a constant letter in the first position of the base-64-url string. 
+
+This is how the UUID bits are rearranged:
+
+```
+  00000000-0000-V000-X000-000000000000
+                |    |            ^
+  ,-------------'    |   encode   |
+  |,-----------------'      |   decode
+  ||                        v
+  VX000000-0000-0000-0000-000000000000
+                             shift -->
+  V: version nibble or character
+  X: variant nibble or character
+```
+
+This table shows the slug prefixes for each UUID version:
+
+```
+VERSON  PREFIX   EXAMPLE
+   1       G     GxA1e7vco3Ib6_mjtptP3w
+   2       K     KryezRARVgTHLQ3zJpAXIw
+   3       O     O9JfSS1IqIabkEWC-uXWNA
+   4       S     S5iPSZYDt7q2w0qiIFZVwQ
+   5       W     WY-Uv6WAY5os7Gfv4ILnvQ
+   6       a     aMKkEoaymw0FSQNJRDL7Gw
+```
+
+If you don't like the change in the UUID bytes layout before the encoding to base-64-url, use the `Base64Codec` instead of `SlugCodec` to generate slugs.
+
+`SlugCodec` and `NcnameCodec` are very similar. The difference between the two is the bit shift they do with the original UUID to transform it into a string.
+
+In the case someone is interested in implementing this type of slug in another language, the change in the bytes layout don't have to be done with bit shifting. Since a base-16 character corresponds to a nibble, the layout change could be easily done by moving characters instead of by shifting bits. See `SlugCodecTest#moveCharacters()`.
+
+```java
+// Returns a UUID Slug
+UuidCodec<String> codec = new SlugCodec();
+UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
+String string = codec.encode(uuid); // SgEjRWeJq97xI0VniavN7w
+```
+
+```java
+// Returns a UUID Slug encoded to base 32
+UuidCodec<String> codec = new SlugCodec(new Base32Codec());
+UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
+String string = codec.encode(uuid); // jiasgrlhrgv554jdivtytk6n54
+```
+
+##### NcnameCodec
+
+A UUID NCName is a shorter string representation that conforms to the constraints of various other identifiers such as NCName in XML documents.
+
+The `NcnameCodec` turns a UUID into a string that does not start with digits (0-9). But due to the default base-64-url encoding, it may contain '-' and '_'.
+
+The `Base32Codec` can be passed to the `NcnameCodec` constructor to generate base-32 NCNames. Due to the base-32 alphabet, it is *case insensitive* and it contains only letters (a-zA-Z) and digits (2-7). This encoding substitution can be done to avoid the characters '-' and '_' of the base-64-url encoding, but it makes the NCName case insensitive.
+
+The transformation scheme is outlined in this RFC: https://tools.ietf.org/html/draft-taylor-uuid-ncname-00
+
+Both `SlugCodec` and `NcnameCodec` are very similar. The difference between the two is the bit shift they do with the original UUID to make it a string.
+
+```java
+// Returns a UUID NCName
+UuidCodec<String> codec = new NcnameCodec();
+UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
+String string = codec.encode(uuid); // EASNFZ4mr3vEjRWeJq83vK
+```
+
+```java
+// Returns a UUID NCName encoded to base 32
+UuidCodec<String> codec = new NcnameCodec(new Base32Codec());
+UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
+String string = codec.encode(uuid); // eaerukz4jvpppci2fm6e2xtppk
+```
+
+##### UriCodec
+
+The URN representation adds the prefix 'urn:uuid:' to a UUID canonical representation. The codec `UriCodec` encodes UUID to and from a opaque `java.net.URI`.
+
+```java
+// Returns a `java.net.URI`
+UuidCodec<URI> codec = new UriCodec();
+UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
+URI uri = codec.encode(uuid); // urn:uuid:01234567-89ab-4def-a123-456789abcdef
+```
+
+##### BaseNCodec
+
+This library provides codecs for base-16, base-32 and base-64 encodings. All the encodings defined in the [RFC-4648](https://tools.ietf.org/html/rfc4648) are available. The [Crockford's base-32](https://www.crockford.com/base32.html) is also available.
+
+These are the base-n encodings available:
+
+- Base 16;
+- Base 32;
+- Base 32 Hex;
+- Base 32 Crockford;
+- Base 64;
+- Base 64 URL.
+
+The following examples encode the UUID `01234567-89AB-4DEF-A123-456789ABCDEF` to all the provided encodings.
+
+```java
+// Returns a base-16 string
+// It is much faster than doing `uuid.toString().replaceAll("-", "")`.
+UuidCodec<String> codec = new Base16Codec();
+UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
+String string = codec.encode(uuid); // 0123456789ab4defa123456789abcdef
+```
+
+```java
+// Returns a base-32 string
+UuidCodec<String> codec = new Base32Codec();
+UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
+String string = codec.encode(uuid); // aerukz4jvng67ijdivtytk6n54
+```
+
+```java
+// Returns a base-32-hex string
+UuidCodec<String> codec = new Base32HexCodec();
+UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
+String string = codec.encode(uuid); // 04hkaps9ld6uv8938ljojaudts
+```
+
+```java
+// Returns a Crockford's base-32 string
+UuidCodec<String> codec = new Base32CrockfordCodec();
+UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
+String string = codec.encode(uuid); // 04hmasw9nd6yz8938nkrkaydxw
+```
+
+```java
+// Returns a base-64 string
+UuidCodec<String> codec = new Base64Codec();
+UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
+String string = codec.encode(uuid); // ASNFZ4mrTe+hI0VniavN7w
+```
+
+```java
+// Returns a base-64-url string
+UuidCodec<String> codec = new Base64UrlCodec();
+UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
+String string = codec.encode(uuid); // ASNFZ4mrTe-hI0VniavN7w
+```
+
+##### TimeOrderedCodec
+
+Time-based UUIDs and time-ordered UUIDs have different byte layouts for the timestamp. The `TimeOrderedCodec` converts time-based UUIDs (v1) to and from time-ordered UUIDs (v6).
+
+```java
+// Convert time-based (version 1) to time-ordered (version 6)
+UuidCodec<UUID> codec = new TimeOrderedCodec();
+UUID orderUuid = codec.encode(timeUuid);
+```
+
+```java
+// Convert time-ordered (version 6) to time-based (version 1)
+UuidCodec<UUID> codec = new TimeOrderedCodec();
+UUID timeUuid = codec.decode(orderUuid);
+```
+
+##### DotNetGuid1Codec and DotNetGuid4Codec
+
+The [.Net Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid?view=net-5.0) stores the timestamp bytes in a different order from the RFC-4122 UUID. The `DotNetGuid1Codec` and `DotNetGuid4Codec` codecs convert RFC-4122 UUIDs to and from .Net GUIDs.
+
+The .Net GUID stores the most significant bytes as little-endian, while the least significant bytes are stored as big-endian (network order).
+
+```java
+// Convert time-ordered (version 1) to .Net Guid
+UuidCodec<UUID> codec = new DotNetGuid1Codec();
+UUID guid = codec.encode(timeUuid);
+```
+
+```java
+// Convert random-ordered (version 4) to .Net Guid
+UuidCodec<UUID> codec = new DotNetGuid4Codec();
+UUID guid = codec.encode(randomUuid);
 ```
 
 Benchmark

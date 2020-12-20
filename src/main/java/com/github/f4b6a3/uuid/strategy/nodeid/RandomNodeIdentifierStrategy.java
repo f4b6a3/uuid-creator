@@ -22,17 +22,24 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.codec;
+package com.github.f4b6a3.uuid.strategy.nodeid;
 
-import java.util.UUID;
+import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
 
 /**
- * Interface to be implemented by all codecs of this package.
+ * Strategy that provides a random node identifier.
  * 
- * @param <T> the type encoded to and decoded from.
+ * A new random node identifier is always generated and returned.
  */
-public interface UuidCodec<T> {
-	public T encode(UUID uuid);
+public final class RandomNodeIdentifierStrategy implements NodeIdentifierStrategy {
 
-	public UUID decode(T item);
+	/**
+	 * Return a new random node identifier.
+	 * 
+	 * @return a node identifier
+	 */
+	@Override
+	public long getNodeIdentifier() {
+		return NodeIdentifierStrategy.getRandomNodeIdentifier();
+	}
 }

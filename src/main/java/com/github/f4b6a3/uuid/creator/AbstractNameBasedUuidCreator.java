@@ -29,9 +29,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.codec.UuidBytesCodec;
+import com.github.f4b6a3.uuid.codec.BinaryCodec;
 import com.github.f4b6a3.uuid.codec.UuidCodec;
-import com.github.f4b6a3.uuid.codec.UuidStringCodec;
+import com.github.f4b6a3.uuid.codec.StringCodec;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
@@ -68,8 +68,8 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 
 	private static final String EXCEPTION_MESSAGE = "Namespace can not be changed.";
 
-	private static final UuidCodec<byte[]> CODEC_BYTES = new UuidBytesCodec();
-	private static final UuidCodec<String> CODEC_STRING = new UuidStringCodec();
+	private static final UuidCodec<byte[]> CODEC_BYTES = new BinaryCodec();
+	private static final UuidCodec<String> CODEC_STRING = new StringCodec();
 
 	/**
 	 * This constructor receives the name of a message digest.

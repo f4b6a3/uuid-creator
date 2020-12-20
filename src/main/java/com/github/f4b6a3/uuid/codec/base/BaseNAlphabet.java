@@ -22,17 +22,37 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.codec;
-
-import java.util.UUID;
+package com.github.f4b6a3.uuid.codec.base;
 
 /**
- * Interface to be implemented by all codecs of this package.
- * 
- * @param <T> the type encoded to and decoded from.
+ * Enumeration that lists the base-n alphabets of this package.
  */
-public interface UuidCodec<T> {
-	public T encode(UUID uuid);
+public enum BaseNAlphabet {
 
-	public UUID decode(T item);
+	ALPHABET_BASE_16(BaseN.BASE_16, "0123456789abcdef"), //
+	ALPHABET_BASE_32(BaseN.BASE_32, "abcdefghijklmnopqrstuvwxyz234567"), //
+	ALPHABET_BASE_32_HEX(BaseN.BASE_32, "0123456789abcdefghijklmnopqrstuv"), //
+	ALPHABET_BASE_32_CROCKFORD(BaseN.BASE_32, "0123456789abcdefghjkmnpqrstvwxyz"), //
+	ALPHABET_BASE_64(BaseN.BASE_64, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"), //
+	ALPHABET_BASE_64_URL(BaseN.BASE_64, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"); //
+
+	private BaseN base;
+	private String alphabet;
+
+	/**
+	 * @param base     an enumeration that represents the base-n encoding
+	 * @param alphabet a string that contains the base-n alphabet
+	 */
+	private BaseNAlphabet(BaseN base, String alphabet) {
+		this.base = base;
+		this.alphabet = alphabet;
+	}
+
+	public BaseN getBase() {
+		return this.base;
+	}
+
+	public String getAlphabet() {
+		return this.alphabet;
+	}
 }

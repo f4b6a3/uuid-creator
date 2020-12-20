@@ -11,9 +11,8 @@ import com.github.f4b6a3.uuid.util.UuidValidator;
 
 public class UuidValidatorTest {
 
-	private static final int DEFAULT_LOOP_LIMIT = 10_000;
+	private static final int DEFAULT_LOOP_LIMIT = 100;
 
-	// TODO: test with version
 	@Test
 	public void testIsValidBytes() {
 

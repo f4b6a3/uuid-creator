@@ -22,17 +22,19 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.codec;
-
-import java.util.UUID;
+package com.github.f4b6a3.uuid.codec.base;
 
 /**
- * Interface to be implemented by all codecs of this package.
+ * Codec for base-32 as defined in RFC-4648.
  * 
- * @param <T> the type encoded to and decoded from.
+ * It is case insensitive, so it decodes in lower and upper case, but encodes in
+ * lower case only.
+ * 
+ * See: https://tools.ietf.org/html/rfc4648
  */
-public interface UuidCodec<T> {
-	public T encode(UUID uuid);
+public final class Base32Codec extends BaseNCodec {
 
-	public UUID decode(T item);
+	public Base32Codec() {
+		super(BaseNAlphabet.ALPHABET_BASE_32);
+	}
 }

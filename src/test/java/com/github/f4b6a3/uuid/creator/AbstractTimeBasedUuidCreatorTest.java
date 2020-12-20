@@ -5,6 +5,7 @@ import com.github.f4b6a3.uuid.strategy.nodeid.DefaultNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.FixedNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.HashNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.MacNodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.strategy.nodeid.RandomNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.util.internal.UuidCreatorSettings;
 
 import static org.junit.Assert.assertEquals;
@@ -32,6 +33,12 @@ public class AbstractTimeBasedUuidCreatorTest extends AbstractUuidCreatorTest {
 		strategy = AbstractTimeBasedUuidCreator.selectNodeIdentifierStrategy();
 		if (!(strategy instanceof HashNodeIdentifierStrategy)) {
 			fail("It should use Hash node identifier strategy");
+		}
+		
+		UuidCreatorSettings.setProperty(UuidCreatorSettings.PROPERTY_NODE, "random");
+		strategy = AbstractTimeBasedUuidCreator.selectNodeIdentifierStrategy();
+		if (!(strategy instanceof RandomNodeIdentifierStrategy)) {
+			fail("It should use Random node identifier strategy");
 		}
 
 		Long number = random.nextLong() & 0x0000ffffffffffffL;

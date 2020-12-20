@@ -1,7 +1,7 @@
 package com.github.f4b6a3.uuid.creator;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import com.github.f4b6a3.uuid.codec.UuidBytesCodec;
+import com.github.f4b6a3.uuid.codec.BinaryCodec;
 import com.github.f4b6a3.uuid.codec.UuidCodec;
 import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.util.UuidUtil;
@@ -19,7 +19,7 @@ public abstract class AbstractUuidCreatorTest {
 
 	protected static final String DUPLICATE_UUID_MSG = "A duplicate UUID was created";
 
-	private static final UuidCodec<byte[]> bytesCodec = new UuidBytesCodec();
+	private static final UuidCodec<byte[]> bytesCodec = new BinaryCodec();
 
 	protected static final int THREAD_TOTAL = availableProcessors();
 
@@ -146,7 +146,6 @@ public abstract class AbstractUuidCreatorTest {
 			this.loopLimit = loopLimit;
 		}
 
-		// TODO: call it after run() ?
 		public static void clearHashSet() {
 			hashSet = new HashSet<>();
 		}

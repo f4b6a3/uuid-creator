@@ -37,6 +37,7 @@ import com.github.f4b6a3.uuid.strategy.nodeid.DefaultNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.FixedNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.HashNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.MacNodeIdentifierStrategy;
+import com.github.f4b6a3.uuid.strategy.nodeid.RandomNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.util.UuidTime;
 import com.github.f4b6a3.uuid.util.internal.UuidCreatorSettings;
@@ -85,7 +86,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * 
 	 * - The string "hash" for using the system data hash;
 	 * 
-	 * - The string "random" for using a random number explicitly.
+	 * - The string "random" for using a random number that always changes.
 	 * 
 	 * - The string representation of a number between 0 and 2^48-1.
 	 * 
@@ -335,6 +336,19 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	}
 
 	/**
+	 * Replaces the default {@link NodeIdentifierStrategy} with the
+	 * {@link RandomNodeIdentifierStrategy}.
+	 * 
+	 * @param <T> type parameter
+	 * @return {@link AbstractTimeBasedUuidCreator}
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized <T extends AbstractTimeBasedUuidCreator> T withRandomNodeIdentifier() {
+		this.nodeIdentifierStrategy = new RandomNodeIdentifierStrategy();
+		return (T) this;
+	}
+
+	/**
 	 * Replaces the default {@link ClockSequenceStrategy} with the
 	 * {@link FixedClockSequenceStrategy}.
 	 * 
@@ -446,12 +460,12 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 * hash.
 	 * 
 	 * 3. If it finds the string "random", the generator will use a random number
-	 * explicitly.
+	 * that always changes.
 	 * 
 	 * 4. If it finds the string representation of a specific number in octal,
 	 * hexadecimal or decimal format, the generator will use the number represented.
 	 * 
-	 * 5. Else, a random number will be used implicitly by the generator.
+	 * 5. Else, a random number will be used by the generator.
 	 */
 	protected static NodeIdentifierStrategy selectNodeIdentifierStrategy() {
 
@@ -466,7 +480,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 		}
 
 		if (NODE_RANDOM.equalsIgnoreCase(string)) {
-			return new DefaultNodeIdentifierStrategy();
+			return new RandomNodeIdentifierStrategy();
 		}
 
 		Long number = UuidCreatorSettings.getNodeIdentifier();

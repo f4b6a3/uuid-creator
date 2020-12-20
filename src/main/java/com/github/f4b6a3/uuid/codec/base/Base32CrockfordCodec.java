@@ -22,17 +22,19 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.codec;
-
-import java.util.UUID;
+package com.github.f4b6a3.uuid.codec.base;
 
 /**
- * Interface to be implemented by all codecs of this package.
+ * Codec for Crockford's base-32.
  * 
- * @param <T> the type encoded to and decoded from.
+ * It is case insensitive, so it decodes in lower and upper case, but encodes in
+ * lower case only.
+ * 
+ * See: https://www.crockford.com/base32.html
  */
-public interface UuidCodec<T> {
-	public T encode(UUID uuid);
+public final class Base32CrockfordCodec extends BaseNCodec {
 
-	public UUID decode(T item);
+	public Base32CrockfordCodec() {
+		super(BaseNAlphabet.ALPHABET_BASE_32_CROCKFORD);
+	}
 }

@@ -31,6 +31,8 @@ import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
 /**
  * Strategy that provides a random node identifier.
  * 
+ * A random node identifier is generated ONCE and always returned.
+ * 
  * It uses {@link SecureRandom} to generate a 'cryptographic quality random
  * number'. The first generated number is returned for all calls.
  * 
@@ -68,7 +70,7 @@ public final class DefaultNodeIdentifierStrategy implements NodeIdentifierStrate
 
 	/**
 	 *
-	 * Return the current node identifier.
+	 * Return the random node identifier.
 	 * 
 	 * @return a node identifier
 	 */

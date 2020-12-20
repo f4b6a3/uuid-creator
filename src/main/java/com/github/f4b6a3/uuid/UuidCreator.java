@@ -27,9 +27,9 @@ package com.github.f4b6a3.uuid;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.codec.UuidBytesCodec;
+import com.github.f4b6a3.uuid.codec.BinaryCodec;
 import com.github.f4b6a3.uuid.codec.UuidCodec;
-import com.github.f4b6a3.uuid.codec.UuidStringCodec;
+import com.github.f4b6a3.uuid.codec.StringCodec;
 import com.github.f4b6a3.uuid.creator.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.creator.nonstandard.PrefixCombCreator;
 import com.github.f4b6a3.uuid.creator.nonstandard.ShortPrefixCombCreator;
@@ -71,7 +71,7 @@ public final class UuidCreator {
 	 * @return an array of bytes
 	 */
 	public static byte[] toBytes(final UUID uuid) {
-		return UuidBytesCodecLazyHolder.CODEC.encode(uuid);
+		return BinaryCodecLazyHolder.CODEC.encode(uuid);
 	}
 
 	/**
@@ -84,7 +84,7 @@ public final class UuidCreator {
 	 * @throws InvalidUuidException if invalid
 	 */
 	public static UUID fromBytes(byte[] uuid) {
-		return UuidBytesCodecLazyHolder.CODEC.decode(uuid);
+		return BinaryCodecLazyHolder.CODEC.decode(uuid);
 	}
 
 	/**
@@ -98,7 +98,7 @@ public final class UuidCreator {
 	 * @return a UUID string
 	 */
 	public static String toString(UUID uuid) {
-		return UuidStringCodecLazyHolder.CODEC.encode(uuid);
+		return StringCodecLazyHolder.CODEC.encode(uuid);
 	}
 
 	/**
@@ -123,7 +123,7 @@ public final class UuidCreator {
 	 * @throws InvalidUuidException if invalid
 	 */
 	public static UUID fromString(String uuid) {
-		return UuidStringCodecLazyHolder.CODEC.decode(uuid);
+		return StringCodecLazyHolder.CODEC.decode(uuid);
 	}
 
 	/**
@@ -202,6 +202,21 @@ public final class UuidCreator {
 	}
 
 	/**
+	 * Returns a time-based UUID with random node identifier.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 1 
+	 * - Node identifier: random (always changing)
+	 * </pre>
+	 * 
+	 * @return a version 1 UUID
+	 */
+	public static UUID getTimeBasedWithRandom() {
+		return TimeBasedWithRandomCreatorHolder.INSTANCE.create();
+	}
+
+	/**
 	 * Returns a time-based UUID.
 	 *
 	 * <pre>
@@ -260,6 +275,25 @@ public final class UuidCreator {
 	}
 
 	/**
+	 * Returns a time-based UUID with random node identifier.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 1
+	 * - Node identifier: random (always changing)
+	 * </pre>
+	 * 
+	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Integer, Long)}
+	 * 
+	 * @param instant  an alternate instant
+	 * @param clockseq an alternate clock sequence (0 to 16,383)
+	 * @return a version 1 UUID
+	 */
+	public static UUID getTimeBasedWithRandom(Instant instant, Integer clockseq) {
+		return TimeBasedWithRandomCreatorHolder.INSTANCE.create(instant, clockseq, null);
+	}
+
+	/**
 	 * Returns a time-ordered UUID.
 	 *
 	 * <pre>
@@ -305,6 +339,21 @@ public final class UuidCreator {
 	 */
 	public static UUID getTimeOrderedWithHash() {
 		return TimeOrderedWithHashCreatorHolder.INSTANCE.create();
+	}
+
+	/**
+	 * Returns a time-ordered UUID with random node identifier.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 6
+	 * - Node identifier: random (always changing)
+	 * </pre>
+	 * 
+	 * @return a version 6 UUID
+	 */
+	public static UUID getTimeOrderedWithRandom() {
+		return TimeOrderedWithRandomCreatorHolder.INSTANCE.create();
 	}
 
 	/**
@@ -363,6 +412,25 @@ public final class UuidCreator {
 	 */
 	public static UUID getTimeOrderedWithHash(Instant instant, Integer clockseq) {
 		return TimeOrderedWithHashCreatorHolder.INSTANCE.create(instant, clockseq, null);
+	}
+
+	/**
+	 * Returns a time-ordered UUID with random node identifier.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 6
+	 * - Node identifier: random (always changing)
+	 * </pre>
+	 * 
+	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Integer, Long)}
+	 * 
+	 * @param instant  an alternate instant
+	 * @param clockseq an alternate clock sequence (0 to 16,383)
+	 * @return a version 6 UUID
+	 */
+	public static UUID getTimeOrderedWithRandom(Instant instant, Integer clockseq) {
+		return TimeOrderedWithRandomCreatorHolder.INSTANCE.create(instant, clockseq, null);
 	}
 
 	/**
@@ -788,6 +856,25 @@ public final class UuidCreator {
 	}
 
 	/**
+	 * Returns a DCE Security UUID with random node identifier.
+	 *
+	 * See: {@link UuidLocalDomain}.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 2 
+	 * - Node identifier: random (always changing)
+	 * </pre>
+	 * 
+	 * @param localDomain     a custom local domain byte
+	 * @param localIdentifier a local identifier
+	 * @return a version 2 UUID
+	 */
+	public static UUID getDceSecurityWithRandom(byte localDomain, int localIdentifier) {
+		return DceSecurityWithRandomCreatorHolder.INSTANCE.create(localDomain, localIdentifier);
+	}
+
+	/**
 	 * Returns a DCE Security UUID.
 	 *
 	 * <pre>
@@ -858,6 +945,25 @@ public final class UuidCreator {
 	 */
 	public static UUID getDceSecurityWithHash(UuidLocalDomain localDomain, int localIdentifier) {
 		return DceSecurityWithHashCreatorHolder.INSTANCE.create(localDomain, localIdentifier);
+	}
+
+	/**
+	 * Returns a DCE Security UUID with random node identifier.
+	 *
+	 * See: {@link UuidLocalDomain}.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 2 
+	 * - Node identifier: random (always changing)
+	 * </pre>
+	 * 
+	 * @param localDomain     a predefined local domain enumeration
+	 * @param localIdentifier a local identifier
+	 * @return a version 2 UUID
+	 */
+	public static UUID getDceSecurityWithRandom(UuidLocalDomain localDomain, int localIdentifier) {
+		return DceSecurityWithRandomCreatorHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
@@ -1031,12 +1137,12 @@ public final class UuidCreator {
 	 * Private classes for lazy holders
 	 */
 
-	private static class UuidBytesCodecLazyHolder {
-		private static final UuidCodec<byte[]> CODEC = new UuidBytesCodec();
+	private static class BinaryCodecLazyHolder {
+		private static final UuidCodec<byte[]> CODEC = new BinaryCodec();
 	}
 
-	private static class UuidStringCodecLazyHolder {
-		private static final UuidCodec<String> CODEC = new UuidStringCodec();
+	private static class StringCodecLazyHolder {
+		private static final UuidCodec<String> CODEC = new StringCodec();
 	}
 
 	private static class RandomCreatorHolder {
@@ -1055,6 +1161,10 @@ public final class UuidCreator {
 		static final TimeOrderedUuidCreator INSTANCE = getTimeOrderedCreator().withHashNodeIdentifier();
 	}
 
+	private static class TimeOrderedWithRandomCreatorHolder {
+		static final TimeOrderedUuidCreator INSTANCE = getTimeOrderedCreator().withRandomNodeIdentifier();
+	}
+
 	private static class TimeBasedCreatorHolder {
 		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator();
 	}
@@ -1065,6 +1175,10 @@ public final class UuidCreator {
 
 	private static class TimeBasedWithHashCreatorHolder {
 		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withHashNodeIdentifier();
+	}
+
+	private static class TimeBasedWithRandomCreatorHolder {
+		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withRandomNodeIdentifier();
 	}
 
 	private static class NameBasedMd5CreatorHolder {
@@ -1085,6 +1199,10 @@ public final class UuidCreator {
 
 	private static class DceSecurityWithHashCreatorHolder {
 		static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator().withHashNodeIdentifier();
+	}
+
+	private static class DceSecurityWithRandomCreatorHolder {
+		static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator().withRandomNodeIdentifier();
 	}
 
 	private static class SuffixCombCreatorHolder {

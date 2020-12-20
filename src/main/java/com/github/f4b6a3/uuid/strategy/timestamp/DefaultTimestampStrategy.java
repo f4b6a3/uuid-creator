@@ -68,11 +68,11 @@ import com.github.f4b6a3.uuid.util.internal.SharedRandom;
  */
 public final class DefaultTimestampStrategy implements TimestampStrategy {
 
-	// initiate the previous time and tick
+	// initialize the previous time and tick
 	private long prevTime = UuidTime.getCurrentTimestamp();
 	private long prevTick = System.nanoTime() / TICK_UNIT;
 
-	// initiate the accumulator with a number between 0 and 255
+	// initialize the accumulator with a number between 0 and 255
 	private long accumulator = SharedRandom.nextLong() & ACCUMULATOR_RESET;
 
 	// a tick is equivalent to a 100-nanosecond interval
@@ -81,7 +81,7 @@ public final class DefaultTimestampStrategy implements TimestampStrategy {
 	// the accumulator can count a maximum of 10,000 ticks
 	private static final long ACCUMULATOR_LIMIT = 10_000; // 10,000 ticks = 1ms
 
-	// the accumulator must be initiated or reset to a number between 0 and 255
+	// the accumulator must be initialized or reset to a number between 0 and 255
 	private static final long ACCUMULATOR_RESET = 255; // 255 ticks = 0xff
 
 	@Override

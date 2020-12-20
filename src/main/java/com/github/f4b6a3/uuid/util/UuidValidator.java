@@ -28,6 +28,8 @@ import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
 /**
  * Utility for UUID validation.
+ * 
+ * Using it is much faster than using on regular expression.
  */
 public final class UuidValidator {
 
@@ -216,15 +218,13 @@ public final class UuidValidator {
 	protected static boolean isUuidString(final char[] chars, int version) {
 		return isVersion(chars, version) && isUuidString(chars);
 	}
-	
-	// TODO: test it individually 
+
 	protected static boolean isVersion(byte[] bytes, int version) {
 		boolean versionOk = ((version & ~0xf) == 0) && (((bytes[6] & 0xff) >>> 4) == version);
 		boolean variantOk = ((bytes[8] & 0xff) >>> 6) == 2; // RFC-4122
 		return versionOk && variantOk;
 	}
 
-	// TODO: test it individually 
 	protected static boolean isVersion(char[] chars, int version) {
 
 		// valid if between 0x0 and 0xf

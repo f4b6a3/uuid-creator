@@ -22,17 +22,41 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.codec;
-
-import java.util.UUID;
+package com.github.f4b6a3.uuid.codec.base;
 
 /**
- * Interface to be implemented by all codecs of this package.
- * 
- * @param <T> the type encoded to and decoded from.
+ * Enumeration that lists the base-n encodings of this package.
  */
-public interface UuidCodec<T> {
-	public T encode(UUID uuid);
+public enum BaseN {
 
-	public UUID decode(T item);
+	BASE_16(16, 32, true), //
+	BASE_32(32, 26, true), //
+	BASE_64(64, 22, false); // only base-64 is case sensitive
+
+	private int number;
+	private int length;
+	private boolean insensitive;
+
+	/**
+	 * @param number      the base number and also the alphabet size
+	 * @param length      the string length of the encoded UUID
+	 * @param insensitive a flag indicating whether the base-n is case insensitive
+	 */
+	BaseN(int number, int length, boolean insensitive) {
+		this.number = number;
+		this.length = length;
+		this.insensitive = insensitive;
+	}
+
+	public int getNumber() {
+		return number;
+	}
+
+	public int getLength() {
+		return length;
+	}
+
+	public boolean isInsensitive() {
+		return insensitive;
+	}
 }
