@@ -67,16 +67,15 @@ public class SlugCodecTest {
 
 	private UUID moveCharacters(UUID uuid) {
 
-		// Remove the hyphens
+		// remove the hyphens
 		String string = uuid.toString().replace("-", "");
 
-		// Create a buffer to store
-		// the characters temporarily
+		// create a buffer
 		int b = 0; // buffer index
 		char[] buffer = new char[32];
 
 		// put the version and variant characters
-		// in the start positions of the buffer
+		// at the start positions of the buffer
 		buffer[b++] = string.charAt(12); // equivalent to move version nibble to bit positions 0, 1, 2, and 3
 		buffer[b++] = string.charAt(16); // equivalent to move variant nibble to bit positions 4, 5, 6, and 7
 
@@ -88,7 +87,7 @@ public class SlugCodecTest {
 			}
 		}
 
-		// Add the hyphens back so that it
+		// add the hyphens back so that it
 		// can be parsed by UUID#fromString()
 		string = new String(buffer);
 		string = string.substring(0, 8) + '-' + //

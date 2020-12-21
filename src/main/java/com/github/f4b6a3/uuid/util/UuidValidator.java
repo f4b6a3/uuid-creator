@@ -211,7 +211,7 @@ public final class UuidValidator {
 	/**
 	 * Checks if the UUID char array in the standard format.
 	 * 
-	 * @param c       a char array
+	 * @param chars   a char array
 	 * @param version a version number
 	 * @return true if valid, false if invalid
 	 */
@@ -259,10 +259,10 @@ public final class UuidValidator {
 
 	private static void throwInvalidUuidException(char[] chars) {
 		String string = chars == null ? null : new String(chars);
-		throw new InvalidUuidException("Invalid UUID: " + string);
+		throw new InvalidUuidException("Invalid UUID: \"" + string + "\"");
 	}
 
 	private static void throwInvalidUuidException(String string) {
-		throw new InvalidUuidException("Invalid UUID: " + string);
+		throw new InvalidUuidException("Invalid UUID: \"" + string + "\"");
 	}
 }

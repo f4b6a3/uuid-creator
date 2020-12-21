@@ -34,7 +34,7 @@ import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 /**
  * Codec for UUID URIs (specifically URNs).
  * 
- * The {@link UriCodec} encodes UUID to and from a opaque {@link java.net.URI}.
+ * The {@link UriCodec} encodes UUID to and from an opaque {@link java.net.URI}.
  * 
  * The RFC-4122 defines a URN namespace for UUIDs. URNs are opaque URIs.
  * 

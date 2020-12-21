@@ -1202,7 +1202,7 @@ The `Base32Codec` can be passed to the `NcnameCodec` constructor to generate bas
 
 The transformation scheme is outlined in this RFC: https://tools.ietf.org/html/draft-taylor-uuid-ncname-00
 
-Both `SlugCodec` and `NcnameCodec` are very similar. The difference between the two is the bit shift they do with the original UUID to make it a string.
+`SlugCodec` and `NcnameCodec` are very similar. The difference between the two is the bit shift they do with the original UUID to make it a string.
 
 ```java
 // Returns a UUID NCName
@@ -1220,7 +1220,7 @@ String string = codec.encode(uuid); // eaerukz4jvpppci2fm6e2xtppk
 
 ##### UriCodec
 
-The URN representation adds the prefix 'urn:uuid:' to a UUID canonical representation. The codec `UriCodec` encodes UUID to and from a opaque `java.net.URI`.
+The URN representation adds the prefix 'urn:uuid:' to a UUID canonical representation. The codec `UriCodec` encodes UUID to and from an opaque `java.net.URI`.
 
 ```java
 // Returns a `java.net.URI`

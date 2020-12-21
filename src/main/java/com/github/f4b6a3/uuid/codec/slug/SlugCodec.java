@@ -27,8 +27,10 @@ package com.github.f4b6a3.uuid.codec.slug;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.codec.UuidCodec;
+import com.github.f4b6a3.uuid.codec.base.Base32Codec;
 import com.github.f4b6a3.uuid.codec.base.Base64UrlCodec;
 import com.github.f4b6a3.uuid.codec.base.BaseNCodec;
+import com.github.f4b6a3.uuid.codec.name.NcnameCodec;
 
 /**
  * Codec for UUID Slugs.
@@ -60,7 +62,7 @@ import com.github.f4b6a3.uuid.codec.base.BaseNCodec;
  *   |,-----------------'      |   decode
  *   ||                        v
  *   VX000000-0000-0000-0000-000000000000
- *                              shift -->
+ *                               shift ->
  *   V: version nibble or character
  *   X: variant nibble or character
  * </pre>
@@ -103,8 +105,6 @@ public final class SlugCodec implements UuidCodec<String> {
 
 	/**
 	 * @param codec a base-n codec to be used (the default is base-64-url)
-	 * @param shift a flag to shift the variant and variant bits to the front of the
-	 *              byte array.
 	 */
 	public SlugCodec(BaseNCodec codec) {
 		if (codec == null) {

@@ -51,9 +51,9 @@ import com.github.f4b6a3.uuid.codec.slug.SlugCodec;
  * The transformation scheme is outlined in this RFC:
  * https://tools.ietf.org/html/draft-taylor-uuid-ncname-00
  * 
- * Both {@link SlugCodec} and {@link NcnameCodec} are very similar. The
- * difference between the two is the bit shift they do with the original UUID to
- * transform it into a string.
+ * {@link SlugCodec} and {@link NcnameCodec} are very similar. The difference
+ * between the two is the bit shift they do with the original UUID to transform
+ * it into a string.
  * 
  * See: https://github.com/f4b6a3/uuid-creator/issues/31
  */
@@ -79,7 +79,7 @@ public final class NcnameCodec implements UuidCodec<String> {
 		for (int i = 0; i < VERSION_MAP.length; i++) {
 			VERSION_MAP[i] = -1;
 		}
-		// upper case for base-16 and base-32
+		// upper case for base-64
 		VERSION_MAP['A'] = 0x0;
 		VERSION_MAP['B'] = 0x1;
 		VERSION_MAP['C'] = 0x2;
@@ -96,7 +96,7 @@ public final class NcnameCodec implements UuidCodec<String> {
 		VERSION_MAP['N'] = 0xd;
 		VERSION_MAP['O'] = 0xe;
 		VERSION_MAP['P'] = 0xf;
-		// lower case for base-64
+		// lower case for base-16 and base-32
 		VERSION_MAP['a'] = 0x0;
 		VERSION_MAP['b'] = 0x1;
 		VERSION_MAP['c'] = 0x2;

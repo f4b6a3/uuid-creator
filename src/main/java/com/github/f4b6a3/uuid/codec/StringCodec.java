@@ -184,15 +184,19 @@ public class StringCodec implements UuidCodec<String> {
 	@Override
 	public UUID decode(String string) {
 
-		char[] chars = string == null ? new char[0] : string.toCharArray();
+		if (string == null) {
+			throw new InvalidUuidException("Invalid UUID: null");
+		}
+
+		char[] chars = string.toCharArray();
 
 		if (chars.length != 32 && chars.length != 36) {
-			if (string != null && string.startsWith(URN_PREFIX)) {
+			if (string.startsWith(URN_PREFIX)) {
 				// Remove URN prefix: "urn:uuid:"
 				char[] substring = new char[chars.length - 9];
 				System.arraycopy(chars, 9, substring, 0, substring.length);
 				chars = substring;
-			} else if (chars[0] == '{' && chars[chars.length - 1] == '}') {
+			} else if (chars.length > 0 && chars[0] == '{' && chars[chars.length - 1] == '}') {
 				// Remove curly braces: '{' and '}'
 				char[] substring = new char[chars.length - 2];
 				System.arraycopy(chars, 1, substring, 0, substring.length);
