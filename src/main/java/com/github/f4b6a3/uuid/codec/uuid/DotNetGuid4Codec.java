@@ -69,10 +69,10 @@ public class DotNetGuid4Codec implements UuidCodec<UUID> {
 	 */
 	@Override
 	public UUID decode(UUID uuid) {
-		UUID uuidv1 = toAndFromDotNetGuid(uuid);
-		if (!UuidUtil.isRandomBased(uuidv1)) {
-			throw new IllegalArgumentException(String.format("Not a random-based UUID: %s.", uuidv1.toString()));
+		UUID uuidv4 = toAndFromDotNetGuid(uuid);
+		if (!UuidUtil.isRandomBased(uuidv4)) {
+			throw new IllegalArgumentException(String.format("Not a random-based UUID: %s.", uuidv4.toString()));
 		}
-		return uuidv1;
+		return uuidv4;
 	}
 }

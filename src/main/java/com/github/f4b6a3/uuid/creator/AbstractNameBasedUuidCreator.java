@@ -108,6 +108,9 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
 	 * use {@link #create(byte[])} instead.
 	 * 
+	 * See: UTF-8, a transformation format of ISO 10646
+	 * https://tools.ietf.org/html/rfc3629
+	 * 
 	 * @param name a name string
 	 * @return a name-based UUID
 	 */
@@ -177,6 +180,9 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
 	 * use {@link #create(UUID, byte[])} instead.
 	 * 
+	 * See: UTF-8, a transformation format of ISO 10646
+	 * https://tools.ietf.org/html/rfc3629
+	 * 
 	 * @param namespace a name space UUID (optional)
 	 * @param name      a name string
 	 * @return a name-based UUID
@@ -207,6 +213,9 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
 	 * use {@link #create(String, byte[])} instead.
 	 * 
+	 * See: UTF-8, a transformation format of ISO 10646
+	 * https://tools.ietf.org/html/rfc3629
+	 * 
 	 * @param namespace a name space UUID in string format (optional)
 	 * @param name      a name string
 	 * @return a name-based UUID
@@ -236,6 +245,9 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * The name string is encoded into a sequence of bytes using the UTF-8
 	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
 	 * use {@link #create(UuidNamespace, byte[])} instead.
+	 * 
+	 * See: UTF-8, a transformation format of ISO 10646
+	 * https://tools.ietf.org/html/rfc3629
 	 * 
 	 * @param namespace a name space enumeration (optional)
 	 * @param name      a name string

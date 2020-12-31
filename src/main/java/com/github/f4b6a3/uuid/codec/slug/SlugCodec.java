@@ -62,7 +62,7 @@ import com.github.f4b6a3.uuid.codec.name.NcnameCodec;
  *   |,-----------------'      |   decode
  *   ||                        v
  *   VX000000-0000-0000-0000-000000000000
- *                               shift ->
+ *                               shift >>
  *   V: version nibble or character
  *   X: variant nibble or character
  * </pre>
@@ -79,13 +79,13 @@ import com.github.f4b6a3.uuid.codec.name.NcnameCodec;
  *    6       a     aMKkEoaymw0FSQNJRDL7Gw
  * </pre>
  * 
- * If you don't like the change in the UUID bytes layout before the encoding to
- * base-64-url, use the {@link Base64Codec} instead of {@link SlugCodec} to
+ * If you don't like the change in the bytes layout before the encoding to
+ * base-64-url, use the {@link Base64UrlCodec} instead of {@link SlugCodec} to
  * generate slugs.
  * 
- *{@link SlugCodec} and {@link NcnameCodec} are very similar. The
- * difference between the two is the bit shift they do with the original UUID to
- * transform it into a string.
+ * {@link SlugCodec} and {@link NcnameCodec} are very similar. The difference
+ * between the two is the bit shift they do with the original UUID to transform
+ * it into a string.
  * 
  * In the case someone is interested in implementing this type of slug in
  * another language, the change in the bytes layout don't have to be done with

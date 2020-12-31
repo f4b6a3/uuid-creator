@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>3.4.1</version>
+  <version>3.4.2</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -834,16 +834,16 @@ UUID uuid = timebased.create();
 
 ```java
 // with host IP address
+TimeBasedUuidCreator timebased = UuidCreator.getTimeBasedCreator();
 try {
+	// Get the IP and pass it to the generator
 	byte[] ip = InetAddress.getLocalHost().getAddress();
-	TimeBasedUuidCreator timebased = UuidCreator.getTimeBasedCreator()
-		.withNodeIdentifier(ip);
+	timebased.withNodeIdentifier(ip);
 } catch (UnknownHostException | SocketException e) {
 	// treat exception
 }
 
 UUID uuid = timebased.create();
-
 ```
 
 ##### Node identifier strategy
@@ -936,7 +936,7 @@ UUID uuid = randombased.create();
 
 ```java
 // with random values provided by a method reference or lambda expression
-import com.github.niceguy.random.AwesomeRandom;
+import com.github.niceguy.random.AwesomeRandom; // a hypothetical RNG
 AwesomeRandom awesomeRandom = new AwesomeRandom();
 RandomBasedUuidCreator randombased = UuidCreator.getRandomBasedCreator()
 		.withRandomStrategy(awesomeRandom::nextBytes);
@@ -1006,19 +1006,19 @@ Using `UuidValidator` is much faster than using regular expression.
 The methods below have variants that check the UUID version.
 
 ```java
-// Returns true if is valid (these examples are valid)
-UuidValidator.isValid("94d785b2eb624eaa88e72fe8fc5c3478");
-UuidValidator.isValid("94D785B2EB624EAA88E72FE8FC5C3478");
-UuidValidator.isValid("94d785b2-eb62-4eaa-88e7-2fe8fc5c3478");
-UuidValidator.isValid("94D785B2-EB62-4EAA-88E7-2FE8FC5C3478");
+// Returns true a string or byte array is valid
+// These examples are valid for this method:
+// 94d785b2eb624eaa88e72fe8fc5c3478 (lower case)
+// 94D785B2EB624EAA88E72FE8FC5C3478 (upper case)
+// 94d785b2-eb62-4eaa-88e7-2fe8fc5c3478 (the canonical string)
+// 94D785B2-EB62-4EAA-88E7-2FE8FC5C3478 (upper case with hyphens)
+UuidValidator.isValid(uuid);
 ```
 
 ```java
-// Throws an exception if invalid (these examples are valid)
-UuidValidator.validate("033d4881f0594171bc832fe89e5a2bed");
-UuidValidator.validate("033D4881F0594171BC832FE89E5A2BED");
-UuidValidator.validate("033d4881-f059-4171-bc83-2fe89e5a2bed");
-UuidValidator.validate("033D4881-F059-4171-BC83-2FE89E5A2BED");
+// Throws an exception if a string or byte array INVALID
+// The previous examples are also valid for this method.
+UuidValidator.validate(uuid);
 ```
 
 ##### UuidUtil
@@ -1026,32 +1026,27 @@ UuidValidator.validate("033D4881-F059-4171-BC83-2FE89E5A2BED");
 This utility class provides methods for checking UUID version, extracting information from UUIDs, etc.
 
 ```java
-// Returns true if UUID is NIL
-UUID uuid = UuidCreator.fromString("00000000-0000-0000-0000-000000000000");
+// Returns true if UUID is NIL (00000000-0000-0000-0000-000000000000)
 UuidUtil.isNil(uuid);
 ```
 
 ```java
 // Returns true if UUID is random based (version 4)
-UUID uuid = UuidCreator.fromString("e2df0d73-cc2b-455f-a9e4-2fe8bf4bf0f0");
 UuidUtil.isRandomBased(uuid);
 ```
 
 ```java
 // Returns true if UUID is time-based (version 1)
-UUID uuid = UuidCreator.fromString("0edd764a-8eff-11e9-8649-972f32b091a1");
 UuidUtil.isTimeBased(uuid);
 ```
 
 ```java
 // Returns true if UUID is time-ordered (version 6)
-UUID uuid = UuidCreator.fromString("1e98eff0-eddc-647f-a649-ad1cde652e10");
 UuidUtil.isTimeOrdered(uuid);
 ```
 
 ```java
 // Extract information from time-based or time-ordered UUIDs
-UUID uuid = UuidCreator.fromString("0edd764a-8eff-11e9-8649-972f32b091a1");
 Instant instant = UuidUtil.extractInstant(uuid);
 long millis = UuidUtil.extractUnixMilliseconds(uuid);
 int clocksq = UuidUtil.extractClockSequence(uuid);
@@ -1062,7 +1057,7 @@ UuidVariant variant = UuidUtil.getVariant(uuid);
 
 ```java
 // Apply a given version number to a UUID
-uuid = UuidUtil.applyVersion(uuid, 4); // 00000000-0000-4000-0000-000000000000
+UUID v4 = UuidUtil.applyVersion(uuid, 4);
 ```
 
 ##### MachineId
@@ -1071,17 +1066,17 @@ The `MachineId` collects the hostname, the MAC address and the IP address and th
 
 ```java
 // Get the machine ID
-long id = MachineId.getMachineId();
+long id = MachineId.getMachineId(); // 0x7bc3cfd7844f46ad (8918200211668420269)
 ```
 
 ```java
 // Get the machine UUID
-UUID uuid = MachineId.getMachineUuid();
+UUID uuid = MachineId.getMachineUuid(); // 7bc3cfd7-844f-46ad-51a9-1aa22d3c427a
 ```
 
 ### Library codecs
 
-This library also provides many codecs for canonical string, byte array, base-n, slugs etc.
+This library also provides many codecs for canonical string, byte array, base-n, slugs, etc.
 
 ##### BinaryCodec
 
@@ -1116,24 +1111,26 @@ The encoding and decoding processes may be much faster (5 to 7x) than `UUID#toSt
 If you prefer a string representation without hyphens, use the `Base16Codec` instead of `StringCodec`. This other codec may be much faster (10x) than doing `uuid.toString().replaceAll("-", "")`.
 
 ```java
-// Convert UUID into a string
+// Convert UUID into a canonical string
 // It is much faster than `UUID.toString(UUID)` in JDK 8.
 UuidCodec<String> codec = new StringCodec();
 String string = codec.encode(uuid);
 ```
 
 ```java
-// Convert a string into a UUID (these examples are valid)
+// Convert a canonical string (and some common variations of it) into a UUID
 // It is much faster than `UUID.fromString(String)` in JDK 8.
+// These examples are valid for this method:
+// 53ab5fd331ee4cb987792fe8a887b3be (lower case)
+// 53AB5FD331EE4CB987792FE8A887B3BE (upper case)
+// 53ab5fd3-31ee-4cb9-8779-2fe8a887b3be (the canonical string)
+// 53AB5FD3-31EE-4CB9-8779-2FE8A887B3BE (upper case with hyphens)
+// {53ab5fd3-31ee-4cb9-8779-2fe8a887b3be} (lower case with hyphens and curly braces)
+// {53AB5FD3-31EE-4CB9-8779-2FE8A887B3BE} (upper case with hyphens and curly braces)
+// urn:uuid:53ab5fd3-31ee-4cb9-8779-2fe8a887b3be (lower case with hyphens and URN prefix)
+// urn:uuid:53AB5FD3-31EE-4CB9-8779-2FE8A887B3BE (upper case with hyphens and URN prefix)
 UuidCodec<String> codec = new StringCodec();
-UUID uuid = codec.decode("53ab5fd331ee4cb987792fe8a887b3be");
-UUID uuid = codec.decode("53AB5FD331EE4CB987792FE8A887B3BE");
-UUID uuid = codec.decode("53ab5fd3-31ee-4cb9-8779-2fe8a887b3be");
-UUID uuid = codec.decode("53AB5FD3-31EE-4CB9-8779-2FE8A887B3BE");
-UUID uuid = codec.decode("{53ab5fd3-31ee-4cb9-8779-2fe8a887b3be}");
-UUID uuid = codec.decode("{53AB5FD3-31EE-4CB9-8779-2FE8A887B3BE}");
-UUID uuid = codec.decode("urn:uuid:53ab5fd3-31ee-4cb9-8779-2fe8a887b3be");
-UUID uuid = codec.decode("urn:uuid:53AB5FD3-31EE-4CB9-8779-2FE8A887B3BE");
+UUID uuid = codec.decode(string);
 ```
 
 ##### SlugCodec
@@ -1155,7 +1152,7 @@ This is how the UUID bits are rearranged:
   |,-----------------'      |   decode
   ||                        v
   VX000000-0000-0000-0000-000000000000
-                             shift -->
+                              shift >>
   V: version nibble or character
   X: variant nibble or character
 ```
@@ -1172,7 +1169,7 @@ VERSON  PREFIX   EXAMPLE
    6       a     aMKkEoaymw0FSQNJRDL7Gw
 ```
 
-If you don't like the change in the UUID bytes layout before the encoding to base-64-url, use the `Base64Codec` instead of `SlugCodec` to generate slugs.
+If you don't like the change in the bytes layout before the encoding to base-64-url, use the `Base64UrlCodec` instead of `SlugCodec` to generate slugs.
 
 `SlugCodec` and `NcnameCodec` are very similar. The difference between the two is the bit shift they do with the original UUID to transform it into a string.
 
@@ -1180,16 +1177,18 @@ In the case someone is interested in implementing this type of slug in another l
 
 ```java
 // Returns a UUID Slug
+// input:: 01234567-89AB-4DEF-A123-456789ABCDEF
+// output: SgEjRWeJq97xI0VniavN7w
 UuidCodec<String> codec = new SlugCodec();
-UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
-String string = codec.encode(uuid); // SgEjRWeJq97xI0VniavN7w
+String string = codec.encode(uuid);
 ```
 
 ```java
 // Returns a UUID Slug encoded to base 32
+// input:: 01234567-89AB-4DEF-A123-456789ABCDEF
+// output: jiasgrlhrgv554jdivtytk6n54
 UuidCodec<String> codec = new SlugCodec(new Base32Codec());
-UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
-String string = codec.encode(uuid); // jiasgrlhrgv554jdivtytk6n54
+String string = codec.encode(uuid);
 ```
 
 ##### NcnameCodec
@@ -1206,16 +1205,18 @@ The transformation scheme is outlined in this RFC: https://tools.ietf.org/html/d
 
 ```java
 // Returns a UUID NCName
+// input:: 01234567-89AB-4DEF-A123-456789ABCDEF
+// output: EASNFZ4mr3vEjRWeJq83vK
 UuidCodec<String> codec = new NcnameCodec();
-UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
-String string = codec.encode(uuid); // EASNFZ4mr3vEjRWeJq83vK
+String string = codec.encode(uuid);
 ```
 
 ```java
 // Returns a UUID NCName encoded to base 32
+// input:: 01234567-89AB-4DEF-A123-456789ABCDEF
+// output: eaerukz4jvpppci2fm6e2xtppk
 UuidCodec<String> codec = new NcnameCodec(new Base32Codec());
-UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
-String string = codec.encode(uuid); // eaerukz4jvpppci2fm6e2xtppk
+String string = codec.encode(uuid);
 ```
 
 ##### UriCodec
@@ -1224,9 +1225,10 @@ The URN representation adds the prefix 'urn:uuid:' to a UUID canonical represent
 
 ```java
 // Returns a `java.net.URI`
+// input:: 01234567-89AB-4DEF-A123-456789ABCDEF
+// output: urn:uuid:01234567-89ab-4def-a123-456789abcdef
 UuidCodec<URI> codec = new UriCodec();
-UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
-URI uri = codec.encode(uuid); // urn:uuid:01234567-89ab-4def-a123-456789abcdef
+URI uri = codec.encode(uuid);
 ```
 
 ##### BaseNCodec
@@ -1247,44 +1249,50 @@ The following examples encode the UUID `01234567-89AB-4DEF-A123-456789ABCDEF` to
 ```java
 // Returns a base-16 string
 // It is much faster than doing `uuid.toString().replaceAll("-", "")`.
+// input:: 01234567-89AB-4DEF-A123-456789ABCDEF
+// output: 0123456789ab4defa123456789abcdef
 UuidCodec<String> codec = new Base16Codec();
-UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
-String string = codec.encode(uuid); // 0123456789ab4defa123456789abcdef
+String string = codec.encode(uuid);
 ```
 
 ```java
 // Returns a base-32 string
+// input:: 01234567-89AB-4DEF-A123-456789ABCDEF
+// output: aerukz4jvng67ijdivtytk6n54
 UuidCodec<String> codec = new Base32Codec();
-UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
-String string = codec.encode(uuid); // aerukz4jvng67ijdivtytk6n54
+String string = codec.encode(uuid);
 ```
 
 ```java
 // Returns a base-32-hex string
+// input:: 01234567-89AB-4DEF-A123-456789ABCDEF
+// output: 04hkaps9ld6uv8938ljojaudts
 UuidCodec<String> codec = new Base32HexCodec();
-UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
-String string = codec.encode(uuid); // 04hkaps9ld6uv8938ljojaudts
+String string = codec.encode(uuid);
 ```
 
 ```java
 // Returns a Crockford's base-32 string
+// input:: 01234567-89AB-4DEF-A123-456789ABCDEF
+// output: 04hmasw9nd6yz8938nkrkaydxw
 UuidCodec<String> codec = new Base32CrockfordCodec();
-UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
-String string = codec.encode(uuid); // 04hmasw9nd6yz8938nkrkaydxw
+String string = codec.encode(uuid);
 ```
 
 ```java
 // Returns a base-64 string
+// input:: 01234567-89AB-4DEF-A123-456789ABCDEF
+// output: ASNFZ4mrTe+hI0VniavN7w
 UuidCodec<String> codec = new Base64Codec();
-UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
-String string = codec.encode(uuid); // ASNFZ4mrTe+hI0VniavN7w
+String string = codec.encode(uuid);
 ```
 
 ```java
 // Returns a base-64-url string
+// input:: 01234567-89AB-4DEF-A123-456789ABCDEF
+// output: ASNFZ4mrTe-hI0VniavN7w
 UuidCodec<String> codec = new Base64UrlCodec();
-UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
-String string = codec.encode(uuid); // ASNFZ4mrTe-hI0VniavN7w
+String string = codec.encode(uuid);
 ```
 
 ##### TimeOrderedCodec
@@ -1310,13 +1318,13 @@ The [.Net Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid?view=net
 The .Net GUID stores the most significant bytes as little-endian, while the least significant bytes are stored as big-endian (network order).
 
 ```java
-// Convert time-ordered (version 1) to .Net Guid
+// Convert time-based (version 1) to .Net Guid
 UuidCodec<UUID> codec = new DotNetGuid1Codec();
 UUID guid = codec.encode(timeUuid);
 ```
 
 ```java
-// Convert random-ordered (version 4) to .Net Guid
+// Convert random-based (version 4) to .Net Guid
 UuidCodec<UUID> codec = new DotNetGuid4Codec();
 UUID guid = codec.encode(randomUuid);
 ```

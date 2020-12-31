@@ -447,6 +447,9 @@ public final class UuidCreator {
 	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
 	 * use {@link #getNameBasedMd5(byte[])} instead.
 	 * 
+	 * See: UTF-8, a transformation format of ISO 10646
+	 * https://tools.ietf.org/html/rfc3629
+	 * 
 	 * @param name a name string
 	 * @return a version 3 UUID
 	 */
@@ -484,6 +487,9 @@ public final class UuidCreator {
 	 * The name string is encoded into a sequence of bytes using the UTF-8
 	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
 	 * use {@link #getNameBasedMd5(UUID, byte[])} instead.
+	 * 
+	 * See: UTF-8, a transformation format of ISO 10646
+	 * https://tools.ietf.org/html/rfc3629
 	 * 
 	 * @param namespace a custom name space UUID
 	 * @param name      a name string
@@ -524,6 +530,9 @@ public final class UuidCreator {
 	 * The name string is encoded into a sequence of bytes using the UTF-8
 	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
 	 * use {@link #getNameBasedMd5(String, byte[])} instead.
+	 * 
+	 * See: UTF-8, a transformation format of ISO 10646
+	 * https://tools.ietf.org/html/rfc3629
 	 * 
 	 * @param namespace a custom name space UUID in string format
 	 * @param name      a name string
@@ -576,8 +585,10 @@ public final class UuidCreator {
 	 * - NAMESPACE_X500_DN: Name string is an X.500 DN (in DER or a text format).
 	 * </pre>
 	 * 
-	 * 
 	 * See: {@link UuidNamespace}.
+	 * 
+	 * See: UTF-8, a transformation format of ISO 10646
+	 * https://tools.ietf.org/html/rfc3629
 	 * 
 	 * @param namespace a predefined name space enumeration
 	 * @param name      a name string
@@ -630,6 +641,9 @@ public final class UuidCreator {
 	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
 	 * use {@link #getNameBasedSha1(byte[])} instead.
 	 * 
+	 * See: UTF-8, a transformation format of ISO 10646
+	 * https://tools.ietf.org/html/rfc3629
+	 * 
 	 * @param name a name string
 	 * @return a version 5 UUID
 	 */
@@ -667,6 +681,9 @@ public final class UuidCreator {
 	 * The name string is encoded into a sequence of bytes using the UTF-8
 	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
 	 * use {@link #getNameBasedSha1(UUID, byte[])} instead.
+	 * 
+	 * See: UTF-8, a transformation format of ISO 10646
+	 * https://tools.ietf.org/html/rfc3629
 	 * 
 	 * @param namespace a custom name space UUID
 	 * @param name      a name string
@@ -707,6 +724,9 @@ public final class UuidCreator {
 	 * The name string is encoded into a sequence of bytes using the UTF-8
 	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
 	 * use {@link #getNameBasedSha1(String, byte[])} instead.
+	 * 
+	 * See: UTF-8, a transformation format of ISO 10646
+	 * https://tools.ietf.org/html/rfc3629
 	 * 
 	 * @param namespace a custom name space UUID in string format
 	 * @param name      a name string
@@ -760,6 +780,9 @@ public final class UuidCreator {
 	 * </pre>
 	 * 
 	 * See: {@link UuidNamespace}.
+	 * 
+	 * See: UTF-8, a transformation format of ISO 10646
+	 * https://tools.ietf.org/html/rfc3629
 	 * 
 	 * @param namespace a predefined name space enumeration
 	 * @param name      a name string

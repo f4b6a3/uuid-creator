@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.github.f4b6a3.uuid.creator.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidLocalDomain;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
+import com.github.f4b6a3.uuid.util.internal.SharedRandom;
 
 /**
  * 
@@ -67,7 +68,7 @@ public final class DceSecurityUuidCreator extends AbstractTimeBasedUuidCreator {
 
 	public DceSecurityUuidCreator() {
 		super(UuidVersion.VERSION_DCE_SECURITY);
-		this.counter = new AtomicInteger();
+		this.counter = new AtomicInteger(SharedRandom.nextInt());
 	}
 
 	/**

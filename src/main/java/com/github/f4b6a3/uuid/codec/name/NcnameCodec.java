@@ -28,6 +28,7 @@ import java.util.UUID;
 
 import com.github.f4b6a3.uuid.codec.BinaryCodec;
 import com.github.f4b6a3.uuid.codec.UuidCodec;
+import com.github.f4b6a3.uuid.codec.base.Base32Codec;
 import com.github.f4b6a3.uuid.codec.base.Base64UrlCodec;
 import com.github.f4b6a3.uuid.codec.base.BaseNCodec;
 import com.github.f4b6a3.uuid.codec.slug.SlugCodec;

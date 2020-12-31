@@ -26,6 +26,7 @@ package com.github.f4b6a3.uuid.codec;
 
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.codec.base.Base16Codec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.UuidValidator;
 
