@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>3.4.2</version>
+  <version>3.5.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -1058,6 +1058,18 @@ UuidVariant variant = UuidUtil.getVariant(uuid);
 ```java
 // Apply a given version number to a UUID
 UUID v4 = UuidUtil.applyVersion(uuid, 4);
+```
+
+##### CombUtil
+
+This utility class provides methods for extracting information from COMBs.
+
+```java
+// Extract instant and milliseconds from COMBs
+Instant instant = UuidUtil.extractPrefixInstant(comb);
+Instant instant = UuidUtil.extractSuffixInstant(comb);
+long prefix = UuidUtil.extractPrefix(comb); // Equivalent to Unix milliseconds
+long suffix = UuidUtil.extractSuffix(comb); // Equivalent to Unix milliseconds
 ```
 
 ##### MachineId

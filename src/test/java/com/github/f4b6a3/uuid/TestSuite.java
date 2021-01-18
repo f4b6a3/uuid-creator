@@ -28,6 +28,7 @@ import com.github.f4b6a3.uuid.strategy.clockseq.DefaultClockSequenceStrategyTest
 import com.github.f4b6a3.uuid.strategy.timestamp.DefaultTimestampStrategyTest;
 import com.github.f4b6a3.uuid.util.internal.ByteUtilTest;
 import com.github.f4b6a3.uuid.util.internal.UuidCreatorSettingsTest;
+import com.github.f4b6a3.uuid.util.nonstandard.CombUtilTest;
 import com.github.f4b6a3.uuid.util.UuidConverterTest;
 import com.github.f4b6a3.uuid.util.UuidTimeTest;
 import com.github.f4b6a3.uuid.util.UuidUtilTest;
@@ -60,6 +61,7 @@ import com.github.f4b6a3.uuid.util.UuidValidatorTest;
 	UuidTimeTest.class,
 	UriCodecTest.class,
 	UuidUtilTest.class,
+	CombUtilTest.class,
 	UuidValidatorTest.class,
 	DotNetGuid1CodecTest.class,
 	DotNetGuid4CodecTest.class,
