@@ -36,6 +36,11 @@ package com.github.f4b6a3.uuid.codec.base;
  * See: https://tools.ietf.org/html/rfc4648
  */
 public final class Base16Codec extends BaseNCodec {
+	
+	/**
+	 * A shared immutable instance.
+	 */
+	public static final Base16Codec INSTANCE = new Base16Codec();
 
 	public Base16Codec() {
 		super(BaseNAlphabet.ALPHABET_BASE_16);

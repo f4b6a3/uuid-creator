@@ -36,6 +36,11 @@ package com.github.f4b6a3.uuid.codec.base;
  */
 public final class Base64UrlCodec extends BaseNCodec {
 
+	/**
+	 * A shared immutable instance.
+	 */
+	public static final Base64UrlCodec INSTANCE = new Base64UrlCodec();
+	
 	public Base64UrlCodec() {
 		super(BaseNAlphabet.ALPHABET_BASE_64_URL);
 	}

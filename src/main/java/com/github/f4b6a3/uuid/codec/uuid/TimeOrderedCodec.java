@@ -35,6 +35,11 @@ import com.github.f4b6a3.uuid.util.UuidUtil;
  * This codec converts time-based UUIDs (v1) to time-ordered UUIDs (v6).
  */
 public class TimeOrderedCodec implements UuidCodec<UUID> {
+	
+	/**
+	 * A shared immutable instance.
+	 */
+	public static final TimeOrderedCodec INSTANCE = new TimeOrderedCodec();
 
 	@Override
 	public UUID encode(UUID uuid) {

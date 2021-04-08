@@ -30,7 +30,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.codec.BinaryCodec;
-import com.github.f4b6a3.uuid.codec.UuidCodec;
 import com.github.f4b6a3.uuid.codec.StringCodec;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
@@ -67,9 +66,6 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	protected static final String ALGORITHM_SHA1 = "SHA-1";
 
 	private static final String EXCEPTION_MESSAGE = "Namespace can not be changed.";
-
-	private static final UuidCodec<byte[]> CODEC_BYTES = new BinaryCodec();
-	private static final UuidCodec<String> CODEC_STRING = new StringCodec();
 
 	/**
 	 * This constructor receives the name of a message digest.
@@ -169,7 +165,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * @return a name-based UUID
 	 */
 	public UUID create(final UUID namespace, final byte[] name) {
-		final byte[] ns = namespace == null ? null : CODEC_BYTES.encode(namespace);
+		final byte[] ns = namespace == null ? null : BinaryCodec.INSTANCE.encode(namespace);
 		return create(ns, name);
 	}
 
@@ -188,7 +184,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * @return a name-based UUID
 	 */
 	public UUID create(final UUID namespace, final String name) {
-		final byte[] ns = namespace == null ? null : CODEC_BYTES.encode(namespace);
+		final byte[] ns = namespace == null ? null : BinaryCodec.INSTANCE.encode(namespace);
 		final byte[] n = name.getBytes(StandardCharsets.UTF_8);
 		return create(ns, n);
 	}
@@ -202,7 +198,8 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * @throws InvalidUuidException if the namespace is invalid
 	 */
 	public UUID create(final String namespace, final byte[] name) {
-		final byte[] ns = namespace == null ? null : CODEC_BYTES.encode(CODEC_STRING.decode(namespace));
+		final byte[] ns = namespace == null ? null
+				: BinaryCodec.INSTANCE.encode(StringCodec.INSTANCE.decode(namespace));
 		return create(ns, name);
 	}
 
@@ -222,7 +219,8 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * @throws InvalidUuidException if the namespace is invalid
 	 */
 	public UUID create(final String namespace, final String name) {
-		final byte[] ns = namespace == null ? null : CODEC_BYTES.encode(CODEC_STRING.decode(namespace));
+		final byte[] ns = namespace == null ? null
+				: BinaryCodec.INSTANCE.encode(StringCodec.INSTANCE.decode(namespace));
 		final byte[] n = name.getBytes(StandardCharsets.UTF_8);
 		return create(ns, n);
 	}
@@ -235,7 +233,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * @return a name-based UUID
 	 */
 	public UUID create(final UuidNamespace namespace, final byte[] name) {
-		final byte[] ns = namespace == null ? null : CODEC_BYTES.encode(namespace.getValue());
+		final byte[] ns = namespace == null ? null : BinaryCodec.INSTANCE.encode(namespace.getValue());
 		return create(ns, name);
 	}
 
@@ -254,7 +252,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 	 * @return a name-based UUID
 	 */
 	public UUID create(final UuidNamespace namespace, final String name) {
-		final byte[] ns = namespace == null ? null : CODEC_BYTES.encode(namespace.getValue());
+		final byte[] ns = namespace == null ? null : BinaryCodec.INSTANCE.encode(namespace.getValue());
 		final byte[] n = name.getBytes(StandardCharsets.UTF_8);
 		return create(ns, n);
 	}
@@ -272,6 +270,10 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 		MessageDigest hasher;
 
 		try {
+			// No need for a synchronized `MessageDigest`. Just get a new instance, use it,
+			// and throw it away. It performs worse than synchronized instances in
+			// single-threaded benchmarks, but it performs much better in multi-threaded
+			// contexts. The overhead of creation is justifiable.
 			hasher = MessageDigest.getInstance(this.algorithm);
 		} catch (NoSuchAlgorithmException e) {
 			throw new IllegalArgumentException("Message digest algorithm not available: " + this.algorithm, e);
@@ -302,7 +304,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 		if (this.locked) {
 			throw new IllegalArgumentException(EXCEPTION_MESSAGE);
 		}
-		this.namespace = CODEC_BYTES.encode(namespace);
+		this.namespace = BinaryCodec.INSTANCE.encode(namespace);
 		return (T) this;
 	}
 
@@ -322,7 +324,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 		if (this.locked) {
 			throw new IllegalArgumentException(EXCEPTION_MESSAGE);
 		}
-		this.namespace = CODEC_BYTES.encode(CODEC_STRING.decode(namespace));
+		this.namespace = BinaryCodec.INSTANCE.encode(StringCodec.INSTANCE.decode(namespace));
 		return (T) this;
 	}
 
@@ -341,7 +343,7 @@ public abstract class AbstractNameBasedUuidCreator extends AbstractUuidCreator {
 		if (this.locked) {
 			throw new IllegalArgumentException(EXCEPTION_MESSAGE);
 		}
-		this.namespace = CODEC_BYTES.encode(namespace.getValue());
+		this.namespace = BinaryCodec.INSTANCE.encode(namespace.getValue());
 		return (T) this;
 	}
 }

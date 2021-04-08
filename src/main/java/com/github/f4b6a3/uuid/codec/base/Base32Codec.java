@@ -33,6 +33,11 @@ package com.github.f4b6a3.uuid.codec.base;
  * See: https://tools.ietf.org/html/rfc4648
  */
 public final class Base32Codec extends BaseNCodec {
+	
+	/**
+	 * A shared immutable instance.
+	 */
+	public static final Base32Codec INSTANCE = new Base32Codec();
 
 	public Base32Codec() {
 		super(BaseNAlphabet.ALPHABET_BASE_32);

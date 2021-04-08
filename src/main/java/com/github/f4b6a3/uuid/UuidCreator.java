@@ -28,7 +28,6 @@ import java.time.Instant;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.codec.BinaryCodec;
-import com.github.f4b6a3.uuid.codec.UuidCodec;
 import com.github.f4b6a3.uuid.codec.StringCodec;
 import com.github.f4b6a3.uuid.creator.AbstractTimeBasedUuidCreator;
 import com.github.f4b6a3.uuid.creator.nonstandard.PrefixCombCreator;
@@ -71,7 +70,7 @@ public final class UuidCreator {
 	 * @return an array of bytes
 	 */
 	public static byte[] toBytes(final UUID uuid) {
-		return BinaryCodecLazyHolder.CODEC.encode(uuid);
+		return BinaryCodec.INSTANCE.encode(uuid);
 	}
 
 	/**
@@ -84,7 +83,7 @@ public final class UuidCreator {
 	 * @throws InvalidUuidException if invalid
 	 */
 	public static UUID fromBytes(byte[] uuid) {
-		return BinaryCodecLazyHolder.CODEC.decode(uuid);
+		return BinaryCodec.INSTANCE.decode(uuid);
 	}
 
 	/**
@@ -98,7 +97,7 @@ public final class UuidCreator {
 	 * @return a UUID string
 	 */
 	public static String toString(UUID uuid) {
-		return StringCodecLazyHolder.CODEC.encode(uuid);
+		return StringCodec.INSTANCE.encode(uuid);
 	}
 
 	/**
@@ -123,7 +122,7 @@ public final class UuidCreator {
 	 * @throws InvalidUuidException if invalid
 	 */
 	public static UUID fromString(String uuid) {
-		return StringCodecLazyHolder.CODEC.decode(uuid);
+		return StringCodec.INSTANCE.decode(uuid);
 	}
 
 	/**
@@ -1159,14 +1158,6 @@ public final class UuidCreator {
 	/*
 	 * Private classes for lazy holders
 	 */
-
-	private static class BinaryCodecLazyHolder {
-		private static final UuidCodec<byte[]> CODEC = new BinaryCodec();
-	}
-
-	private static class StringCodecLazyHolder {
-		private static final UuidCodec<String> CODEC = new StringCodec();
-	}
 
 	private static class RandomCreatorHolder {
 		static final RandomBasedUuidCreator INSTANCE = getRandomBasedCreator();

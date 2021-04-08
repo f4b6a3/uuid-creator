@@ -60,12 +60,15 @@ import com.github.f4b6a3.uuid.codec.slug.SlugCodec;
  */
 public final class NcnameCodec implements UuidCodec<String> {
 
+	/**
+	 * A shared immutable instance using `base64url`
+	 */
+	public static final NcnameCodec INSTANCE = new NcnameCodec();
+
 	private final int base;
 	private final int length;
 	private final int shift;
 	private final BaseNCodec codec;
-
-	private static final UuidCodec<byte[]> CODEC_BYTES = new BinaryCodec();
 
 	// array 0: upper case base-64
 	// array 1: lower case for base-16 and base-32
@@ -145,7 +148,7 @@ public final class NcnameCodec implements UuidCodec<String> {
 	public String encode(final UUID uuid) {
 
 		int version = uuid.version();
-		byte[] bytes = CODEC_BYTES.encode(uuid);
+		byte[] bytes = BinaryCodec.INSTANCE.encode(uuid);
 		int[] ints = toInts(bytes);
 
 		int variant = (ints[2] & 0xf0000000) >>> 24;
@@ -157,7 +160,7 @@ public final class NcnameCodec implements UuidCodec<String> {
 		bytes = fromInts(ints);
 		bytes[15] = (byte) ((bytes[15] & 0xff) >>> this.shift);
 
-		UUID uuuu = CODEC_BYTES.decode(bytes);
+		UUID uuuu = BinaryCodec.INSTANCE.decode(bytes);
 		String encoded = this.codec.encode(uuuu).substring(0, this.length - 1);
 
 		// if base is 64, use upper case version, else use lower case
@@ -173,7 +176,7 @@ public final class NcnameCodec implements UuidCodec<String> {
 		String substring = ncname.substring(1, ncname.length());
 		UUID uuid = this.codec.decode(substring + DECODER_PADDING);
 
-		byte[] bytes = CODEC_BYTES.encode(uuid);
+		byte[] bytes = BinaryCodec.INSTANCE.encode(uuid);
 		bytes[15] <<= this.shift;
 
 		version &= 0xf;
@@ -190,7 +193,7 @@ public final class NcnameCodec implements UuidCodec<String> {
 
 		bytes = fromInts(ints);
 
-		return CODEC_BYTES.decode(bytes);
+		return BinaryCodec.INSTANCE.decode(bytes);
 	}
 
 	private static int[] toInts(byte[] bytes) {

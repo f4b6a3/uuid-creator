@@ -33,6 +33,11 @@ package com.github.f4b6a3.uuid.codec.base;
  * See: https://www.crockford.com/base32.html
  */
 public final class Base32CrockfordCodec extends BaseNCodec {
+	
+	/**
+	 * A shared immutable instance.
+	 */
+	public static final Base32CrockfordCodec INSTANCE = new Base32CrockfordCodec();
 
 	public Base32CrockfordCodec() {
 		super(BaseNAlphabet.ALPHABET_BASE_32_CROCKFORD);

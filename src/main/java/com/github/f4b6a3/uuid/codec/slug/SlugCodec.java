@@ -97,6 +97,11 @@ import com.github.f4b6a3.uuid.codec.name.NcnameCodec;
  */
 public final class SlugCodec implements UuidCodec<String> {
 
+	/**
+	 * A shared immutable instance using `base64url`
+	 */
+	public static final SlugCodec INSTANCE = new SlugCodec();
+
 	private final BaseNCodec codec;
 
 	public SlugCodec() {

@@ -28,6 +28,7 @@ import java.net.URI;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.codec.UuidCodec;
+import com.github.f4b6a3.uuid.codec.slug.SlugCodec;
 import com.github.f4b6a3.uuid.codec.StringCodec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
@@ -48,11 +49,16 @@ import com.github.f4b6a3.uuid.exception.InvalidUuidException;
  */
 public class UriCodec implements UuidCodec<java.net.URI> {
 
+	/**
+	 * A shared immutable instance.
+	 */
+	public static final UriCodec INSTANCE = new UriCodec();
+	
 	protected static final String URN_PREFIX = "urn:uuid:";
 
 	@Override
 	public URI encode(UUID uuid) {
-		return URI.create(URN_PREFIX + LazyHolder.CODEC.encode(uuid));
+		return URI.create(URN_PREFIX + StringCodec.INSTANCE.encode(uuid));
 	}
 
 	@Override
@@ -60,10 +66,6 @@ public class UriCodec implements UuidCodec<java.net.URI> {
 		if (uri == null || !uri.toString().startsWith(URN_PREFIX)) {
 			throw new InvalidUuidException("Invalid URI: \"" + uri + "\"");
 		}
-		return LazyHolder.CODEC.decode(uri.toString());
-	}
-
-	private static class LazyHolder {
-		private static final UuidCodec<String> CODEC = new StringCodec();
+		return StringCodec.INSTANCE.decode(uri.toString());
 	}
 }

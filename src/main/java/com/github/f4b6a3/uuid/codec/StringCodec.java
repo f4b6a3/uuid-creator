@@ -60,6 +60,11 @@ import com.github.f4b6a3.uuid.util.UuidValidator;
  */
 public class StringCodec implements UuidCodec<String> {
 
+	/**
+	 * A shared immutable instance.
+	 */
+	public static final StringCodec INSTANCE = new StringCodec();
+	
 	protected static final String URN_PREFIX = "urn:uuid:";
 
 	protected static final char[] ALPHABET = //

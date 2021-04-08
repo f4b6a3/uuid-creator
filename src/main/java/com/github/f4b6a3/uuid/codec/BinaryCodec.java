@@ -42,6 +42,11 @@ import com.github.f4b6a3.uuid.util.UuidValidator;
 public class BinaryCodec implements UuidCodec<byte[]> {
 
 	/**
+	 * A shared immutable instance.
+	 */
+	public static final BinaryCodec INSTANCE = new BinaryCodec();
+
+	/**
 	 * Get an array of bytes from a UUID.
 	 * 
 	 * @param uuid a UUID

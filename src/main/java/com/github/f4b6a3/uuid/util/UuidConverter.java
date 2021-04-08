@@ -28,7 +28,6 @@ import java.util.UUID;
 
 import com.github.f4b6a3.uuid.codec.BinaryCodec;
 import com.github.f4b6a3.uuid.codec.StringCodec;
-import com.github.f4b6a3.uuid.codec.UuidCodec;
 import com.github.f4b6a3.uuid.codec.uuid.DotNetGuid4Codec;
 import com.github.f4b6a3.uuid.codec.uuid.TimeOrderedCodec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
@@ -55,7 +54,7 @@ public final class UuidConverter {
 	 */
 	@Deprecated
 	public static byte[] toBytes(final UUID uuid) {
-		return BinaryCodecLazyHolder.CODEC.encode(uuid);
+		return BinaryCodec.INSTANCE.encode(uuid);
 	}
 
 	/**
@@ -69,7 +68,7 @@ public final class UuidConverter {
 	 */
 	@Deprecated
 	public static UUID fromBytes(final byte[] bytes) {
-		return BinaryCodecLazyHolder.CODEC.decode(bytes);
+		return BinaryCodec.INSTANCE.decode(bytes);
 	}
 
 	/**
@@ -86,7 +85,7 @@ public final class UuidConverter {
 	 */
 	@Deprecated
 	public static String toString(UUID uuid) {
-		return StringCodecLazyHolder.CODEC.encode(uuid);
+		return StringCodec.INSTANCE.encode(uuid);
 	}
 
 	/**
@@ -112,7 +111,7 @@ public final class UuidConverter {
 	 */
 	@Deprecated
 	public static UUID fromString(String string) {
-		return StringCodecLazyHolder.CODEC.decode(string);
+		return StringCodec.INSTANCE.decode(string);
 	}
 
 	/**
@@ -126,7 +125,7 @@ public final class UuidConverter {
 	 */
 	@Deprecated
 	public static UUID toTimeBasedUuid(UUID uuid) {
-		return TimeOrderedCodecLazyHolder.CODEC.decode(uuid);
+		return TimeOrderedCodec.INSTANCE.decode(uuid);
 	}
 
 	/**
@@ -140,7 +139,7 @@ public final class UuidConverter {
 	 */
 	@Deprecated
 	public static UUID toTimeOrderedUuid(UUID uuid) {
-		return TimeOrderedCodecLazyHolder.CODEC.encode(uuid);
+		return TimeOrderedCodec.INSTANCE.encode(uuid);
 	}
 
 	/**
@@ -162,24 +161,8 @@ public final class UuidConverter {
 	@Deprecated
 	public static UUID toAndFromMsGuid(UUID uuid) {
 		if (UuidUtil.isRandomBased(uuid)) {
-			return DotNetGuidCodecLazyHolder.CODEC.encode(uuid);
+			return DotNetGuid4Codec.INSTANCE.encode(uuid);
 		}
-		return DotNetGuidCodecLazyHolder.CODEC.decode(uuid);
-	}
-
-	private static class BinaryCodecLazyHolder {
-		private static final UuidCodec<byte[]> CODEC = new BinaryCodec();
-	}
-
-	private static class StringCodecLazyHolder {
-		private static final UuidCodec<String> CODEC = new StringCodec();
-	}
-
-	private static class TimeOrderedCodecLazyHolder {
-		private static final UuidCodec<UUID> CODEC = new TimeOrderedCodec();
-	}
-
-	private static class DotNetGuidCodecLazyHolder {
-		private static final UuidCodec<UUID> CODEC = new DotNetGuid4Codec();
+		return DotNetGuid4Codec.INSTANCE.decode(uuid);
 	}
 }

@@ -34,6 +34,11 @@ import static com.github.f4b6a3.uuid.codec.uuid.DotNetGuid1Codec.toAndFromDotNet
 public class DotNetGuid4Codec implements UuidCodec<UUID> {
 
 	/**
+	 * A shared immutable instance.
+	 */
+	public static final DotNetGuid4Codec INSTANCE = new DotNetGuid4Codec();
+	
+	/**
 	 * Codec for .Net Guids.
 	 * 
 	 * This codec converts a random-based UUID (v4) to a .Net Guid.

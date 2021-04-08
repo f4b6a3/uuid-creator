@@ -32,6 +32,11 @@ import com.github.f4b6a3.uuid.util.UuidUtil;
 public class DotNetGuid1Codec implements UuidCodec<UUID> {
 
 	/**
+	 * A shared immutable instance.
+	 */
+	public static final DotNetGuid1Codec INSTANCE = new DotNetGuid1Codec();
+	
+	/**
 	 * Codec for .Net Guid.
 	 * 
 	 * This codec converts a time-based UUID (v1) to a .Net Guid.

@@ -34,6 +34,11 @@ package com.github.f4b6a3.uuid.codec.base;
  */
 public final class Base32HexCodec extends BaseNCodec {
 
+	/**
+	 * A shared immutable instance.
+	 */
+	public static final Base32HexCodec INSTANCE = new Base32HexCodec();
+	
 	public Base32HexCodec() {
 		super(BaseNAlphabet.ALPHABET_BASE_32_HEX);
 	}
