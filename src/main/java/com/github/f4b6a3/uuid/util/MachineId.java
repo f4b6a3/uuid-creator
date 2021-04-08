@@ -31,6 +31,7 @@ import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.UUID;
@@ -121,7 +122,7 @@ public final class MachineId {
 	public static byte[] getMachineHash() {
 		if (hash == null) {
 			final String string = getMachineString();
-			hash = MessageDigestHolder.digest(string);
+			hash = getMessageDigest().digest(string.getBytes());
 		}
 		return hash;
 	}
@@ -167,6 +168,7 @@ public final class MachineId {
 							InetAddress ip = ips.nextElement();
 							list.add(ip.getHostAddress());
 						}
+						Collections.sort(list);
 						nicAddr = String.join(" ", list);
 						break; // take only one
 					}
@@ -195,23 +197,12 @@ public final class MachineId {
 		}
 		return String.join("-", hex);
 	}
-
-	/**
-	 * Class that holds private instance of the message digest.
-	 */
-	private static class MessageDigestHolder {
-		static final MessageDigest INSTANCE = getMessageDigest();
-
-		static synchronized byte[] digest(String string) {
-			return MessageDigestHolder.INSTANCE.digest(string.getBytes());
-		}
-
-		private static MessageDigest getMessageDigest() {
-			try {
-				return MessageDigest.getInstance("SHA-256");
-			} catch (NoSuchAlgorithmException e) {
-				throw new InternalError("Message digest algorithm not supported.", e);
-			}
+	
+	private static MessageDigest getMessageDigest() {
+		try {
+			return MessageDigest.getInstance("SHA-256");
+		} catch (NoSuchAlgorithmException e) {
+			throw new InternalError("Message digest algorithm not supported.", e);
 		}
 	}
 }

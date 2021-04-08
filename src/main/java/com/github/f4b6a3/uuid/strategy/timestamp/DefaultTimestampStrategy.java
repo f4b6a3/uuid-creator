@@ -26,7 +26,7 @@ package com.github.f4b6a3.uuid.strategy.timestamp;
 
 import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
 import com.github.f4b6a3.uuid.util.UuidTime;
-import com.github.f4b6a3.uuid.util.internal.SharedRandom;
+import com.github.f4b6a3.uuid.util.internal.RandomUtil;
 
 /**
  * Strategy that provides the current timestamp.
@@ -73,7 +73,7 @@ public final class DefaultTimestampStrategy implements TimestampStrategy {
 	private long prevTick = System.nanoTime() / TICK_UNIT;
 
 	// initialize the accumulator with a number between 0 and 255
-	private long accumulator = SharedRandom.nextLong() & ACCUMULATOR_RESET;
+	private long accumulator = RandomUtil.nextLong() & ACCUMULATOR_RESET;
 
 	// a tick is equivalent to a 100-nanosecond interval
 	private static final long TICK_UNIT = 100; // 1 tick = 100ns

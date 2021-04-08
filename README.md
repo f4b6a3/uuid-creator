@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>3.5.0</version>
+  <version>3.6.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -73,7 +73,7 @@ The timestamp bytes in this version are __rearranged__ in a special layout, unli
 
 The node identifier can be a MAC address, a hash of system information, a specific number or a random number (default).
 
-See the section [Node identifier](#node-identifier) to know how to use the environment variable `UUIDCREATOR_NODE` and the system property `uuidcreator.node`.
+See the section [Choosing the node identifier](#choosing-the-node-identifier).
 
 ```java
 // Time-based with a random node identifier (default)
@@ -193,6 +193,8 @@ List of predefined [name spaces](https://en.wikipedia.org/wiki/Namespace):
 
 The random-based UUID is a random array of 16 bytes.
 
+See the section [Choosing the SecureRandom algorithm](#choosing-the-securerandom-algorithm).
+
 ```java
 // Random-based using SecureRandom generator
 UUID uuid = UuidCreator.getRandomBased();
@@ -262,9 +264,9 @@ The timestamp is the count of 100 nanosecond intervals since 1582-10-15, the beg
 
 The timestamp bytes are __kept__ in the original order, unlike the time-based UUID (version 1). This is the only difference between version 1 and version 6.
 
-The node identifier can be a MAC address, a hash of system information, a specific number or a random number (default).
+The node identifier can be a MAC address, a hash of system information, a specific number or a random number (default). 
 
-See the section [Node identifier](#node-identifier) to know how to use the environment variable `UUIDCREATOR_NODE` and the system property `uuidcreator.node`.
+See the section [Choosing the node identifier](#choosing-the-node-identifier).
 
 ```java
 // Time-ordered with a random node identifier (default)
@@ -606,7 +608,7 @@ The hardware address node identifier is the MAC address associated with the host
 
 The system data hash is calculated from a list of system properties: hostname, MAC and IP. These information are collected and passed to a SHA-256 message digest. The node identifier is the first 6 bytes of the resulting hash.
 
-##### System property and environment variable
+##### Choosing the node identifier
 
 It's possible to manage the node identifier for each machine by defining the system property `uuidcreator.node` or the environment variable `UUIDCREATOR_NODE`. The system property has priority over the environment variable. If no property or variable is defined, the node identifier is randomly chosen.
 
@@ -751,6 +753,49 @@ If the default `SecureRandom` is not desired, any instance of `java.util.Random`
 You can also implement a custom `RandomStrategy` that uses any random generator you like, not only instances of `java.util.Random`.
 
 All COMB creators inherit the same characteristics of the random-based creator.
+
+#### Choosing the SecureRandom algorithm
+
+It's possible to select the algorithm used by `java.security.SecureRandom` in this library. It can be done by defining the system property `uuidcreator.securerandom` or the environment variable `UUIDCREATOR_SECURERANDOM`. The system property has priority over the environment variable. If no property or variable is defined, the algorithm is chosen by the runtime.
+
+It can be useful to make use of SHA1PRNG or DRBG as a non-blocking source of random bytes. The SHA1PRNG algorithm is default in some operating systems that don't have '/dev/random' or '/dev/urandom', e.g., in Windows. The DRBG algorithm is available in JDK9+.
+
+* Defining a system property:
+
+```bash
+# Append one of these examples to VM arguments
+
+# Use the the algorithm SHA1PRNG for SecureRandom
+-Duuidcreator.securerandom="SHA1PRNG"
+
+# Use the the algorithm DRBG for SecureRandom (JDK9+)
+-Duuidcreator.securerandom="DRBG"
+```
+
+* Defining an environment variable:
+
+```bash
+# Append one of these examples to /etc/environment or ~/.profile
+
+# Use the the algorithm SHA1PRNG for SecureRandom
+export UUIDCREATOR_SECURERANDOM="SHA1PRNG"
+
+# Use the the algorithm DRBG for SecureRandom (JDK9+)
+export UUIDCREATOR_SECURERANDOM="DRBG"
+```
+
+##### Benchmarking SecureRandom algorithms
+
+This is a 4-threaded benchmark comparing the default algorithm with SHA1PRNG and DRBG:
+
+```
+Benchmark     Mode   Cnt      Score     Error   Units
+DEFAULT       thrpt    5   1385,507 ±  67,979  ops/ms
+SHA1PRNG      thrpt    5  10422,873 ± 378,375  ops/ms
+DRBG          thrpt    5   2195,322 ±   5,905  ops/ms
+```
+
+Benchmark machine: JDK 9, Ubuntu 20.04, CPU Intel i5-3330 and 8GB RAM.
 
 ### Name-based
 

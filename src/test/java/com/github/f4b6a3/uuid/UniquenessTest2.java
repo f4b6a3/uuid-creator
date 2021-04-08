@@ -118,9 +118,9 @@ public class UniquenessTest2 {
 				value = (msb | lsb);
 
 				if (verbose) {
-					// Calculate and show progress
-					progress = (int) ((i * 1.0 / max) * 100);
-					if (progress % 10 == 0) {
+					if (i % (max / 100) == 0) {
+						// Calculate and show progress
+						progress = (int) ((i * 1.0 / max) * 100);
 						System.out.println(String.format("[Thread %06d] %s %s %s%%", id, uuid, i, (int) progress));
 					}
 				}

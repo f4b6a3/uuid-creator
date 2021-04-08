@@ -24,7 +24,7 @@
 
 package com.github.f4b6a3.uuid.strategy.clockseq;
 
-import com.github.f4b6a3.uuid.util.internal.SharedRandom;
+import com.github.f4b6a3.uuid.util.internal.RandomUtil;
 
 /**
  * Class that controls the usage of clock sequence values from 0 to 16383.
@@ -73,7 +73,7 @@ public final class ClockSequenceController {
 	 */
 	public synchronized int random() {
 		// Choose a random number between 0 and 16383
-		int random = (SharedRandom.nextInt() & 0x7fffffff) % POOL_SIZE;
+		int random = (RandomUtil.nextInt() & 0x7fffffff) % POOL_SIZE;
 		return this.take(random);
 	}
 

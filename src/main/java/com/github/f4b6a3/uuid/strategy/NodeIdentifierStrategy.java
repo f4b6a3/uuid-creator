@@ -24,7 +24,7 @@
 
 package com.github.f4b6a3.uuid.strategy;
 
-import com.github.f4b6a3.uuid.util.internal.SharedRandom;
+import com.github.f4b6a3.uuid.util.internal.RandomUtil;
 
 /**
  * Strategy that provides node identifiers for time-based UUIDs.
@@ -41,7 +41,7 @@ public interface NodeIdentifierStrategy {
 	 * @return a random multicast node identifier
 	 */
 	public static long getRandomNodeIdentifier() {
-		final long random = SharedRandom.nextLong();
+		final long random = RandomUtil.nextLong();
 		return NodeIdentifierStrategy.setMulticastNodeIdentifier(random);
 	}
 

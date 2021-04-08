@@ -35,13 +35,14 @@ package com.github.f4b6a3.uuid.util.internal;
  * 
  * - UUIDCREATOR_NODE
  */
-public final class UuidCreatorSettings {
+public final class SettingsUtil {
 
 	protected static final String PROPERTY_PREFIX = "uuidcreator";
 
 	public static final String PROPERTY_NODE = "node";
+	public static final String PROPERTY_SECURERANDOM = "securerandom";
 
-	protected UuidCreatorSettings() {
+	protected SettingsUtil() {
 	}
 
 	public static Long getNodeIdentifier() {
@@ -60,6 +61,18 @@ public final class UuidCreatorSettings {
 	public static void setNodeIdentifier(Long nodeid) {
 		String value = Long.toString(nodeid);
 		setProperty(PROPERTY_NODE, value);
+	}
+
+	public static String getSecureRandom() {
+		String value = getProperty(PROPERTY_SECURERANDOM);
+		if (value == null || value.isEmpty()) {
+			return null;
+		}
+		return value;
+	}
+
+	public static void setSecureRandom(String random) {
+		setProperty(PROPERTY_SECURERANDOM, random);
 	}
 
 	public static String getProperty(String name) {

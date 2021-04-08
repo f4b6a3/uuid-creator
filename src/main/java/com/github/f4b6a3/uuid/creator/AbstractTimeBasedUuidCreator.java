@@ -40,7 +40,7 @@ import com.github.f4b6a3.uuid.strategy.nodeid.MacNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.nodeid.RandomNodeIdentifierStrategy;
 import com.github.f4b6a3.uuid.strategy.timestamp.DefaultTimestampStrategy;
 import com.github.f4b6a3.uuid.util.UuidTime;
-import com.github.f4b6a3.uuid.util.internal.UuidCreatorSettings;
+import com.github.f4b6a3.uuid.util.internal.SettingsUtil;
 
 public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator implements NoArgumentsUuidCreator {
 
@@ -469,7 +469,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 	 */
 	protected static NodeIdentifierStrategy selectNodeIdentifierStrategy() {
 
-		String string = UuidCreatorSettings.getProperty(UuidCreatorSettings.PROPERTY_NODE);
+		String string = SettingsUtil.getProperty(SettingsUtil.PROPERTY_NODE);
 
 		if (NODE_MAC.equalsIgnoreCase(string)) {
 			return new MacNodeIdentifierStrategy();
@@ -483,7 +483,7 @@ public abstract class AbstractTimeBasedUuidCreator extends AbstractUuidCreator i
 			return new RandomNodeIdentifierStrategy();
 		}
 
-		Long number = UuidCreatorSettings.getNodeIdentifier();
+		Long number = SettingsUtil.getNodeIdentifier();
 		if (number != null) {
 			return new FixedNodeIdentifierStrategy(number);
 		}
