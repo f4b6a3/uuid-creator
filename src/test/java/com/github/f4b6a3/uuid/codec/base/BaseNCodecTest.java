@@ -52,7 +52,7 @@ public class BaseNCodecTest {
 	@Test
 	public void testEncodeBase32() {
 
-		char[] alphabet = BaseNAlphabet.ALPHABET_BASE_32.getAlphabet().toCharArray();
+		char[] alphabet = BaseN.BASE_32.getAlphabet().array();
 
 		final UuidCodec<String> codec = new Base32Codec();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
@@ -76,7 +76,7 @@ public class BaseNCodecTest {
 	@Test
 	public void testDecodeBase32() {
 
-		char[] alphabet = BaseNAlphabet.ALPHABET_BASE_32.getAlphabet().toCharArray();
+		char[] alphabet = BaseN.BASE_32.getAlphabet().array();
 
 		final UuidCodec<String> codec = new Base32Codec();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
@@ -100,7 +100,7 @@ public class BaseNCodecTest {
 	@Test
 	public void testEncodeBase32Hex() {
 
-		char[] alphabet = BaseNAlphabet.ALPHABET_BASE_32_HEX.getAlphabet().toCharArray();
+		char[] alphabet = BaseN.BASE_32_HEX.getAlphabet().array();
 
 		final UuidCodec<String> codec = new Base32HexCodec();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
@@ -124,7 +124,7 @@ public class BaseNCodecTest {
 	@Test
 	public void testDecodeBase32Hex() {
 
-		char[] alphabet = BaseNAlphabet.ALPHABET_BASE_32_HEX.getAlphabet().toCharArray();
+		char[] alphabet = BaseN.BASE_32_HEX.getAlphabet().array();
 
 		final UuidCodec<String> codec = new Base32HexCodec();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
@@ -148,7 +148,7 @@ public class BaseNCodecTest {
 	@Test
 	public void testEncodeBase32Crockford() {
 
-		char[] alphabet = BaseNAlphabet.ALPHABET_BASE_32_CROCKFORD.getAlphabet().toCharArray();
+		char[] alphabet = BaseN.BASE_32_CROCKFORD.getAlphabet().array();
 
 		final UuidCodec<String> codec = new Base32CrockfordCodec();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
@@ -172,7 +172,7 @@ public class BaseNCodecTest {
 	@Test
 	public void testDecodeBase32Crockford() {
 
-		char[] alphabet = BaseNAlphabet.ALPHABET_BASE_32_CROCKFORD.getAlphabet().toCharArray();
+		char[] alphabet = BaseN.BASE_32_CROCKFORD.getAlphabet().array();
 
 		final UuidCodec<String> codec = new Base32CrockfordCodec();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
@@ -311,36 +311,42 @@ public class BaseNCodecTest {
 		String base64 = "CcxXDvv8xFqL9GxMp+A5NB";
 		String base64url = "CcxXDvv8xFqL9GxMp-A5NB";
 
+		testExceptionBase16("");
 		testExceptionBase16(null);
 		testExceptionBase16(base16.replace('9', 'H'));
 		testExceptionBase16(base16.replace('9', '.'));
 		testExceptionBase16(base16.substring(0, 31));
 		testExceptionBase16(base16 + "9");
 
+		testExceptionBase32("");
 		testExceptionBase32(null);
 		testExceptionBase32(base32.replace('E', '1'));
 		testExceptionBase32(base32.replace('E', '.'));
 		testExceptionBase32(base32.substring(0, 25));
 		testExceptionBase32(base32 + "E");
 
+		testExceptionBase32Hex("");
 		testExceptionBase32Hex(null);
 		testExceptionBase32Hex(base32hex.replace('4', 'Z'));
 		testExceptionBase32Hex(base32hex.replace('4', '.'));
 		testExceptionBase32Hex(base32hex.substring(0, 25));
 		testExceptionBase32Hex(base32hex + "4");
 
+		testExceptionBase32Crockford("");
 		testExceptionBase32Crockford(null);
 		testExceptionBase32Crockford(base32crockford.replace('4', 'U'));
 		testExceptionBase32Crockford(base32crockford.replace('4', '.'));
 		testExceptionBase32Crockford(base32crockford.substring(0, 25));
 		testExceptionBase32Crockford(base32crockford + "4");
 
+		testExceptionBase64("");
 		testExceptionBase64(null);
 		testExceptionBase64(base64.replace('C', '_'));
 		testExceptionBase64(base64.replace('C', '.'));
 		testExceptionBase64(base64.substring(0, 21));
 		testExceptionBase64(base64 + "C");
 
+		testExceptionBase64url("");
 		testExceptionBase64url(null);
 		testExceptionBase64url(base64url.replace('C', '/'));
 		testExceptionBase64url(base64url.replace('C', '.'));
@@ -348,64 +354,37 @@ public class BaseNCodecTest {
 		testExceptionBase64url(base64url + "C");
 	}
 
-	private void testExceptionBase16(String string) {
-		final UuidCodec<String> codec = new Base16Codec();
+	private void testExceptionBaseN(String string, BaseNCodec codec) {
 		try {
 			codec.decode(string);
 			fail(string);
 		} catch (UuidCodecException e) {
 			// success
 		}
+	}
+	
+	private void testExceptionBase16(String string) {
+		testExceptionBaseN(string, Base16Codec.INSTANCE);
 	}
 
 	private void testExceptionBase32(String string) {
-		final UuidCodec<String> codec = new Base32Codec();
-		try {
-			codec.decode(string);
-			fail(string);
-		} catch (UuidCodecException e) {
-			// success
-		}
+		testExceptionBaseN(string, Base32Codec.INSTANCE);
 	}
 
 	private void testExceptionBase32Hex(String string) {
-		final UuidCodec<String> codec = new Base32HexCodec();
-		try {
-			codec.decode(string);
-			fail(string);
-		} catch (UuidCodecException e) {
-			// success
-		}
+		testExceptionBaseN(string, Base32HexCodec.INSTANCE);
 	}
 
 	private void testExceptionBase32Crockford(String string) {
-		final UuidCodec<String> codec = new Base32CrockfordCodec();
-		try {
-			codec.decode(string);
-			fail(string);
-		} catch (UuidCodecException e) {
-			// success
-		}
+		testExceptionBaseN(string, Base32CrockfordCodec.INSTANCE);
 	}
 
 	private void testExceptionBase64(String string) {
-		final UuidCodec<String> codec = new Base64Codec();
-		try {
-			codec.decode(string);
-			fail(string);
-		} catch (UuidCodecException e) {
-			// success
-		}
+		testExceptionBaseN(string, Base64Codec.INSTANCE);
 	}
 
 	private void testExceptionBase64url(String string) {
-		final UuidCodec<String> codec = new Base64UrlCodec();
-		try {
-			codec.decode(string);
-			fail(string);
-		} catch (UuidCodecException e) {
-			// success
-		}
+		testExceptionBaseN(string, Base64UrlCodec.INSTANCE);
 	}
 
 	public static String lpad(String string, int length, char fill) {

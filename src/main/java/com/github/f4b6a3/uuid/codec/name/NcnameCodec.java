@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2020 Fabio Lima
+ * Copyright (c) 2018-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,8 @@ import com.github.f4b6a3.uuid.codec.base.Base32Codec;
 import com.github.f4b6a3.uuid.codec.base.Base64UrlCodec;
 import com.github.f4b6a3.uuid.codec.base.BaseNCodec;
 import com.github.f4b6a3.uuid.codec.slug.SlugCodec;
+import com.github.f4b6a3.uuid.util.internal.immutable.CharArray;
+import com.github.f4b6a3.uuid.util.internal.immutable.LongArray;
 
 /**
  * Codec for UUID NCNames.
@@ -70,60 +72,59 @@ public final class NcnameCodec implements UuidCodec<String> {
 	private final int shift;
 	private final BaseNCodec codec;
 
-	// array 0: upper case base-64
-	// array 1: lower case for base-16 and base-32
-	private static final char[][] VERSION_CHARS = { //
-			{ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P' }, //
-			{ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p' }, //
-	};
+	private static final CharArray VERSION_UPPER = CharArray.from("ABCDEFGHIJKLMNOP".toCharArray()); // base64
+	private static final CharArray VERSION_LOWER = CharArray.from("abcdefghijklmnop".toCharArray()); // base16 & base32
 
-	private static final long[] VERSION_MAP = new long[128];
+	private static final LongArray VERSION_MAP;
 	static {
 		// initialize the array with -1
-		for (int i = 0; i < VERSION_MAP.length; i++) {
-			VERSION_MAP[i] = -1;
+		final long[] mapping = new long[128];
+		for (int i = 0; i < mapping.length; i++) {
+			mapping[i] = -1;
 		}
 		// upper case for base-64
-		VERSION_MAP['A'] = 0x0;
-		VERSION_MAP['B'] = 0x1;
-		VERSION_MAP['C'] = 0x2;
-		VERSION_MAP['D'] = 0x3;
-		VERSION_MAP['E'] = 0x4;
-		VERSION_MAP['F'] = 0x5;
-		VERSION_MAP['G'] = 0x6;
-		VERSION_MAP['H'] = 0x7;
-		VERSION_MAP['I'] = 0x8;
-		VERSION_MAP['J'] = 0x9;
-		VERSION_MAP['K'] = 0xa;
-		VERSION_MAP['L'] = 0xb;
-		VERSION_MAP['M'] = 0xc;
-		VERSION_MAP['N'] = 0xd;
-		VERSION_MAP['O'] = 0xe;
-		VERSION_MAP['P'] = 0xf;
+		mapping['A'] = 0x0;
+		mapping['B'] = 0x1;
+		mapping['C'] = 0x2;
+		mapping['D'] = 0x3;
+		mapping['E'] = 0x4;
+		mapping['F'] = 0x5;
+		mapping['G'] = 0x6;
+		mapping['H'] = 0x7;
+		mapping['I'] = 0x8;
+		mapping['J'] = 0x9;
+		mapping['K'] = 0xa;
+		mapping['L'] = 0xb;
+		mapping['M'] = 0xc;
+		mapping['N'] = 0xd;
+		mapping['O'] = 0xe;
+		mapping['P'] = 0xf;
 		// lower case for base-16 and base-32
-		VERSION_MAP['a'] = 0x0;
-		VERSION_MAP['b'] = 0x1;
-		VERSION_MAP['c'] = 0x2;
-		VERSION_MAP['d'] = 0x3;
-		VERSION_MAP['e'] = 0x4;
-		VERSION_MAP['f'] = 0x5;
-		VERSION_MAP['g'] = 0x6;
-		VERSION_MAP['h'] = 0x7;
-		VERSION_MAP['i'] = 0x8;
-		VERSION_MAP['j'] = 0x9;
-		VERSION_MAP['k'] = 0xa;
-		VERSION_MAP['l'] = 0xb;
-		VERSION_MAP['m'] = 0xc;
-		VERSION_MAP['n'] = 0xd;
-		VERSION_MAP['o'] = 0xe;
-		VERSION_MAP['p'] = 0xf;
+		mapping['a'] = 0x0;
+		mapping['b'] = 0x1;
+		mapping['c'] = 0x2;
+		mapping['d'] = 0x3;
+		mapping['e'] = 0x4;
+		mapping['f'] = 0x5;
+		mapping['g'] = 0x6;
+		mapping['h'] = 0x7;
+		mapping['i'] = 0x8;
+		mapping['j'] = 0x9;
+		mapping['k'] = 0xa;
+		mapping['l'] = 0xb;
+		mapping['m'] = 0xc;
+		mapping['n'] = 0xd;
+		mapping['o'] = 0xe;
+		mapping['p'] = 0xf;
+
+		VERSION_MAP = LongArray.from(mapping);
 	}
 
 	// padding used to circumvent the decoder's length validation
 	private static final char DECODER_PADDING = 'A'; // 'A' = 0
 
 	public NcnameCodec() {
-		this(new Base64UrlCodec());
+		this(Base64UrlCodec.INSTANCE);
 	}
 
 	public NcnameCodec(BaseNCodec codec) {
@@ -164,7 +165,7 @@ public final class NcnameCodec implements UuidCodec<String> {
 		String encoded = this.codec.encode(uuuu).substring(0, this.length - 1);
 
 		// if base is 64, use upper case version, else use lower case
-		char v = this.base == 64 ? VERSION_CHARS[0][version] : VERSION_CHARS[1][version];
+		char v = this.base == 64 ? VERSION_UPPER.get(version) : VERSION_LOWER.get(version);
 
 		return v + encoded;
 	}
@@ -172,7 +173,7 @@ public final class NcnameCodec implements UuidCodec<String> {
 	@Override
 	public UUID decode(String ncname) {
 
-		int version = (int) VERSION_MAP[ncname.charAt(0)];
+		int version = (int) VERSION_MAP.get(ncname.charAt(0));
 		String substring = ncname.substring(1, ncname.length());
 		UUID uuid = this.codec.decode(substring + DECODER_PADDING);
 

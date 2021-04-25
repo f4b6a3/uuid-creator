@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2020 Fabio Lima
+ * Copyright (c) 2018-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,10 +36,10 @@ import com.github.f4b6a3.uuid.codec.base.BaseN;
 public final class Base64Encoder extends BaseNEncoder {
 
 	/**
-	 * @param alphabet a string that contains the base-n alphabet
+	 * @param base an enumeration that represents the base-n encoding
 	 */
-	public Base64Encoder(String alphabet) {
-		super(BaseN.BASE_64, alphabet);
+	public Base64Encoder(BaseN base) {
+		super(base);
 	}
 
 	@Override
@@ -49,30 +49,30 @@ public final class Base64Encoder extends BaseNEncoder {
 		long msb = uuid.getMostSignificantBits();
 		long lsb = uuid.getLeastSignificantBits();
 
-		chars[0x00] = alphabet[(int) ((msb >>> 58) & 0b111111)];
-		chars[0x01] = alphabet[(int) ((msb >>> 52) & 0b111111)];
-		chars[0x02] = alphabet[(int) ((msb >>> 46) & 0b111111)];
-		chars[0x03] = alphabet[(int) ((msb >>> 40) & 0b111111)];
-		chars[0x04] = alphabet[(int) ((msb >>> 34) & 0b111111)];
-		chars[0x05] = alphabet[(int) ((msb >>> 28) & 0b111111)];
-		chars[0x06] = alphabet[(int) ((msb >>> 22) & 0b111111)];
-		chars[0x07] = alphabet[(int) ((msb >>> 16) & 0b111111)];
-		chars[0x08] = alphabet[(int) ((msb >>> 10) & 0b111111)];
-		chars[0x09] = alphabet[(int) ((msb >>> 4) & 0b111111)];
+		chars[0x00] = alphabet.get((int) ((msb >>> 58) & 0b111111));
+		chars[0x01] = alphabet.get((int) ((msb >>> 52) & 0b111111));
+		chars[0x02] = alphabet.get((int) ((msb >>> 46) & 0b111111));
+		chars[0x03] = alphabet.get((int) ((msb >>> 40) & 0b111111));
+		chars[0x04] = alphabet.get((int) ((msb >>> 34) & 0b111111));
+		chars[0x05] = alphabet.get((int) ((msb >>> 28) & 0b111111));
+		chars[0x06] = alphabet.get((int) ((msb >>> 22) & 0b111111));
+		chars[0x07] = alphabet.get((int) ((msb >>> 16) & 0b111111));
+		chars[0x08] = alphabet.get((int) ((msb >>> 10) & 0b111111));
+		chars[0x09] = alphabet.get((int) ((msb >>> 4) & 0b111111));
 
-		chars[0x0a] = alphabet[(int) (msb << 2 & 0b111111) | (int) ((lsb >>> 62) & 0b111111)];
+		chars[0x0a] = alphabet.get((int) (msb << 2 & 0b111111) | (int) ((lsb >>> 62) & 0b111111));
 
-		chars[0x0b] = alphabet[(int) ((lsb >>> 56) & 0b111111)];
-		chars[0x0c] = alphabet[(int) ((lsb >>> 50) & 0b111111)];
-		chars[0x0d] = alphabet[(int) ((lsb >>> 44) & 0b111111)];
-		chars[0x0e] = alphabet[(int) ((lsb >>> 38) & 0b111111)];
-		chars[0x0f] = alphabet[(int) ((lsb >>> 32) & 0b111111)];
-		chars[0x10] = alphabet[(int) ((lsb >>> 26) & 0b111111)];
-		chars[0x11] = alphabet[(int) ((lsb >>> 20) & 0b111111)];
-		chars[0x12] = alphabet[(int) ((lsb >>> 14) & 0b111111)];
-		chars[0x13] = alphabet[(int) ((lsb >>> 8) & 0b111111)];
-		chars[0x14] = alphabet[(int) ((lsb >>> 2) & 0b111111)];
-		chars[0x15] = alphabet[(int) ((lsb << 4) & 0b111111)];
+		chars[0x0b] = alphabet.get((int) ((lsb >>> 56) & 0b111111));
+		chars[0x0c] = alphabet.get((int) ((lsb >>> 50) & 0b111111));
+		chars[0x0d] = alphabet.get((int) ((lsb >>> 44) & 0b111111));
+		chars[0x0e] = alphabet.get((int) ((lsb >>> 38) & 0b111111));
+		chars[0x0f] = alphabet.get((int) ((lsb >>> 32) & 0b111111));
+		chars[0x10] = alphabet.get((int) ((lsb >>> 26) & 0b111111));
+		chars[0x11] = alphabet.get((int) ((lsb >>> 20) & 0b111111));
+		chars[0x12] = alphabet.get((int) ((lsb >>> 14) & 0b111111));
+		chars[0x13] = alphabet.get((int) ((lsb >>> 8) & 0b111111));
+		chars[0x14] = alphabet.get((int) ((lsb >>> 2) & 0b111111));
+		chars[0x15] = alphabet.get((int) ((lsb << 4) & 0b111111));
 
 		return new String(chars);
 	}

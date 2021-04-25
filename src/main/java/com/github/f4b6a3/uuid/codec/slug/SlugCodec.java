@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2020 Fabio Lima
+ * Copyright (c) 2018-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -105,7 +105,7 @@ public final class SlugCodec implements UuidCodec<String> {
 	private final BaseNCodec codec;
 
 	public SlugCodec() {
-		this(new Base64UrlCodec());
+		this(Base64UrlCodec.INSTANCE);
 	}
 
 	/**

@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2020 Fabio Lima
+ * Copyright (c) 2018-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,10 +38,10 @@ import com.github.f4b6a3.uuid.codec.base.BaseN;
 public final class Base32Decoder extends BaseNDecoder {
 
 	/**
-	 * @param alphabet a string that contains the base-n alphabet
+	 * @param base an enumeration that represents the base-n encoding
 	 */
-	public Base32Decoder(String alphabet) {
-		super(BaseN.BASE_32, alphabet);
+	public Base32Decoder(BaseN base) {
+		super(base);
 	}
 
 	@Override
@@ -52,35 +52,35 @@ public final class Base32Decoder extends BaseNDecoder {
 		long msb = 0;
 		long lsb = 0;
 
-		msb |= map[chars[0x00]] << 59;
-		msb |= map[chars[0x01]] << 54;
-		msb |= map[chars[0x02]] << 49;
-		msb |= map[chars[0x03]] << 44;
-		msb |= map[chars[0x04]] << 39;
-		msb |= map[chars[0x05]] << 34;
-		msb |= map[chars[0x06]] << 29;
-		msb |= map[chars[0x07]] << 24;
-		msb |= map[chars[0x08]] << 19;
-		msb |= map[chars[0x09]] << 14;
-		msb |= map[chars[0x0a]] << 9;
-		msb |= map[chars[0x0b]] << 4;
+		msb |= map.get(chars[0x00]) << 59;
+		msb |= map.get(chars[0x01]) << 54;
+		msb |= map.get(chars[0x02]) << 49;
+		msb |= map.get(chars[0x03]) << 44;
+		msb |= map.get(chars[0x04]) << 39;
+		msb |= map.get(chars[0x05]) << 34;
+		msb |= map.get(chars[0x06]) << 29;
+		msb |= map.get(chars[0x07]) << 24;
+		msb |= map.get(chars[0x08]) << 19;
+		msb |= map.get(chars[0x09]) << 14;
+		msb |= map.get(chars[0x0a]) << 9;
+		msb |= map.get(chars[0x0b]) << 4;
 
-		msb |= map[chars[0x0c]] >>> 1;
-		lsb |= map[chars[0x0c]] << 63;
+		msb |= map.get(chars[0x0c]) >>> 1;
+		lsb |= map.get(chars[0x0c]) << 63;
 
-		lsb |= map[chars[0x0d]] << 58;
-		lsb |= map[chars[0x0e]] << 53;
-		lsb |= map[chars[0x0f]] << 48;
-		lsb |= map[chars[0x10]] << 43;
-		lsb |= map[chars[0x11]] << 38;
-		lsb |= map[chars[0x12]] << 33;
-		lsb |= map[chars[0x13]] << 28;
-		lsb |= map[chars[0x14]] << 23;
-		lsb |= map[chars[0x15]] << 18;
-		lsb |= map[chars[0x16]] << 13;
-		lsb |= map[chars[0x17]] << 8;
-		lsb |= map[chars[0x18]] << 3;
-		lsb |= map[chars[0x19]] >>> 2;
+		lsb |= map.get(chars[0x0d]) << 58;
+		lsb |= map.get(chars[0x0e]) << 53;
+		lsb |= map.get(chars[0x0f]) << 48;
+		lsb |= map.get(chars[0x10]) << 43;
+		lsb |= map.get(chars[0x11]) << 38;
+		lsb |= map.get(chars[0x12]) << 33;
+		lsb |= map.get(chars[0x13]) << 28;
+		lsb |= map.get(chars[0x14]) << 23;
+		lsb |= map.get(chars[0x15]) << 18;
+		lsb |= map.get(chars[0x16]) << 13;
+		lsb |= map.get(chars[0x17]) << 8;
+		lsb |= map.get(chars[0x18]) << 3;
+		lsb |= map.get(chars[0x19]) >>> 2;
 
 		return new UUID(msb, lsb);
 	}

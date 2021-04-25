@@ -22,37 +22,31 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.codec.base.function;
+package com.github.f4b6a3.uuid.util.internal.immutable;
 
-import java.util.UUID;
-import java.util.function.Function;
+import java.util.Arrays;
 
-import com.github.f4b6a3.uuid.codec.base.BaseN;
-import com.github.f4b6a3.uuid.util.internal.immutable.LongArray;
+public class CharArray {
 
-/**
- * Abstract function to be extended by all decoder functions of this package.
- * 
- * If the base-n is case insensitive, it decodes in lower case and upper case.
- * 
- * See: https://tools.ietf.org/html/rfc4648
- */
-public abstract class BaseNDecoder implements Function<String, UUID> {
+	private final char[] array;
 
-	protected BaseN base;
-	protected final LongArray map;
-
-	/**
-	 * @param base an enumeration that represents the base-n encoding
-	 */
-	public BaseNDecoder(BaseN base) {
-		this.base = base;
-		this.map = base.getMap();
+	private CharArray(char[] a) {
+		array = Arrays.copyOf(a, a.length);
 	}
 
-	protected char[] toCharArray(String string) {
-		char[] chars = string == null ? null : string.toCharArray();
-		this.base.validate(chars);
-		return chars;
+	public static CharArray from(char[] a) {
+		return new CharArray(a);
+	}
+
+	public char get(int index) {
+		return array[index];
+	}
+
+	public int length() {
+		return this.array.length;
+	}
+
+	public char[] array() {
+		return array.clone();
 	}
 }

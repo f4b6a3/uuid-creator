@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2020 Fabio Lima
+ * Copyright (c) 2018-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,10 @@ package com.github.f4b6a3.uuid.codec.base;
 /**
  * Codec for base-64 as defined in RFC-4648.
  * 
- * It is case sensitive.
+ * It is case SENSITIVE.
+ * 
+ * The only difference between base-64 and base-64-url is that the second
+ * substitutes the chars '+' and '/' with '-' and '_'.
  * 
  * See: https://tools.ietf.org/html/rfc4648
  */
@@ -37,8 +40,8 @@ public final class Base64Codec extends BaseNCodec {
 	 * A shared immutable instance.
 	 */
 	public static final Base64Codec INSTANCE = new Base64Codec();
-	
+
 	public Base64Codec() {
-		super(BaseNAlphabet.ALPHABET_BASE_64);
+		super(BaseN.BASE_64);
 	}
 }

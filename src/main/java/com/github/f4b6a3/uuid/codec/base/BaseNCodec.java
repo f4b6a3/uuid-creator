@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2020 Fabio Lima
+ * Copyright (c) 2018-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,43 +43,29 @@ import com.github.f4b6a3.uuid.exception.UuidCodecException;
 public abstract class BaseNCodec implements UuidCodec<String> {
 
 	protected final BaseN base;
-	protected final String alphabet;
 
 	protected final Function<UUID, String> encoder;
 	protected final Function<String, UUID> decoder;
 
 	/**
-	 * @param baseNAlphabet a enumeration that represents a supported alphabet.
+	 * @param base an enumeration that represents the base-n encoding
 	 */
-	protected BaseNCodec(BaseNAlphabet baseNAlphabet) {
-		this(baseNAlphabet.getBase(), baseNAlphabet.getAlphabet());
-	}
-
-	/**
-	 * @param base     an enumeration that represents the base-n encoding
-	 * @param alphabet a string that contains the base-n alphabet
-	 */
-	public BaseNCodec(BaseN base, String alphabet) {
-
-		if (alphabet.length() != base.getNumber()) {
-			throw new IllegalArgumentException(String.format("Invalid alphabet length: %s", alphabet.length()));
-		}
+	public BaseNCodec(BaseN base) {
 
 		this.base = base;
-		this.alphabet = alphabet;
 
-		switch (base) {
-		case BASE_16:
-			encoder = new Base16Encoder(this.alphabet);
-			decoder = new Base16Decoder(this.alphabet);
+		switch (base.getNumber()) {
+		case 16:
+			encoder = new Base16Encoder(base);
+			decoder = new Base16Decoder(base);
 			break;
-		case BASE_32:
-			encoder = new Base32Encoder(this.alphabet);
-			decoder = new Base32Decoder(this.alphabet);
+		case 32:
+			encoder = new Base32Encoder(base);
+			decoder = new Base32Decoder(base);
 			break;
-		case BASE_64:
-			encoder = new Base64Encoder(this.alphabet);
-			decoder = new Base64Decoder(this.alphabet);
+		case 64:
+			encoder = new Base64Encoder(base);
+			decoder = new Base64Decoder(base);
 			break;
 		default:
 			throw new UuidCodecException("Unsupported base-n");
@@ -98,9 +84,5 @@ public abstract class BaseNCodec implements UuidCodec<String> {
 
 	public BaseN getBase() {
 		return this.base;
-	}
-
-	public String getAlphabet() {
-		return this.alphabet;
 	}
 }

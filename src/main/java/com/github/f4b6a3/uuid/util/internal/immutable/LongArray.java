@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2020 Fabio Lima
+ * Copyright (c) 2018-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,37 +22,31 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.codec.base;
+package com.github.f4b6a3.uuid.util.internal.immutable;
 
-/**
- * Enumeration that lists the base-n alphabets of this package.
- */
-public enum BaseNAlphabet {
+import java.util.Arrays;
 
-	ALPHABET_BASE_16(BaseN.BASE_16, "0123456789abcdef"), //
-	ALPHABET_BASE_32(BaseN.BASE_32, "abcdefghijklmnopqrstuvwxyz234567"), //
-	ALPHABET_BASE_32_HEX(BaseN.BASE_32, "0123456789abcdefghijklmnopqrstuv"), //
-	ALPHABET_BASE_32_CROCKFORD(BaseN.BASE_32, "0123456789abcdefghjkmnpqrstvwxyz"), //
-	ALPHABET_BASE_64(BaseN.BASE_64, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"), //
-	ALPHABET_BASE_64_URL(BaseN.BASE_64, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"); //
+public class LongArray {
 
-	private BaseN base;
-	private String alphabet;
+	private final long[] array;
 
-	/**
-	 * @param base     an enumeration that represents the base-n encoding
-	 * @param alphabet a string that contains the base-n alphabet
-	 */
-	private BaseNAlphabet(BaseN base, String alphabet) {
-		this.base = base;
-		this.alphabet = alphabet;
+	private LongArray(long[] a) {
+		array = Arrays.copyOf(a, a.length);
 	}
 
-	public BaseN getBase() {
-		return this.base;
+	public static LongArray from(long[] a) {
+		return new LongArray(a);
 	}
 
-	public String getAlphabet() {
-		return this.alphabet;
+	public long get(int index) {
+		return array[index];
+	}
+
+	public int length() {
+		return this.array.length;
+	}
+
+	public long[] array() {
+		return array.clone();
 	}
 }

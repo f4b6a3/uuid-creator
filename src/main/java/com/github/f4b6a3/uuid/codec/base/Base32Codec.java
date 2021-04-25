@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2020 Fabio Lima
+ * Copyright (c) 2018-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,6 +40,6 @@ public final class Base32Codec extends BaseNCodec {
 	public static final Base32Codec INSTANCE = new Base32Codec();
 
 	public Base32Codec() {
-		super(BaseNAlphabet.ALPHABET_BASE_32);
+		super(BaseN.BASE_32);
 	}
 }

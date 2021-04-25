@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2020 Fabio Lima
+ * Copyright (c) 2018-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,6 @@ import java.net.URI;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.codec.UuidCodec;
-import com.github.f4b6a3.uuid.codec.slug.SlugCodec;
 import com.github.f4b6a3.uuid.codec.StringCodec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
@@ -54,7 +53,7 @@ public class UriCodec implements UuidCodec<java.net.URI> {
 	 */
 	public static final UriCodec INSTANCE = new UriCodec();
 	
-	protected static final String URN_PREFIX = "urn:uuid:";
+	private static final String URN_PREFIX = "urn:uuid:";
 
 	@Override
 	public URI encode(UUID uuid) {

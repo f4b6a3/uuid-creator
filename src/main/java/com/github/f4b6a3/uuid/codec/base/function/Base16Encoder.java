@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2020 Fabio Lima
+ * Copyright (c) 2018-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,10 +38,10 @@ import com.github.f4b6a3.uuid.codec.base.BaseN;
 public final class Base16Encoder extends BaseNEncoder {
 
 	/**
-	 * @param alphabet a string that contains the base-n alphabet
+	 * @param base an enumeration that represents the base-n encoding
 	 */
-	public Base16Encoder(String alphabet) {
-		super(BaseN.BASE_16, alphabet);
+	public Base16Encoder(BaseN base) {
+		super(base);
 	}
 
 	@Override
@@ -51,39 +51,39 @@ public final class Base16Encoder extends BaseNEncoder {
 		final long msb = uuid.getMostSignificantBits();
 		final long lsb = uuid.getLeastSignificantBits();
 
-		chars[0x00] = alphabet[(int) (msb >>> 0x3c & 0xf)];
-		chars[0x01] = alphabet[(int) (msb >>> 0x38 & 0xf)];
-		chars[0x02] = alphabet[(int) (msb >>> 0x34 & 0xf)];
-		chars[0x03] = alphabet[(int) (msb >>> 0x30 & 0xf)];
-		chars[0x04] = alphabet[(int) (msb >>> 0x2c & 0xf)];
-		chars[0x05] = alphabet[(int) (msb >>> 0x28 & 0xf)];
-		chars[0x06] = alphabet[(int) (msb >>> 0x24 & 0xf)];
-		chars[0x07] = alphabet[(int) (msb >>> 0x20 & 0xf)];
-		chars[0x08] = alphabet[(int) (msb >>> 0x1c & 0xf)];
-		chars[0x09] = alphabet[(int) (msb >>> 0x18 & 0xf)];
-		chars[0x0a] = alphabet[(int) (msb >>> 0x14 & 0xf)];
-		chars[0x0b] = alphabet[(int) (msb >>> 0x10 & 0xf)];
-		chars[0x0c] = alphabet[(int) (msb >>> 0x0c & 0xf)];
-		chars[0x0d] = alphabet[(int) (msb >>> 0x08 & 0xf)];
-		chars[0x0e] = alphabet[(int) (msb >>> 0x04 & 0xf)];
-		chars[0x0f] = alphabet[(int) (msb & 0xf)];
+		chars[0x00] = alphabet.get((int) (msb >>> 0x3c & 0xf));
+		chars[0x01] = alphabet.get((int) (msb >>> 0x38 & 0xf));
+		chars[0x02] = alphabet.get((int) (msb >>> 0x34 & 0xf));
+		chars[0x03] = alphabet.get((int) (msb >>> 0x30 & 0xf));
+		chars[0x04] = alphabet.get((int) (msb >>> 0x2c & 0xf));
+		chars[0x05] = alphabet.get((int) (msb >>> 0x28 & 0xf));
+		chars[0x06] = alphabet.get((int) (msb >>> 0x24 & 0xf));
+		chars[0x07] = alphabet.get((int) (msb >>> 0x20 & 0xf));
+		chars[0x08] = alphabet.get((int) (msb >>> 0x1c & 0xf));
+		chars[0x09] = alphabet.get((int) (msb >>> 0x18 & 0xf));
+		chars[0x0a] = alphabet.get((int) (msb >>> 0x14 & 0xf));
+		chars[0x0b] = alphabet.get((int) (msb >>> 0x10 & 0xf));
+		chars[0x0c] = alphabet.get((int) (msb >>> 0x0c & 0xf));
+		chars[0x0d] = alphabet.get((int) (msb >>> 0x08 & 0xf));
+		chars[0x0e] = alphabet.get((int) (msb >>> 0x04 & 0xf));
+		chars[0x0f] = alphabet.get((int) (msb & 0xf));
 
-		chars[0x10] = alphabet[(int) (lsb >>> 0x3c & 0xf)];
-		chars[0x11] = alphabet[(int) (lsb >>> 0x38 & 0xf)];
-		chars[0x12] = alphabet[(int) (lsb >>> 0x34 & 0xf)];
-		chars[0x13] = alphabet[(int) (lsb >>> 0x30 & 0xf)];
-		chars[0x14] = alphabet[(int) (lsb >>> 0x2c & 0xf)];
-		chars[0x15] = alphabet[(int) (lsb >>> 0x28 & 0xf)];
-		chars[0x16] = alphabet[(int) (lsb >>> 0x24 & 0xf)];
-		chars[0x17] = alphabet[(int) (lsb >>> 0x20 & 0xf)];
-		chars[0x18] = alphabet[(int) (lsb >>> 0x1c & 0xf)];
-		chars[0x19] = alphabet[(int) (lsb >>> 0x18 & 0xf)];
-		chars[0x1a] = alphabet[(int) (lsb >>> 0x14 & 0xf)];
-		chars[0x1b] = alphabet[(int) (lsb >>> 0x10 & 0xf)];
-		chars[0x1c] = alphabet[(int) (lsb >>> 0x0c & 0xf)];
-		chars[0x1d] = alphabet[(int) (lsb >>> 0x08 & 0xf)];
-		chars[0x1e] = alphabet[(int) (lsb >>> 0x04 & 0xf)];
-		chars[0x1f] = alphabet[(int) (lsb & 0xf)];
+		chars[0x10] = alphabet.get((int) (lsb >>> 0x3c & 0xf));
+		chars[0x11] = alphabet.get((int) (lsb >>> 0x38 & 0xf));
+		chars[0x12] = alphabet.get((int) (lsb >>> 0x34 & 0xf));
+		chars[0x13] = alphabet.get((int) (lsb >>> 0x30 & 0xf));
+		chars[0x14] = alphabet.get((int) (lsb >>> 0x2c & 0xf));
+		chars[0x15] = alphabet.get((int) (lsb >>> 0x28 & 0xf));
+		chars[0x16] = alphabet.get((int) (lsb >>> 0x24 & 0xf));
+		chars[0x17] = alphabet.get((int) (lsb >>> 0x20 & 0xf));
+		chars[0x18] = alphabet.get((int) (lsb >>> 0x1c & 0xf));
+		chars[0x19] = alphabet.get((int) (lsb >>> 0x18 & 0xf));
+		chars[0x1a] = alphabet.get((int) (lsb >>> 0x14 & 0xf));
+		chars[0x1b] = alphabet.get((int) (lsb >>> 0x10 & 0xf));
+		chars[0x1c] = alphabet.get((int) (lsb >>> 0x0c & 0xf));
+		chars[0x1d] = alphabet.get((int) (lsb >>> 0x08 & 0xf));
+		chars[0x1e] = alphabet.get((int) (lsb >>> 0x04 & 0xf));
+		chars[0x1f] = alphabet.get((int) (lsb & 0xf));
 
 		return new String(chars);
 	}

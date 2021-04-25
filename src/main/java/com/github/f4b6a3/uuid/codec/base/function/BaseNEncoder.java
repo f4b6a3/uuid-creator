@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2020 Fabio Lima
+ * Copyright (c) 2018-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import com.github.f4b6a3.uuid.codec.base.BaseN;
+import com.github.f4b6a3.uuid.util.internal.immutable.CharArray;
 
 /**
  * Abstract function to be extended by all encoder functions of this package.
@@ -38,15 +39,14 @@ import com.github.f4b6a3.uuid.codec.base.BaseN;
  */
 public abstract class BaseNEncoder implements Function<UUID, String> {
 
-	protected final BaseN base;
-	protected final char[] alphabet;
+	protected BaseN base;
+	protected CharArray alphabet;
 
 	/**
-	 * @param base     an enumeration that represents the base-n encoding
-	 * @param alphabet a string that contains the base-n alphabet
+	 * @param base an enumeration that represents the base-n encoding
 	 */
-	public BaseNEncoder(BaseN base, String alphabet) {
+	public BaseNEncoder(BaseN base) {
 		this.base = base;
-		this.alphabet = alphabet.toCharArray();
+		this.alphabet = base.getAlphabet();
 	}
 }
