@@ -24,7 +24,7 @@
 
 package com.github.f4b6a3.uuid.strategy.nodeid;
 
-import java.security.SecureRandom;
+import java.util.Random;
 
 import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
 
@@ -33,7 +33,7 @@ import com.github.f4b6a3.uuid.strategy.NodeIdentifierStrategy;
  * 
  * A random node identifier is generated ONCE and always returned.
  * 
- * It uses {@link SecureRandom} to generate a 'cryptographic quality random
+ * It uses {@link Random} to generate a 'cryptographic quality random
  * number'. The first generated number is returned for all calls.
  * 
  * ### RFC-4122 - 4.1.6. Node

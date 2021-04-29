@@ -73,7 +73,7 @@ public abstract class AbstractRandomBasedUuidCreator extends AbstractUuidCreator
 	/**
 	 * Replaces the default random strategy with another.
 	 * 
-	 * The default random strategy uses {@link java.security.SecureRandom}.
+	 * The default random strategy uses {@link java.util.Random}.
 	 * 
 	 * See {@link Random}.
 	 * 

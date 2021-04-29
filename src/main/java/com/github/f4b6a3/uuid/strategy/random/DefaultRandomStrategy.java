@@ -24,18 +24,18 @@
 
 package com.github.f4b6a3.uuid.strategy.random;
 
-import java.security.SecureRandom;
+import java.util.Random;
 
 import com.github.f4b6a3.uuid.strategy.RandomStrategy;
 
 /**
  * Strategy that provides random values for random-based UUIDs.
  * 
- * It uses a thread local instance of {@link java.security.SecureRandom}.
+ * It uses a thread local instance of {@link java.util.Random}.
  */
 public final class DefaultRandomStrategy implements RandomStrategy {
 
-	protected static final ThreadLocal<SecureRandom> THREAD_LOCAL_RANDOM = ThreadLocal.withInitial(SecureRandom::new);
+	protected static final ThreadLocal<Random> THREAD_LOCAL_RANDOM = ThreadLocal.withInitial(Random::new);
 
 	@Override
 	public void nextBytes(byte[] bytes) {

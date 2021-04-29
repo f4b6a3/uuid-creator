@@ -24,14 +24,14 @@
 
 package com.github.f4b6a3.uuid.util.internal;
 
-import java.security.SecureRandom;
+import java.util.Random;
 
 /**
- * A utility class that wraps a shared {@link java.security.SecureRandom}.
+ * A utility class that wraps a shared {@link java.util.Random}.
  */
 public final class SharedRandom {
 
-	protected static final SecureRandom SHARED_RANDOM = new SecureRandom();
+	protected static final Random SHARED_RANDOM = new Random();
 
 	private SharedRandom() {
 	}

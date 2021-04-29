@@ -140,7 +140,7 @@ public final class UuidCreator {
 	/**
 	 * Returns a random UUID.
 	 * 
-	 * The random generator is {@link java.security.SecureRandom}.
+	 * The random generator is {@link java.util.Random}.
 	 * 
 	 * <pre>
 	 * Details: 
