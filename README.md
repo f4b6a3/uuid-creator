@@ -4,6 +4,8 @@ UUID Creator
 
 A Java library for generating and handling RFC-4122 UUIDs.
 
+This fork changes all instances of java.security.SecureRandom to java.util.Random
+
 #### RFC-4122 UUIDs:
 
 * __Version 1__: Time-based;
