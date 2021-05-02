@@ -24,6 +24,9 @@
 
 package com.github.f4b6a3.uuid.codec.base;
 
+import com.github.f4b6a3.uuid.codec.base.function.Base16Decoder;
+import com.github.f4b6a3.uuid.codec.base.function.Base16Encoder;
+
 /**
  * Codec for base-16 as defined in RFC-4648.
  * 
@@ -36,13 +39,13 @@ package com.github.f4b6a3.uuid.codec.base;
  * See: https://tools.ietf.org/html/rfc4648
  */
 public final class Base16Codec extends BaseNCodec {
-	
+
 	/**
 	 * A shared immutable instance.
 	 */
 	public static final Base16Codec INSTANCE = new Base16Codec();
 
 	public Base16Codec() {
-		super(BaseN.BASE_16);
+		super(BaseN.BASE_16, new Base16Encoder(BaseN.BASE_16), new Base16Decoder(BaseN.BASE_16));
 	}
 }

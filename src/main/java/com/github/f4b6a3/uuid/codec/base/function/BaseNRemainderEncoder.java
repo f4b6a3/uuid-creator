@@ -24,57 +24,56 @@
 
 package com.github.f4b6a3.uuid.codec.base.function;
 
+import java.math.BigInteger;
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.codec.BinaryCodec;
 import com.github.f4b6a3.uuid.codec.base.BaseN;
 
 /**
- * Function that decodes a base-64 string to a UUID.
+ * Function that encodes a UUID to a base-n string.
  * 
- * It is case SENSITIVE.
+ * It encodes using remainder operator (modulus), a common approach to encode
+ * integers.
  * 
- * See: https://tools.ietf.org/html/rfc4648
+ * The encoding process is performed using integer arithmetic.
  */
-public final class Base64Decoder extends BaseNDecoder {
+public final class BaseNRemainderEncoder extends BaseNEncoder {
 
-	public Base64Decoder(BaseN base) {
+	private final BigInteger n; // the radix
+
+	private static final int SIGNUM_POSITIVE = 1;
+
+	public BaseNRemainderEncoder(BaseN base) {
 		super(base);
+		n = BigInteger.valueOf(base.getRadix());
 	}
 
 	@Override
-	public UUID apply(String string) {
+	public String apply(UUID uuid) {
 
-		char[] chars = toCharArray(string);
+		// it must be a POSITIVE big number
+		byte[] bytes = BinaryCodec.INSTANCE.encode(uuid);
+		BigInteger number = new BigInteger(SIGNUM_POSITIVE, bytes);
 
-		long msb = 0;
-		long lsb = 0;
+		char[] buffer = new char[base.getLength()];
+		int b = buffer.length; // buffer index
 
-		msb |= map.get(chars[0x00]) << 58;
-		msb |= map.get(chars[0x01]) << 52;
-		msb |= map.get(chars[0x02]) << 46;
-		msb |= map.get(chars[0x03]) << 40;
-		msb |= map.get(chars[0x04]) << 34;
-		msb |= map.get(chars[0x05]) << 28;
-		msb |= map.get(chars[0x06]) << 22;
-		msb |= map.get(chars[0x07]) << 16;
-		msb |= map.get(chars[0x08]) << 10;
-		msb |= map.get(chars[0x09]) << 4;
+		// fill in the buffer backwards using remainder operation
+		while (number.signum() == SIGNUM_POSITIVE) {
+			buffer[--b] = alphabet.get(number.remainder(n).intValue());
+			number = number.divide(n);
+		}
 
-		msb |= map.get(chars[0x0a]) >>> 2;
-		lsb |= map.get(chars[0x0a]) << 62;
+		// add padding to the leading
+		if (b > 0) {
+			// there are x chars to be padded
+			final int padding = b;
+			for (int i = 0; i < padding; i++) {
+				buffer[--b] = base.getPadding();
+			}
+		}
 
-		lsb |= map.get(chars[0x0b]) << 56;
-		lsb |= map.get(chars[0x0c]) << 50;
-		lsb |= map.get(chars[0x0d]) << 44;
-		lsb |= map.get(chars[0x0e]) << 38;
-		lsb |= map.get(chars[0x0f]) << 32;
-		lsb |= map.get(chars[0x10]) << 26;
-		lsb |= map.get(chars[0x11]) << 20;
-		lsb |= map.get(chars[0x12]) << 14;
-		lsb |= map.get(chars[0x13]) << 8;
-		lsb |= map.get(chars[0x14]) << 2;
-		lsb |= map.get(chars[0x15]) >>> 4;
-
-		return new UUID(msb, lsb);
+		return new String(buffer);
 	}
 }

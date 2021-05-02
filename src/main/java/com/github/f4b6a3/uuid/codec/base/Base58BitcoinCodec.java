@@ -24,30 +24,25 @@
 
 package com.github.f4b6a3.uuid.codec.base;
 
-import com.github.f4b6a3.uuid.codec.base.function.Base32Decoder;
-import com.github.f4b6a3.uuid.codec.base.function.Base32Encoder;
-
 /**
- * Codec for Crockford's base-32.
+ * Codec for base-58.
  * 
- * It is case insensitive, so it decodes in lower and upper case, but encodes in
- * lower case only.
+ * It is case SENSITIVE.
  * 
- * This codec complies with RFC-4648, encoding a byte array sequentially. If you
- * need a codec that encodes integers using the remainder operator (modulus),
- * use the static factory {@link BaseNCodec#newInstance(BaseN)}.
+ * It encodes using remainder operator (modulus).
  * 
- * See: https://www.crockford.com/base32.html
+ * The alphabet for this codec is the same used in Bitcoin (BTC).
+ * 
+ * Read: https://tools.ietf.org/html/draft-msporny-base58-03
  */
-public final class Base32CrockfordCodec extends BaseNCodec {
+public final class Base58BitcoinCodec extends BaseNCodec {
 
 	/**
 	 * A shared immutable instance.
 	 */
-	public static final Base32CrockfordCodec INSTANCE = new Base32CrockfordCodec();
+	public static final Base58BitcoinCodec INSTANCE = new Base58BitcoinCodec();
 
-	public Base32CrockfordCodec() {
-		super(BaseN.BASE_32_CROCKFORD, new Base32Encoder(BaseN.BASE_32_CROCKFORD),
-				new Base32Decoder(BaseN.BASE_32_CROCKFORD));
+	public Base58BitcoinCodec() {
+		super(BaseN.BASE_58_BITCOIN);
 	}
 }

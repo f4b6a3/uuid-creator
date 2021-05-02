@@ -49,4 +49,29 @@ public class CharArray {
 	public char[] array() {
 		return array.clone();
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(array);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CharArray other = (CharArray) obj;
+		return Arrays.equals(array, other.array);
+	}
+
+	@Override
+	public String toString() {
+		return "CharArray [array=" + Arrays.toString(array) + "]";
+	}
 }

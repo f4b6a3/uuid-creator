@@ -24,61 +24,53 @@
 
 package com.github.f4b6a3.uuid.codec.base.function;
 
+import java.math.BigInteger;
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.codec.BinaryCodec;
 import com.github.f4b6a3.uuid.codec.base.BaseN;
 
 /**
- * Function that decodes a base-32 string to a UUID.
+ * Function that decodes a base-n string to a UUID.
  * 
- * It is case insensitive, so it decodes in lower case and upper case.
+ * It decodes strings created by encoders that use remainder operator (modulus),
+ * a common approach to encode integers.
  * 
- * See: https://tools.ietf.org/html/rfc4648
+ * The decoding process is performed using integer arithmetic.
  */
-public final class Base32Decoder extends BaseNDecoder {
+public final class BaseNRemainderDecoder extends BaseNDecoder {
 
-	public Base32Decoder(BaseN base) {
+	private final BigInteger n; // the radix
+
+	private static final int BYTE_LENGTH = 16;
+
+	public BaseNRemainderDecoder(BaseN base) {
 		super(base);
+		n = BigInteger.valueOf(base.getRadix());
 	}
 
 	@Override
 	public UUID apply(String string) {
 
 		char[] chars = toCharArray(string);
+		BigInteger number = BigInteger.ZERO;
 
-		long msb = 0;
-		long lsb = 0;
+		for (int c : chars) {
+			final long value = map.get(c);
+			number = n.multiply(number).add(BigInteger.valueOf(value));
+		}
 
-		msb |= map.get(chars[0x00]) << 59;
-		msb |= map.get(chars[0x01]) << 54;
-		msb |= map.get(chars[0x02]) << 49;
-		msb |= map.get(chars[0x03]) << 44;
-		msb |= map.get(chars[0x04]) << 39;
-		msb |= map.get(chars[0x05]) << 34;
-		msb |= map.get(chars[0x06]) << 29;
-		msb |= map.get(chars[0x07]) << 24;
-		msb |= map.get(chars[0x08]) << 19;
-		msb |= map.get(chars[0x09]) << 14;
-		msb |= map.get(chars[0x0a]) << 9;
-		msb |= map.get(chars[0x0b]) << 4;
+		// prepare a byte buffer
+		byte[] result = number.toByteArray();
+		byte[] buffer = new byte[BYTE_LENGTH];
+		int r = result.length; // result index
+		int b = buffer.length; // buffer index
 
-		msb |= map.get(chars[0x0c]) >>> 1;
-		lsb |= map.get(chars[0x0c]) << 63;
+		// fill in the byte buffer
+		while (--b >= 0 && --r >= 0) {
+			buffer[b] = result[r];
+		}
 
-		lsb |= map.get(chars[0x0d]) << 58;
-		lsb |= map.get(chars[0x0e]) << 53;
-		lsb |= map.get(chars[0x0f]) << 48;
-		lsb |= map.get(chars[0x10]) << 43;
-		lsb |= map.get(chars[0x11]) << 38;
-		lsb |= map.get(chars[0x12]) << 33;
-		lsb |= map.get(chars[0x13]) << 28;
-		lsb |= map.get(chars[0x14]) << 23;
-		lsb |= map.get(chars[0x15]) << 18;
-		lsb |= map.get(chars[0x16]) << 13;
-		lsb |= map.get(chars[0x17]) << 8;
-		lsb |= map.get(chars[0x18]) << 3;
-		lsb |= map.get(chars[0x19]) >>> 2;
-
-		return new UUID(msb, lsb);
+		return BinaryCodec.INSTANCE.decode(buffer);
 	}
 }

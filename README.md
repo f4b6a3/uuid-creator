@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>3.6.0</version>
+  <version>3.7.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -1290,16 +1290,26 @@ URI uri = codec.encode(uuid);
 
 ##### BaseNCodec
 
-This library provides codecs for base-16, base-32 and base-64 encodings. All the encodings defined in the [RFC-4648](https://tools.ietf.org/html/rfc4648) are available. The [Crockford's base-32](https://www.crockford.com/base32.html) is also available.
+This library provides codecs for base-16, base-32 and base-64 encodings. All the encodings defined in the [RFC-4648](https://tools.ietf.org/html/rfc4648) are available. 
 
-These are the base-n encodings available:
+There's also codecs for [Crockford's base-32](https://www.crockford.com/base32.html) and [Bitcoin's base-58](https://tools.ietf.org/html/draft-msporny-base58-03).
 
-- Base 16;
-- Base 32;
-- Base 32 Hex;
-- Base 32 Crockford;
-- Base 64;
-- Base 64 URL.
+List of base-n codecs available:
+
+- __Base 16:__ "0-9a-f";
+- __Base 32:__ "a-z2-7";
+- __Base 32 Hex:__ "0-9a-v";
+- __Base 32 Crockford:__ "0123456789abcdefghjkmnpqrstvwxyz";
+- __Base 36:__ "0-9a-z";
+- __Base 58:__ "0-9A-Za-v";
+- __Base 58 Bitcoin:__ "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+- __Base 58 Flickr:__ "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+- __Base 62:__ "0-9A-Za-z";
+- __Base 64:__ "A-Za-z0-9+/";
+- __Base 64 URL:__ "A-Za-z0-9-_";
+- __Custom base-n:__ custom alphabet.
+
+Custom codecs can be instantiated using `BaseNCodec.newInstance(BaseN)` or `BaseNCodec.newInstance(String)`. There are [many possibilities of encodings](https://github.com/multiformats/multibase).
 
 The following examples encode the UUID `01234567-89AB-4DEF-A123-456789ABCDEF` to all the provided encodings.
 
@@ -1337,6 +1347,30 @@ String string = codec.encode(uuid);
 ```
 
 ```java
+// Returns a base-36 string string
+// input:: 01234567-89AB-4DEF-A123-456789ABCDEF
+// output: 02fapl4n189comd58bkoghddb
+UuidCodec<String> codec = new Base36Codec();
+String string = codec.encode(uuid);
+```
+
+```java
+// Returns a base-58 string
+// input:: 01234567-89AB-4DEF-A123-456789ABCDEF
+// output: 199dn6s7UNiX3LyNkQ1Cfx
+UuidCodec<String> codec = new Base58Codec();
+String string = codec.encode(uuid);
+```
+
+```java
+// Returns a base-62 string
+// input:: 01234567-89AB-4DEF-A123-456789ABCDEF
+// output: 0296tiiBY28FKCYq1PVSGd
+UuidCodec<String> codec = new Base62Codec();
+String string = codec.encode(uuid);
+```
+
+```java
 // Returns a base-64 string
 // input:: 01234567-89AB-4DEF-A123-456789ABCDEF
 // output: ASNFZ4mrTe+hI0VniavN7w
@@ -1351,6 +1385,53 @@ String string = codec.encode(uuid);
 UuidCodec<String> codec = new Base64UrlCodec();
 String string = codec.encode(uuid);
 ```
+
+```
+// Returns a base-20 string using a custom radix
+// input:: 01234567-89AB-4DEF-A123-456789ABCDEF
+// output: 00b5740h195313554732654bjhj9e7
+int radix = 20; // expanded to alphabet "0123456789abcdefghij"
+UuidCodec<String> codec = BaseNCodec.newInstance(radix);
+String string = codec.encode(uuid);
+```
+
+```
+// Returns a base-10 string using the custom alphabet "0-9"
+// input:: 01234567-89AB-4DEF-A123-456789ABCDEF
+// output: 001512366075203566477668990085887675887
+String alphabet = "0-9"; // expanded to alphabet "0123456789"
+UuidCodec<String> codec = BaseNCodec.newInstance(alphabet);
+String string = codec.encode(uuid);
+```
+
+###### Benchmarking base-n codecs
+
+This is a single-threaded benchmark comparing the main base-n codecs:
+
+```
+------------------------------------------------------------------
+Benchmark                  Mode  Cnt      Score     Error   Units
+------------------------------------------------------------------
+Throughput.decode_base16  thrpt    5   4695,920 ±   6,835  ops/ms
+Throughput.decode_base32  thrpt    5   2146,940 ±  26,668  ops/ms
+Throughput.decode_base64  thrpt    5   2566,964 ±  25,757  ops/ms
+Throughput.decode_base36  thrpt    5    528,938 ±   3,441  ops/ms *
+Throughput.decode_base58  thrpt    5    609,171 ±   8,800  ops/ms *
+Throughput.decode_base62  thrpt    5    629,332 ±   2,297  ops/ms *
+------------------------------------------------------------------
+Throughput.encode_base16  thrpt    5  18432,630 ± 171,769  ops/ms
+Throughput.encode_base32  thrpt    5  20345,201 ± 126,980  ops/ms
+Throughput.encode_base64  thrpt    5  21841,282 ±  43,678  ops/ms
+Throughput.encode_base36  thrpt    5    267,618 ±  22,657  ops/ms *
+Throughput.encode_base58  thrpt    5    243,444 ±  20,533  ops/ms *
+Throughput.encode_base62  thrpt    5    257,363 ±  14,720  ops/ms *
+------------------------------------------------------------------
+
+(*) The codecs for base-36, base-58, and base-62 don't perform as fast
+as the others because they do integer arithmetic on BigInteger objects.
+```
+
+Benchmark machine: JDK 8, Ubuntu 20.04, CPU Intel i5-3330 and 8GB RAM.
 
 ##### TimeOrderedCodec
 

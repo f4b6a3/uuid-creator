@@ -3,7 +3,10 @@ package com.github.f4b6a3.uuid;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import com.github.f4b6a3.uuid.codec.base.BaseNCodecTest;
+import com.github.f4b6a3.uuid.codec.base.BaseNCodec1Test;
+import com.github.f4b6a3.uuid.codec.base.BaseNCodec2SamplesTest;
+import com.github.f4b6a3.uuid.codec.base.BaseNCodec3SamplesTest;
+import com.github.f4b6a3.uuid.codec.base.BaseNTest;
 import com.github.f4b6a3.uuid.codec.name.NcnameCodecTest;
 import com.github.f4b6a3.uuid.codec.slug.SlugCodecTest;
 import com.github.f4b6a3.uuid.codec.uri.UriCodecTest;
@@ -51,7 +54,10 @@ import com.github.f4b6a3.uuid.util.UuidValidatorTest;
 	SuffixCombCreatorTest.class,
 	TimeBasedUuidCreatorTest.class,
 	TimeOrderedUuidCreatorTest.class,
-	BaseNCodecTest.class,
+	BaseNTest.class,
+	BaseNCodec1Test.class,
+	BaseNCodec2SamplesTest.class,
+	BaseNCodec3SamplesTest.class,
 	BinaryCodecTest.class,
 	SettingsUtilTest.class,
 	NcnameCodecTest.class,

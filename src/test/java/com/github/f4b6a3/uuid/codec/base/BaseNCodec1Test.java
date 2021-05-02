@@ -12,7 +12,7 @@ import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.UUID;
 
-public class BaseNCodecTest {
+public class BaseNCodec1Test {
 
 	private static final int DEFAULT_LOOP_LIMIT = 100;
 
@@ -56,18 +56,12 @@ public class BaseNCodecTest {
 
 		final UuidCodec<String> codec = new Base32Codec();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-
-			byte[] padded = new byte[20];
-			padded[16] = 0; // right pad
-			padded[17] = 0; // right pad
-			padded[18] = 0; // right pad
-			padded[19] = 0; // right pad
-
 			UUID uuid = UUID.randomUUID();
 			byte[] bytes = CODEC_BYTES.encode(uuid);
-			System.arraycopy(bytes, 0, padded, 0, 16);
+			byte[] padded = getPadded(bytes);
 			BigInteger n = new BigInteger(1, padded);
-			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet).substring(0, 26);
+			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet) //
+					.substring(0, 26); // remove padding
 			String actual = codec.encode(uuid);
 			assertEquals(string, actual);
 		}
@@ -80,18 +74,12 @@ public class BaseNCodecTest {
 
 		final UuidCodec<String> codec = new Base32Codec();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-
-			byte[] padded = new byte[20];
-			padded[16] = 0; // right pad
-			padded[17] = 0; // right pad
-			padded[18] = 0; // right pad
-			padded[19] = 0; // right pad
-
 			UUID uuid = UUID.randomUUID();
 			byte[] bytes = CODEC_BYTES.encode(uuid);
-			System.arraycopy(bytes, 0, padded, 0, 16);
+			byte[] padded = getPadded(bytes);
 			BigInteger n = new BigInteger(1, padded);
-			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet).substring(0, 26);
+			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet) //
+					.substring(0, 26); // remove padding
 			UUID actual = codec.decode(string);
 			assertEquals(uuid.toString(), actual.toString());
 		}
@@ -104,18 +92,12 @@ public class BaseNCodecTest {
 
 		final UuidCodec<String> codec = new Base32HexCodec();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-
-			byte[] padded = new byte[20];
-			padded[16] = 0; // right pad
-			padded[17] = 0; // right pad
-			padded[18] = 0; // right pad
-			padded[19] = 0; // right pad
-
 			UUID uuid = UUID.randomUUID();
 			byte[] bytes = CODEC_BYTES.encode(uuid);
-			System.arraycopy(bytes, 0, padded, 0, 16);
+			byte[] padded = getPadded(bytes);
 			BigInteger n = new BigInteger(1, padded);
-			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet).substring(0, 26);
+			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet) //
+					.substring(0, 26); // remove padding
 			String actual = codec.encode(uuid);
 			assertEquals(string, actual);
 		}
@@ -128,18 +110,12 @@ public class BaseNCodecTest {
 
 		final UuidCodec<String> codec = new Base32HexCodec();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-
-			byte[] padded = new byte[20];
-			padded[16] = 0; // right pad
-			padded[17] = 0; // right pad
-			padded[18] = 0; // right pad
-			padded[19] = 0; // right pad
-
 			UUID uuid = UUID.randomUUID();
 			byte[] bytes = CODEC_BYTES.encode(uuid);
-			System.arraycopy(bytes, 0, padded, 0, 16);
+			byte[] padded = getPadded(bytes);
 			BigInteger n = new BigInteger(1, padded);
-			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet).substring(0, 26);
+			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet) //
+					.substring(0, 26); // remove padding
 			UUID actual = codec.decode(string);
 			assertEquals(uuid.toString(), actual.toString());
 		}
@@ -152,18 +128,12 @@ public class BaseNCodecTest {
 
 		final UuidCodec<String> codec = new Base32CrockfordCodec();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-
-			byte[] padded = new byte[20];
-			padded[16] = 0; // right pad
-			padded[17] = 0; // right pad
-			padded[18] = 0; // right pad
-			padded[19] = 0; // right pad
-
 			UUID uuid = UUID.randomUUID();
 			byte[] bytes = CODEC_BYTES.encode(uuid);
-			System.arraycopy(bytes, 0, padded, 0, 16);
+			byte[] padded = getPadded(bytes);
 			BigInteger n = new BigInteger(1, padded);
-			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet).substring(0, 26);
+			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet) //
+					.substring(0, 26); // remove padding
 			String actual = codec.encode(uuid);
 			assertEquals(string, actual);
 		}
@@ -176,18 +146,12 @@ public class BaseNCodecTest {
 
 		final UuidCodec<String> codec = new Base32CrockfordCodec();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-
-			byte[] padded = new byte[20];
-			padded[16] = 0; // right pad
-			padded[17] = 0; // right pad
-			padded[18] = 0; // right pad
-			padded[19] = 0; // right pad
-
 			UUID uuid = UUID.randomUUID();
 			byte[] bytes = CODEC_BYTES.encode(uuid);
-			System.arraycopy(bytes, 0, padded, 0, 16);
+			byte[] padded = getPadded(bytes);
 			BigInteger n = new BigInteger(1, padded);
-			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet).substring(0, 26);
+			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet). //
+					substring(0, 26); // remove padding
 			UUID actual = codec.decode(string);
 			assertEquals(uuid.toString(), actual.toString());
 		}
@@ -362,7 +326,7 @@ public class BaseNCodecTest {
 			// success
 		}
 	}
-	
+
 	private void testExceptionBase16(String string) {
 		testExceptionBaseN(string, Base16Codec.INSTANCE);
 	}
@@ -393,6 +357,28 @@ public class BaseNCodecTest {
 
 	public static String zerofill(String string, int length) {
 		return new String(zerofill(string.toCharArray(), length));
+	}
+
+	/**
+	 * Returns an array with 160 bits.
+	 * 
+	 * Base32 uses blocks of 40 bits. This method returns 4 groups of 40 bits.
+	 * 
+	 * RFC-4648: "When fewer than 40 input bits are available in an input group,
+	 * bits with value zero are added (on the right) to form an integral number of
+	 * 5-bit groups."
+	 * 
+	 * @param bytes the array to be padded
+	 * @return a padded array
+	 */
+	private byte[] getPadded(byte[] bytes) {
+		byte[] padded = new byte[20];
+		padded[16] = 0; // right pad
+		padded[17] = 0; // right pad
+		padded[18] = 0; // right pad
+		padded[19] = 0; // right pad
+		System.arraycopy(bytes, 0, padded, 0, 16);
+		return padded;
 	}
 
 	private static char[] lpad(char[] chars, int length, char fill) {

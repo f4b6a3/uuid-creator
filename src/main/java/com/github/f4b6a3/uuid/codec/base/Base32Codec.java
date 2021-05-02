@@ -24,22 +24,29 @@
 
 package com.github.f4b6a3.uuid.codec.base;
 
+import com.github.f4b6a3.uuid.codec.base.function.Base32Decoder;
+import com.github.f4b6a3.uuid.codec.base.function.Base32Encoder;
+
 /**
  * Codec for base-32 as defined in RFC-4648.
  * 
  * It is case insensitive, so it decodes in lower and upper case, but encodes in
  * lower case only.
  * 
+ * This codec complies with RFC-4648, encoding a byte array sequentially. If you
+ * need a codec that encodes integers using the remainder operator (modulus),
+ * use the static factory {@link BaseNCodec#newInstance(BaseN)}.
+ * 
  * See: https://tools.ietf.org/html/rfc4648
  */
 public final class Base32Codec extends BaseNCodec {
-	
+
 	/**
 	 * A shared immutable instance.
 	 */
 	public static final Base32Codec INSTANCE = new Base32Codec();
 
 	public Base32Codec() {
-		super(BaseN.BASE_32);
+		super(BaseN.BASE_32, new Base32Encoder(BaseN.BASE_32), new Base32Decoder(BaseN.BASE_32));
 	}
 }

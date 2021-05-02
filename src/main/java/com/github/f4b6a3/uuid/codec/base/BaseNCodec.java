@@ -28,13 +28,10 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import com.github.f4b6a3.uuid.codec.UuidCodec;
-import com.github.f4b6a3.uuid.codec.base.function.Base16Decoder;
-import com.github.f4b6a3.uuid.codec.base.function.Base16Encoder;
-import com.github.f4b6a3.uuid.codec.base.function.Base32Decoder;
-import com.github.f4b6a3.uuid.codec.base.function.Base32Encoder;
-import com.github.f4b6a3.uuid.codec.base.function.Base64Decoder;
-import com.github.f4b6a3.uuid.codec.base.function.Base64Encoder;
-import com.github.f4b6a3.uuid.exception.UuidCodecException;
+import com.github.f4b6a3.uuid.codec.base.function.BaseNDecoder;
+import com.github.f4b6a3.uuid.codec.base.function.BaseNEncoder;
+import com.github.f4b6a3.uuid.codec.base.function.BaseNRemainderDecoder;
+import com.github.f4b6a3.uuid.codec.base.function.BaseNRemainderEncoder;
 
 /**
  * Abstract class that contains the basic functionality for base-n codecs of
@@ -48,28 +45,112 @@ public abstract class BaseNCodec implements UuidCodec<String> {
 	protected final Function<String, UUID> decoder;
 
 	/**
-	 * @param base an enumeration that represents the base-n encoding
+	 * @param base an object that represents the base-n encoding
 	 */
-	public BaseNCodec(BaseN base) {
+	protected BaseNCodec(BaseN base) {
+		this(base, new BaseNRemainderEncoder(base), new BaseNRemainderDecoder(base));
+	}
 
+	/**
+	 * @param base    an object that represents the base-n encoding
+	 * @param encoder a functional encoder
+	 * @param decoder a functional decoder
+	 */
+	protected BaseNCodec(BaseN base, BaseNEncoder encoder, BaseNDecoder decoder) {
 		this.base = base;
+		this.encoder = encoder;
+		this.decoder = decoder;
+	}
 
-		switch (base.getNumber()) {
-		case 16:
-			encoder = new Base16Encoder(base);
-			decoder = new Base16Decoder(base);
-			break;
-		case 32:
-			encoder = new Base32Encoder(base);
-			decoder = new Base32Decoder(base);
-			break;
-		case 64:
-			encoder = new Base64Encoder(base);
-			decoder = new Base64Decoder(base);
-			break;
-		default:
-			throw new UuidCodecException("Unsupported base-n");
-		}
+	/**
+	 * Static factory that returns a new instance of {@link BaseNCodec} using the
+	 * specified {@link BaseN}.
+	 * 
+	 * This method can be used if none of the existing concrete codecs of this
+	 * package class is desired.
+	 *
+	 * The {@link BaseNCodec} objects provided by this method encode UUIDs using
+	 * remainder operation (modulus), a common approach to encode integers.
+	 * 
+	 * If you need a {@link BaseN} that is not available in this package, use the
+	 * static factories {@link BaseNCodec#newInstance(String)} or
+	 * {@link BaseNCodec#newInstance(int)}.
+	 * 
+	 * @param base an object that represents the base-n encoding
+	 * @return a {@link BaseNCodec}
+	 */
+	public static BaseNCodec newInstance(BaseN base) {
+		return new BaseNCodec(base) {
+		};
+	}
+
+	/**
+	 * Static factory that returns a new instance of {@link BaseNCodec} using the
+	 * specified radix.
+	 * 
+	 * This method can be used if none of the existing concrete codecs of this
+	 * package class is desired.
+	 * 
+	 * The {@link BaseNCodec} objects provided by this method encode UUIDs using
+	 * remainder operator (modulus), a common approach to encode integers.
+	 * 
+	 * The example below shows how to create a {@link BaseNCodec} for an
+	 * hypothetical base-40 encoding that contains only letters. You only need to
+	 * pass a number 40. The {@link BaseNCodec} instantiates a {@link BaseN} object
+	 * internally. See {@link BaseN}.
+	 * 
+	 * <pre>
+	 * String radix = 40;
+	 * BaseNCodec codec = BaseNCodec.newInstance(radix);
+	 * </pre>
+	 * 
+	 * If radix is greater than 36, the alphabet generated is a subset of the
+	 * character sequence "0-9A-Za-z-_". Otherwise it is a subset of "0-9a-z". In
+	 * the example above the resulting alphabet is
+	 * "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcd" (0-9A-Za-d).
+	 * 
+	 * @param radix the radix to be used
+	 * @return a {@link BaseNCodec}
+	 */
+	public static BaseNCodec newInstance(int radix) {
+		BaseN base = new BaseN(radix);
+		return newInstance(base);
+	}
+
+	/**
+	 * Static factory that returns a new instance of {@link BaseNCodec} using the
+	 * specified alphabet.
+	 * 
+	 * This method can be used if none of the existing concrete codecs of this
+	 * package class is desired.
+	 * 
+	 * The {@link BaseNCodec} objects provided by this method encode UUIDs using
+	 * remainder operator (modulus), a common approach to encode integers.
+	 * 
+	 * The example below shows how to create a {@link BaseNCodec} for an
+	 * hypothetical base-26 encoding that contains only letters. You only need to
+	 * pass a string with 26 characters. The {@link BaseNCodec} instantiates a
+	 * {@link BaseN} object internally. See {@link BaseN}.
+	 * 
+	 * <pre>
+	 * String alphabet = "abcdefghijklmnopqrstuvwxyz";
+	 * BaseNCodec codec = BaseNCodec.newInstance(alphabet);
+	 * </pre>
+	 * 
+	 * Alphabet strings similar to "a-f0-9" are expanded to "abcdef0123456789". The
+	 * same example using the string "a-z" instead of "abcdefghijklmnopqrstuvwxyz":
+	 * 
+	 * <pre>
+	 * String alphabet = "a-z";
+	 * BaseNCodec codec = BaseNCodec.newInstance(alphabet);
+	 * </pre>
+	 * 
+	 * @param alphabet the alphabet to be used
+	 * @return a {@link BaseNCodec}
+	 */
+	public static BaseNCodec newInstance(String alphabet) {
+		BaseN base = new BaseN(alphabet);
+		return newInstance(base);
 	}
 
 	@Override

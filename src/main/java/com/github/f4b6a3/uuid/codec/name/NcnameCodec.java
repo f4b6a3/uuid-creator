@@ -67,13 +67,14 @@ public final class NcnameCodec implements UuidCodec<String> {
 	 */
 	public static final NcnameCodec INSTANCE = new NcnameCodec();
 
-	private final int base;
+	private final int radix;
 	private final int length;
 	private final int shift;
+	private final char padding;
 	private final BaseNCodec codec;
 
-	private static final CharArray VERSION_UPPER = CharArray.from("ABCDEFGHIJKLMNOP".toCharArray()); // base64
-	private static final CharArray VERSION_LOWER = CharArray.from("abcdefghijklmnop".toCharArray()); // base16 & base32
+	private static final CharArray VERSION_UPPERCASE = CharArray.from("ABCDEFGHIJKLMNOP".toCharArray());
+	private static final CharArray VERSION_LOWERCASE = CharArray.from("abcdefghijklmnop".toCharArray());
 
 	private static final LongArray VERSION_MAP;
 	static {
@@ -120,9 +121,6 @@ public final class NcnameCodec implements UuidCodec<String> {
 		VERSION_MAP = LongArray.from(mapping);
 	}
 
-	// padding used to circumvent the decoder's length validation
-	private static final char DECODER_PADDING = 'A'; // 'A' = 0
-
 	public NcnameCodec() {
 		this(Base64UrlCodec.INSTANCE);
 	}
@@ -130,10 +128,11 @@ public final class NcnameCodec implements UuidCodec<String> {
 	public NcnameCodec(BaseNCodec codec) {
 
 		this.codec = codec;
-		this.base = codec.getBase().getNumber();
+		this.radix = codec.getBase().getRadix();
 		this.length = codec.getBase().getLength();
+		this.padding = codec.getBase().getPadding();
 
-		switch (this.base) {
+		switch (this.radix) {
 		case 32:
 			this.shift = 1;
 			break;
@@ -165,7 +164,7 @@ public final class NcnameCodec implements UuidCodec<String> {
 		String encoded = this.codec.encode(uuuu).substring(0, this.length - 1);
 
 		// if base is 64, use upper case version, else use lower case
-		char v = this.base == 64 ? VERSION_UPPER.get(version) : VERSION_LOWER.get(version);
+		char v = this.radix == 64 ? VERSION_UPPERCASE.get(version) : VERSION_LOWERCASE.get(version);
 
 		return v + encoded;
 	}
@@ -175,7 +174,7 @@ public final class NcnameCodec implements UuidCodec<String> {
 
 		int version = (int) VERSION_MAP.get(ncname.charAt(0));
 		String substring = ncname.substring(1, ncname.length());
-		UUID uuid = this.codec.decode(substring + DECODER_PADDING);
+		UUID uuid = this.codec.decode(substring + padding);
 
 		byte[] bytes = BinaryCodec.INSTANCE.encode(uuid);
 		bytes[15] <<= this.shift;

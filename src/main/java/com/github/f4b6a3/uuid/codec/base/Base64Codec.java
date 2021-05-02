@@ -24,6 +24,9 @@
 
 package com.github.f4b6a3.uuid.codec.base;
 
+import com.github.f4b6a3.uuid.codec.base.function.Base64Decoder;
+import com.github.f4b6a3.uuid.codec.base.function.Base64Encoder;
+
 /**
  * Codec for base-64 as defined in RFC-4648.
  * 
@@ -31,6 +34,10 @@ package com.github.f4b6a3.uuid.codec.base;
  * 
  * The only difference between base-64 and base-64-url is that the second
  * substitutes the chars '+' and '/' with '-' and '_'.
+ * 
+ * This codec complies with RFC-4648, encoding a byte array sequentially. If you
+ * need a codec that encodes integers using the remainder operator (modulus),
+ * use the static factory {@link BaseNCodec#newInstance(BaseN)}.
  * 
  * See: https://tools.ietf.org/html/rfc4648
  */
@@ -42,6 +49,6 @@ public final class Base64Codec extends BaseNCodec {
 	public static final Base64Codec INSTANCE = new Base64Codec();
 
 	public Base64Codec() {
-		super(BaseN.BASE_64);
+		super(BaseN.BASE_64, new Base64Encoder(BaseN.BASE_64), new Base64Decoder(BaseN.BASE_64));
 	}
 }

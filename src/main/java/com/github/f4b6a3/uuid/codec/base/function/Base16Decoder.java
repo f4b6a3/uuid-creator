@@ -37,9 +37,6 @@ import com.github.f4b6a3.uuid.codec.base.BaseN;
  */
 public final class Base16Decoder extends BaseNDecoder {
 
-	/**
-	 * @param base an enumeration that represents the base-n encoding
-	 */
 	public Base16Decoder(BaseN base) {
 		super(base);
 	}
