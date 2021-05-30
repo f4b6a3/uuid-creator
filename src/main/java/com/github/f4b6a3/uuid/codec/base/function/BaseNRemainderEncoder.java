@@ -24,10 +24,7 @@
 
 package com.github.f4b6a3.uuid.codec.base.function;
 
-import java.math.BigInteger;
 import java.util.UUID;
-
-import com.github.f4b6a3.uuid.codec.BinaryCodec;
 import com.github.f4b6a3.uuid.codec.base.BaseN;
 
 /**
@@ -40,29 +37,34 @@ import com.github.f4b6a3.uuid.codec.base.BaseN;
  */
 public final class BaseNRemainderEncoder extends BaseNEncoder {
 
-	private final BigInteger n; // the radix
+	private final int n; // the radix
 
-	private static final int SIGNUM_POSITIVE = 1;
+	private static final long HALF_LONG_MASK = 0x00000000ffffffffL;
 
 	public BaseNRemainderEncoder(BaseN base) {
 		super(base);
-		n = BigInteger.valueOf(base.getRadix());
+		n = base.getRadix();
 	}
 
 	@Override
 	public String apply(UUID uuid) {
 
-		// it must be a POSITIVE big number
-		byte[] bytes = BinaryCodec.INSTANCE.encode(uuid);
-		BigInteger number = new BigInteger(SIGNUM_POSITIVE, bytes);
+		// unsigned 128 bit number
+		int[] number = new int[4];
+		number[0] = (int) (uuid.getMostSignificantBits() >>> 32);
+		number[1] = (int) (uuid.getMostSignificantBits() & HALF_LONG_MASK);
+		number[2] = (int) (uuid.getLeastSignificantBits() >>> 32);
+		number[3] = (int) (uuid.getLeastSignificantBits() & HALF_LONG_MASK);
 
 		char[] buffer = new char[base.getLength()];
 		int b = buffer.length; // buffer index
 
 		// fill in the buffer backwards using remainder operation
-		while (number.signum() == SIGNUM_POSITIVE) {
-			buffer[--b] = alphabet.get(number.remainder(n).intValue());
-			number = number.divide(n);
+		while (!isZero(number)) {
+			final int[] quotient = new int[4];
+			final int remainder = remainder(number, n, quotient);
+			buffer[--b] = alphabet.get(remainder);
+			number = quotient;
 		}
 
 		// add padding to the leading
@@ -75,5 +77,41 @@ public final class BaseNRemainderEncoder extends BaseNEncoder {
 		}
 
 		return new String(buffer);
+	}
+
+	private int remainder(int[] number, int divisor, int[] quotient) {
+
+		long temporary = 0;
+		long remainder = 0;
+
+		if (number[0] != 0) { // optimization condition
+			temporary = number[0] & HALF_LONG_MASK;
+			quotient[0] = (int) (temporary / divisor);
+			remainder = temporary % divisor;
+		}
+
+		if (number[1] != 0 || remainder != 0) {
+			temporary = (remainder << 32) | (number[1] & HALF_LONG_MASK);
+			quotient[1] = (int) (temporary / divisor);
+			remainder = temporary % divisor;
+		}
+
+		if (number[2] != 0 || remainder != 0) {
+			temporary = (remainder << 32) | (number[2] & HALF_LONG_MASK);
+			quotient[2] = (int) (temporary / divisor);
+			remainder = temporary % divisor;
+		}
+
+		if (number[3] != 0 || remainder != 0) {
+			temporary = (remainder << 32) | (number[3] & HALF_LONG_MASK);
+			quotient[3] = (int) (temporary / divisor);
+			remainder = temporary % divisor;
+		}
+
+		return (int) remainder;
+	}
+
+	private boolean isZero(int[] number) {
+		return number[0] == 0 && number[1] == 0 && number[2] == 0 && number[3] == 0;
 	}
 }

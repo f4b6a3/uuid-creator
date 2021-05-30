@@ -37,6 +37,8 @@ import com.github.f4b6a3.uuid.codec.base.BaseN;
  */
 public final class Base32Encoder extends BaseNEncoder {
 
+	private static final int CHAR_LENGTH = 26;
+
 	public Base32Encoder(BaseN base) {
 		super(base);
 	}
@@ -44,7 +46,7 @@ public final class Base32Encoder extends BaseNEncoder {
 	@Override
 	public String apply(UUID uuid) {
 
-		final char[] chars = new char[base.getLength()];
+		final char[] chars = new char[CHAR_LENGTH];
 		long msb = uuid.getMostSignificantBits();
 		long lsb = uuid.getLeastSignificantBits();
 

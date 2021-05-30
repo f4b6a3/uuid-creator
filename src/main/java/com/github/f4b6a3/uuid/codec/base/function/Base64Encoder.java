@@ -35,9 +35,8 @@ import com.github.f4b6a3.uuid.codec.base.BaseN;
  */
 public final class Base64Encoder extends BaseNEncoder {
 
-	/**
-	 * @param base an enumeration that represents the base-n encoding
-	 */
+	private static final int CHAR_LENGTH = 22;
+	
 	public Base64Encoder(BaseN base) {
 		super(base);
 	}
@@ -45,7 +44,7 @@ public final class Base64Encoder extends BaseNEncoder {
 	@Override
 	public String apply(UUID uuid) {
 
-		final char[] chars = new char[base.getLength()];
+		final char[] chars = new char[CHAR_LENGTH];
 		long msb = uuid.getMostSignificantBits();
 		long lsb = uuid.getLeastSignificantBits();
 

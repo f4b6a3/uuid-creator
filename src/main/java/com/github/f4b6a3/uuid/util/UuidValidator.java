@@ -24,7 +24,9 @@
 
 package com.github.f4b6a3.uuid.util;
 
+import com.github.f4b6a3.uuid.codec.base.BaseN;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
+import com.github.f4b6a3.uuid.util.internal.immutable.LongArray;
 
 /**
  * Utility for UUID validation.
@@ -32,6 +34,8 @@ import com.github.f4b6a3.uuid.exception.InvalidUuidException;
  * Using it is much faster than using on regular expression.
  */
 public final class UuidValidator {
+
+	private static final LongArray MAP = BaseN.BASE_16.getMap();
 
 	private UuidValidator() {
 	}
@@ -131,7 +135,7 @@ public final class UuidValidator {
 	 * @throws InvalidUuidException if invalid
 	 */
 	public static void validate(final String uuid) {
-		if (uuid == null || uuid.length() == 0 || !isUuidString(uuid.toCharArray())) {
+		if (uuid == null || !isUuidString(uuid.toCharArray())) {
 			throwInvalidUuidException(uuid);
 		}
 	}
@@ -144,7 +148,7 @@ public final class UuidValidator {
 	 * @throws InvalidUuidException if invalid
 	 */
 	public static void validate(final String uuid, int version) {
-		if (uuid == null || uuid.length() == 0 || !isUuidString(uuid.toCharArray(), version)) {
+		if (uuid == null || !isUuidString(uuid.toCharArray(), version)) {
 			throwInvalidUuidException(uuid);
 		}
 	}
@@ -156,7 +160,7 @@ public final class UuidValidator {
 	 * @throws InvalidUuidException if invalid
 	 */
 	public static void validate(final char[] uuid) {
-		if (uuid == null || uuid.length == 0 || !isUuidString(uuid)) {
+		if (uuid == null || !isUuidString(uuid)) {
 			throwInvalidUuidException(uuid);
 		}
 	}
@@ -169,7 +173,7 @@ public final class UuidValidator {
 	 * @throws InvalidUuidException if invalid
 	 */
 	public static void validate(final char[] uuid, int version) {
-		if (uuid == null || uuid.length == 0 || !isUuidString(uuid, version)) {
+		if (uuid == null || !isUuidString(uuid, version)) {
 			throwInvalidUuidException(uuid);
 		}
 	}
@@ -186,26 +190,28 @@ public final class UuidValidator {
 	 * 12345678-ABCD-ABCD-ABCD-123456789ABCD   (36 hexadecimal chars, UPPER CASE and with hyphen)
 	 * </pre>
 	 * 
-	 * @param c a char array
+	 * @param chars a char array
 	 * @return true if valid, false if invalid
 	 */
-	protected static boolean isUuidString(final char[] c) {
+	protected static boolean isUuidString(final char[] chars) {
 
 		int hyphens = 0;
-
-		for (int i = 0; i < c.length; i++) {
-			// Count hyphens in their standard positions
-			if ((c[i] == '-') && (i == 8 || i == 13 || i == 18 || i == 23)) {
-				hyphens++;
-				continue;
-			}
-			// ASCII codes: 0-9, a-f, A-F
-			if (!((c[i] >= 0x30 && c[i] <= 0x39) || (c[i] >= 0x61 && c[i] <= 0x66) || (c[i] >= 0x41 && c[i] <= 0x46))) {
-				return false;
+		for (int i = 0; i < chars.length; i++) {
+			if (MAP.get(chars[i]) == -1) {
+				if (chars[i] == '-') {
+					hyphens++;
+					continue;
+				}
+				return false; // invalid character!
 			}
 		}
 
-		return (c.length == 36 && hyphens == 4) || (c.length == 32 && hyphens == 0);
+		if (chars.length == 36 && hyphens == 4) {
+			// check if the hyphens positions are correct
+			return chars[8] == '-' && chars[13] == '-' && chars[18] == '-' && chars[23] == '-';
+		}
+
+		return chars.length == 32 && hyphens == 0;
 	}
 
 	/**

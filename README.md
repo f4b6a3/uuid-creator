@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>3.7.0</version>
+  <version>3.7.1</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -1048,21 +1048,20 @@ The `UuidValidator` is used to check if the UUID string representation is correc
 
 Using `UuidValidator` is much faster than using regular expression.
 
+It validates strings in these formats, upper or lower case:
+
+- `00000000000000000000000000000000` (hexadecimal);
+- `00000000-0000-0000-0000-000000000000` (canonical string).
+
 The methods below have variants that check the UUID version.
 
 ```java
 // Returns true a string or byte array is valid
-// These examples are valid for this method:
-// 94d785b2eb624eaa88e72fe8fc5c3478 (lower case)
-// 94D785B2EB624EAA88E72FE8FC5C3478 (upper case)
-// 94d785b2-eb62-4eaa-88e7-2fe8fc5c3478 (the canonical string)
-// 94D785B2-EB62-4EAA-88E7-2FE8FC5C3478 (upper case with hyphens)
 UuidValidator.isValid(uuid);
 ```
 
 ```java
 // Throws an exception if a string or byte array INVALID
-// The previous examples are also valid for this method.
 UuidValidator.validate(uuid);
 ```
 
@@ -1157,35 +1156,29 @@ The RFC-4122 defines a standard string representation, also referred as [canonic
 
 The string representation is a string of 32 hexadecimal (base-16) digits, displayed in five groups separated by hyphens, in the form 8-4-4-4-12 for a total of 36 characters (32 hexadecimal characters and 4 hyphens).
 
-This codec decodes (parses) strings in these formats, with/without hyphens:
+This codec decodes (parses) strings in these formats, upper or lower case, with or without hyphens:
 
-- 00000000-0000-V000-0000-000000000000 (canonical string);
-- {00000000-0000-V000-0000-000000000000} (MS GUID string).
-- urn:uuid:00000000-0000-V000-0000-000000000000 (URN UUID string);
+- `00000000000000000000000000000000` (hexadecimal);
+- `00000000-0000-0000-0000-000000000000` (canonical string);
+- `{00000000-0000-0000-0000-000000000000}` (MS GUID string);
+- `urn:uuid:00000000-0000-0000-0000-000000000000` (URN UUID string).
 
-The encoding and decoding processes may be much faster (5 to 7x) than `UUID#toString()` and `UUID#fromString(String)` in JDK 8.
+The JDK method `UUID#fromString()` can only parse the format `00000000-0000-0000-0000-000000000000`.
 
-If you prefer a string representation without hyphens, use the `Base16Codec` instead of `StringCodec`. This other codec may be much faster (10x) than doing `uuid.toString().replaceAll("-", "")`.
+The encoding and decoding processes can be much faster (7x) than `UUID#toString()` and `UUID#fromString(String)` in JDK 8.
+
+If you prefer a string representation without hyphens, use the `Base16Codec` instead of `StringCodec`. That other codec can be much faster (22x) than doing `uuid.toString().replaceAll("-", "")`.
 
 ```java
 // Convert UUID into a canonical string
-// It is much faster than `UUID.toString(UUID)` in JDK 8.
+// It is much faster (7x) than `UUID.toString(UUID)` in JDK 8.
 UuidCodec<String> codec = new StringCodec();
 String string = codec.encode(uuid);
 ```
 
 ```java
 // Convert a canonical string (and some common variations of it) into a UUID
-// It is much faster than `UUID.fromString(String)` in JDK 8.
-// These examples are valid for this method:
-// 53ab5fd331ee4cb987792fe8a887b3be (lower case)
-// 53AB5FD331EE4CB987792FE8A887B3BE (upper case)
-// 53ab5fd3-31ee-4cb9-8779-2fe8a887b3be (the canonical string)
-// 53AB5FD3-31EE-4CB9-8779-2FE8A887B3BE (upper case with hyphens)
-// {53ab5fd3-31ee-4cb9-8779-2fe8a887b3be} (lower case with hyphens and curly braces)
-// {53AB5FD3-31EE-4CB9-8779-2FE8A887B3BE} (upper case with hyphens and curly braces)
-// urn:uuid:53ab5fd3-31ee-4cb9-8779-2fe8a887b3be (lower case with hyphens and URN prefix)
-// urn:uuid:53AB5FD3-31EE-4CB9-8779-2FE8A887B3BE (upper case with hyphens and URN prefix)
+// It is much faster (7x) than `UUID.fromString(String)` in JDK 8.
 UuidCodec<String> codec = new StringCodec();
 UUID uuid = codec.decode(string);
 ```
@@ -1315,7 +1308,7 @@ The following examples encode the UUID `01234567-89AB-4DEF-A123-456789ABCDEF` to
 
 ```java
 // Returns a base-16 string
-// It is much faster than doing `uuid.toString().replaceAll("-", "")`.
+// It is much faster (22x) than doing `uuid.toString().replaceAll("-", "")`.
 // input:: 01234567-89AB-4DEF-A123-456789ABCDEF
 // output: 0123456789ab4defa123456789abcdef
 UuidCodec<String> codec = new Base16Codec();
@@ -1386,7 +1379,7 @@ UuidCodec<String> codec = new Base64UrlCodec();
 String string = codec.encode(uuid);
 ```
 
-```
+```java
 // Returns a base-20 string using a custom radix
 // input:: 01234567-89AB-4DEF-A123-456789ABCDEF
 // output: 00b5740h195313554732654bjhj9e7
@@ -1395,7 +1388,7 @@ UuidCodec<String> codec = BaseNCodec.newInstance(radix);
 String string = codec.encode(uuid);
 ```
 
-```
+```java
 // Returns a base-10 string using the custom alphabet "0-9"
 // input:: 01234567-89AB-4DEF-A123-456789ABCDEF
 // output: 001512366075203566477668990085887675887
@@ -1412,23 +1405,23 @@ This is a single-threaded benchmark comparing the main base-n codecs:
 ------------------------------------------------------------------
 Benchmark                  Mode  Cnt      Score     Error   Units
 ------------------------------------------------------------------
-Throughput.decode_base16  thrpt    5   4695,920 ±   6,835  ops/ms
-Throughput.decode_base32  thrpt    5   2146,940 ±  26,668  ops/ms
-Throughput.decode_base64  thrpt    5   2566,964 ±  25,757  ops/ms
-Throughput.decode_base36  thrpt    5    528,938 ±   3,441  ops/ms *
-Throughput.decode_base58  thrpt    5    609,171 ±   8,800  ops/ms *
-Throughput.decode_base62  thrpt    5    629,332 ±   2,297  ops/ms *
+Throughput.decode_base16  thrpt    5  16278,459 ± 535,333  ops/ms
+Throughput.decode_base32  thrpt    5  19190,166 ± 163,644  ops/ms
+Throughput.decode_base64  thrpt    5  21783,804 ± 191,067  ops/ms
+Throughput.decode_base36  thrpt    5   4598,355 ±  60,168  ops/ms *
+Throughput.decode_base58  thrpt    5   5125,792 ±  64,979  ops/ms *
+Throughput.decode_base62  thrpt    5   5157,235 ±  40,137  ops/ms *
 ------------------------------------------------------------------
-Throughput.encode_base16  thrpt    5  18432,630 ± 171,769  ops/ms
-Throughput.encode_base32  thrpt    5  20345,201 ± 126,980  ops/ms
-Throughput.encode_base64  thrpt    5  21841,282 ±  43,678  ops/ms
-Throughput.encode_base36  thrpt    5    267,618 ±  22,657  ops/ms *
-Throughput.encode_base58  thrpt    5    243,444 ±  20,533  ops/ms *
-Throughput.encode_base62  thrpt    5    257,363 ±  14,720  ops/ms *
+Throughput.encode_base16  thrpt    5  26206,302 ± 305,194  ops/ms
+Throughput.encode_base32  thrpt    5  28777,567 ± 344,404  ops/ms
+Throughput.encode_base64  thrpt    5  31791,024 ± 579,749  ops/ms
+Throughput.encode_base36  thrpt    5   1077,678 ±   9,852  ops/ms *
+Throughput.encode_base58  thrpt    5   1201,396 ±  25,900  ops/ms *
+Throughput.encode_base62  thrpt    5   1218,330 ±  14,767  ops/ms *
 ------------------------------------------------------------------
 
-(*) The codecs for base-36, base-58, and base-62 don't perform as fast
-as the others because they do integer arithmetic on BigInteger objects.
+(*) The codecs for base-36, base-58, and base-62 don't perform as
+fast as the others because they do arithmetic on integer arrays.
 ```
 
 Benchmark machine: JDK 8, Ubuntu 20.04, CPU Intel i5-3330 and 8GB RAM.
@@ -1476,13 +1469,13 @@ This section shows benchmarks using JMH v1.23.
 ================================================================================
 THROUGHPUT (operations/msec)             Mode  Cnt      Score     Error   Units
 ================================================================================
-Throughput.JDK_toString                 thrpt    5   2915,524 ±  86,400  ops/ms
-Throughput.JDK_fromString               thrpt    5   1938,784 ±  88,818  ops/ms
+Throughput.JDK_toString                 thrpt    5   2875,357 ±  39,875  ops/ms
+Throughput.JDK_fromString               thrpt    5   2060,916 ±  41,060  ops/ms
 Throughput.JDK_RandomBased              thrpt    5   2050,995 ±  21,636  ops/ms
 Throughput.JDK_NameBasedMd5             thrpt    5   2809,598 ±  73,894  ops/ms
 --------------------------------------------------------------------------------
-Throughput.UuidCreator_toString   (7x)  thrpt    5  20940,350 ± 244,373  ops/ms (*)
-Throughput.UuidCreator_fromString (5x)  thrpt    5  10229,685 ± 286,160  ops/ms
+Throughput.UuidCreator_toString   (7x)  thrpt    5  21048,977 ± 267,136  ops/ms *
+Throughput.UuidCreator_fromString (7x)  thrpt    5  15259,545 ± 265,470  ops/ms *
 Throughput.UuidCreator_RandomBased      thrpt    5   2017,299 ±  23,892  ops/ms
 Throughput.UuidCreator_PrefixComb       thrpt    5   2665,831 ±  49,381  ops/ms
 Throughput.UuidCreator_ShortPrefixComb  thrpt    5   2082,030 ±  19,635  ops/ms

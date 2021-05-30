@@ -24,11 +24,10 @@
 
 package com.github.f4b6a3.uuid.codec.base.function;
 
-import java.math.BigInteger;
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.codec.BinaryCodec;
 import com.github.f4b6a3.uuid.codec.base.BaseN;
+import com.github.f4b6a3.uuid.exception.UuidCodecException;
 
 /**
  * Function that decodes a base-n string to a UUID.
@@ -40,37 +39,68 @@ import com.github.f4b6a3.uuid.codec.base.BaseN;
  */
 public final class BaseNRemainderDecoder extends BaseNDecoder {
 
-	private final BigInteger n; // the radix
+	private final int n; // the radix
 
-	private static final int BYTE_LENGTH = 16;
+	private static final long HALF_LONG_MASK = 0x00000000ffffffffL;
 
 	public BaseNRemainderDecoder(BaseN base) {
 		super(base);
-		n = BigInteger.valueOf(base.getRadix());
+		n = base.getRadix();
 	}
 
 	@Override
 	public UUID apply(String string) {
 
-		char[] chars = toCharArray(string);
-		BigInteger number = BigInteger.ZERO;
+		final char[] chars = toCharArray(string);
+
+		// unsigned 128 bit number
+		int[] number = new int[4];
 
 		for (int c : chars) {
-			final long value = map.get(c);
-			number = n.multiply(number).add(BigInteger.valueOf(value));
+			final int[] product = new int[4];
+			final long remainder = map.get(c);
+			final int overflow = multiply(number, n, remainder, product);
+			if (overflow > 0) {
+				throw new UuidCodecException("Invalid string (overflow): \"" + (new String(chars)) + "\"");
+			}
+			number = product;
 		}
 
-		// prepare a byte buffer
-		byte[] result = number.toByteArray();
-		byte[] buffer = new byte[BYTE_LENGTH];
-		int r = result.length; // result index
-		int b = buffer.length; // buffer index
+		final long msb = ((number[0] & HALF_LONG_MASK) << 32) | (number[1] & HALF_LONG_MASK);
+		final long lsb = ((number[2] & HALF_LONG_MASK) << 32) | (number[3] & HALF_LONG_MASK);
 
-		// fill in the byte buffer
-		while (--b >= 0 && --r >= 0) {
-			buffer[b] = result[r];
+		return new UUID(msb, lsb);
+	}
+
+	private int multiply(int[] number, int multiplier, long remainder, int[] product) {
+
+		long temporary = 0;
+		long overflow = remainder;
+
+		temporary = ((number[3] & HALF_LONG_MASK) * multiplier) + overflow;
+		if (temporary > 0) { // optimization condition
+			product[3] = (int) temporary;
+			overflow = (temporary >>> 32);
 		}
 
-		return BinaryCodec.INSTANCE.decode(buffer);
+		temporary = ((number[2] & HALF_LONG_MASK) * multiplier) + overflow;
+		if (temporary > 0) {
+			product[2] = (int) temporary;
+			overflow = (temporary >>> 32);
+		}
+
+		temporary = ((number[1] & HALF_LONG_MASK) * multiplier) + overflow;
+		if (temporary > 0) {
+			product[1] = (int) temporary;
+			overflow = (temporary >>> 32);
+		}
+
+		temporary = ((number[0] & HALF_LONG_MASK) * multiplier) + overflow;
+		if (temporary > 0) {
+			product[0] = (int) temporary;
+			overflow = (temporary >>> 32);
+		}
+
+		return (int) overflow;
 	}
 }

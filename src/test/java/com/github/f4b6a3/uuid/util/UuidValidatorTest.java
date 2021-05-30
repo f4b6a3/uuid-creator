@@ -27,7 +27,7 @@ public class UuidValidatorTest {
 
 		uuid = new byte[17];
 		assertFalse("UUID byte array with length greater than 16 should be invalid .", UuidValidator.isValid(uuid));
-		
+
 		try {
 			uuid = null;
 			UuidValidator.validate(uuid);
@@ -49,11 +49,15 @@ public class UuidValidatorTest {
 		uuid = "01234567-89ab-4def-abcd-ef0123456789"; // String length = 36
 		assertTrue("UUID with length equals to 36 should be valid.", UuidValidator.isValid(uuid));
 
-		uuid = "01234567-89ab-4def-abcd-ef01-3456789"; // String length = 36, but an extra hyphen
+		uuid = "01234567-89ab-4def-abcdef01-23456789"; // String length = 36 with hyphen in wrong position
+		assertFalse("UUID with length equals to 36 with hyphen in wrong position should be invalid.",
+				UuidValidator.isValid(uuid));
+
+		uuid = "01234567-89ab-4def-abcd-ef01-3456789"; // String length = 36 with an extra hyphen
 		assertFalse("UUID with length equals to 36 with an extra hyphen should be invalid.",
 				UuidValidator.isValid(uuid));
 
-		uuid = "01234567-89ab-4def-abcddef0123456789"; // String length = 36, but a missing hyphen
+		uuid = "01234567-89ab-4def-abcddef0123456789"; // String length = 36 with a missing hyphen
 		assertFalse("UUID with length equals to 36 with a missing hyphen should be invalid.",
 				UuidValidator.isValid(uuid));
 
@@ -98,7 +102,7 @@ public class UuidValidatorTest {
 			// Success
 		}
 	}
-	
+
 	@Test
 	public void testIsValidStringWithVersion() {
 
@@ -112,11 +116,15 @@ public class UuidValidatorTest {
 		uuid = "01234567-89ab-4def-abcd-ef0123456789"; // String length = 36
 		assertTrue("UUID with length equals to 36 should be valid.", UuidValidator.isValid(uuid, version));
 
-		uuid = "01234567-89ab-4def-abcd-ef01-3456789"; // String length = 36, but an extra hyphen
+		uuid = "01234567-89ab-4def-abcdef01-23456789"; // String length = 36 with hyphen in wrong position
+		assertFalse("UUID with length equals to 36 with hyphen in wrong position should be invalid.",
+				UuidValidator.isValid(uuid, version));
+
+		uuid = "01234567-89ab-4def-abcd-ef01-3456789"; // String length = 36 with an extra hyphen
 		assertFalse("UUID with length equals to 36 with an extra hyphen should be invalid.",
 				UuidValidator.isValid(uuid, version));
 
-		uuid = "01234567-89ab-4def-abcddef0123456789"; // String length = 36, but a missing hyphen
+		uuid = "01234567-89ab-4def-abcddef0123456789"; // String length = 36 with a missing hyphen
 		assertFalse("UUID with length equals to 36 with a missing hyphen should be invalid.",
 				UuidValidator.isValid(uuid, version));
 
@@ -145,7 +153,8 @@ public class UuidValidatorTest {
 		assertTrue("UUID in lower case without hyphen should be valid.", UuidValidator.isValid(uuid, version));
 
 		uuid = "0123456789ab4DEFabcdEF0123456789"; // mixed case, without hyphen
-		assertTrue("UUID in upper and lower case without hyphen should be valid.", UuidValidator.isValid(uuid, version));
+		assertTrue("UUID in upper and lower case without hyphen should be valid.",
+				UuidValidator.isValid(uuid, version));
 
 		uuid = "01234567-89ab-4def-abcd-SOPQRSTUVXYZ"; // String with non hexadecimal chars
 		assertFalse("UUID string with non hexadecimal chars should be invalid.", UuidValidator.isValid(uuid, version));

@@ -28,6 +28,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import com.github.f4b6a3.uuid.codec.base.BaseN;
+import com.github.f4b6a3.uuid.exception.UuidCodecException;
 import com.github.f4b6a3.uuid.util.internal.immutable.LongArray;
 
 /**
@@ -39,7 +40,7 @@ import com.github.f4b6a3.uuid.util.internal.immutable.LongArray;
  */
 public abstract class BaseNDecoder implements Function<String, UUID> {
 
-	protected BaseN base;
+	protected final BaseN base;
 	protected final LongArray map;
 
 	/**
@@ -51,8 +52,13 @@ public abstract class BaseNDecoder implements Function<String, UUID> {
 	}
 
 	protected char[] toCharArray(String string) {
-		char[] chars = string == null ? null : string.toCharArray();
-		this.base.validate(chars);
+		if (string == null) {
+			throw new UuidCodecException("Invalid string: null");
+		}
+		char[] chars = string.toCharArray();
+		if (!base.isValid(chars)) {
+			throw new UuidCodecException("Invalid string: \"" + string + "\"");
+		}
 		return chars;
 	}
 }

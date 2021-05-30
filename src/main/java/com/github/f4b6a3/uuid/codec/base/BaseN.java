@@ -50,8 +50,8 @@ public final class BaseN {
 	private boolean sensitive;
 	private char padding;
 
+	// alphabet chars
 	private final CharArray alphabet;
-	private final CharArray validchars;
 
 	// ASCII map
 	// each char is mapped to a value
@@ -152,9 +152,6 @@ public final class BaseN {
 		// set the padding field
 		this.padding = charset.charAt(0);
 
-		// set the valid CharArray
-		this.validchars = validchars(charset, sensitive);
-
 		// set the map LongArray
 		this.map = map(charset, sensitive);
 	}
@@ -183,49 +180,26 @@ public final class BaseN {
 		return this.map;
 	}
 
-	public void validate(char[] chars) {
+	public boolean isValid(String string) {
+		return string != null && isValid(string.toCharArray());
+	}
+
+	public boolean isValid(char[] chars) {
 		if (chars == null || chars.length != this.length) {
-			throw new UuidCodecException("Invalid string: \"" + (chars == null ? null : new String(chars)) + "\"");
+			return false;
 		}
 		for (int i = 0; i < chars.length; i++) {
-			boolean found = false;
-			for (int j = 0; j < validchars.length(); j++) {
-				// check if the char is in one of the lower and upper alphabets
-				if (chars[i] == validchars.get(j)) {
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				throw new UuidCodecException("Invalid string: \"" + (new String(chars)) + "\"");
+			if (this.map.get(chars[i]) == -1) {
+				return false;
 			}
 		}
+		return true;
 	}
 
 	private static boolean sensitive(String charset) {
 		String lowercase = charset.toLowerCase();
 		String uppercase = charset.toUpperCase();
 		return !(charset.equals(lowercase) || charset.equals(uppercase));
-	}
-
-	private static CharArray validchars(String alphabet, boolean sensitive) {
-		if (sensitive) {
-			return CharArray.from(alphabet.toCharArray());
-		}
-		String lowercase = alphabet.toLowerCase();
-		String uppercase = alphabet.toUpperCase();
-		StringBuilder merged = new StringBuilder();
-		for (int i = 0; i < alphabet.length(); i++) {
-			char l = lowercase.charAt(i);
-			char u = uppercase.charAt(i);
-			if (l == u) {
-				merged.append(l);
-			} else {
-				merged.append(l);
-				merged.append(u);
-			}
-		}
-		return CharArray.from(merged.toString().toCharArray());
 	}
 
 	private static String alphabet(int radix) {

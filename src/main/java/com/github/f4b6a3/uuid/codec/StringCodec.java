@@ -49,12 +49,12 @@ import com.github.f4b6a3.uuid.util.internal.immutable.LongArray;
  * 
  * - urn:uuid:00000000-0000-V000-0000-000000000000 (URN UUID string)
  * 
- * The encoding and decoding processes may be much faster (5 to 7x) than
+ * The encoding and decoding processes can be much faster (7x) than
  * {@link UUID#toString()} and {@link UUID#fromString(String)} in JDK 8.
  * 
  * If you prefer a string representation without hyphens, use the
- * {@link Base16Codec} instead of {@link StringCodec}. This other codec may be
- * much faster (10x) than doing
+ * {@link Base16Codec} instead of {@link StringCodec}. That other codec can be
+ * much faster (22x) than doing
  * <code>uuid.toString().replaceAll("-", "")`</code>.
  *
  * Read: https://tools.ietf.org/html/rfc4122
@@ -77,7 +77,7 @@ public class StringCodec implements UuidCodec<String> {
 	/**
 	 * Get a string from a UUID.
 	 * 
-	 * It may be much faster than {@link UUID#toString()} in JDK 8.
+	 * It can be much faster than {@link UUID#toString()} in JDK 8.
 	 * 
 	 * In JDK9+ it uses {@link UUID#toString()}.
 	 * 
@@ -148,7 +148,7 @@ public class StringCodec implements UuidCodec<String> {
 	 * 
 	 * - With or without hyphens.
 	 * 
-	 * It may be much faster than {@link UUID#fromString(String)} in JDK 8.
+	 * It can be much faster than {@link UUID#fromString(String)} in JDK 8.
 	 * 
 	 * In JDK9+ it may be slightly faster.
 	 * 

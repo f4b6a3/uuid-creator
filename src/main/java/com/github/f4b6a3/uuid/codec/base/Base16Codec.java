@@ -33,7 +33,7 @@ import com.github.f4b6a3.uuid.codec.base.function.Base16Encoder;
  * It is case insensitive, so it decodes in lower and upper case, but encodes in
  * lower case only.
  * 
- * This other codec may be much faster (10x) than doing
+ * This other codec may be much faster (22x) than doing
  * <code>uuid.toString().replaceAll("-", "")`</code>.
  * 
  * See: https://tools.ietf.org/html/rfc4648
