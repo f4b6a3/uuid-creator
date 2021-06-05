@@ -7,6 +7,8 @@ import com.github.f4b6a3.uuid.codec.base.BaseNCodec1Test;
 import com.github.f4b6a3.uuid.codec.base.BaseNCodec2SamplesTest;
 import com.github.f4b6a3.uuid.codec.base.BaseNCodec3SamplesTest;
 import com.github.f4b6a3.uuid.codec.base.BaseNTest;
+import com.github.f4b6a3.uuid.codec.base.function.BaseNRemainderDecoderTest;
+import com.github.f4b6a3.uuid.codec.base.function.BaseNRemainderEncoderTest;
 import com.github.f4b6a3.uuid.codec.name.NcnameCodecTest;
 import com.github.f4b6a3.uuid.codec.slug.SlugCodecTest;
 import com.github.f4b6a3.uuid.codec.uri.UriCodecTest;
@@ -58,6 +60,8 @@ import com.github.f4b6a3.uuid.util.UuidValidatorTest;
 	BaseNCodec1Test.class,
 	BaseNCodec2SamplesTest.class,
 	BaseNCodec3SamplesTest.class,
+	BaseNRemainderDecoderTest.class,
+	BaseNRemainderEncoderTest.class,
 	BinaryCodecTest.class,
 	SettingsUtilTest.class,
 	NcnameCodecTest.class,

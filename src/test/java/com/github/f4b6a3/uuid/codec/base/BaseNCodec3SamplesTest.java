@@ -3,6 +3,8 @@ package com.github.f4b6a3.uuid.codec.base;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import com.github.f4b6a3.uuid.exception.UuidCodecException;
+
 import java.util.UUID;
 
 /**
@@ -29,6 +31,18 @@ public class BaseNCodec3SamplesTest {
 			UUID expected = UUID.fromString(SAMPLES_BASE_36[i][0]);
 			UUID actual = Base36Codec.INSTANCE.decode(string);
 			assertEquals(expected.toString(), actual.toString());
+		}
+
+		// overflow exception
+		int radix = Base36Codec.INSTANCE.base.getRadix();
+		char max = Base36Codec.INSTANCE.base.getAlphabet().array()[radix - 1];
+		UUID uuid = new UUID(0xffffffffffffffffL, 0xffffffffffffffffL);
+		String string = max + Base36Codec.INSTANCE.encode(uuid).substring(1);
+		try {
+			Base36Codec.INSTANCE.decode(string);
+			fail("Should throw overflow exception");
+		} catch (UuidCodecException e) {
+			// success!
 		}
 	}
 
@@ -64,6 +78,18 @@ public class BaseNCodec3SamplesTest {
 			UUID actual = Base58BitcoinCodec.INSTANCE.decode(string);
 			assertEquals(expected.toString(), actual.toString());
 		}
+
+		// overflow exception
+		int radix = Base58BitcoinCodec.INSTANCE.base.getRadix();
+		char max = Base58BitcoinCodec.INSTANCE.base.getAlphabet().array()[radix - 1];
+		UUID uuid = new UUID(0xffffffffffffffffL, 0xffffffffffffffffL);
+		String string = max + Base58BitcoinCodec.INSTANCE.encode(uuid).substring(1);
+		try {
+			Base58BitcoinCodec.INSTANCE.decode(string);
+			fail("Should throw overflow exception");
+		} catch (UuidCodecException e) {
+			// success!
+		}
 	}
 
 	@Test
@@ -83,6 +109,18 @@ public class BaseNCodec3SamplesTest {
 			UUID expected = UUID.fromString(SAMPLES_BASE_62[i][0]);
 			UUID actual = Base62Codec.INSTANCE.decode(string);
 			assertEquals(expected.toString(), actual.toString());
+		}
+
+		// overflow exception
+		int radix = Base62Codec.INSTANCE.base.getRadix();
+		char max = Base62Codec.INSTANCE.base.getAlphabet().array()[radix - 1];
+		UUID uuid = new UUID(0xffffffffffffffffL, 0xffffffffffffffffL);
+		String string = max + Base62Codec.INSTANCE.encode(uuid).substring(1);
+		try {
+			Base62Codec.INSTANCE.decode(string);
+			fail("Should throw overflow exception");
+		} catch (UuidCodecException e) {
+			// success!
 		}
 	}
 

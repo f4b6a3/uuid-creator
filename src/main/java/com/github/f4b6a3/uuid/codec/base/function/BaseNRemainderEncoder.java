@@ -37,74 +37,57 @@ import com.github.f4b6a3.uuid.codec.base.BaseN;
  */
 public final class BaseNRemainderEncoder extends BaseNEncoder {
 
-	private final int n; // the radix
+	private final int radix;
+	private final int length;
+	private final char padding;
 
+	private static final int UUID_INTS = 4;
 	private static final long HALF_LONG_MASK = 0x00000000ffffffffL;
 
 	public BaseNRemainderEncoder(BaseN base) {
 		super(base);
-		n = base.getRadix();
+		radix = base.getRadix();
+		length = base.getLength();
+		padding = base.getPadding();
 	}
 
 	@Override
 	public String apply(UUID uuid) {
 
 		// unsigned 128 bit number
-		int[] number = new int[4];
+		int[] number = new int[UUID_INTS];
 		number[0] = (int) (uuid.getMostSignificantBits() >>> 32);
 		number[1] = (int) (uuid.getMostSignificantBits() & HALF_LONG_MASK);
 		number[2] = (int) (uuid.getLeastSignificantBits() >>> 32);
 		number[3] = (int) (uuid.getLeastSignificantBits() & HALF_LONG_MASK);
 
-		char[] buffer = new char[base.getLength()];
-		int b = buffer.length; // buffer index
+		char[] buffer = new char[length];
+		int b = length; // buffer index
 
 		// fill in the buffer backwards using remainder operation
 		while (!isZero(number)) {
-			final int[] quotient = new int[4];
-			final int remainder = remainder(number, n, quotient);
+			final int[] quotient = new int[UUID_INTS]; // division output
+			final int remainder = remainder(number, radix, quotient);
 			buffer[--b] = alphabet.get(remainder);
 			number = quotient;
 		}
 
 		// add padding to the leading
-		if (b > 0) {
-			// there are x chars to be padded
-			final int padding = b;
-			for (int i = 0; i < padding; i++) {
-				buffer[--b] = base.getPadding();
-			}
+		while (b > 0) {
+			buffer[--b] = padding;
 		}
 
 		return new String(buffer);
 	}
 
-	private int remainder(int[] number, int divisor, int[] quotient) {
+	protected static int remainder(int[] number, int divisor, int[] quotient /* division output */) {
 
 		long temporary = 0;
 		long remainder = 0;
 
-		if (number[0] != 0) { // optimization condition
-			temporary = number[0] & HALF_LONG_MASK;
-			quotient[0] = (int) (temporary / divisor);
-			remainder = temporary % divisor;
-		}
-
-		if (number[1] != 0 || remainder != 0) {
-			temporary = (remainder << 32) | (number[1] & HALF_LONG_MASK);
-			quotient[1] = (int) (temporary / divisor);
-			remainder = temporary % divisor;
-		}
-
-		if (number[2] != 0 || remainder != 0) {
-			temporary = (remainder << 32) | (number[2] & HALF_LONG_MASK);
-			quotient[2] = (int) (temporary / divisor);
-			remainder = temporary % divisor;
-		}
-
-		if (number[3] != 0 || remainder != 0) {
-			temporary = (remainder << 32) | (number[3] & HALF_LONG_MASK);
-			quotient[3] = (int) (temporary / divisor);
+		for (int i = 0; i < UUID_INTS; i++) {
+			temporary = (remainder << 32) | (number[i] & HALF_LONG_MASK);
+			quotient[i] = (int) (temporary / divisor);
 			remainder = temporary % divisor;
 		}
 

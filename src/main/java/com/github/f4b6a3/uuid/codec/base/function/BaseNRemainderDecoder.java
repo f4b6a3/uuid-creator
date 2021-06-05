@@ -39,13 +39,14 @@ import com.github.f4b6a3.uuid.exception.UuidCodecException;
  */
 public final class BaseNRemainderDecoder extends BaseNDecoder {
 
-	private final int n; // the radix
+	private final int radix;
 
+	private static final int UUID_INTS = 4;
 	private static final long HALF_LONG_MASK = 0x00000000ffffffffL;
 
 	public BaseNRemainderDecoder(BaseN base) {
 		super(base);
-		n = base.getRadix();
+		radix = base.getRadix();
 	}
 
 	@Override
@@ -54,15 +55,11 @@ public final class BaseNRemainderDecoder extends BaseNDecoder {
 		final char[] chars = toCharArray(string);
 
 		// unsigned 128 bit number
-		int[] number = new int[4];
+		int[] number = new int[UUID_INTS];
 
-		for (int c : chars) {
-			final int[] product = new int[4];
-			final long remainder = map.get(c);
-			final int overflow = multiply(number, n, remainder, product);
-			if (overflow > 0) {
-				throw new UuidCodecException("Invalid string (overflow): \"" + (new String(chars)) + "\"");
-			}
+		for (int i = 0; i < chars.length; i++) {
+			final int remainder = (int) map.get(chars[i]);
+			final int[] product = multiply(number, radix, remainder, true);
 			number = product;
 		}
 
@@ -72,35 +69,22 @@ public final class BaseNRemainderDecoder extends BaseNDecoder {
 		return new UUID(msb, lsb);
 	}
 
-	private int multiply(int[] number, int multiplier, long remainder, int[] product) {
+	protected static int[] multiply(int[] number, int multiplier, int addend, boolean validate) {
 
 		long temporary = 0;
-		long overflow = remainder;
+		long overflow = addend;
+		final int[] product = new int[UUID_INTS];
 
-		temporary = ((number[3] & HALF_LONG_MASK) * multiplier) + overflow;
-		if (temporary > 0) { // optimization condition
-			product[3] = (int) temporary;
+		for (int i = UUID_INTS - 1; i >= 0; i--) {
+			temporary = ((number[i] & HALF_LONG_MASK) * multiplier) + overflow;
+			product[i] = (int) temporary;
 			overflow = (temporary >>> 32);
 		}
 
-		temporary = ((number[2] & HALF_LONG_MASK) * multiplier) + overflow;
-		if (temporary > 0) {
-			product[2] = (int) temporary;
-			overflow = (temporary >>> 32);
+		if (validate && overflow != 0) {
+			throw new UuidCodecException("Invalid string (overflow)");
 		}
 
-		temporary = ((number[1] & HALF_LONG_MASK) * multiplier) + overflow;
-		if (temporary > 0) {
-			product[1] = (int) temporary;
-			overflow = (temporary >>> 32);
-		}
-
-		temporary = ((number[0] & HALF_LONG_MASK) * multiplier) + overflow;
-		if (temporary > 0) {
-			product[0] = (int) temporary;
-			overflow = (temporary >>> 32);
-		}
-
-		return (int) overflow;
+		return product;
 	}
 }

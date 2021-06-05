@@ -58,7 +58,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>3.7.1</version>
+  <version>3.7.2</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -1408,16 +1408,16 @@ Benchmark                  Mode  Cnt      Score     Error   Units
 Throughput.decode_base16  thrpt    5  16278,459 ± 535,333  ops/ms
 Throughput.decode_base32  thrpt    5  19190,166 ± 163,644  ops/ms
 Throughput.decode_base64  thrpt    5  21783,804 ± 191,067  ops/ms
-Throughput.decode_base36  thrpt    5   4598,355 ±  60,168  ops/ms *
-Throughput.decode_base58  thrpt    5   5125,792 ±  64,979  ops/ms *
-Throughput.decode_base62  thrpt    5   5157,235 ±  40,137  ops/ms *
+Throughput.decode_base36  thrpt    5   5549,047 ±  63,524  ops/ms *
+Throughput.decode_base58  thrpt    5   6387,853 ± 127,972  ops/ms *
+Throughput.decode_base62  thrpt    5   6333,792 ± 164,613  ops/ms *
 ------------------------------------------------------------------
 Throughput.encode_base16  thrpt    5  26206,302 ± 305,194  ops/ms
 Throughput.encode_base32  thrpt    5  28777,567 ± 344,404  ops/ms
 Throughput.encode_base64  thrpt    5  31791,024 ± 579,749  ops/ms
-Throughput.encode_base36  thrpt    5   1077,678 ±   9,852  ops/ms *
-Throughput.encode_base58  thrpt    5   1201,396 ±  25,900  ops/ms *
-Throughput.encode_base62  thrpt    5   1218,330 ±  14,767  ops/ms *
+Throughput.encode_base36  thrpt    5    736,239 ±  12,396  ops/ms *
+Throughput.encode_base58  thrpt    5    835,961 ±  25,055  ops/ms *
+Throughput.encode_base62  thrpt    5    836,418 ±  24,241  ops/ms *
 ------------------------------------------------------------------
 
 (*) The codecs for base-36, base-58, and base-62 don't perform as
