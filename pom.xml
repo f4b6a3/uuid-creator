@@ -3,7 +3,7 @@
 
 	<groupId>com.github.f4b6a3</groupId>
 	<artifactId>uuid-creator</artifactId>
-	<version>3.7.3-SNAPSHOT</version>
+	<version>3.7.3</version>
 	<packaging>jar</packaging>
 
 	<name>uuid-creator</name>
@@ -44,7 +44,7 @@
 		<url>https://github.com/f4b6a3/uuid-creator</url>
 		<connection>scm:git:ssh://git@github.com/f4b6a3/uuid-creator.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/f4b6a3/uuid-creator.git</developerConnection>
-		<tag>HEAD</tag>
+		<tag>uuid-creator-3.7.3</tag>
 	</scm>
 
 	<distributionManagement>
