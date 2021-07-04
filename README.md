@@ -47,6 +47,8 @@ UUID uuid = UuidCreator.getTimeOrdered();
 
 All UUID types can be generated from the [facade](https://en.wikipedia.org/wiki/Facade_pattern) `UuidCreator`. If you have a special requirement that is not covered by the facade, you can read the rest of this document or check the source code.
 
+The [module name](https://blog.joda.org/2017/04/java-se-9-jpms-module-naming.html) for JDK9+ is the package name: `com.github.f4b6a3.uuid`.
+
 The generators are [thread-safe](https://en.wikipedia.org/wiki/Thread_safety).
 
 ### Maven dependency
@@ -58,7 +60,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>3.7.2</version>
+  <version>3.7.3</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
