@@ -1465,36 +1465,42 @@ UUID guid = codec.encode(randomUuid);
 Benchmark
 ------------------------------------------------------
 
-This section shows benchmarks using JMH v1.23.
+This section shows benchmarks comparing `UuidCreator` to `java.util.UUID`.
 
-```text
-================================================================================
-THROUGHPUT (operations/msec)             Mode  Cnt      Score     Error   Units
-================================================================================
-Throughput.JDK_toString                 thrpt    5   2875,357 ±  39,875  ops/ms
-Throughput.JDK_fromString               thrpt    5   2060,916 ±  41,060  ops/ms
-Throughput.JDK_RandomBased              thrpt    5   2050,995 ±  21,636  ops/ms
-Throughput.JDK_NameBasedMd5             thrpt    5   2809,598 ±  73,894  ops/ms
+```
 --------------------------------------------------------------------------------
-Throughput.UuidCreator_toString   (7x)  thrpt    5  21048,977 ± 267,136  ops/ms *
-Throughput.UuidCreator_fromString (7x)  thrpt    5  15259,545 ± 265,470  ops/ms *
-Throughput.UuidCreator_RandomBased      thrpt    5   2017,299 ±  23,892  ops/ms
-Throughput.UuidCreator_PrefixComb       thrpt    5   2665,831 ±  49,381  ops/ms
-Throughput.UuidCreator_ShortPrefixComb  thrpt    5   2082,030 ±  19,635  ops/ms
-Throughput.UuidCreator_NameBasedMd5     thrpt    5   2847,436 ±  56,548  ops/ms
-Throughput.UuidCreator_NameBasedSha1    thrpt    5   2155,267 ±  48,075  ops/ms
-Throughput.UuidCreator_TimeBased        thrpt    5   9748,507 ±  77,969  ops/ms
-Throughput.UuidCreator_TimeOrdered      thrpt    5   9784,130 ±  74,655  ops/ms
-================================================================================
-Total time: 00:17:20
-================================================================================
+THROUGHPUT (operations/msec)          Mode  Cnt      Score     Error   Units
+--------------------------------------------------------------------------------
+UUID_toString                        thrpt    5   2922,273 ±  71,279  ops/ms
+UUID_fromString                      thrpt    5   2083,705 ±  39,578  ops/ms
+UUID_RandomBased                     thrpt    5   2053,765 ±  31,964  ops/ms
+UUID_NameBasedMd5                    thrpt    5   2953,064 ±  65,484  ops/ms
+--------------------------------------------------------------------------------
+UuidCreator_toString          (7x)   thrpt    5  21533,728 ± 175,913  ops/ms *
+UuidCreator_fromString        (7x)   thrpt    5  15610,646 ± 196,864  ops/ms *
+UuidCreator_RandomBased              thrpt    5   2019,678 ±  26,092  ops/ms
+UuidCreator_PrefixComb               thrpt    5   2704,653 ±  53,146  ops/ms
+UuidCreator_ShortPrefixComb          thrpt    5   2091,576 ±  51,236  ops/ms
+UuidCreator_NameBasedMd5             thrpt    5   2878,344 ±  39,492  ops/ms
+UuidCreator_NameBasedSha1            thrpt    5   2199,752 ±  49,427  ops/ms
+UuidCreator_TimeBased                thrpt    5   9740,581 ±  63,521  ops/ms
+UuidCreator_TimeOrdered              thrpt    5   9737,235 ±  99,547  ops/ms
+--------------------------------------------------------------------------------
+Total time: 00:17:23
+--------------------------------------------------------------------------------
 ```
 
 (*) The methods `UuidCreator.toString()` and `UuidCreator.fromString()` are much faster only in JDK 8.
 
-Benchmarks executed in a PC with JDK 8, Ubuntu 20.04, CPU Intel i5-3330 and 8GB RAM.
+System: JVM 8, Ubuntu 20.04, CPU i5-3330, 8G RAM.
 
-You can find the benchmark source code at [uuid-creator-benchmark](https://github.com/fabiolimace/uuid-creator-benchmark).
+To execute the benchmark, run `./benchmark/run.sh`.
+
+Other identifier generators
+-------------------------------------------
+* [ULID Creator](https://github.com/f4b6a3/ulid-creator)
+* [TSID Creator](https://github.com/f4b6a3/tsid-creator)
+* [KSUID Creator](https://github.com/f4b6a3/ksuid-creator)
 
 Related projects
 ------------------------------------------------------
