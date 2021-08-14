@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2020 Fabio Lima
+ * Copyright (c) 2018-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.UUID;
 
-import static com.github.f4b6a3.uuid.util.UuidUtil.applyVersion;
+import static com.github.f4b6a3.uuid.util.UuidUtil.setVersion;
 import static com.github.f4b6a3.uuid.util.internal.ByteUtil.toHexadecimal;
 import static com.github.f4b6a3.uuid.util.internal.ByteUtil.toNumber;
 
@@ -94,7 +95,7 @@ public final class MachineId {
 			final long msb = toNumber(bytes, 0, 8);
 			final long lsb = toNumber(bytes, 8, 16);
 			uuid = new UUID(msb, lsb);
-			applyVersion(uuid, 4);
+			uuid = setVersion(uuid, 4);
 		}
 		return uuid;
 	}
@@ -117,12 +118,14 @@ public final class MachineId {
 	/**
 	 * Returns the machine hash in a byte array.
 	 * 
+	 * The returning array has 32 bytes (256 bits).
+	 * 
 	 * @return a byte array
 	 */
 	public static byte[] getMachineHash() {
 		if (hash == null) {
 			final String string = getMachineString();
-			hash = getMessageDigest().digest(string.getBytes());
+			hash = getMessageDigest().digest(string.getBytes(StandardCharsets.UTF_8));
 		}
 		return hash;
 	}
@@ -197,7 +200,7 @@ public final class MachineId {
 		}
 		return String.join("-", hex);
 	}
-	
+
 	private static MessageDigest getMessageDigest() {
 		try {
 			return MessageDigest.getInstance("SHA-256");

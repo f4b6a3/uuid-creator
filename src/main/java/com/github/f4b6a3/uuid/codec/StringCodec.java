@@ -30,8 +30,8 @@ import com.github.f4b6a3.uuid.codec.base.Base16Codec;
 import com.github.f4b6a3.uuid.codec.base.BaseN;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.UuidValidator;
-import com.github.f4b6a3.uuid.util.internal.immutable.CharArray;
-import com.github.f4b6a3.uuid.util.internal.immutable.LongArray;
+import com.github.f4b6a3.uuid.util.immutable.CharArray;
+import com.github.f4b6a3.uuid.util.immutable.LongArray;
 
 /**
  * Codec for UUID string representation as defined in the RFC-4122.
@@ -271,12 +271,20 @@ public class StringCodec implements UuidCodec<String> {
 	 */
 	protected static int getJavaVersion() {
 		try {
-			String[] version = System.getProperty("java.version").split("\\.");
-			if (version[0].equals("1")) {
-				return Integer.parseInt(version[1]);
+
+			String property = System.getProperty("java.version");
+
+			if (property != null) {
+				String[] version = property.split("\\.");
+				if (version[0].equals("1")) {
+					return Integer.parseInt(version[1]);
+				} else {
+					return Integer.parseInt(version[0]);
+				}
 			} else {
-				return Integer.parseInt(version[0]);
+				return 8;
 			}
+
 		} catch (NullPointerException | NumberFormatException | IndexOutOfBoundsException e) {
 			return 8;
 		}

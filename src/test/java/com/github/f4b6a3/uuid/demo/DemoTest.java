@@ -36,7 +36,7 @@ public class DemoTest {
 		}
 
 		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### Time-ordered UUID With Mac");
+		System.out.println("### Time-ordered UUID with Mac");
 
 		for (int i = 0; i < max; i++) {
 			System.out.println(UuidCreator.getTimeOrderedWithMac());
@@ -50,10 +50,24 @@ public class DemoTest {
 		}
 
 		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### Time-ordered UUID With Hash");
+		System.out.println("### Time-ordered UUID with Hash");
 
 		for (int i = 0; i < max; i++) {
 			System.out.println(UuidCreator.getTimeOrderedWithHash());
+		}
+		
+		System.out.println(HORIZONTAL_LINE);
+		System.out.println("### Time-based UUID with Random");
+
+		for (int i = 0; i < max; i++) {
+			System.out.println(UuidCreator.getTimeBasedWithRandom());
+		}
+
+		System.out.println(HORIZONTAL_LINE);
+		System.out.println("### Time-ordered UUID with Random");
+
+		for (int i = 0; i < max; i++) {
+			System.out.println(UuidCreator.getTimeOrderedWithRandom());
 		}
 
 		System.out.println(HORIZONTAL_LINE);

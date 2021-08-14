@@ -25,8 +25,8 @@
 package com.github.f4b6a3.uuid.codec.base;
 
 import com.github.f4b6a3.uuid.exception.UuidCodecException;
-import com.github.f4b6a3.uuid.util.internal.immutable.CharArray;
-import com.github.f4b6a3.uuid.util.internal.immutable.LongArray;
+import com.github.f4b6a3.uuid.util.immutable.CharArray;
+import com.github.f4b6a3.uuid.util.immutable.LongArray;
 
 /**
  * Class that represents the base-n encodings.

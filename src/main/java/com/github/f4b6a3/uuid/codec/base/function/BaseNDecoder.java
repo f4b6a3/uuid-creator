@@ -29,7 +29,7 @@ import java.util.function.Function;
 
 import com.github.f4b6a3.uuid.codec.base.BaseN;
 import com.github.f4b6a3.uuid.exception.UuidCodecException;
-import com.github.f4b6a3.uuid.util.internal.immutable.LongArray;
+import com.github.f4b6a3.uuid.util.immutable.LongArray;
 
 /**
  * Abstract function to be extended by all decoder functions of this package.

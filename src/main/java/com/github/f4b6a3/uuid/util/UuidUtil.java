@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2020 Fabio Lima
+ * Copyright (c) 2018-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -74,7 +74,7 @@ public final class UuidUtil {
 	 * @param version a version
 	 * @return a UUID
 	 */
-	public static UUID applyVersion(UUID uuid, int version) {
+	public static UUID setVersion(UUID uuid, int version) {
 		long msb = uuid.getMostSignificantBits();
 		long lsb = uuid.getLeastSignificantBits();
 		msb = (msb & 0xffffffffffff0fffL) | ((version & 0x0000000f) << 12); // apply version
@@ -198,6 +198,42 @@ public final class UuidUtil {
 	}
 
 	/**
+	 * Get the instant from a time-based, time-ordered or DCE Security UUID.
+	 *
+	 * @param uuid a UUID
+	 * @return {@link Instant}
+	 * @throws IllegalArgumentException if the input is not a time-based,
+	 *                                  time-ordered or DCE Security UUID.
+	 */
+	public static Instant getInstant(UUID uuid) {
+		final long gregTimestamp = getTimestamp(uuid);
+		return UuidTime.fromGregTimestamp(gregTimestamp);
+	}
+
+	/**
+	 * Get the timestamp from a time-based, time-ordered or DCE Security UUID.
+	 *
+	 * The value returned by this method is the number of 100-nanos since 1582-10-15
+	 * (Gregorian epoch).
+	 *
+	 * @param uuid a UUID
+	 * @return long the timestamp
+	 * @throws IllegalArgumentException if the input is not a time-based,
+	 *                                  time-ordered or DCE Security UUID.
+	 */
+	public static long getTimestamp(UUID uuid) {
+		if (UuidUtil.isTimeBased(uuid)) {
+			return getTimeBasedTimestamp(uuid.getMostSignificantBits());
+		} else if (UuidUtil.isTimeOrdered(uuid)) {
+			return getTimeOrderedTimestamp(uuid.getMostSignificantBits());
+		} else if (UuidUtil.isDceSecurity(uuid)) {
+			return getTimeBasedTimestamp(uuid.getMostSignificantBits() & 0x00000000ffffffffL);
+		} else {
+			throw new IllegalArgumentException(String.format(MESSAGE_NOT_A_TIME_BASED_UUID, uuid.toString()));
+		}
+	}
+
+	/**
 	 * Get the node identifier from a time-based, time-ordered or DCE Security UUID.
 	 *
 	 * @param uuid a UUID
@@ -205,7 +241,7 @@ public final class UuidUtil {
 	 * @throws IllegalArgumentException if the input is not a time-based,
 	 *                                  time-ordered or DCE Security UUID.
 	 */
-	public static long extractNodeIdentifier(UUID uuid) {
+	public static long getNodeIdentifier(UUID uuid) {
 
 		if (!(UuidUtil.isTimeBased(uuid) || UuidUtil.isTimeOrdered(uuid) || UuidUtil.isDceSecurity(uuid))) {
 			throw new IllegalArgumentException(String.format(MESSAGE_NOT_A_TIME_BASED_UUID, uuid.toString()));
@@ -222,7 +258,7 @@ public final class UuidUtil {
 	 * @throws IllegalArgumentException if the input is not a time-based,
 	 *                                  time-ordered or DCE Security UUID.
 	 */
-	public static int extractClockSequence(UUID uuid) {
+	public static int getClockSequence(UUID uuid) {
 
 		if (!(UuidUtil.isTimeBased(uuid) || UuidUtil.isTimeOrdered(uuid)) || UuidUtil.isDceSecurity(uuid)) {
 			throw new IllegalArgumentException(String.format(MESSAGE_NOT_A_TIME_BASED_UUID, uuid.toString()));
@@ -236,66 +272,13 @@ public final class UuidUtil {
 	}
 
 	/**
-	 * Get the instant from a time-based, time-ordered or DCE Security UUID.
-	 *
-	 * @param uuid a UUID
-	 * @return {@link Instant}
-	 * @throws IllegalArgumentException if the input is not a time-based,
-	 *                                  time-ordered or DCE Security UUID.
-	 */
-	public static Instant extractInstant(UUID uuid) {
-		long timestamp = extractTimestamp(uuid);
-		return UuidTime.toInstant(timestamp);
-	}
-
-	/**
-	 * Get the Unix epoch milliseconds from a time-based, time-ordered or DCE
-	 * Security UUID.
-	 *
-	 * The value returned by this method is the number of milliseconds since
-	 * 1970-01-01 (Unix epoch).
-	 * 
-	 * @param uuid a UUID
-	 * @return Unix milliseconds
-	 * @throws IllegalArgumentException if the input is not a time-based,
-	 *                                  time-ordered or DCE Security UUID.
-	 */
-	public static long extractUnixMilliseconds(UUID uuid) {
-		long timestamp = extractTimestamp(uuid);
-		return UuidTime.toUnixMilliseconds(timestamp);
-	}
-
-	/**
-	 * Get the timestamp from a time-based, time-ordered or DCE Security UUID.
-	 *
-	 * The value returned by this method is the number of 100-nanos since 1582-10-15
-	 * (Gregorian epoch).
-	 *
-	 * @param uuid a UUID
-	 * @return long the timestamp
-	 * @throws IllegalArgumentException if the input is not a time-based,
-	 *                                  time-ordered or DCE Security UUID.
-	 */
-	public static long extractTimestamp(UUID uuid) {
-		if (UuidUtil.isTimeBased(uuid)) {
-			return extractTimeBasedTimestamp(uuid.getMostSignificantBits());
-		} else if (UuidUtil.isTimeOrdered(uuid)) {
-			return extractTimeOrderedTimestamp(uuid.getMostSignificantBits());
-		} else if (UuidUtil.isDceSecurity(uuid)) {
-			return extractDceSecurityTimestamp(uuid.getMostSignificantBits());
-		} else {
-			throw new IllegalArgumentException(String.format(MESSAGE_NOT_A_TIME_BASED_UUID, uuid.toString()));
-		}
-	}
-
-	/**
 	 * Get the local domain number from a DCE Security UUID.
 	 *
 	 * @param uuid a UUID
 	 * @return the local domain
 	 * @throws IllegalArgumentException if the input is not a DCE Security UUID.
 	 */
-	public static byte extractLocalDomain(UUID uuid) {
+	public static byte getLocalDomain(UUID uuid) {
 
 		if (!UuidUtil.isDceSecurity(uuid)) {
 			throw new IllegalArgumentException(String.format(MESSAGE_NOT_A_DCE_SECURITY_UUID, uuid.toString()));
@@ -311,7 +294,7 @@ public final class UuidUtil {
 	 * @return the local identifier
 	 * @throws IllegalArgumentException if the input is not a DCE Security UUID.
 	 */
-	public static int extractLocalIdentifier(UUID uuid) {
+	public static int getLocalIdentifier(UUID uuid) {
 
 		if (!UuidUtil.isDceSecurity(uuid)) {
 			throw new IllegalArgumentException(String.format(MESSAGE_NOT_A_DCE_SECURITY_UUID, uuid.toString()));
@@ -334,13 +317,7 @@ public final class UuidUtil {
 		return isRfc4122(uuid) && (uuid.version() == version.getValue());
 	}
 
-	/**
-	 * Get the timestamp from a standard time-based MSB.
-	 *
-	 * @param msb a long value that has the "Most Significant Bits" of the UUID.
-	 * @return the timestamp
-	 */
-	private static long extractTimeBasedTimestamp(long msb) {
+	private static long getTimeBasedTimestamp(long msb) {
 
 		long hii = (msb & 0xffffffff00000000L) >>> 32;
 		long mid = (msb & 0x00000000ffff0000L) << 16;
@@ -349,27 +326,11 @@ public final class UuidUtil {
 		return (hii | mid | low);
 	}
 
-	/**
-	 * Get the timestamp from a time-ordered MSB.
-	 *
-	 * @param msb a long value that has the "Most Significant Bits" of the UUID.
-	 * @return the timestamp
-	 */
-	private static long extractTimeOrderedTimestamp(long msb) {
+	private static long getTimeOrderedTimestamp(long msb) {
 
 		long himid = (msb & 0xffffffffffff0000L) >>> 4;
 		long low = (msb & 0x0000000000000fffL);
 
 		return (himid | low);
-	}
-
-	/**
-	 * Get the timestamp from a standard DCE security MSB.
-	 *
-	 * @param msb a long value that has the "Most Significant Bits" of the UUID.
-	 * @return the timestamp
-	 */
-	private static long extractDceSecurityTimestamp(long msb) {
-		return extractTimeBasedTimestamp((msb & 0x00000000ffffffffL));
 	}
 }

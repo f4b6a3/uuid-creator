@@ -29,20 +29,19 @@ import java.util.UUID;
 
 import com.github.f4b6a3.uuid.codec.BinaryCodec;
 import com.github.f4b6a3.uuid.codec.StringCodec;
-import com.github.f4b6a3.uuid.creator.AbstractTimeBasedUuidCreator;
-import com.github.f4b6a3.uuid.creator.nonstandard.PrefixCombCreator;
-import com.github.f4b6a3.uuid.creator.nonstandard.ShortPrefixCombCreator;
-import com.github.f4b6a3.uuid.creator.nonstandard.ShortSuffixCombCreator;
-import com.github.f4b6a3.uuid.creator.nonstandard.SuffixCombCreator;
-import com.github.f4b6a3.uuid.creator.rfc4122.DceSecurityUuidCreator;
-import com.github.f4b6a3.uuid.creator.rfc4122.NameBasedMd5UuidCreator;
-import com.github.f4b6a3.uuid.creator.rfc4122.NameBasedSha1UuidCreator;
-import com.github.f4b6a3.uuid.creator.rfc4122.RandomBasedUuidCreator;
-import com.github.f4b6a3.uuid.creator.rfc4122.TimeBasedUuidCreator;
-import com.github.f4b6a3.uuid.creator.rfc4122.TimeOrderedUuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidLocalDomain;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
+import com.github.f4b6a3.uuid.factory.nonstandard.PrefixCombFactory;
+import com.github.f4b6a3.uuid.factory.nonstandard.ShortPrefixCombFactory;
+import com.github.f4b6a3.uuid.factory.nonstandard.ShortSuffixCombFactory;
+import com.github.f4b6a3.uuid.factory.nonstandard.SuffixCombFactory;
+import com.github.f4b6a3.uuid.factory.rfc4122.DceSecurityFactory;
+import com.github.f4b6a3.uuid.factory.rfc4122.NameBasedMd5Factory;
+import com.github.f4b6a3.uuid.factory.rfc4122.NameBasedSha1Factory;
+import com.github.f4b6a3.uuid.factory.rfc4122.RandomBasedFactory;
+import com.github.f4b6a3.uuid.factory.rfc4122.TimeBasedFactory;
+import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedFactory;
 
 /**
  * Facade to all the UUID generators.
@@ -149,7 +148,7 @@ public final class UuidCreator {
 	 * @return a version 4 UUID
 	 */
 	public static UUID getRandomBased() {
-		return RandomCreatorHolder.INSTANCE.create();
+		return RandomBasedHolder.INSTANCE.create();
 	}
 
 	/**
@@ -167,7 +166,7 @@ public final class UuidCreator {
 	 * @return a version 1 UUID
 	 */
 	public static UUID getTimeBased() {
-		return TimeBasedCreatorHolder.INSTANCE.create();
+		return TimeBasedHolder.INSTANCE.create();
 	}
 
 	/**
@@ -182,7 +181,7 @@ public final class UuidCreator {
 	 * @return a version 1 UUID
 	 */
 	public static UUID getTimeBasedWithMac() {
-		return TimeBasedWithMacCreatorHolder.INSTANCE.create();
+		return TimeBasedWithMacHolder.INSTANCE.create();
 	}
 
 	/**
@@ -197,7 +196,7 @@ public final class UuidCreator {
 	 * @return a version 1 UUID
 	 */
 	public static UUID getTimeBasedWithHash() {
-		return TimeBasedWithHashCreatorHolder.INSTANCE.create();
+		return TimeBasedWithHashHolder.INSTANCE.create();
 	}
 
 	/**
@@ -212,7 +211,7 @@ public final class UuidCreator {
 	 * @return a version 1 UUID
 	 */
 	public static UUID getTimeBasedWithRandom() {
-		return TimeBasedWithRandomCreatorHolder.INSTANCE.create();
+		return TimeBasedWithRandomHolder.INSTANCE.create();
 	}
 
 	/**
@@ -224,15 +223,13 @@ public final class UuidCreator {
 	 * - Node identifier: random
 	 * </pre>
 	 * 
-	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Integer, Long)}
-	 * 
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
 	 * @param nodeid   an alternate node (0 to 2^48-1)
 	 * @return a version 1 UUID
 	 */
 	public static UUID getTimeBased(Instant instant, Integer clockseq, Long nodeid) {
-		return TimeBasedCreatorHolder.INSTANCE.create(instant, clockseq, nodeid);
+		return TimeBasedHolder.INSTANCE.create(instant, clockseq, nodeid);
 	}
 
 	/**
@@ -244,14 +241,12 @@ public final class UuidCreator {
 	 * - Node identifier: MAC
 	 * </pre>
 	 * 
-	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Integer, Long)}
-	 * 
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
 	 * @return a version 1 UUID
 	 */
 	public static UUID getTimeBasedWithMac(Instant instant, Integer clockseq) {
-		return TimeBasedWithMacCreatorHolder.INSTANCE.create(instant, clockseq, null);
+		return TimeBasedWithMacHolder.INSTANCE.create(instant, clockseq, null);
 	}
 
 	/**
@@ -263,14 +258,12 @@ public final class UuidCreator {
 	 * - Node identifier: system data hash
 	 * </pre>
 	 * 
-	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Integer, Long)}
-	 * 
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
 	 * @return a version 1 UUID
 	 */
 	public static UUID getTimeBasedWithHash(Instant instant, Integer clockseq) {
-		return TimeBasedWithHashCreatorHolder.INSTANCE.create(instant, clockseq, null);
+		return TimeBasedWithHashHolder.INSTANCE.create(instant, clockseq, null);
 	}
 
 	/**
@@ -282,14 +275,12 @@ public final class UuidCreator {
 	 * - Node identifier: random (always changing)
 	 * </pre>
 	 * 
-	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Integer, Long)}
-	 * 
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
 	 * @return a version 1 UUID
 	 */
 	public static UUID getTimeBasedWithRandom(Instant instant, Integer clockseq) {
-		return TimeBasedWithRandomCreatorHolder.INSTANCE.create(instant, clockseq, null);
+		return TimeBasedWithRandomHolder.INSTANCE.create(instant, clockseq, null);
 	}
 
 	/**
@@ -307,7 +298,7 @@ public final class UuidCreator {
 	 * @return a version 6 UUID
 	 */
 	public static UUID getTimeOrdered() {
-		return TimeOrderedCreatorHolder.INSTANCE.create();
+		return TimeOrderedHolder.INSTANCE.create();
 	}
 
 	/**
@@ -322,7 +313,7 @@ public final class UuidCreator {
 	 * @return a version 6 UUID
 	 */
 	public static UUID getTimeOrderedWithMac() {
-		return TimeOrderedWithMacCreatorHolder.INSTANCE.create();
+		return TimeOrderedWithMacHolder.INSTANCE.create();
 	}
 
 	/**
@@ -337,7 +328,7 @@ public final class UuidCreator {
 	 * @return a version 6 UUID
 	 */
 	public static UUID getTimeOrderedWithHash() {
-		return TimeOrderedWithHashCreatorHolder.INSTANCE.create();
+		return TimeOrderedWithHashHolder.INSTANCE.create();
 	}
 
 	/**
@@ -352,7 +343,7 @@ public final class UuidCreator {
 	 * @return a version 6 UUID
 	 */
 	public static UUID getTimeOrderedWithRandom() {
-		return TimeOrderedWithRandomCreatorHolder.INSTANCE.create();
+		return TimeOrderedWithRandomHolder.INSTANCE.create();
 	}
 
 	/**
@@ -364,15 +355,13 @@ public final class UuidCreator {
 	 * - Node identifier: random
 	 * </pre>
 	 * 
-	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Integer, Long)}
-	 * 
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
 	 * @param nodeid   an alternate node (0 to 2^48-1)
 	 * @return a version 6 UUID
 	 */
 	public static UUID getTimeOrdered(Instant instant, Integer clockseq, Long nodeid) {
-		return TimeOrderedCreatorHolder.INSTANCE.create(instant, clockseq, nodeid);
+		return TimeOrderedHolder.INSTANCE.create(instant, clockseq, nodeid);
 	}
 
 	/**
@@ -384,14 +373,12 @@ public final class UuidCreator {
 	 * - Node identifier: MAC
 	 * </pre>
 	 * 
-	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Integer, Long)}
-	 * 
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
 	 * @return a version 6 UUID
 	 */
 	public static UUID getTimeOrderedWithMac(Instant instant, Integer clockseq) {
-		return TimeOrderedWithMacCreatorHolder.INSTANCE.create(instant, clockseq, null);
+		return TimeOrderedWithMacHolder.INSTANCE.create(instant, clockseq, null);
 	}
 
 	/**
@@ -403,14 +390,12 @@ public final class UuidCreator {
 	 * - Node identifier: system data hash
 	 * </pre>
 	 * 
-	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Integer, Long)}
-	 * 
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
 	 * @return a version 6 UUID
 	 */
 	public static UUID getTimeOrderedWithHash(Instant instant, Integer clockseq) {
-		return TimeOrderedWithHashCreatorHolder.INSTANCE.create(instant, clockseq, null);
+		return TimeOrderedWithHashHolder.INSTANCE.create(instant, clockseq, null);
 	}
 
 	/**
@@ -422,14 +407,12 @@ public final class UuidCreator {
 	 * - Node identifier: random (always changing)
 	 * </pre>
 	 * 
-	 * @see {@link AbstractTimeBasedUuidCreator#create(Instant, Integer, Long)}
-	 * 
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
 	 * @return a version 6 UUID
 	 */
 	public static UUID getTimeOrderedWithRandom(Instant instant, Integer clockseq) {
-		return TimeOrderedWithRandomCreatorHolder.INSTANCE.create(instant, clockseq, null);
+		return TimeOrderedWithRandomHolder.INSTANCE.create(instant, clockseq, null);
 	}
 
 	/**
@@ -453,7 +436,7 @@ public final class UuidCreator {
 	 * @return a version 3 UUID
 	 */
 	public static UUID getNameBasedMd5(String name) {
-		return NameBasedMd5CreatorHolder.INSTANCE.create(name);
+		return NameBasedMd5Holder.INSTANCE.create(name);
 	}
 
 	/**
@@ -470,7 +453,24 @@ public final class UuidCreator {
 	 * @return a version 3 UUID
 	 */
 	public static UUID getNameBasedMd5(byte[] name) {
-		return NameBasedMd5CreatorHolder.INSTANCE.create(name);
+		return NameBasedMd5Holder.INSTANCE.create(name);
+	}
+
+	/**
+	 * Returns a name-based UUID (MD5).
+	 * 
+	 * <pre>
+	 * Details: 
+	 * - Version number: 3 
+	 * - Hash Algorithm: MD5 
+	 * - Name Space: NO
+	 * </pre>
+	 * 
+	 * @param name a UUID
+	 * @return a version 3 UUID
+	 */
+	public static UUID getNameBasedMd5(UUID name) {
+		return NameBasedMd5Holder.INSTANCE.create(name);
 	}
 
 	/**
@@ -495,7 +495,7 @@ public final class UuidCreator {
 	 * @return a version 3 UUID
 	 */
 	public static UUID getNameBasedMd5(UUID namespace, String name) {
-		return NameBasedMd5CreatorHolder.INSTANCE.create(namespace, name);
+		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
@@ -513,7 +513,25 @@ public final class UuidCreator {
 	 * @return a version 3 UUID
 	 */
 	public static UUID getNameBasedMd5(UUID namespace, byte[] name) {
-		return NameBasedMd5CreatorHolder.INSTANCE.create(namespace, name);
+		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
+	}
+
+	/**
+	 * Returns a name-based UUID (MD5).
+	 * 
+	 * <pre>
+	 * Details: 
+	 * - Version number: 3 
+	 * - Hash Algorithm: MD5 
+	 * - Name Space: YES (custom)
+	 * </pre>
+	 * 
+	 * @param namespace a custom name space UUID
+	 * @param name      a UUID
+	 * @return a version 3 UUID
+	 */
+	public static UUID getNameBasedMd5(UUID namespace, UUID name) {
+		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
@@ -539,7 +557,7 @@ public final class UuidCreator {
 	 * @throws InvalidUuidException if the namespace is invalid
 	 */
 	public static UUID getNameBasedMd5(String namespace, String name) {
-		return NameBasedMd5CreatorHolder.INSTANCE.create(namespace, name);
+		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
@@ -558,7 +576,26 @@ public final class UuidCreator {
 	 * @throws InvalidUuidException if the namespace is invalid
 	 */
 	public static UUID getNameBasedMd5(String namespace, byte[] name) {
-		return NameBasedMd5CreatorHolder.INSTANCE.create(namespace, name);
+		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
+	}
+
+	/**
+	 * Returns a name-based UUID (MD5).
+	 * 
+	 * <pre>
+	 * Details: 
+	 * - Version number: 3 
+	 * - Hash Algorithm: MD5 
+	 * - Name Space: YES (custom)
+	 * </pre>
+	 * 
+	 * @param namespace a custom name space UUID in string format
+	 * @param name      a UUID
+	 * @return a version 3 UUID
+	 * @throws InvalidUuidException if the namespace is invalid
+	 */
+	public static UUID getNameBasedMd5(String namespace, UUID name) {
+		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
@@ -594,7 +631,7 @@ public final class UuidCreator {
 	 * @return a version 3 UUID
 	 */
 	public static UUID getNameBasedMd5(UuidNamespace namespace, String name) {
-		return NameBasedMd5CreatorHolder.INSTANCE.create(namespace, name);
+		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
@@ -623,7 +660,36 @@ public final class UuidCreator {
 	 * @return a version 3 UUID
 	 */
 	public static UUID getNameBasedMd5(UuidNamespace namespace, byte[] name) {
-		return NameBasedMd5CreatorHolder.INSTANCE.create(namespace, name);
+		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
+	}
+
+	/**
+	 * Returns a name-based UUID (MD5).
+	 * 
+	 * <pre>
+	 * Details: 
+	 * - Version number: 3 
+	 * - Hash Algorithm: MD5 
+	 * - Name Space: YES (predefined)
+	 * </pre>
+	 * 
+	 * <pre>
+	 * Name spaces predefined by RFC-4122 (Appendix C):
+	 * 
+	 * - NAMESPACE_DNS: Name string is a fully-qualified domain name;
+	 * - NAMESPACE_URL: Name string is a URL;
+	 * - NAMESPACE_ISO_OID: Name string is an ISO OID;
+	 * - NAMESPACE_X500_DN: Name string is an X.500 DN (in DER or a text format).
+	 * </pre>
+	 * 
+	 * See: {@link UuidNamespace}.
+	 * 
+	 * @param namespace a predefined name space enumeration
+	 * @param name      a UUID
+	 * @return a version 3 UUID
+	 */
+	public static UUID getNameBasedMd5(UuidNamespace namespace, UUID name) {
+		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
@@ -647,7 +713,7 @@ public final class UuidCreator {
 	 * @return a version 5 UUID
 	 */
 	public static UUID getNameBasedSha1(String name) {
-		return NameBasedSha1CreatorHolder.INSTANCE.create(name);
+		return NameBasedSha1Holder.INSTANCE.create(name);
 	}
 
 	/**
@@ -664,7 +730,24 @@ public final class UuidCreator {
 	 * @return a version 5 UUID
 	 */
 	public static UUID getNameBasedSha1(byte[] name) {
-		return NameBasedSha1CreatorHolder.INSTANCE.create(name);
+		return NameBasedSha1Holder.INSTANCE.create(name);
+	}
+
+	/**
+	 * Returns a name-based UUID (SHA1).
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 5 
+	 * - Hash Algorithm: SHA1 
+	 * - Name Space: NO
+	 * </pre>
+	 * 
+	 * @param name a UUID
+	 * @return a version 5 UUID
+	 */
+	public static UUID getNameBasedSha1(UUID name) {
+		return NameBasedSha1Holder.INSTANCE.create(name);
 	}
 
 	/**
@@ -689,7 +772,7 @@ public final class UuidCreator {
 	 * @return a version 5 UUID
 	 */
 	public static UUID getNameBasedSha1(UUID namespace, String name) {
-		return NameBasedSha1CreatorHolder.INSTANCE.create(namespace, name);
+		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
@@ -707,7 +790,25 @@ public final class UuidCreator {
 	 * @return a version 5 UUID
 	 */
 	public static UUID getNameBasedSha1(UUID namespace, byte[] name) {
-		return NameBasedSha1CreatorHolder.INSTANCE.create(namespace, name);
+		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
+	}
+
+	/**
+	 * Returns a name-based UUID (SHA1).
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 5 
+	 * - Hash Algorithm: SHA1 
+	 * - Name Space: YES (custom)
+	 * </pre>
+	 * 
+	 * @param namespace a custom name space UUID
+	 * @param name      a UUID
+	 * @return a version 5 UUID
+	 */
+	public static UUID getNameBasedSha1(UUID namespace, UUID name) {
+		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
@@ -733,7 +834,7 @@ public final class UuidCreator {
 	 * @throws InvalidUuidException if the namespace is invalid
 	 */
 	public static UUID getNameBasedSha1(String namespace, String name) {
-		return NameBasedSha1CreatorHolder.INSTANCE.create(namespace, name);
+		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
@@ -752,7 +853,26 @@ public final class UuidCreator {
 	 * @throws InvalidUuidException if the namespace is invalid
 	 */
 	public static UUID getNameBasedSha1(String namespace, byte[] name) {
-		return NameBasedSha1CreatorHolder.INSTANCE.create(namespace, name);
+		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
+	}
+
+	/**
+	 * Returns a name-based UUID (SHA1).
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 5 
+	 * - Hash Algorithm: SHA1 
+	 * - Name Space: YES (custom)
+	 * </pre>
+	 * 
+	 * @param namespace a custom name space UUID in string format
+	 * @param name      a UUID
+	 * @return a version 5 UUID
+	 * @throws InvalidUuidException if the namespace is invalid
+	 */
+	public static UUID getNameBasedSha1(String namespace, UUID name) {
+		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
@@ -788,7 +908,7 @@ public final class UuidCreator {
 	 * @return a version 5 UUID
 	 */
 	public static UUID getNameBasedSha1(UuidNamespace namespace, String name) {
-		return NameBasedSha1CreatorHolder.INSTANCE.create(namespace, name);
+		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
@@ -817,7 +937,36 @@ public final class UuidCreator {
 	 * @return a version 5 UUID
 	 */
 	public static UUID getNameBasedSha1(UuidNamespace namespace, byte[] name) {
-		return NameBasedSha1CreatorHolder.INSTANCE.create(namespace, name);
+		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
+	}
+
+	/**
+	 * Returns a name-based UUID (SHA1).
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 5 
+	 * - Hash Algorithm: SHA1 
+	 * - Name Space: YES (predefined)
+	 * </pre>
+	 * 
+	 * <pre>
+	 * Name spaces predefined by RFC-4122 (Appendix C):
+	 * 
+	 * - NAMESPACE_DNS: Name string is a fully-qualified domain name;
+	 * - NAMESPACE_URL: Name string is a URL;
+	 * - NAMESPACE_ISO_OID: Name string is an ISO OID;
+	 * - NAMESPACE_X500_DN: Name string is an X.500 DN (in DER or a text format).
+	 * </pre>
+	 * 
+	 * See: {@link UuidNamespace}.
+	 * 
+	 * @param namespace a predefined name space enumeration
+	 * @param name      a UUID
+	 * @return a version 5 UUID
+	 */
+	public static UUID getNameBasedSha1(UuidNamespace namespace, UUID name) {
+		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
@@ -836,7 +985,7 @@ public final class UuidCreator {
 	 * @return a version 2 UUID
 	 */
 	public static UUID getDceSecurity(byte localDomain, int localIdentifier) {
-		return DceSecurityCreatorHolder.INSTANCE.create(localDomain, localIdentifier);
+		return DceSecurityHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
@@ -855,7 +1004,7 @@ public final class UuidCreator {
 	 * @return a version 2 UUID
 	 */
 	public static UUID getDceSecurityWithMac(byte localDomain, int localIdentifier) {
-		return DceSecurityWithMacCreatorHolder.INSTANCE.create(localDomain, localIdentifier);
+		return DceSecurityWithMacHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
@@ -874,7 +1023,7 @@ public final class UuidCreator {
 	 * @return a version 2 UUID
 	 */
 	public static UUID getDceSecurityWithHash(byte localDomain, int localIdentifier) {
-		return DceSecurityWithHashCreatorHolder.INSTANCE.create(localDomain, localIdentifier);
+		return DceSecurityWithHashHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
@@ -893,7 +1042,7 @@ public final class UuidCreator {
 	 * @return a version 2 UUID
 	 */
 	public static UUID getDceSecurityWithRandom(byte localDomain, int localIdentifier) {
-		return DceSecurityWithRandomCreatorHolder.INSTANCE.create(localDomain, localIdentifier);
+		return DceSecurityWithRandomHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
@@ -920,7 +1069,7 @@ public final class UuidCreator {
 	 * @return a version 2 UUID
 	 */
 	public static UUID getDceSecurity(UuidLocalDomain localDomain, int localIdentifier) {
-		return DceSecurityCreatorHolder.INSTANCE.create(localDomain, localIdentifier);
+		return DceSecurityHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
@@ -947,7 +1096,7 @@ public final class UuidCreator {
 	 * @return a version 2 UUID
 	 */
 	public static UUID getDceSecurityWithMac(UuidLocalDomain localDomain, int localIdentifier) {
-		return DceSecurityWithMacCreatorHolder.INSTANCE.create(localDomain, localIdentifier);
+		return DceSecurityWithMacHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
@@ -966,7 +1115,7 @@ public final class UuidCreator {
 	 * @return a version 2 UUID
 	 */
 	public static UUID getDceSecurityWithHash(UuidLocalDomain localDomain, int localIdentifier) {
-		return DceSecurityWithHashCreatorHolder.INSTANCE.create(localDomain, localIdentifier);
+		return DceSecurityWithHashHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
@@ -985,7 +1134,7 @@ public final class UuidCreator {
 	 * @return a version 2 UUID
 	 */
 	public static UUID getDceSecurityWithRandom(UuidLocalDomain localDomain, int localIdentifier) {
-		return DceSecurityWithRandomCreatorHolder.INSTANCE.create(localDomain, localIdentifier);
+		return DceSecurityWithRandomHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
@@ -999,7 +1148,7 @@ public final class UuidCreator {
 	 * @return a GUID
 	 */
 	public static UUID getPrefixComb() {
-		return PrefixCombCreatorHolder.INSTANCE.create();
+		return PrefixCombHolder.INSTANCE.create();
 	}
 
 	/**
@@ -1014,7 +1163,7 @@ public final class UuidCreator {
 	 * @return a GUID
 	 */
 	public static UUID getSuffixComb() {
-		return SuffixCombCreatorHolder.INSTANCE.create();
+		return SuffixCombHolder.INSTANCE.create();
 	}
 
 	/**
@@ -1030,7 +1179,7 @@ public final class UuidCreator {
 	 * @return a GUID
 	 */
 	public static UUID getShortPrefixComb() {
-		return ShortPrefixCombCreatorHolder.INSTANCE.create();
+		return ShortPrefixCombHolder.INSTANCE.create();
 	}
 
 	/**
@@ -1046,192 +1195,86 @@ public final class UuidCreator {
 	 * @return a GUID
 	 */
 	public static UUID getShortSuffixComb() {
-		return ShortSuffixCombCreatorHolder.INSTANCE.create();
-	}
-
-	/*
-	 * Public static methods for creating FACTORIES of UUIDs
-	 */
-
-	/**
-	 * Returns a {@link RandomBasedUuidCreator} that creates UUID version 4.
-	 * 
-	 * @return {@link RandomBasedUuidCreator}
-	 */
-	public static RandomBasedUuidCreator getRandomBasedCreator() {
-		return new RandomBasedUuidCreator();
-	}
-
-	/**
-	 * Returns a {@link TimeBasedUuidCreator} that creates UUID version 1.
-	 * 
-	 * @return {@link TimeBasedUuidCreator}
-	 */
-	public static TimeBasedUuidCreator getTimeBasedCreator() {
-		return new TimeBasedUuidCreator();
-	}
-
-	/**
-	 * Returns a {@link TimeOrderedUuidCreator} that creates UUID version 6.
-	 * 
-	 * @return {@link TimeOrderedUuidCreator}
-	 */
-	public static TimeOrderedUuidCreator getTimeOrderedCreator() {
-		return new TimeOrderedUuidCreator();
-	}
-
-	/**
-	 * Returns a {@link NameBasedMd5UuidCreator} that creates UUID version 3.
-	 * 
-	 * @return {@link NameBasedMd5UuidCreator}
-	 */
-	public static NameBasedMd5UuidCreator getNameBasedMd5Creator() {
-		return new NameBasedMd5UuidCreator();
-	}
-
-	/**
-	 * Returns a {@link NameBasedSha1UuidCreator} that creates UUID version 5.
-	 * 
-	 * @return {@link NameBasedSha1UuidCreator}
-	 */
-	public static NameBasedSha1UuidCreator getNameBasedSha1Creator() {
-		return new NameBasedSha1UuidCreator();
-	}
-
-	/**
-	 * Returns a {@link DceSecurityUuidCreator} that creates UUID version 2.
-	 * 
-	 * @return {@link DceSecurityUuidCreator}
-	 */
-	public static DceSecurityUuidCreator getDceSecurityCreator() {
-		return new DceSecurityUuidCreator();
-	}
-
-	/**
-	 * Returns a {@link SuffixCombCreator}.
-	 * 
-	 * Read: The Cost of GUIDs as Primary Keys
-	 * http://www.informit.com/articles/article.aspx?p=25862
-	 * 
-	 * @return {@link SuffixCombCreator}
-	 */
-	public static SuffixCombCreator getSuffixCombCreator() {
-		return new SuffixCombCreator();
-	}
-
-	/**
-	 * Returns a {@link PrefixCombCreator}.
-	 * 
-	 * Read: The Cost of GUIDs as Primary Keys
-	 * http://www.informit.com/articles/article.aspx?p=25862
-	 * 
-	 * @return {@link PrefixCombCreator}
-	 */
-	public static PrefixCombCreator getPrefixCombCreator() {
-		return new PrefixCombCreator();
-	}
-
-	/**
-	 * Returns a {@link ShortPrefixCombCreator}.
-	 * 
-	 * Read: Sequential UUID Generators
-	 * https://www.2ndquadrant.com/en/blog/sequential-uuid-generators/
-	 * 
-	 * @return {@link ShortPrefixCombCreator}
-	 */
-	public static ShortPrefixCombCreator getShortPrefixCombCreator() {
-		return new ShortPrefixCombCreator();
-	}
-
-	/**
-	 * Returns a {@link ShortSuffixCombCreator}.
-	 * 
-	 * Read: Sequential UUID Generators
-	 * https://www.2ndquadrant.com/en/blog/sequential-uuid-generators/
-	 * 
-	 * @return {@link ShortSuffixCombCreator}
-	 */
-	public static ShortSuffixCombCreator getShortSuffixCombCreator() {
-		return new ShortSuffixCombCreator();
+		return ShortSuffixCombHolder.INSTANCE.create();
 	}
 
 	/*
 	 * Private classes for lazy holders
 	 */
 
-	private static class RandomCreatorHolder {
-		static final RandomBasedUuidCreator INSTANCE = getRandomBasedCreator();
+	private static class RandomBasedHolder {
+		static final RandomBasedFactory INSTANCE = new RandomBasedFactory();
 	}
 
-	private static class TimeOrderedCreatorHolder {
-		static final TimeOrderedUuidCreator INSTANCE = getTimeOrderedCreator();
+	private static class TimeOrderedHolder {
+		static final TimeOrderedFactory INSTANCE = new TimeOrderedFactory();
 	}
 
-	private static class TimeOrderedWithMacCreatorHolder {
-		static final TimeOrderedUuidCreator INSTANCE = getTimeOrderedCreator().withMacNodeIdentifier();
+	private static class TimeOrderedWithMacHolder {
+		static final TimeOrderedFactory INSTANCE = new TimeOrderedFactory.Builder().withMacNodeIdFunction().build();
 	}
 
-	private static class TimeOrderedWithHashCreatorHolder {
-		static final TimeOrderedUuidCreator INSTANCE = getTimeOrderedCreator().withHashNodeIdentifier();
+	private static class TimeOrderedWithHashHolder {
+		static final TimeOrderedFactory INSTANCE = new TimeOrderedFactory.Builder().withHashNodeIdFunction().build();
 	}
 
-	private static class TimeOrderedWithRandomCreatorHolder {
-		static final TimeOrderedUuidCreator INSTANCE = getTimeOrderedCreator().withRandomNodeIdentifier();
+	private static class TimeOrderedWithRandomHolder {
+		static final TimeOrderedFactory INSTANCE = new TimeOrderedFactory.Builder().withRandomNodeIdFunction().build();
 	}
 
-	private static class TimeBasedCreatorHolder {
-		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator();
+	private static class TimeBasedHolder {
+		static final TimeBasedFactory INSTANCE = new TimeBasedFactory();
 	}
 
-	private static class TimeBasedWithMacCreatorHolder {
-		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withMacNodeIdentifier();
+	private static class TimeBasedWithMacHolder {
+		static final TimeBasedFactory INSTANCE = new TimeBasedFactory.Builder().withMacNodeIdFunction().build();
 	}
 
-	private static class TimeBasedWithHashCreatorHolder {
-		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withHashNodeIdentifier();
+	private static class TimeBasedWithHashHolder {
+		static final TimeBasedFactory INSTANCE = new TimeBasedFactory.Builder().withHashNodeIdFunction().build();
 	}
 
-	private static class TimeBasedWithRandomCreatorHolder {
-		static final TimeBasedUuidCreator INSTANCE = getTimeBasedCreator().withRandomNodeIdentifier();
+	private static class TimeBasedWithRandomHolder {
+		static final TimeBasedFactory INSTANCE = new TimeBasedFactory.Builder().withRandomNodeIdFunction().build();
 	}
 
-	private static class NameBasedMd5CreatorHolder {
-		static final NameBasedMd5UuidCreator INSTANCE = getNameBasedMd5Creator();
+	private static class NameBasedMd5Holder {
+		static final NameBasedMd5Factory INSTANCE = new NameBasedMd5Factory();
 	}
 
-	private static class NameBasedSha1CreatorHolder {
-		static final NameBasedSha1UuidCreator INSTANCE = getNameBasedSha1Creator();
+	private static class NameBasedSha1Holder {
+		static final NameBasedSha1Factory INSTANCE = new NameBasedSha1Factory();
 	}
 
-	private static class DceSecurityCreatorHolder {
-		static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator();
+	private static class DceSecurityHolder {
+		static final DceSecurityFactory INSTANCE = new DceSecurityFactory();
 	}
 
-	private static class DceSecurityWithMacCreatorHolder {
-		static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator().withMacNodeIdentifier();
+	private static class DceSecurityWithMacHolder {
+		static final DceSecurityFactory INSTANCE = new DceSecurityFactory.Builder().withMacNodeIdFunction().build();
 	}
 
-	private static class DceSecurityWithHashCreatorHolder {
-		static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator().withHashNodeIdentifier();
+	private static class DceSecurityWithHashHolder {
+		static final DceSecurityFactory INSTANCE = new DceSecurityFactory.Builder().withHashNodeIdFunction().build();
 	}
 
-	private static class DceSecurityWithRandomCreatorHolder {
-		static final DceSecurityUuidCreator INSTANCE = getDceSecurityCreator().withRandomNodeIdentifier();
+	private static class DceSecurityWithRandomHolder {
+		static final DceSecurityFactory INSTANCE = new DceSecurityFactory.Builder().withRandomNodeIdFunction().build();
 	}
 
-	private static class SuffixCombCreatorHolder {
-		static final SuffixCombCreator INSTANCE = getSuffixCombCreator();
+	private static class SuffixCombHolder {
+		static final SuffixCombFactory INSTANCE = new SuffixCombFactory();
 	}
 
-	private static class PrefixCombCreatorHolder {
-		static final PrefixCombCreator INSTANCE = getPrefixCombCreator();
+	private static class PrefixCombHolder {
+		static final PrefixCombFactory INSTANCE = new PrefixCombFactory();
 	}
 
-	private static class ShortPrefixCombCreatorHolder {
-		static final ShortPrefixCombCreator INSTANCE = getShortPrefixCombCreator();
+	private static class ShortPrefixCombHolder {
+		static final ShortPrefixCombFactory INSTANCE = new ShortPrefixCombFactory();
 	}
 
-	private static class ShortSuffixCombCreatorHolder {
-		static final ShortSuffixCombCreator INSTANCE = getShortSuffixCombCreator();
+	private static class ShortSuffixCombHolder {
+		static final ShortSuffixCombFactory INSTANCE = new ShortSuffixCombFactory();
 	}
 }

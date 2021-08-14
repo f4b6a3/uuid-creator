@@ -28,7 +28,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import com.github.f4b6a3.uuid.codec.base.BaseN;
-import com.github.f4b6a3.uuid.util.internal.immutable.CharArray;
+import com.github.f4b6a3.uuid.util.immutable.CharArray;
 
 /**
  * Abstract function to be extended by all encoder functions of this package.

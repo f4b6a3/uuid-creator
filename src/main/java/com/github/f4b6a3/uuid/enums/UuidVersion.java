@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2020 Fabio Lima
+ * Copyright (c) 2018-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ package com.github.f4b6a3.uuid.enums;
  */
 public enum UuidVersion {
 
+	VERSION_UNKNOWN(0), //
 	VERSION_TIME_BASED(1), //
 	VERSION_DCE_SECURITY(2), //
 	VERSION_NAME_BASED_MD5(3), //

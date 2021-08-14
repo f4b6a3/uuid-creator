@@ -9,73 +9,71 @@ import com.github.f4b6a3.uuid.codec.base.BaseNCodec3SamplesTest;
 import com.github.f4b6a3.uuid.codec.base.BaseNTest;
 import com.github.f4b6a3.uuid.codec.base.function.BaseNRemainderDecoderTest;
 import com.github.f4b6a3.uuid.codec.base.function.BaseNRemainderEncoderTest;
-import com.github.f4b6a3.uuid.codec.name.NcnameCodecTest;
-import com.github.f4b6a3.uuid.codec.slug.SlugCodecTest;
-import com.github.f4b6a3.uuid.codec.uri.UriCodecTest;
-import com.github.f4b6a3.uuid.codec.uuid.DotNetGuid1CodecTest;
-import com.github.f4b6a3.uuid.codec.uuid.DotNetGuid4CodecTest;
-import com.github.f4b6a3.uuid.codec.uuid.TimeOrderedCodecTest;
+import com.github.f4b6a3.uuid.codec.other.DotNetGuid1CodecTest;
+import com.github.f4b6a3.uuid.codec.other.DotNetGuid4CodecTest;
+import com.github.f4b6a3.uuid.codec.other.NcnameCodecTest;
+import com.github.f4b6a3.uuid.codec.other.SlugCodecTest;
+import com.github.f4b6a3.uuid.codec.other.TimeOrderedCodecTest;
+import com.github.f4b6a3.uuid.factory.AbstTimeBasedFactoryTest;
+import com.github.f4b6a3.uuid.factory.function.ClockSeqPoolTest;
+import com.github.f4b6a3.uuid.factory.function.impl.DefaultClockSeqFunctionTest;
+import com.github.f4b6a3.uuid.factory.function.impl.DefaultTimeFunctionTest;
+import com.github.f4b6a3.uuid.factory.nonstandard.PrefixCombFactoryTest;
+import com.github.f4b6a3.uuid.factory.nonstandard.ShortPrefixCombFactoryTest;
+import com.github.f4b6a3.uuid.factory.nonstandard.ShortSuffixCombFactoryTest;
+import com.github.f4b6a3.uuid.factory.nonstandard.SuffixCombFactoryTest;
+import com.github.f4b6a3.uuid.factory.rfc4122.DceSecurityFactoryTest;
+import com.github.f4b6a3.uuid.factory.rfc4122.NameBasedMd5FactoryTest;
+import com.github.f4b6a3.uuid.factory.rfc4122.NameBasedSha1FactoryTest;
+import com.github.f4b6a3.uuid.factory.rfc4122.RandomBasedFactoryTest;
+import com.github.f4b6a3.uuid.factory.rfc4122.TimeBasedFactoryTest;
+import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedFactoryTest;
 import com.github.f4b6a3.uuid.codec.BinaryCodecTest;
 import com.github.f4b6a3.uuid.codec.StringCodecTest;
-import com.github.f4b6a3.uuid.creator.AbstractTimeBasedUuidCreatorTest;
-import com.github.f4b6a3.uuid.creator.nonstandard.PrefixCombCreatorTest;
-import com.github.f4b6a3.uuid.creator.nonstandard.ShortPrefixCombCreatorTest;
-import com.github.f4b6a3.uuid.creator.nonstandard.ShortSuffixCombCreatorTest;
-import com.github.f4b6a3.uuid.creator.nonstandard.SuffixCombCreatorTest;
-import com.github.f4b6a3.uuid.creator.rfc4122.DceSecurityUuidCreatorTest;
-import com.github.f4b6a3.uuid.creator.rfc4122.NameBasedMd5UuidCreatorTest;
-import com.github.f4b6a3.uuid.creator.rfc4122.NameBasedSha1UuidCreatorTest;
-import com.github.f4b6a3.uuid.creator.rfc4122.RandomBasedUuidCreatorTest;
-import com.github.f4b6a3.uuid.creator.rfc4122.TimeBasedUuidCreatorTest;
-import com.github.f4b6a3.uuid.creator.rfc4122.TimeOrderedUuidCreatorTest;
-import com.github.f4b6a3.uuid.strategy.clockseq.ClockSequenceControllerTest;
-import com.github.f4b6a3.uuid.strategy.clockseq.DefaultClockSequenceStrategyTest;
-import com.github.f4b6a3.uuid.strategy.timestamp.DefaultTimestampStrategyTest;
+import com.github.f4b6a3.uuid.codec.UriCodecTest;
 import com.github.f4b6a3.uuid.util.internal.ByteUtilTest;
 import com.github.f4b6a3.uuid.util.internal.SettingsUtilTest;
-import com.github.f4b6a3.uuid.util.nonstandard.CombUtilTest;
-import com.github.f4b6a3.uuid.util.UuidConverterTest;
+import com.github.f4b6a3.uuid.util.CombUtilTest;
 import com.github.f4b6a3.uuid.util.UuidTimeTest;
 import com.github.f4b6a3.uuid.util.UuidUtilTest;
 import com.github.f4b6a3.uuid.util.UuidValidatorTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	AbstractTimeBasedUuidCreatorTest.class,
-	ByteUtilTest.class,
-	ClockSequenceControllerTest.class,
-	DceSecurityUuidCreatorTest.class,
-	DefaultClockSequenceStrategyTest.class,
-	DefaultTimestampStrategyTest.class,
-	NameBasedMd5UuidCreatorTest.class,
-	NameBasedSha1UuidCreatorTest.class,
-	PrefixCombCreatorTest.class,
-	RandomBasedUuidCreatorTest.class,
-	ShortPrefixCombCreatorTest.class,
-	ShortSuffixCombCreatorTest.class,
-	SuffixCombCreatorTest.class,
-	TimeBasedUuidCreatorTest.class,
-	TimeOrderedUuidCreatorTest.class,
-	BaseNTest.class,
+	AbstTimeBasedFactoryTest.class,
 	BaseNCodec1Test.class,
 	BaseNCodec2SamplesTest.class,
 	BaseNCodec3SamplesTest.class,
 	BaseNRemainderDecoderTest.class,
 	BaseNRemainderEncoderTest.class,
+	BaseNTest.class,
 	BinaryCodecTest.class,
-	SettingsUtilTest.class,
-	NcnameCodecTest.class,
-	SlugCodecTest.class,
-	StringCodecTest.class,
-	UuidConverterTest.class,
-	UuidTimeTest.class,
-	UriCodecTest.class,
-	UuidUtilTest.class,
+	ByteUtilTest.class,
+	ClockSeqPoolTest.class,
 	CombUtilTest.class,
-	UuidValidatorTest.class,
+	DceSecurityFactoryTest.class,
+	DefaultClockSeqFunctionTest.class,
+	DefaultTimeFunctionTest.class,
 	DotNetGuid1CodecTest.class,
 	DotNetGuid4CodecTest.class,
+	NameBasedMd5FactoryTest.class,
+	NameBasedSha1FactoryTest.class,
+	NcnameCodecTest.class,
+	PrefixCombFactoryTest.class,
+	RandomBasedFactoryTest.class,
+	SettingsUtilTest.class,
+	ShortPrefixCombFactoryTest.class,
+	ShortSuffixCombFactoryTest.class,
+	SlugCodecTest.class,
+	StringCodecTest.class,
+	SuffixCombFactoryTest.class,
+	TimeBasedFactoryTest.class,
 	TimeOrderedCodecTest.class,
+	TimeOrderedFactoryTest.class,
+	UriCodecTest.class,
+	UuidTimeTest.class,
+	UuidUtilTest.class,
+	UuidValidatorTest.class,
 })
 
 /**

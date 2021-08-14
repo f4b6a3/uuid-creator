@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2020 Fabio Lima
+ * Copyright (c) 2018-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,108 +27,115 @@ package com.github.f4b6a3.uuid.util;
 import java.time.Instant;
 
 /**
- * Utility that provides methods related to timestamps.
+ * Utility for UUID time stamps.
+ * 
+ * The UUID timestamp is a 60-bit number.
+ * 
+ * The UUID timestamp resolution is 100-nanoseconds, i.e., the UUID clock
+ * 'ticks' every 100-nanosecond interval.
+ * 
+ * In JDK 8, {@link Instant#now()} has millisecond precision, in spite of
+ * {@link Instant} has nanoseconds resolution. In JDK 9+,{@link Instant#now()}
+ * has microsecond precision.
+ * 
+ * Read: https://stackoverflow.com/questions/1712205
+ * 
+ * Read also: https://bugs.openjdk.java.net/browse/JDK-8068730
+ * 
  */
 public final class UuidTime {
 
-	public static final long GREGORIAN_MILLISECONDS = getGregorianMilliseconds();
+	public static final Instant EPOCH_UNIX = Instant.parse("1970-01-01T00:00:00.000Z"); // 0s
+	public static final Instant EPOCH_GREG = Instant.parse("1582-10-15T00:00:00.000Z"); // -12219292800s
 
-	public static final long TICKS_PER_MILLISECOND = 10_000L; // 1 tick = 100ns
+	public static final long EPOCH_UNIX_MILLIS = EPOCH_UNIX.toEpochMilli();
+	public static final long EPOCH_GREG_MILLIS = EPOCH_GREG.toEpochMilli();
+
+	public static final long EPOCH_UNIX_SECONDS = EPOCH_UNIX.getEpochSecond();
+	public static final long EPOCH_GREG_SECONDS = EPOCH_GREG.getEpochSecond();
+
+	public static final long NANOS_PER_TICK = 100; // 1 tick = 100ns
+	public static final long TICKS_PER_MILLI = 10_000; // 1ms = 10,000 ticks
+	public static final long TICKS_PER_SECOND = 10_000_000; // 1s = 10,000,000 ticks
 
 	private UuidTime() {
 	}
 
 	/**
-	 * Get the current timestamp with milliseconds precision.
-	 * 
-	 * The UUID timestamp is the number of 100-nanos since 1582-10-15 (Gregorian
+	 * This method returns the number of 100-nanoseconds since 1970-01-01 (Unix
 	 * epoch).
 	 * 
-	 * ### RFC-4122 - 4.2.1.2. System Clock Resolution
+	 * It uses {@code Instant.now()} to get the the current time.
 	 * 
-	 * The timestamp is generated from the system time, whose resolution may be less
-	 * than the resolution of the UUID timestamp.
-	 * 
-	 * If UUIDs do not need to be frequently generated, the timestamp can simply be
-	 * the system time multiplied by the number of 100-nanosecond intervals per
-	 * system time interval.
-	 * 
-	 * (4) A high resolution timestamp can be simulated by keeping a count of the
-	 * number of UUIDs that have been generated with the same value of the system
-	 * time, and using it to construct the low order bits of the timestamp. The
-	 * count will range between zero and the number of 100-nanosecond intervals per
-	 * system time interval.
-	 * 
-	 * @return the current timestamp
+	 * @return a number of 100-nanoseconds since 1970-01-01 (Unix epoch).
 	 */
-	public static long getCurrentTimestamp() {
-		return (System.currentTimeMillis() - GREGORIAN_MILLISECONDS) * TICKS_PER_MILLISECOND;
+	public static long getUnixTimestamp() {
+		return toUnixTimestamp(Instant.now());
 	}
 
 	/**
-	 * Get the timestamp of a given Unix Epoch milliseconds.
+	 * This method returns the number of 100-nanoseconds since 1582-10-15 (Gregorian
+	 * epoch).
 	 * 
-	 * The value returned by this method is the number of 100-nanos since 1582-10-15
-	 * (Gregorian epoch).
+	 * It uses {@code Instant.now()} to get the the current time.
 	 * 
-	 * @param unixMilliseconds the Unix Epoch milliseconds
-	 * @return the timestamp
+	 * @return a number of 100-nanoseconds since 1582-10-15 (Gregorian epoch).
 	 */
-	public static long toTimestamp(final long unixMilliseconds) {
-		return (unixMilliseconds - GREGORIAN_MILLISECONDS) * TICKS_PER_MILLISECOND;
+	public static long getGregTimestamp() {
+		return toGregTimestamp(Instant.now());
 	}
 
 	/**
-	 * Get the Unix Epoch milliseconds of a given timestmap.
+	 * This method converts an {@code Instant} into a number of 100-nanoseconds
+	 * since 1970-01-01 (Unix epoch).
 	 * 
-	 * The value returned by this method is the number of milliseconds since
-	 * 1970-01-01 (Unix epoch).
-	 * 
-	 * @param timestamp a timestamp
-	 * @return the Unix milliseconds
+	 * @param unixMillis an instant
+	 * @return a number of 100-nanoseconds since 1970-01-01 (Unix epoch).
 	 */
-	public static long toUnixMilliseconds(final long timestamp) {
-		return (timestamp / TICKS_PER_MILLISECOND) + GREGORIAN_MILLISECONDS;
+	public static long toUnixTimestamp(final Instant instant) {
+		final long seconds = instant.getEpochSecond() * TICKS_PER_SECOND;
+		final long nanos = instant.getNano() / NANOS_PER_TICK;
+		return seconds + nanos;
 	}
 
 	/**
-	 * Get the timestamp of a given instant.
-	 *
-	 * The value returned by this method is the number of 100-nanos since 1582-10-15
-	 * (Gregorian epoch).
+	 * This method converts an {@code Instant} into a number of 100-nanoseconds
+	 * since 1582-10-15 (Gregorian epoch).
 	 * 
-	 * @param instant an instant
-	 * @return the timestamp
+	 * @param unixMillis an instant
+	 * @return a number of 100-nanoseconds since 1582-10-15 (Gregorian epoch).
 	 */
-	public static long toTimestamp(final Instant instant) {
-		final long millis = (instant.toEpochMilli() - GREGORIAN_MILLISECONDS) * TICKS_PER_MILLISECOND;
-		final long ticks = (instant.getNano() / 100) % TICKS_PER_MILLISECOND;
-		return millis + ticks;
+	public static long toGregTimestamp(final Instant instant) {
+		final long seconds = (instant.getEpochSecond() - EPOCH_GREG_SECONDS) * TICKS_PER_SECOND;
+		final long nanos = instant.getNano() / NANOS_PER_TICK;
+		return seconds + nanos;
 	}
 
 	/**
-	 * Get the instant of the given timestamp.
-	 *
-	 * @param timestamp a timestamp
-	 * @return the instant
+	 * This method converts a number of 100-nanoseconds since 1970-01-01 (Unix
+	 * epoch) into an {@code Instant}.
+	 * 
+	 * @param unixTimestamp a number of 100-nanoseconds since 1970-01-01 (Unix
+	 *                      epoch)
+	 * @return an instant
 	 */
-	public static Instant toInstant(final long timestamp) {
-		final long millis = ((timestamp / TICKS_PER_MILLISECOND) + GREGORIAN_MILLISECONDS);
-		final long nanos = (timestamp % TICKS_PER_MILLISECOND) * 100;
-		return Instant.ofEpochMilli(millis).plusNanos(nanos);
+	public static Instant fromUnixTimestamp(final long unixTimestamp) {
+		final long seconds = unixTimestamp / TICKS_PER_SECOND;
+		final long nanos = (unixTimestamp % TICKS_PER_SECOND) * NANOS_PER_TICK;
+		return Instant.ofEpochSecond(seconds, nanos);
 	}
 
 	/**
-	 * Get the beginning of the Gregorian Calendar in milliseconds: 1582-10-15
-	 * 00:00:00Z.
+	 * This method converts a number of 100-nanoseconds since 1582-10-15 (Gregorian
+	 * epoch) into an {@code Instant}.
 	 * 
-	 * The expression "Gregorian Epoch" means the date and time the Gregorian
-	 * Calendar started. This expression is similar to "Unix Epoch", started in
-	 * 1970-01-01 00:00:00Z.
-	 *
-	 * @return the milliseconds since gregorian epoch
+	 * @param gregTimestamp a number of 100-nanoseconds since 1582-10-15 (Gregorian
+	 *                      epoch)
+	 * @return an instant
 	 */
-	private static long getGregorianMilliseconds() {
-		return Instant.parse("1582-10-15T00:00:00.000Z").getEpochSecond() * 1_000L;
+	public static Instant fromGregTimestamp(final long gregTimestamp) {
+		final long seconds = (gregTimestamp / TICKS_PER_SECOND) + EPOCH_GREG_SECONDS;
+		final long nanos = (gregTimestamp % TICKS_PER_SECOND) * NANOS_PER_TICK;
+		return Instant.ofEpochSecond(seconds, nanos);
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2020 Fabio Lima
+ * Copyright (c) 2018-2021 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@ package com.github.f4b6a3.uuid.util;
 
 import com.github.f4b6a3.uuid.codec.base.BaseN;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
-import com.github.f4b6a3.uuid.util.internal.immutable.LongArray;
+import com.github.f4b6a3.uuid.util.immutable.LongArray;
 
 /**
  * Utility for UUID validation.
@@ -256,7 +256,7 @@ public final class UuidValidator {
 
 		final char[] lower = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 		final char[] upper = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-		boolean versionOk = (version & ~0xf) == 0 && chars[ver] == lower[version] || chars[ver] == upper[version];
+		boolean versionOk = ((version & ~0xf) == 0) && (chars[ver] == lower[version] || chars[ver] == upper[version]);
 		boolean variantOk = chars[var] == '8' || chars[var] == '9' //
 				|| chars[var] == 'a' || chars[var] == 'b' || chars[var] == 'A' || chars[var] == 'B';
 

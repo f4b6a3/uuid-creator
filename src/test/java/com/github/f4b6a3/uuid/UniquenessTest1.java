@@ -3,8 +3,7 @@ package com.github.f4b6a3.uuid;
 import java.util.HashSet;
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.UuidCreator;
-import com.github.f4b6a3.uuid.creator.rfc4122.TimeBasedUuidCreator;
+import com.github.f4b6a3.uuid.factory.rfc4122.TimeBasedFactory;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 /**
@@ -32,7 +31,7 @@ import com.github.f4b6a3.uuid.util.UuidUtil;
  */
 public class UniquenessTest1 {
 
-	TimeBasedUuidCreator creator;
+	TimeBasedFactory factory;
 	private int threadCount; // Number of threads to run
 	private int requestCount; // Number of requests for thread
 
@@ -40,8 +39,8 @@ public class UniquenessTest1 {
 
 	private static UUID[][] values;
 
-	public UniquenessTest1(TimeBasedUuidCreator creator, int threadCount, int requestCount) {
-		this.creator = creator;
+	public UniquenessTest1(TimeBasedFactory factory, int threadCount, int requestCount) {
+		this.factory = factory;
 		this.threadCount = threadCount;
 		this.requestCount = requestCount;
 		this.init(threadCount, requestCount);
@@ -57,7 +56,7 @@ public class UniquenessTest1 {
 
 		// Start the threads
 		for (int i = 0; i < this.threadCount; i++) {
-			threads[i] = new TestThread(i, creator, requestCount);
+			threads[i] = new TestThread(i, factory, requestCount);
 			threads[i].start();
 		}
 
@@ -85,7 +84,7 @@ public class UniquenessTest1 {
 				if (!s.add(values[i][j])) {
 					dup++;
 				}
-				cs.add(UuidUtil.extractClockSequence(values[i][j]));
+				cs.add(UuidUtil.getClockSequence(values[i][j]));
 			}
 			int progress = (((i + 1) * 100) / values.length);
 			System.out.println(String.format("Looking for duplicates (%s%%)", progress));
@@ -107,19 +106,19 @@ public class UniquenessTest1 {
 	public class TestThread extends Thread {
 
 		public int id;
-		public TimeBasedUuidCreator creator;
+		public TimeBasedFactory factory;
 		public int requests;
 
-		public TestThread(int id, TimeBasedUuidCreator creator, int requests) {
+		public TestThread(int id, TimeBasedFactory factory, int requests) {
 			this.id = id;
-			this.creator = creator;
+			this.factory = factory;
 			this.requests = requests;
 
-			if (this.creator == null) {
+			if (this.factory == null) {
 				// DEDICATED generator that creates time-based UUIDs (v1),
 				// that uses a hash instead of a random node identifier,
 				// and that uses a fixed millisecond to simulate a loop faster than the clock
-				this.creator = UuidCreator.getTimeBasedCreator().withHashNodeIdentifier();
+				this.factory = newFactory();
 			}
 		}
 
@@ -127,21 +126,21 @@ public class UniquenessTest1 {
 		public void run() {
 
 			for (int i = 0; i < requests; i++) {
-				values[id][i] = creator.create();
+				values[id][i] = factory.create();
 			}
 		}
 	}
 
-	public static void execute(TimeBasedUuidCreator creator, int threads, int requests) {
-		UniquenessTest1 test = new UniquenessTest1(creator, threads, requests);
+	public static void execute(TimeBasedFactory factory, int threads, int requests) {
+		UniquenessTest1 test = new UniquenessTest1(factory, threads, requests);
 		test.start();
 	}
 
-	private static TimeBasedUuidCreator newCreator() {
+	private static TimeBasedFactory newFactory() {
 		// a new generator that creates time-based UUIDs (v1),
 		// that uses a hash instead of a random node identifier,
 		// and that uses a fixed millisecond to simulate a loop faster than the clock
-		return UuidCreator.getTimeBasedCreator().withHashNodeIdentifier();
+		return new TimeBasedFactory.Builder().withHashNodeIdFunction().build();
 	}
 
 	public static void main(String[] args) {
@@ -151,10 +150,10 @@ public class UniquenessTest1 {
 		System.out.println("-----------------------------------------------------");
 
 		// SHARED generator for all threads
-		TimeBasedUuidCreator creator = newCreator();
+		TimeBasedFactory factory = newFactory();
 		int threadCount = 16; // Number of threads to run
 		int requestCount = 1_000_000; // Number of requests for thread
-		execute(creator, threadCount, requestCount);
+		execute(factory, threadCount, requestCount);
 
 		System.out.println();
 		System.out.println("------------------------------------------------------");
@@ -162,10 +161,10 @@ public class UniquenessTest1 {
 		System.out.println("------------------------------------------------------");
 
 		// Dedicated generators for each thread
-		creator = null;
+		factory = null;
 		threadCount = 16; // Number of threads to run
 		requestCount = 1_000_000; // Number of requests for thread
-		execute(creator, threadCount, requestCount);
+		execute(factory, threadCount, requestCount);
 
 	}
 }

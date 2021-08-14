@@ -4,7 +4,7 @@ import static com.github.f4b6a3.uuid.util.UuidUtil.*;
 import static org.junit.Assert.*;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.util.Random;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -12,11 +12,19 @@ import org.junit.Test;
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidLocalDomain;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
-import com.github.f4b6a3.uuid.strategy.TimestampStrategy;
-import com.github.f4b6a3.uuid.strategy.timestamp.FixedTimestampStretegy;
-import com.github.f4b6a3.uuid.util.UuidTime;
+import com.github.f4b6a3.uuid.factory.rfc4122.DceSecurityFactory;
+import com.github.f4b6a3.uuid.factory.rfc4122.TimeBasedFactory;
+import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedFactory;
 
 public class UuidUtilTest {
+
+	private static final Random random = new Random();
+	protected static final int DEFAULT_LOOP_MAX = 100;
+
+	private static final long GREG_TIMESTAMP_MASK = 0x0fffffffffffffffL;
+	private static final long DCE_TIMESTAMP_MASK = 0xffffffff00000000L;
+	private static final long CLOCK_SEQUENCE_MASK = 0x0000000000003fffL;
+	private static final long NODE_IDENTIFIER_MASK = 0x0000ffffffffffffL;
 
 	@Test
 	public void testIsNil() {
@@ -37,72 +45,107 @@ public class UuidUtilTest {
 	}
 
 	@Test
-	public void testExtractNodeIdentifier() {
-		long nodeIdentifier1 = 0x111111111111L;
-		UUID uuid = UuidCreator.getTimeBasedCreator().withNodeIdentifier(nodeIdentifier1).create();
-		long nodeIdentifier2 = extractNodeIdentifier(uuid);
-		assertEquals(nodeIdentifier1, nodeIdentifier2);
+	public void testCheckCompatibility() {
+		UUID uuid = UuidCreator.getTimeBased();
+		assertEquals(uuid.timestamp(), getTimestamp(uuid));
+		assertEquals(uuid.clockSequence(), getClockSequence(uuid));
+		assertEquals(uuid.node(), getNodeIdentifier(uuid));
+		assertEquals(uuid.version(), getVersion(uuid).getValue());
+		assertEquals(uuid.variant(), getVariant(uuid).getValue());
 	}
 
 	@Test
-	public void testExtractTimestamp() {
-		Instant instant1 = Instant.now().truncatedTo(ChronoUnit.MILLIS);
-		long timestamp1 = UuidTime.toTimestamp(instant1);
-		TimestampStrategy strategy = new FixedTimestampStretegy(instant1);
+	public void testGetTimestamp() {
 
-		UUID uuid = UuidCreator.getTimeBasedCreator().withTimestampStrategy(strategy).create();
-		long timestamp2 = extractTimestamp(uuid);
-		assertEquals(timestamp1, timestamp2);
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
-		uuid = UuidCreator.getTimeOrderedCreator().withTimestampStrategy(strategy).create();
-		timestamp2 = extractTimestamp(uuid);
-		assertEquals(timestamp1, timestamp2);
+			Instant instant = UuidTime.fromGregTimestamp(random.nextLong() & GREG_TIMESTAMP_MASK);
+			long unixTimestamp = UuidTime.toUnixTimestamp(instant);
+			long gregTimestamp = UuidTime.toGregTimestamp(instant);
+
+			TimeBasedFactory factory1 = TimeBasedFactory.builder().withTimeFunction(() -> unixTimestamp).build();
+			UUID uuid1 = factory1.create();
+			long gregTimestamp1 = getTimestamp(uuid1);
+			assertEquals(gregTimestamp, gregTimestamp1);
+
+			TimeOrderedFactory factory2 = TimeOrderedFactory.builder().withTimeFunction(() -> unixTimestamp).build();
+			UUID uuid2 = factory2.create();
+			long gregTimestamp2 = getTimestamp(uuid2);
+			assertEquals(gregTimestamp, gregTimestamp2);
+
+			DceSecurityFactory factory3 = DceSecurityFactory.builder().withTimeFunction(() -> unixTimestamp).build();
+			UUID uuid3 = factory3.create(UuidLocalDomain.LOCAL_DOMAIN_PERSON, 0);
+			long gregTimestamp3 = getTimestamp(uuid3);
+			assertEquals(gregTimestamp & 0xffffffff00000000L, gregTimestamp3);
+		}
 	}
 
 	@Test
-	public void testExtractInstant() {
-		Instant instant1 = Instant.now().truncatedTo(ChronoUnit.MILLIS);
-		TimestampStrategy strategy = new FixedTimestampStretegy(instant1);
+	public void testGetInstant() {
 
-		UUID uuid = UuidCreator.getTimeBasedCreator().withTimestampStrategy(strategy).create();
-		Instant instant2 = extractInstant(uuid);
-		assertEquals(instant1, instant2);
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
-		uuid = UuidCreator.getTimeOrderedCreator().withTimestampStrategy(strategy).create();
-		instant2 = extractInstant(uuid);
-		assertEquals(instant1, instant2);
+			Instant instant = UuidTime.fromGregTimestamp(random.nextLong() & GREG_TIMESTAMP_MASK);
+
+			TimeBasedFactory factory1 = TimeBasedFactory.builder().withInstant(instant).build();
+			UUID uuid1 = factory1.create();
+			Instant instant1 = getInstant(uuid1);
+			assertEquals(instant, instant1);
+
+			TimeOrderedFactory factory2 = TimeOrderedFactory.builder().withInstant(instant).build();
+			UUID uuid2 = factory2.create();
+			Instant instant2 = getInstant(uuid2);
+			assertEquals(instant, instant2);
+
+			DceSecurityFactory factory3 = DceSecurityFactory.builder().withInstant(instant).build();
+			UUID uuid3 = factory3.create(UuidLocalDomain.LOCAL_DOMAIN_PERSON, 0);
+			Instant instant3 = getInstant(uuid3);
+			assertEquals(UuidTime.fromGregTimestamp(UuidTime.toGregTimestamp(instant3) & DCE_TIMESTAMP_MASK), instant3);
+		}
 	}
 
 	@Test
-	public void testExtractUnixMilliseconds() {
-		long milliseconds1 = Instant.now().toEpochMilli();
-		TimestampStrategy strategy = new FixedTimestampStretegy(UuidTime.toTimestamp(milliseconds1));
-
-		UUID uuid = UuidCreator.getTimeBasedCreator().withTimestampStrategy(strategy).create();
-		long milliseconds2 = extractUnixMilliseconds(uuid);
-		assertEquals(milliseconds1, milliseconds2);
-
-		uuid = UuidCreator.getTimeOrderedCreator().withTimestampStrategy(strategy).create();
-		milliseconds2 = extractUnixMilliseconds(uuid);
-		assertEquals(milliseconds1, milliseconds2);
+	public void testGetClockSequence() {
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			long clockSequence1 = random.nextLong() & CLOCK_SEQUENCE_MASK;
+			UUID uuid = TimeBasedFactory.builder().withClockSeq(clockSequence1).build().create();
+			long clockSequence2 = getClockSequence(uuid);
+			assertEquals(clockSequence1, clockSequence2);
+		}
 	}
 
 	@Test
-	public void testExtractLocalDomain() {
-		UuidLocalDomain localDomain1 = UuidLocalDomain.LOCAL_DOMAIN_PERSON;
-		int localIdentifier1 = 1701;
-		UUID uuid = UuidCreator.getDceSecurity(localDomain1, localIdentifier1);
-		byte localDomain2 = extractLocalDomain(uuid);
-		assertEquals(localDomain1.getValue(), localDomain2);
+	public void testGetNodeIdentifier() {
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			long nodeIdentifier1 = random.nextLong() & NODE_IDENTIFIER_MASK;
+			UUID uuid = TimeBasedFactory.builder().withNodeId(nodeIdentifier1).build().create();
+			long nodeIdentifier2 = getNodeIdentifier(uuid);
+			assertEquals(nodeIdentifier1, nodeIdentifier2);
+		}
 	}
 
 	@Test
-	public void testExctractLocalIdentifier() {
-		UuidLocalDomain localDomain1 = UuidLocalDomain.LOCAL_DOMAIN_PERSON;
-		int localIdentifier1 = 1701;
-		UUID uuid = UuidCreator.getDceSecurity(localDomain1, localIdentifier1);
-		int localIdentifier2 = extractLocalIdentifier(uuid);
-		assertEquals(localIdentifier1, localIdentifier2);
+	public void testGetLocalDomain() {
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			int localIdentifier1 = random.nextInt();
+			byte localDomain1 = (byte) random.nextInt();
+			UUID uuid = UuidCreator.getDceSecurity(localDomain1, localIdentifier1);
+			byte localDomain2 = getLocalDomain(uuid);
+			assertEquals(localDomain1, localDomain2);
+		}
+	}
+
+	@Test
+	public void testGetLocalIdentifier() {
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			int localIdentifier1 = random.nextInt();
+			byte localDomain1 = (byte) random.nextInt();
+			UUID uuid = UuidCreator.getDceSecurity(localDomain1, localIdentifier1);
+			int localIdentifier2 = getLocalIdentifier(uuid);
+			assertEquals(localIdentifier1, localIdentifier2);
+		}
 	}
 
 	@Test
@@ -115,85 +158,47 @@ public class UuidUtilTest {
 	}
 
 	@Test
-	public void testExtractDceSecurityTimestamp() {
+	public void testGetAllCatchExceptions() {
 
-		UuidLocalDomain localDomain = UuidLocalDomain.LOCAL_DOMAIN_PERSON;
-		int localIdentifier = 1701;
-
-		Instant instant1 = Instant.now();
-		long timestamp1 = UuidTime.toTimestamp(instant1);
-		UUID uuid = UuidCreator.getDceSecurity(localDomain, localIdentifier);
-		long timestamp2 = extractTimestamp(uuid);
-
-		assertEquals(timestamp1 & 0xffffffff00000000L, timestamp2);
-	}
-
-	@Test
-	public void testExtractDceSecurityInstant() {
-
-		UuidLocalDomain localDomain = UuidLocalDomain.LOCAL_DOMAIN_PERSON;
-		int localIdentifier = 1701;
-
-		Instant instant1 = Instant.now();
-		UUID uuid = UuidCreator.getDceSecurity(localDomain, localIdentifier);
-
-		Instant instant2 = extractInstant(uuid);
-
-		// The expected Instant is trunked like the DCE Security does internally
-		long expectedTimestamp = UuidTime.toTimestamp(instant1) & 0xffffffff00000000L;
-		Instant expectedInstant = UuidTime.toInstant(expectedTimestamp);
-
-		assertEquals(expectedInstant, instant2);
-	}
-
-	@Test
-	public void testExtractAllCatchExceptions() {
 		UUID uuid = UUID.randomUUID();
 
 		try {
-			extractInstant(uuid);
+			getInstant(uuid);
 			fail();
 		} catch (IllegalArgumentException e) {
 			// Success
 		}
 
 		try {
-			extractTimestamp(uuid);
+			getTimestamp(uuid);
 			fail();
 		} catch (IllegalArgumentException e) {
 			// Success
 		}
 
 		try {
-			extractNodeIdentifier(uuid);
+			getClockSequence(uuid);
 			fail();
 		} catch (IllegalArgumentException e) {
 			// Success
 		}
 
 		try {
-			extractInstant(uuid);
+			getNodeIdentifier(uuid);
 			fail();
 		} catch (IllegalArgumentException e) {
 			// Success
 		}
 
 		try {
-			extractTimestamp(uuid);
+			getLocalDomain(uuid);
 			fail();
 		} catch (IllegalArgumentException e) {
 			// Success
 		}
 
 		try {
-			extractLocalDomain(uuid);
-			fail();
-		} catch (IllegalArgumentException e) {
-			// Success
-		}
-
-		try {
-			extractLocalIdentifier(uuid);
+			getLocalIdentifier(uuid);
 			fail();
 		} catch (IllegalArgumentException e) {
 			// Success
