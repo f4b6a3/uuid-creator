@@ -121,7 +121,7 @@ Create a [Short Prefix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.3.-Sh
 UUID uuid = UuidCreator.getShortPrefixComb();
 ```
 
-Create a [Short Suffix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.4.-Short-Prefix-COMB) GUID:
+Create a [Short Suffix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.4.-Short-Suffix-COMB) GUID:
 
 ```java
 UUID uuid = UuidCreator.getShortSuffixComb();
