@@ -89,7 +89,7 @@ public final class UuidTime {
 	 * This method converts an {@code Instant} into a number of 100-nanoseconds
 	 * since 1970-01-01 (Unix epoch).
 	 * 
-	 * @param unixMillis an instant
+	 * @param instant an instant
 	 * @return a number of 100-nanoseconds since 1970-01-01 (Unix epoch).
 	 */
 	public static long toUnixTimestamp(final Instant instant) {
@@ -102,7 +102,7 @@ public final class UuidTime {
 	 * This method converts an {@code Instant} into a number of 100-nanoseconds
 	 * since 1582-10-15 (Gregorian epoch).
 	 * 
-	 * @param unixMillis an instant
+	 * @param instant an instant
 	 * @return a number of 100-nanoseconds since 1582-10-15 (Gregorian epoch).
 	 */
 	public static long toGregTimestamp(final Instant instant) {

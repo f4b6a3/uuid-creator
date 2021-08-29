@@ -83,9 +83,6 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	/**
 	 * Returns a name-based UUID.
 	 * 
-	 * The (optional) namespace to be used is set by
-	 * {@link AbstNameBasedFactory#withNamespace(UUID)}
-	 * 
 	 * @param name a byte array of the name
 	 * @return a name-based UUID
 	 */
@@ -95,9 +92,6 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 
 	/**
 	 * Returns a name-based UUID.
-	 *
-	 * The (optional) namespace to be used is set by
-	 * {@link AbstNameBasedFactory#withNamespace(UUID)}
 	 * 
 	 * The name string is encoded into a sequence of bytes using the UTF-8
 	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
@@ -117,10 +111,7 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	/**
 	 * Returns a name-based UUID.
 	 * 
-	 * The (optional) namespace to be used is set by
-	 * {@link AbstNameBasedFactory#withNamespace(UUID)}
-	 * 
-	 * @param UUID a UUID
+	 * @param name a UUID
 	 * @return a name-based UUID
 	 */
 	public UUID create(final UUID name) {

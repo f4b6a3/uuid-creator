@@ -33,7 +33,7 @@ import com.github.f4b6a3.uuid.util.UuidTime;
 /**
  * It must return a number of 100-nanoseconds since 1970-01-01 (Unix epoch).
  * 
- * Use {@link TimeFunction#toTimestamp()} to convert the output to
+ * Use {@link TimeFunction#toTimestamp(Instant)} to convert the output to
  * 100-nanoseconds since 1970-01-01 (Unix epoch). It also sets the output within
  * the range 0 to 2^60-1.
  * 

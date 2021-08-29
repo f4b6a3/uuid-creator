@@ -205,7 +205,7 @@ public final class DceSecurityFactory extends AbstTimeBasedFactory {
 	 * Returns a DCE Security UUID.
 	 * 
 	 * The local domain is fixed using
-	 * {@link DceSecurityFactory#withLocalDomain(UuidLocalDomain)}
+	 * {@code DceSecurityFactory.builder().withLocalDomain(UuidLocalDomain).build()}
 	 * 
 	 * See {@link DceSecurityFactory#create(byte, int)}
 	 * 
