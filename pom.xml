@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.github.f4b6a3</groupId>
@@ -72,7 +74,16 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
+							<!-- Java Modularity -->
 							<Automatic-Module-Name>${module.name}</Automatic-Module-Name>
+							<!-- OSGi Modularity -->
+							<Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+							<Bundle-Name>${project.artifactId}</Bundle-Name>
+							<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+							<Bundle-Version>${project.version}</Bundle-Version>
+							<Export-Package>
+								com.github.f4b6a3.uuid;uses:="com.github.f4b6a3.uuid.enums",com.github.f4b6a3.uuid.codec,com.github.f4b6a3.uuid.codec.base;uses:="com.github.f4b6a3.uuid.codec,com.github.f4b6a3.uuid.codec.base.function,com.github.f4b6a3.uuid.util.immutable",com.github.f4b6a3.uuid.codec.base.function;uses:="com.github.f4b6a3.uuid.codec.base,com.github.f4b6a3.uuid.util.immutable",com.github.f4b6a3.uuid.codec.other;uses:="com.github.f4b6a3.uuid.codec,com.github.f4b6a3.uuid.codec.base",com.github.f4b6a3.uuid.enums,com.github.f4b6a3.uuid.exception,com.github.f4b6a3.uuid.factory;uses:="com.github.f4b6a3.uuid.enums,com.github.f4b6a3.uuid.factory.function",com.github.f4b6a3.uuid.factory.function,com.github.f4b6a3.uuid.factory.function.impl;uses:="com.github.f4b6a3.uuid.factory.function",com.github.f4b6a3.uuid.factory.nonstandard;uses:="com.github.f4b6a3.uuid.factory,com.github.f4b6a3.uuid.factory.function",com.github.f4b6a3.uuid.factory.rfc4122;uses:="com.github.f4b6a3.uuid.enums,com.github.f4b6a3.uuid.factory,com.github.f4b6a3.uuid.factory.function",com.github.f4b6a3.uuid.util;uses:="com.github.f4b6a3.uuid.enums",com.github.f4b6a3.uuid.util.immutable
+							</Export-Package>
 						</manifestEntries>
 					</archive>
 				</configuration>
