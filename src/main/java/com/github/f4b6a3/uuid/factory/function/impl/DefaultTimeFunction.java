@@ -36,7 +36,7 @@ public final class DefaultTimeFunction implements TimeFunction {
 	// initialize the counter with a number between 0 and 255
 	private long counter = RandomUtil.nextLong() & COUNTER_MASK;
 
-	// used to reset the accumulator to a number between 0 and 255
+	// used to reset the counter to a number between 0 and 255
 	private static final long COUNTER_MASK = 0xff; // 255
 
 	@Override
@@ -48,7 +48,7 @@ public final class DefaultTimeFunction implements TimeFunction {
 		if (time == prevTime) {
 			// increment the counter
 			if (++counter >= TICKS_PER_MILLI) {
-				// if the accumulator goes beyond the limit:
+				// if the counter goes beyond the limit:
 				while (time == System.currentTimeMillis()) {
 					// wait the time change for the next call
 				}

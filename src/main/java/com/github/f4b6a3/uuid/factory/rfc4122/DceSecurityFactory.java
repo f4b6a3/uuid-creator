@@ -63,7 +63,7 @@ public final class DceSecurityFactory extends AbstTimeBasedFactory {
 
 	private AtomicInteger counter;
 
-	private byte localDomain;
+	private final byte localDomain;
 
 	public DceSecurityFactory() {
 		this(null);

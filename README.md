@@ -1,4 +1,4 @@
-# ULID Creator
+# UUID Creator
 
 A Java library for generating and handling RFC-4122 UUIDs.
 
@@ -49,49 +49,65 @@ UUID uuid = UuidCreator.getRandomBased();
 Create a [Time-based](https://github.com/f4b6a3/uuid-creator/wiki/1.1.-Time-based) UUID:
 
 ```java
-// with static random node ID
+// with a static random node ID
 UUID uuid = UuidCreator.getTimeBased();
-// with MAC address node ID
+```
+```java
+// with a MAC address node ID
 UUID uuid = UuidCreator.getTimeBasedWithMac();
-// with hash of Hostname+MAC+IP node ID
+```
+```java
+// with a hash of Hostname+MAC+IP node ID
 UUID uuid = UuidCreator.getTimeBasedWithHash();
-// with always changing random node ID
+```
+```java
+// with a changing random node ID
 UUID uuid = UuidCreator.getTimeBasedWithRandom();
 ```
 
 Create a [Time-ordered](https://github.com/f4b6a3/uuid-creator/wiki/1.6.-Time-ordered) UUID:
 
 ```java
-// with static random node ID
+// with a static random node ID
 UUID uuid = UuidCreator.getTimeOrdered();
-// with MAC address node ID
+```
+```java
+// with a MAC address node ID
 UUID uuid = UuidCreator.getTimeOrderedWithMac();
-// with hash of Hostname+MAC+IP node ID
+```
+```java
+// with a hash of Hostname+MAC+IP node ID
 UUID uuid = UuidCreator.getTimeOrderedWithHash();
-// with always changing random node ID
+```
+```java
+// with a changing random node ID
 UUID uuid = UuidCreator.getTimeOrderedWithRandom();
 ```
 
 Create a [Name-based with MD5](https://github.com/f4b6a3/uuid-creator/wiki/1.3.-Name-based-with-MD5) UUID:
 
 ```java
-String name = "https://github.com/";
-UuidNamespace namespace = UuidNamespace.NAMESPACE_URL;
 // without namespace
+String name = "https://github.com/";
 UUID uuid = UuidCreator.getNameBasedMd5(name);
+```
+```java
 // with namespace
-UUID uuid = UuidCreator.getNameBasedMd5(namespace, name);
+String name = "https://github.com/";
+UUID uuid = UuidCreator.getNameBasedMd5(UuidNamespace.NAMESPACE_URL, name);
 ```
 
 Create a [Name-based with SHA-1](https://github.com/f4b6a3/uuid-creator/wiki/1.5.-Name-based-with-SHA-1) UUID:
 
 ```java
-String name = "https://github.com/";
-UuidNamespace namespace = UuidNamespace.NAMESPACE_URL;
 // without namespace
+String name = "https://github.com/";
 UUID uuid = UuidCreator.getNameBasedSha1(name);
+```
+```java
 // with namespace
-UUID uuid = UuidCreator.getNameBasedSha1(namespace, name);
+String name = "https://github.com/";
+UUID uuid = UuidCreator.getNameBasedSha1(UuidNamespace.NAMESPACE_URL, name);
 ```
 
 Create a [DCE Security](https://github.com/f4b6a3/uuid-creator/wiki/1.2.-DCE-Security) UUID:
@@ -141,9 +157,9 @@ UuidValidator.validate(uuid); // Throws an exception if INVALID
 Check  the version of UUID:
 
 ```java
-UuidUtil.isRandomBased(uuid);
 UuidUtil.isTimeBased(uuid);
 UuidUtil.isTimeOrdered(uuid);
+UuidUtil.isRandomBased(uuid);
 ```
 Extract information from a UUID:
 
@@ -158,10 +174,10 @@ UuidVariant variant = UuidUtil.getVariant(uuid);
 Extract information from a COMB GUID:
 
 ```java
+long prefix = UuidUtil.getPrefix(comb); // Unix milliseconds
+long suffix = UuidUtil.getSuffix(comb); // Unix milliseconds
 Instant instant = UuidUtil.getPrefixInstant(comb);
 Instant instant = UuidUtil.getSuffixInstant(comb);
-long prefix = UuidUtil.getPrefix(comb); // Equivalent to Unix milliseconds
-long suffix = UuidUtil.getSuffix(comb); // Equivalent to Unix milliseconds
 ```
 
 Get the machine ID:
@@ -186,9 +202,9 @@ UUID uuid = BinaryCodec.INSTANCE.decode(bytes);
 Convert a UUID to and from [canonical string](https://github.com/f4b6a3/uuid-creator/wiki/4.0.-Library-codecs#stringcodec):
 
 ```java
-// It is much faster (7x) than `UUID.toString(UUID)` in JDK 8.
+// It is 7x faster than `UUID.toString()` in JDK 8.
 String string = StringCodec.INSTANCE.encode(uuid);
-// It is much faster (7x) than `UUID.fromString(String)` in JDK 8.
+// It is 7x faster than `UUID.fromString()` in JDK 8.
 UUID uuid = StringCodec.INSTANCE.decode(string);
 ```
 
@@ -212,7 +228,7 @@ Convert a UUID to and from [base-n](https://github.com/f4b6a3/uuid-creator/wiki/
 ```java
 // uuid::: 01234567-89AB-4DEF-A123-456789ABCDEF
 // base16: 0123456789ab4defa123456789abcdef
-// It is much faster (22x) `UUID.toString().replaceAll("-", "")`.
+// It is 22x faster than `UUID.toString().replaceAll("-", "")`.
 String string = Base16Codec.INSTANCE.encode(uuid);
 UUID uuid = Base16Codec.INSTANCE.decode(string);
 ```
@@ -245,10 +261,10 @@ String string = Base64UrlCodec.INSTANCE.encode(uuid);
 UUID uuid = Base64UrlCodec.INSTANCE.decode(string);
 ```
 
-Convert a UUID to and from a custom base-n:
+Convert a UUID to and from a *custom* base-n:
 
 ```java
-// Returns a base-20 string using a custom radix
+// Returns a base-20 string using a CUSTOM radix (20)
 // uuid::: 01234567-89AB-4DEF-A123-456789ABCDEF
 // base20: 00b5740h195313554732654bjhj9e7
 int radix = 20; // expanded to alphabet "0123456789abcdefghij"
@@ -257,7 +273,7 @@ String string = codec.encode(uuid);
 ```
 
 ```java
-// Returns a base-10 string using the custom alphabet "0-9"
+// Returns a base-10 string using a CUSTOM alphabet ("0-9")
 // uuid::: 01234567-89AB-4DEF-A123-456789ABCDEF
 // base10: 001512366075203566477668990085887675887
 String alphabet = "0-9"; // expanded to alphabet "0123456789"
@@ -298,4 +314,4 @@ UUID guid = DotNetGuid4Codec.INSTANCE.encode(timeUuid);
 UUID guid = DotNetGuid4Codec.INSTANCE.encode(randomUuid);
 ```
 
-// end
+// the end

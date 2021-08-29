@@ -59,19 +59,6 @@ import com.github.f4b6a3.uuid.util.UuidTime;
 public interface TimeFunction extends LongSupplier {
 
 	/**
-	 * This method clears the unnecessary leading bits so that the resulting number
-	 * is within the range 0 to 2^60-1.
-	 * 
-	 * The result is equivalent to {@code n % 2^60}.
-	 * 
-	 * @param timestamp a number of 100-nanoseconds since 1970-01-01 (Unix epoch)
-	 * @return the time within the range 0 to 2^60-1.
-	 */
-	public static long toExpectedRange(long timestamp) {
-		return timestamp & 0x0fffffffffffffffL;
-	}
-
-	/**
 	 * Converts an instant to a number of 100-nanoseconds since 1970-01-01 (Unix
 	 * epoch).
 	 * 
@@ -79,7 +66,6 @@ public interface TimeFunction extends LongSupplier {
 	 * @return a number of 100-nanoseconds since 1970-01-01 (Unix epoch)
 	 */
 	public static long toTimestamp(final Instant instant) {
-		final long timestamp = UuidTime.toUnixTimestamp(instant);
-		return toExpectedRange(timestamp);
+		return UuidTime.toUnixTimestamp(instant);
 	}
 }

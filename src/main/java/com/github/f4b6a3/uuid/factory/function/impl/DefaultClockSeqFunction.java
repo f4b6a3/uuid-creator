@@ -34,7 +34,7 @@ import com.github.f4b6a3.uuid.factory.function.ClockSeqFunction;
 public final class DefaultClockSeqFunction implements ClockSeqFunction {
 
 	private AtomicInteger sequence;
-	private long previousTimestamp = 0;
+	private long prevTimestamp = -1;
 
 	protected static final ClockSeqPool POOL = new ClockSeqPool();
 
@@ -60,11 +60,11 @@ public final class DefaultClockSeqFunction implements ClockSeqFunction {
 	 */
 	@Override
 	public long applyAsLong(final long timestamp) {
-		if (timestamp > this.previousTimestamp) {
-			this.previousTimestamp = timestamp;
+		if (timestamp > this.prevTimestamp) {
+			this.prevTimestamp = timestamp;
 			return this.sequence.get();
 		}
-		this.previousTimestamp = timestamp;
+		this.prevTimestamp = timestamp;
 		return this.next();
 	}
 
