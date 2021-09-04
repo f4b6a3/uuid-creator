@@ -25,7 +25,7 @@
 
 	<properties>
 		<jdk.version>8</jdk.version>
-		<module.name>com.github.f4b6a3.uuid</module.name>
+		<package.name>com.github.f4b6a3.uuid</package.name>
 		<maven.compiler.source>${jdk.version}</maven.compiler.source>
 		<maven.compiler.target>${jdk.version}</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -73,11 +73,11 @@
 					<archive>
 						<manifestEntries>
 							<!-- Java Modularity -->
-							<Automatic-Module-Name>${module.name}</Automatic-Module-Name>
+							<Automatic-Module-Name>${package.name}</Automatic-Module-Name>
 							<!-- OSGi Modularity -->
 							<Bundle-ManifestVersion>2</Bundle-ManifestVersion>
 							<Bundle-Name>${project.artifactId}</Bundle-Name>
-							<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+							<Bundle-SymbolicName>${package.name}</Bundle-SymbolicName>
 							<Bundle-Version>${project.version}</Bundle-Version>
 							<Export-Package>
 								com.github.f4b6a3.uuid;uses:="com.github.f4b6a3.uuid.enums",com.github.f4b6a3.uuid.codec,com.github.f4b6a3.uuid.codec.base;uses:="com.github.f4b6a3.uuid.codec,com.github.f4b6a3.uuid.codec.base.function,com.github.f4b6a3.uuid.util.immutable",com.github.f4b6a3.uuid.codec.base.function;uses:="com.github.f4b6a3.uuid.codec.base,com.github.f4b6a3.uuid.util.immutable",com.github.f4b6a3.uuid.codec.other;uses:="com.github.f4b6a3.uuid.codec,com.github.f4b6a3.uuid.codec.base",com.github.f4b6a3.uuid.enums,com.github.f4b6a3.uuid.exception,com.github.f4b6a3.uuid.factory;uses:="com.github.f4b6a3.uuid.enums,com.github.f4b6a3.uuid.factory.function",com.github.f4b6a3.uuid.factory.function,com.github.f4b6a3.uuid.factory.function.impl;uses:="com.github.f4b6a3.uuid.factory.function",com.github.f4b6a3.uuid.factory.nonstandard;uses:="com.github.f4b6a3.uuid.factory,com.github.f4b6a3.uuid.factory.function",com.github.f4b6a3.uuid.factory.rfc4122;uses:="com.github.f4b6a3.uuid.enums,com.github.f4b6a3.uuid.factory,com.github.f4b6a3.uuid.factory.function",com.github.f4b6a3.uuid.util;uses:="com.github.f4b6a3.uuid.enums",com.github.f4b6a3.uuid.util.immutable

@@ -6,6 +6,22 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [4.1.0] - 2021-09-04
+
+Finish adding OSGi entries to Manifest.MF. #46
+
+Module and bundle names are the same as the root package name.
+
+The OSGi symbolic name is the same as the JPMS module name: `com.github.f4b6a3.uuid`.
+
+## [4.0.2] - 2021-08-29
+
+Add another OSGi entry to Manifest.MF to require Java 8 #46
+
+## [4.0.1] - 2021-08-29
+
+Add OSGi entries to Manifest.MF #46
+
 ## [4.0.0] - 2021-08-14
 
 The code was restructured. This version contains has breaking changes.
@@ -239,7 +255,10 @@ Remove `Fingerprint` // too complex
 - Removed UuidSettings.getNodeIdentifierDeprecated // remove deprecated
 - Renamed UuidSettings to UuidCreatorSettings
 
-[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.0.0...HEAD
+[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.1.0...HEAD
+[4.1.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.0.2...uuid-creator-4.1.0
+[4.0.2]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.0.1...uuid-creator-4.0.2
+[4.0.1]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.0.0...uuid-creator-4.0.1
 [4.0.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-3.7.3...uuid-creator-4.0.0
 [3.7.3]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-3.7.2...uuid-creator-3.7.3
 [3.7.2]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-3.7.1...uuid-creator-3.7.2
