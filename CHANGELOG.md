@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [4.1.1] - 2021-09-13
+
+More optimization for all base-n codecs. #47
+
+Added codecs for base-16, base-32 and base-36 in upper case.
+
+Added more test cases for base-n codecs.
+
 ## [4.1.0] - 2021-09-04
 
 Finish adding OSGi entries to Manifest.MF. #46
@@ -255,7 +263,8 @@ Remove `Fingerprint` // too complex
 - Removed UuidSettings.getNodeIdentifierDeprecated // remove deprecated
 - Renamed UuidSettings to UuidCreatorSettings
 
-[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.1.0...HEAD
+[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.1.1...HEAD
+[4.1.1]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.1.0...uuid-creator-4.1.1
 [4.1.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.0.2...uuid-creator-4.1.0
 [4.0.2]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.0.1...uuid-creator-4.0.2
 [4.0.1]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.0.0...uuid-creator-4.0.1
