@@ -16,6 +16,13 @@ import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 
 import com.github.f4b6a3.uuid.UuidCreator;
+import com.github.f4b6a3.uuid.codec.UuidCodec;
+import com.github.f4b6a3.uuid.codec.base.Base16Codec;
+import com.github.f4b6a3.uuid.codec.base.Base32Codec;
+import com.github.f4b6a3.uuid.codec.base.Base36Codec;
+import com.github.f4b6a3.uuid.codec.base.Base58Codec;
+import com.github.f4b6a3.uuid.codec.base.Base62Codec;
+import com.github.f4b6a3.uuid.codec.base.Base64Codec;
 
 @Fork(1)
 @Threads(1)
@@ -26,9 +33,9 @@ import com.github.f4b6a3.uuid.UuidCreator;
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class Throughput {
 
-	UUID uuid = UUID.randomUUID();
-	String string = uuid.toString();
-	private byte[] bytes = "http://www.github.com".getBytes();
+	String string = "01234567-89ab-cdef-0123-456789abcdef";
+	UUID uuid = UUID.fromString(string);
+	private byte[] bytes = "http:www.github.com".getBytes();
 	
 	/*********** JDK UUID ***********/
 	
@@ -98,4 +105,73 @@ public class Throughput {
 	public UUID UuidCreator09_TimeOrdered() {
 		return UuidCreator.getTimeOrdered();
 	}
+	
+	/*********** UUID Codecs ************/
+	
+//	String base16 = Base16Codec.INSTANCE.encode(uuid);
+//	String base32 = Base32Codec.INSTANCE.encode(uuid);
+//	String base36 = Base36Codec.INSTANCE.encode(uuid);
+//	String base58 = Base58Codec.INSTANCE.encode(uuid);
+//	String base62 = Base62Codec.INSTANCE.encode(uuid);
+//	String base64 = Base64Codec.INSTANCE.encode(uuid);
+//	
+//	@Benchmark
+//	public UUID Base16Codec_decode() {
+//		return Base16Codec.INSTANCE.decode(base16);
+//	}
+//	
+//	@Benchmark
+//	public UUID Base32Codec_decode() {
+//		return Base32Codec.INSTANCE.decode(base32);
+//	}
+//	
+//	@Benchmark
+//	public UUID Base36Codec_decode() {
+//		return Base36Codec.INSTANCE.decode(base36);
+//	}
+//	
+//	@Benchmark
+//	public UUID Base58Codec_decode() {
+//		return Base58Codec.INSTANCE.decode(base58);
+//	}
+//	
+//	@Benchmark
+//	public UUID Base62Codec_decode() {
+//		return Base62Codec.INSTANCE.decode(base62);
+//	}
+//	
+//	@Benchmark
+//	public UUID Base64Codec_decode() {
+//		return Base64Codec.INSTANCE.decode(base64);
+//	}
+//	
+//	@Benchmark
+//	public String Base16Codec_encode() {
+//		return Base16Codec.INSTANCE.encode(uuid);
+//	}
+//	
+//	@Benchmark
+//	public String Base32Codec_encode() {
+//		return Base32Codec.INSTANCE.encode(uuid);
+//	}
+//	
+//	@Benchmark
+//	public String Base36Codec_encode() {
+//		return Base36Codec.INSTANCE.encode(uuid);
+//	}
+//	
+//	@Benchmark
+//	public String Base58Codec_encode() {
+//		return Base58Codec.INSTANCE.encode(uuid);
+//	}
+//	
+//	@Benchmark
+//	public String Base62Codec_encode() {
+//		return Base62Codec.INSTANCE.encode(uuid);
+//	}
+//	
+//	@Benchmark
+//	public String Base64Codec_encode() {
+//		return Base64Codec.INSTANCE.encode(uuid);
+//	}
 }

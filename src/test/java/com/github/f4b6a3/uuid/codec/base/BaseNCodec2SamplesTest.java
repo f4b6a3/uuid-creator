@@ -23,6 +23,16 @@ public class BaseNCodec2SamplesTest {
 	}
 
 	@Test
+	public void testEncodeBase16Upper() {
+		for (int i = 0; i < SAMPLES_BASE_16.length; i++) {
+			UUID uuid = UUID.fromString(SAMPLES_BASE_16[i][0]);
+			String expected = SAMPLES_BASE_16[i][1].toUpperCase();
+			String actual = Base16UCodec.INSTANCE.encode(uuid);
+			assertEquals(expected, actual);
+		}
+	}
+
+	@Test
 	public void testDecodeBase16() {
 		for (int i = 0; i < SAMPLES_BASE_16.length; i++) {
 			String string = SAMPLES_BASE_16[i][1];
@@ -38,6 +48,16 @@ public class BaseNCodec2SamplesTest {
 			UUID uuid = UUID.fromString(SAMPLES_BASE_32[i][0]);
 			String expected = SAMPLES_BASE_32[i][1];
 			String actual = Base32Codec.INSTANCE.encode(uuid);
+			assertEquals(expected, actual);
+		}
+	}
+
+	@Test
+	public void testEncodeBase32Upper() {
+		for (int i = 0; i < SAMPLES_BASE_32.length; i++) {
+			UUID uuid = UUID.fromString(SAMPLES_BASE_32[i][0]);
+			String expected = SAMPLES_BASE_32[i][1].toUpperCase();
+			String actual = Base32UCodec.INSTANCE.encode(uuid);
 			assertEquals(expected, actual);
 		}
 	}

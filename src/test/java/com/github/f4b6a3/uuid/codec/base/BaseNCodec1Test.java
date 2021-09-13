@@ -36,6 +36,20 @@ public class BaseNCodec1Test {
 	}
 
 	@Test
+	public void testEncodeBase16Upper() {
+
+		final UuidCodec<String> codec = new Base16UCodec();
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			UUID uuid = UUID.randomUUID();
+			byte[] bytes = CODEC_BYTES.encode(uuid);
+			BigInteger n = new BigInteger(1, bytes);
+			String string = zerofill(n.toString(16), 32).toUpperCase();
+			String actual = codec.encode(uuid);
+			assertEquals(string, actual);
+		}
+	}
+
+	@Test
 	public void testDecodeBase16() {
 
 		final UuidCodec<String> codec = new Base16Codec();
@@ -52,9 +66,27 @@ public class BaseNCodec1Test {
 	@Test
 	public void testEncodeBase32() {
 
-		char[] alphabet = BaseN.BASE_32.getAlphabet().array();
+		final BaseNCodec codec = new Base32Codec();
+		char[] alphabet = codec.getBase().getAlphabet().array();
 
-		final UuidCodec<String> codec = new Base32Codec();
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			UUID uuid = UUID.randomUUID();
+			byte[] bytes = CODEC_BYTES.encode(uuid);
+			byte[] padded = getPadded(bytes);
+			BigInteger n = new BigInteger(1, padded);
+			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet) //
+					.substring(0, 26); // remove padding
+			String actual = codec.encode(uuid);
+			assertEquals(string, actual);
+		}
+	}
+
+	@Test
+	public void testEncodeBase32Upper() {
+
+		final BaseNCodec codec = new Base32UCodec();
+		char[] alphabet = codec.getBase().getAlphabet().array();
+
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUID.randomUUID();
 			byte[] bytes = CODEC_BYTES.encode(uuid);
@@ -70,9 +102,9 @@ public class BaseNCodec1Test {
 	@Test
 	public void testDecodeBase32() {
 
-		char[] alphabet = BaseN.BASE_32.getAlphabet().array();
+		final BaseNCodec codec = new Base32Codec();
+		char[] alphabet = codec.getBase().getAlphabet().array();
 
-		final UuidCodec<String> codec = new Base32Codec();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUID.randomUUID();
 			byte[] bytes = CODEC_BYTES.encode(uuid);
@@ -88,9 +120,27 @@ public class BaseNCodec1Test {
 	@Test
 	public void testEncodeBase32Hex() {
 
-		char[] alphabet = BaseN.BASE_32_HEX.getAlphabet().array();
+		final BaseNCodec codec = new Base32HexCodec();
+		char[] alphabet = codec.getBase().getAlphabet().array();
 
-		final UuidCodec<String> codec = new Base32HexCodec();
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			UUID uuid = UUID.randomUUID();
+			byte[] bytes = CODEC_BYTES.encode(uuid);
+			byte[] padded = getPadded(bytes);
+			BigInteger n = new BigInteger(1, padded);
+			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet) //
+					.substring(0, 26); // remove padding
+			String actual = codec.encode(uuid);
+			assertEquals(string, actual);
+		}
+	}
+
+	@Test
+	public void testEncodeBase32HexUpper() {
+
+		final BaseNCodec codec = new Base32UHexCodec();
+		char[] alphabet = codec.getBase().getAlphabet().array();
+
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUID.randomUUID();
 			byte[] bytes = CODEC_BYTES.encode(uuid);
@@ -106,9 +156,9 @@ public class BaseNCodec1Test {
 	@Test
 	public void testDecodeBase32Hex() {
 
-		char[] alphabet = BaseN.BASE_32_HEX.getAlphabet().array();
+		final BaseNCodec codec = new Base32HexCodec();
+		char[] alphabet = codec.getBase().getAlphabet().array();
 
-		final UuidCodec<String> codec = new Base32HexCodec();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUID.randomUUID();
 			byte[] bytes = CODEC_BYTES.encode(uuid);
@@ -124,9 +174,27 @@ public class BaseNCodec1Test {
 	@Test
 	public void testEncodeBase32Crockford() {
 
-		char[] alphabet = BaseN.BASE_32_CROCKFORD.getAlphabet().array();
+		final BaseNCodec codec = new Base32CrockfordCodec();
+		char[] alphabet = codec.getBase().getAlphabet().array();
 
-		final UuidCodec<String> codec = new Base32CrockfordCodec();
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			UUID uuid = UUID.randomUUID();
+			byte[] bytes = CODEC_BYTES.encode(uuid);
+			byte[] padded = getPadded(bytes);
+			BigInteger n = new BigInteger(1, padded);
+			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet) //
+					.substring(0, 26); // remove padding
+			String actual = codec.encode(uuid);
+			assertEquals(string, actual);
+		}
+	}
+
+	@Test
+	public void testEncodeBase32CrockfordUpper() {
+
+		final BaseNCodec codec = new Base32UCrockfordCodec();
+		char[] alphabet = codec.getBase().getAlphabet().array();
+
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUID.randomUUID();
 			byte[] bytes = CODEC_BYTES.encode(uuid);
@@ -142,9 +210,9 @@ public class BaseNCodec1Test {
 	@Test
 	public void testDecodeBase32Crockford() {
 
-		char[] alphabet = BaseN.BASE_32_CROCKFORD.getAlphabet().array();
+		final BaseNCodec codec = new Base32CrockfordCodec();
+		char[] alphabet = codec.getBase().getAlphabet().array();
 
-		final UuidCodec<String> codec = new Base32CrockfordCodec();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUID.randomUUID();
 			byte[] bytes = CODEC_BYTES.encode(uuid);
@@ -229,7 +297,21 @@ public class BaseNCodec1Test {
 			assertEquals(uuid, codec.decode(string)); // decode back
 		}
 
+		codec = new Base16UCodec();
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			UUID uuid = UUID.randomUUID();
+			String string = codec.encode(uuid); // encode
+			assertEquals(uuid, codec.decode(string)); // decode back
+		}
+
 		codec = new Base32Codec();
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			UUID uuid = UUID.randomUUID();
+			String ncname = codec.encode(uuid); // encode
+			assertEquals(uuid, codec.decode(ncname)); // decode back
+		}
+
+		codec = new Base32UCodec();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUID.randomUUID();
 			String ncname = codec.encode(uuid); // encode
@@ -243,7 +325,21 @@ public class BaseNCodec1Test {
 			assertEquals(uuid, codec.decode(string)); // decode back
 		}
 
+		codec = new Base32UHexCodec();
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			UUID uuid = UUID.randomUUID();
+			String string = codec.encode(uuid); // encode
+			assertEquals(uuid, codec.decode(string)); // decode back
+		}
+
 		codec = new Base32CrockfordCodec();
+		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			UUID uuid = UUID.randomUUID();
+			String string = codec.encode(uuid); // encode
+			assertEquals(uuid, codec.decode(string)); // decode back
+		}
+
+		codec = new Base32UCrockfordCodec();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUID.randomUUID();
 			String string = codec.encode(uuid); // encode

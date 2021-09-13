@@ -25,6 +25,16 @@ public class BaseNCodec3SamplesTest {
 	}
 
 	@Test
+	public void testEncodeBase36Upper() {
+		for (int i = 0; i < SAMPLES_BASE_36.length; i++) {
+			UUID uuid = UUID.fromString(SAMPLES_BASE_36[i][0]);
+			String expected = SAMPLES_BASE_36[i][1].toUpperCase();
+			String actual = Base36UCodec.INSTANCE.encode(uuid);
+			assertEquals(expected, actual);
+		}
+	}
+
+	@Test
 	public void testDecodeBase36() {
 		for (int i = 0; i < SAMPLES_BASE_36.length; i++) {
 			String string = SAMPLES_BASE_36[i][1];
