@@ -33,32 +33,19 @@ import com.github.f4b6a3.uuid.util.immutable.LongArray;
  */
 public final class BaseN {
 
-	public static final BaseN BASE_16 = new BaseN("0-9a-f");
-	public static final BaseN BASE_32 = new BaseN("a-z2-7");
-	public static final BaseN BASE_32_HEX = new BaseN("0-9a-v");
-	public static final BaseN BASE_32_CROCKFORD = new BaseN("0123456789abcdefghjkmnpqrstvwxyz");
-	public static final BaseN BASE_36 = new BaseN("0-9a-z");
-	public static final BaseN BASE_58 = new BaseN("0-9A-Za-v");
-	public static final BaseN BASE_58_BITCOIN = new BaseN("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz");
-	public static final BaseN BASE_58_FLICKR = new BaseN("123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ");
-	public static final BaseN BASE_62 = new BaseN("0-9A-Za-z");
-	public static final BaseN BASE_64 = new BaseN("A-Za-z0-9+/");
-	public static final BaseN BASE_64_URL = new BaseN("A-Za-z0-9-_");
+	private final int radix;
+	private final int length;
+	private final char padding;
+	private final boolean sensitive;
 
-	private int radix;
-	private int length;
-	private boolean sensitive;
-	private char padding;
-
-	// alphabet chars
 	private final CharArray alphabet;
-
-	// ASCII map
-	// each char is mapped to a value
 	private final LongArray map;
 
 	protected static final int RADIX_MIN = 2;
 	protected static final int RADIX_MAX = 64;
+
+	protected static final String ALPHABET_36 = "0123456789abcdefghijklmnopqrstuvwxyz";
+	protected static final String ALPHABET_64 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
 
 	private static final int BIT_LENGTH = 128;
 
@@ -94,7 +81,7 @@ public final class BaseN {
 	 * @param radix the radix to be used
 	 */
 	public BaseN(int radix) {
-		this(alphabet(radix));
+		this(expand(radix));
 	}
 
 	/**
@@ -133,26 +120,30 @@ public final class BaseN {
 	 */
 	public BaseN(String alphabet) {
 
-		// expand the alphabet
-		String charset = expand(alphabet);
-		this.alphabet = CharArray.from(charset.toCharArray());
+		// expand the alphabet, if necessary
+		String charset = alphabet.indexOf('-') >= 0 ? expand(alphabet) : alphabet;
+
+		// check the alphabet length
+		if (charset.length() < RADIX_MIN || charset.length() > RADIX_MAX) {
+			throw new UuidCodecException("Unsupported length: " + charset.length());
+		}
 
 		// set the radix field
 		this.radix = charset.length();
-		if (this.radix < RADIX_MIN || this.radix > RADIX_MAX) {
-			throw new UuidCodecException("Unsupported radix: " + this.radix);
-		}
 
 		// set the length field
 		this.length = (int) Math.ceil(BIT_LENGTH / (Math.log(this.radix) / Math.log(2)));
 
-		// set the sensitive field
-		this.sensitive = sensitive(charset);
-
 		// set the padding field
 		this.padding = charset.charAt(0);
 
-		// set the map LongArray
+		// set the sensitive field
+		this.sensitive = sensitive(charset);
+
+		// set the alphabet field
+		this.alphabet = CharArray.from(charset.toCharArray());
+
+		// set the map field
 		this.map = map(charset, sensitive);
 	}
 
@@ -164,12 +155,12 @@ public final class BaseN {
 		return length;
 	}
 
-	public boolean isSensitive() {
-		return sensitive;
-	}
-
 	public char getPadding() {
 		return padding;
+	}
+
+	public boolean isSensitive() {
+		return sensitive;
 	}
 
 	public CharArray getAlphabet() {
@@ -202,19 +193,6 @@ public final class BaseN {
 		return !(charset.equals(lowercase) || charset.equals(uppercase));
 	}
 
-	private static String alphabet(int radix) {
-
-		String string;
-		if (radix > 36) {
-			string = expand("0-9A-Za-z-_"); // 64 chars
-		} else {
-			string = expand("0-9a-z"); // 36 chars
-		}
-
-		// get the first 'n' characters
-		return string.substring(0, radix);
-	}
-
 	private static LongArray map(String alphabet, boolean sensitive) {
 		// initialize the map with -1
 		final long[] mapping = new long[128];
@@ -222,17 +200,25 @@ public final class BaseN {
 			mapping[i] = -1;
 		}
 		// map the alphabets chars to values
-		String lowercase = alphabet.toLowerCase();
-		String uppercase = alphabet.toUpperCase();
 		for (int i = 0; i < alphabet.length(); i++) {
 			if (sensitive) {
 				mapping[alphabet.charAt(i)] = i;
 			} else {
-				mapping[lowercase.charAt(i)] = i;
-				mapping[uppercase.charAt(i)] = i;
+				mapping[alphabet.toLowerCase().charAt(i)] = i;
+				mapping[alphabet.toUpperCase().charAt(i)] = i;
 			}
 		}
 		return LongArray.from(mapping);
+	}
+
+	private static String expand(int radix) {
+		if (radix < RADIX_MIN || radix > RADIX_MAX) {
+			throw new UuidCodecException("Unsupported radix: " + radix);
+		}
+		if (radix > 36) {
+			return ALPHABET_64.substring(0, radix); // 0-9A-Za-z-_
+		}
+		return ALPHABET_36.substring(0, radix); // 0-9a-z
 	}
 
 	/**
@@ -266,7 +252,7 @@ public final class BaseN {
 		return buffer.toString();
 	}
 
-	private static char[] expand(char a, char b) {
+	protected static char[] expand(char a, char b) {
 		char[] expanded = expand(a, b, '0', '9'); // digits (0-9)
 		if (expanded.length == 0) {
 			expanded = expand(a, b, 'a', 'z'); // lower case letters (a-z)

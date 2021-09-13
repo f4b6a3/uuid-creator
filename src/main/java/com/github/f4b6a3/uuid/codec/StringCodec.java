@@ -27,7 +27,6 @@ package com.github.f4b6a3.uuid.codec;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.codec.base.Base16Codec;
-import com.github.f4b6a3.uuid.codec.base.BaseN;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.UuidValidator;
 import com.github.f4b6a3.uuid.util.immutable.CharArray;
@@ -68,8 +67,8 @@ public class StringCodec implements UuidCodec<String> {
 	 */
 	public static final StringCodec INSTANCE = new StringCodec();
 
-	private static final CharArray ALPHABET = BaseN.BASE_16.getAlphabet();
-	private static final LongArray MAP = BaseN.BASE_16.getMap();
+	private static final CharArray ALPHABET = Base16Codec.INSTANCE.getBase().getAlphabet();
+	private static final LongArray MAP = Base16Codec.INSTANCE.getBase().getMap();
 
 	private static final String URN_PREFIX = "urn:uuid:";
 	private static final boolean JAVA_VERSION_GREATER_THAN_8 = getJavaVersion() > 8;

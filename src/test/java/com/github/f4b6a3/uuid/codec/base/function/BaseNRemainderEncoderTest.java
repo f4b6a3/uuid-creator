@@ -27,7 +27,7 @@ public class BaseNRemainderEncoderTest {
 			random.nextBytes(bytes);
 			UUID uuid = BinaryCodec.INSTANCE.decode(bytes);
 			String string = Base62Codec.INSTANCE.encode(uuid);
-			assertEquals(encode(BaseN.BASE_62, bytes), string);
+			assertEquals(encode(Base62Codec.INSTANCE.getBase(), bytes), string);
 		}
 	}
 

@@ -37,12 +37,14 @@ package com.github.f4b6a3.uuid.codec.base;
  */
 public final class Base58FlickrCodec extends BaseNCodec {
 
+	private static final BaseN BASE_N = new BaseN("123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ");
+
 	/**
 	 * A shared immutable instance.
 	 */
 	public static final Base58FlickrCodec INSTANCE = new Base58FlickrCodec();
 
 	public Base58FlickrCodec() {
-		super(BaseN.BASE_58_FLICKR);
+		super(BASE_N);
 	}
 }

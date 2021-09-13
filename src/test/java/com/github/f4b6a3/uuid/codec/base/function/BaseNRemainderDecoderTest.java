@@ -21,10 +21,10 @@ public class BaseNRemainderDecoderTest {
 	@Test
 	public void testDecode() {
 		for (int i = 0; i < 1000; i++) {
-			String string = getRandomString(BaseN.BASE_62);
+			String string = getRandomString(Base62Codec.INSTANCE.getBase());
 			UUID uuid = Base62Codec.INSTANCE.decode(string);
 			byte[] bytes = BinaryCodec.INSTANCE.encode(uuid);
-			assertEquals(Arrays.toString(decode(BaseN.BASE_62, string)), Arrays.toString(bytes));
+			assertEquals(Arrays.toString(decode(Base62Codec.INSTANCE.getBase(), string)), Arrays.toString(bytes));
 		}
 	}
 

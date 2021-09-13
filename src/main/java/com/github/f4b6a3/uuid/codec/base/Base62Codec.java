@@ -33,12 +33,14 @@ package com.github.f4b6a3.uuid.codec.base;
  */
 public final class Base62Codec extends BaseNCodec {
 
+	private static final BaseN BASE_N = new BaseN("0-9A-Za-z");
+
 	/**
 	 * A shared immutable instance.
 	 */
 	public static final Base62Codec INSTANCE = new Base62Codec();
 
 	public Base62Codec() {
-		super(BaseN.BASE_62);
+		super(BASE_N);
 	}
 }

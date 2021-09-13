@@ -43,12 +43,14 @@ import com.github.f4b6a3.uuid.codec.base.function.Base64Encoder;
  */
 public final class Base64Codec extends BaseNCodec {
 
+	private static final BaseN BASE_N = new BaseN("A-Za-z0-9+/");
+
 	/**
 	 * A shared immutable instance.
 	 */
 	public static final Base64Codec INSTANCE = new Base64Codec();
 
 	public Base64Codec() {
-		super(BaseN.BASE_64, new Base64Encoder(BaseN.BASE_64), new Base64Decoder(BaseN.BASE_64));
+		super(BASE_N, new Base64Encoder(BASE_N), new Base64Decoder(BASE_N));
 	}
 }

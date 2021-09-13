@@ -30,15 +30,17 @@ import com.github.f4b6a3.uuid.codec.base.function.Base16Encoder;
 /**
  * Codec for base-16 as defined in RFC-4648.
  * 
- * It is case insensitive, so it decodes in lower and upper case, but encodes in
- * lower case only.
+ * It is case insensitive, so it decodes from lower and upper case, but encodes
+ * to lower case only.
  * 
- * This other codec may be much faster (22x) than doing
+ * It can be up to 22x faster than doing
  * <code>uuid.toString().replaceAll("-", "")`</code>.
  * 
  * See: https://tools.ietf.org/html/rfc4648
  */
 public final class Base16Codec extends BaseNCodec {
+
+	private static final BaseN BASE_N = new BaseN("0-9a-f");
 
 	/**
 	 * A shared immutable instance.
@@ -46,6 +48,6 @@ public final class Base16Codec extends BaseNCodec {
 	public static final Base16Codec INSTANCE = new Base16Codec();
 
 	public Base16Codec() {
-		super(BaseN.BASE_16, new Base16Encoder(BaseN.BASE_16), new Base16Decoder(BaseN.BASE_16));
+		super(BASE_N, new Base16Encoder(BASE_N), new Base16Decoder(BASE_N));
 	}
 }

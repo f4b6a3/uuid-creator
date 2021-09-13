@@ -27,11 +27,14 @@ package com.github.f4b6a3.uuid.codec.base;
 /**
  * Codec for base-36.
  * 
- * It is case SENSITIVE.
+ * It is case insensitive, so it decodes from lower and upper case, but encodes
+ * to lower case only.
  * 
  * It encodes using remainder operator (modulus).
  */
 public final class Base36Codec extends BaseNCodec {
+
+	private static final BaseN BASE_N = new BaseN("0-9a-z");
 
 	/**
 	 * A shared immutable instance.
@@ -39,6 +42,6 @@ public final class Base36Codec extends BaseNCodec {
 	public static final Base36Codec INSTANCE = new Base36Codec();
 
 	public Base36Codec() {
-		super(BaseN.BASE_36);
+		super(BASE_N);
 	}
 }

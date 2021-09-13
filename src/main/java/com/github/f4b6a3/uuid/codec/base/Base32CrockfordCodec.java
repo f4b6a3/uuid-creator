@@ -30,8 +30,8 @@ import com.github.f4b6a3.uuid.codec.base.function.Base32Encoder;
 /**
  * Codec for Crockford's base-32.
  * 
- * It is case insensitive, so it decodes in lower and upper case, but encodes in
- * lower case only.
+ * It is case insensitive, so it decodes from lower and upper case, but encodes
+ * to lower case only.
  * 
  * This codec complies with RFC-4648, encoding a byte array sequentially. If you
  * need a codec that encodes integers using the remainder operator (modulus),
@@ -41,13 +41,14 @@ import com.github.f4b6a3.uuid.codec.base.function.Base32Encoder;
  */
 public final class Base32CrockfordCodec extends BaseNCodec {
 
+	private static final BaseN BASE_N = new BaseN("0123456789abcdefghjkmnpqrstvwxyz");
+
 	/**
 	 * A shared immutable instance.
 	 */
 	public static final Base32CrockfordCodec INSTANCE = new Base32CrockfordCodec();
 
 	public Base32CrockfordCodec() {
-		super(BaseN.BASE_32_CROCKFORD, new Base32Encoder(BaseN.BASE_32_CROCKFORD),
-				new Base32Decoder(BaseN.BASE_32_CROCKFORD));
+		super(BASE_N, new Base32Encoder(BASE_N), new Base32Decoder(BASE_N));
 	}
 }

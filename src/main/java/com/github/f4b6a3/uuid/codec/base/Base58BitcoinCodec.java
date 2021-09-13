@@ -37,12 +37,14 @@ package com.github.f4b6a3.uuid.codec.base;
  */
 public final class Base58BitcoinCodec extends BaseNCodec {
 
+	private static final BaseN BASE_N = new BaseN("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz");
+
 	/**
 	 * A shared immutable instance.
 	 */
 	public static final Base58BitcoinCodec INSTANCE = new Base58BitcoinCodec();
 
 	public Base58BitcoinCodec() {
-		super(BaseN.BASE_58_BITCOIN);
+		super(BASE_N);
 	}
 }
