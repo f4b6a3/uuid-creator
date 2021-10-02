@@ -166,7 +166,8 @@ public class BaseNTest {
 	@Test
 	public void testExpandChars() {
 
-		char a, b;
+		char a;
+		char b;
 		String expected;
 		String actual;
 

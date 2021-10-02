@@ -50,6 +50,6 @@ public class UriCodecTest {
 	}
 
 	private void checkPattern(String string, String pattern) {
-		assertTrue("Doesn't match the pattern: " + string, string.toString().matches(pattern));
+		assertTrue("Doesn't match the pattern: " + string, string.matches(pattern));
 	}
 }

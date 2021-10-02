@@ -64,7 +64,6 @@ public class PrefixCombFactoryTest extends UuidFactoryTest {
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
 		Random random = new Random();
 		PrefixCombFactory factory = new PrefixCombFactory(random);
-		;
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = factory.create();

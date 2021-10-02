@@ -4,108 +4,83 @@ import com.github.f4b6a3.uuid.UuidCreator;
 
 public class DemoTest {
 
-	private static final String HORIZONTAL_LINE = "----------------------------------------";
+	public static void printTitle(String string) {
+		final String HORIZONTAL_LINE = "----------------------------------------";
+		System.out.println(HORIZONTAL_LINE);
+		System.out.println(string);
+		System.out.println(HORIZONTAL_LINE);
+	}
 
 	public static void printList() {
 
 		int max = 100;
 
-		System.out.println();
-		System.out.println(HORIZONTAL_LINE);
-		System.out.println("Print list of UUIDs");
+		printTitle("PRINT LIST OF UUIDs");
 
-		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### Time-based UUID");
-
+		printTitle("### Time-based UUID");
 		for (int i = 0; i < max; i++) {
 			System.out.println(UuidCreator.getTimeBased());
 		}
 
-		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### Time-ordered UUID");
-
+		printTitle("### Time-ordered UUID");
 		for (int i = 0; i < max; i++) {
 			System.out.println(UuidCreator.getTimeOrdered());
 		}
 
-		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### Time-based UUID with Mac");
-
+		printTitle("### Time-based UUID with Mac");
 		for (int i = 0; i < max; i++) {
 			System.out.println(UuidCreator.getTimeBasedWithMac());
 		}
 
-		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### Time-ordered UUID with Mac");
-
+		printTitle("### Time-ordered UUID with Mac");
 		for (int i = 0; i < max; i++) {
 			System.out.println(UuidCreator.getTimeOrderedWithMac());
 		}
 
-		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### Time-based UUID with Hash");
-
+		printTitle("### Time-based UUID with Hash");
 		for (int i = 0; i < max; i++) {
 			System.out.println(UuidCreator.getTimeBasedWithHash());
 		}
 
-		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### Time-ordered UUID with Hash");
-
+		printTitle("### Time-ordered UUID with Hash");
 		for (int i = 0; i < max; i++) {
 			System.out.println(UuidCreator.getTimeOrderedWithHash());
 		}
-		
-		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### Time-based UUID with Random");
 
+		printTitle("### Time-based UUID with Random");
 		for (int i = 0; i < max; i++) {
 			System.out.println(UuidCreator.getTimeBasedWithRandom());
 		}
 
-		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### Time-ordered UUID with Random");
-
+		printTitle("### Time-ordered UUID with Random");
 		for (int i = 0; i < max; i++) {
 			System.out.println(UuidCreator.getTimeOrderedWithRandom());
 		}
 
-		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### Random UUID");
-
+		printTitle("### Random UUID");
 		for (int i = 0; i < max; i++) {
 			System.out.println(UuidCreator.getRandomBased());
 		}
 
-		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### Prefix COMB GUID");
-
+		printTitle("### Prefix COMB GUID");
 		for (int i = 0; i < max; i++) {
 			System.out.println(UuidCreator.getPrefixComb());
 		}
 
-		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### Suffix COMB GUID");
-
+		printTitle("### Suffix COMB GUID");
 		for (int i = 0; i < max; i++) {
 			System.out.println(UuidCreator.getSuffixComb());
 		}
 
-		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### Short Prefix COMB GUID");
-
+		printTitle("### Short Prefix COMB GUID");
 		for (int i = 0; i < max; i++) {
 			System.out.println(UuidCreator.getShortPrefixComb());
 		}
 
-		System.out.println(HORIZONTAL_LINE);
-		System.out.println("### Short Suffix COMB GUID");
-
+		printTitle("### Short Suffix COMB GUID");
 		for (int i = 0; i < max; i++) {
 			System.out.println(UuidCreator.getShortSuffixComb());
 		}
-
-		System.out.println(HORIZONTAL_LINE);
 	}
 
 	public static void main(String[] args) {

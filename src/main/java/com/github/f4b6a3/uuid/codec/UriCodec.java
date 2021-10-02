@@ -44,7 +44,7 @@ import com.github.f4b6a3.uuid.exception.InvalidUuidException;
  * See also:
  * https://stackoverflow.com/questions/4913343/what-is-the-difference-between-uri-url-and-urn
  */
-public class UriCodec implements UuidCodec<java.net.URI> {
+public class UriCodec implements UuidCodec<URI> {
 
 	/**
 	 * A shared immutable instance.

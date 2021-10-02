@@ -38,8 +38,8 @@ See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b
 
 Module and bundle names are the same as the root package name.
 
-- JPMS module name: `com.github.f4b6a3.uuid`
-- OSGi symbolic name: `com.github.f4b6a3.uuid`
+* JPMS module name: `com.github.f4b6a3.uuid`
+* OSGi symbolic name: `com.github.f4b6a3.uuid`
 
 ## How to Use
 

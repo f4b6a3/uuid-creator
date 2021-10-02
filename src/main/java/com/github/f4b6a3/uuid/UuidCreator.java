@@ -1211,15 +1211,15 @@ public final class UuidCreator {
 	}
 
 	private static class TimeOrderedWithMacHolder {
-		static final TimeOrderedFactory INSTANCE = new TimeOrderedFactory.Builder().withMacNodeIdFunction().build();
+		static final TimeOrderedFactory INSTANCE = new TimeOrderedFactory.Builder().withMacNodeId().build();
 	}
 
 	private static class TimeOrderedWithHashHolder {
-		static final TimeOrderedFactory INSTANCE = new TimeOrderedFactory.Builder().withHashNodeIdFunction().build();
+		static final TimeOrderedFactory INSTANCE = new TimeOrderedFactory.Builder().withHashNodeId().build();
 	}
 
 	private static class TimeOrderedWithRandomHolder {
-		static final TimeOrderedFactory INSTANCE = new TimeOrderedFactory.Builder().withRandomNodeIdFunction().build();
+		static final TimeOrderedFactory INSTANCE = new TimeOrderedFactory.Builder().withRandomNodeId().build();
 	}
 
 	private static class TimeBasedHolder {
@@ -1227,15 +1227,15 @@ public final class UuidCreator {
 	}
 
 	private static class TimeBasedWithMacHolder {
-		static final TimeBasedFactory INSTANCE = new TimeBasedFactory.Builder().withMacNodeIdFunction().build();
+		static final TimeBasedFactory INSTANCE = new TimeBasedFactory.Builder().withMacNodeId().build();
 	}
 
 	private static class TimeBasedWithHashHolder {
-		static final TimeBasedFactory INSTANCE = new TimeBasedFactory.Builder().withHashNodeIdFunction().build();
+		static final TimeBasedFactory INSTANCE = new TimeBasedFactory.Builder().withHashNodeId().build();
 	}
 
 	private static class TimeBasedWithRandomHolder {
-		static final TimeBasedFactory INSTANCE = new TimeBasedFactory.Builder().withRandomNodeIdFunction().build();
+		static final TimeBasedFactory INSTANCE = new TimeBasedFactory.Builder().withRandomNodeId().build();
 	}
 
 	private static class NameBasedMd5Holder {
@@ -1251,15 +1251,15 @@ public final class UuidCreator {
 	}
 
 	private static class DceSecurityWithMacHolder {
-		static final DceSecurityFactory INSTANCE = new DceSecurityFactory.Builder().withMacNodeIdFunction().build();
+		static final DceSecurityFactory INSTANCE = new DceSecurityFactory.Builder().withMacNodeId().build();
 	}
 
 	private static class DceSecurityWithHashHolder {
-		static final DceSecurityFactory INSTANCE = new DceSecurityFactory.Builder().withHashNodeIdFunction().build();
+		static final DceSecurityFactory INSTANCE = new DceSecurityFactory.Builder().withHashNodeId().build();
 	}
 
 	private static class DceSecurityWithRandomHolder {
-		static final DceSecurityFactory INSTANCE = new DceSecurityFactory.Builder().withRandomNodeIdFunction().build();
+		static final DceSecurityFactory INSTANCE = new DceSecurityFactory.Builder().withRandomNodeId().build();
 	}
 
 	private static class SuffixCombHolder {

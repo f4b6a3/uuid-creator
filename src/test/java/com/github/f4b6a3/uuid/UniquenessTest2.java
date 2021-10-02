@@ -20,7 +20,6 @@ public class UniquenessTest2 {
 	private HashSet<Long> hashSet;
 
 	private boolean verbose; // Show progress
-	private boolean exception; // Throw exception
 
 	// Abstract time-based UUID factory
 	private TimeBasedFactory factory;
@@ -36,13 +35,11 @@ public class UniquenessTest2 {
 	 * @param factory
 	 * @param verbose
 	 */
-	public UniquenessTest2(TimeBasedFactory factory, int threadCount, int requestCount, boolean verbose,
-			boolean exception) {
+	public UniquenessTest2(TimeBasedFactory factory, int threadCount, int requestCount, boolean verbose) {
 		this.threadCount = threadCount;
 		this.requestCount = requestCount;
 		this.factory = factory;
 		this.verbose = verbose;
-		this.exception = exception;
 		this.initCache();
 	}
 
@@ -59,7 +56,7 @@ public class UniquenessTest2 {
 
 		// Instantiate and start many threads
 		for (int id = 0; id < this.threadCount; id++) {
-			threads[id] = new TestThread(id, this.factory, verbose, exception);
+			threads[id] = new TestThread(id, this.factory, verbose);
 			threads[id].start();
 		}
 
@@ -78,13 +75,11 @@ public class UniquenessTest2 {
 		private int id;
 		private TimeBasedFactory factory;
 		private boolean verbose;
-		private boolean exception;
 
-		public TestThread(int id, TimeBasedFactory factory, boolean verbose, boolean exception) {
+		public TestThread(int id, TimeBasedFactory factory, boolean verbose) {
 			this.id = id;
 			this.factory = factory;
 			this.verbose = verbose;
-			this.exception = exception;
 
 			if (this.factory == null) {
 				// DEDICATED generator that creates time-based UUIDs (v1),
@@ -116,23 +111,16 @@ public class UniquenessTest2 {
 
 				value = (msb | lsb);
 
-				if (verbose) {
-					if (i % (max / 100) == 0) {
-						// Calculate and show progress
-						progress = (int) ((i * 1.0 / max) * 100);
-						System.out.println(String.format("[Thread %06d] %s %s %s%%", id, uuid, i, (int) progress));
-					}
+				if (verbose && (i % (max / 100) == 0)) {
+					// Calculate and show progress
+					progress = (int) ((i * 1.0 / max) * 100);
+					System.out.println(String.format("[Thread %06d] %s %s %s%%", id, uuid, i, (int) progress));
 				}
 				synchronized (hashSet) {
 					// Insert the value in cache, if it does not exist in it.
 					if (!hashSet.add((Long) value)) {
-						if (this.exception) {
-							new RuntimeException(
-									String.format("[Thread %06d] %s %s %s%% [DUPLICATE]", id, uuid, i, (int) progress));
-						} else {
-							System.err.println(
-									String.format("[Thread %06d] %s %s %s%% [DUPLICATE]", id, uuid, i, (int) progress));
-						}
+						System.err.println(
+								String.format("[Thread %06d] %s %s %s%% [DUPLICATE]", id, uuid, i, (int) progress));
 					}
 				}
 			}
@@ -144,9 +132,8 @@ public class UniquenessTest2 {
 		}
 	}
 
-	public static void execute(TimeBasedFactory factory, int threadCount, int requestCount, boolean verbose,
-			boolean exception) {
-		UniquenessTest2 test = new UniquenessTest2(factory, threadCount, requestCount, verbose, exception);
+	public static void execute(TimeBasedFactory factory, int threadCount, int requestCount, boolean verbose) {
+		UniquenessTest2 test = new UniquenessTest2(factory, threadCount, requestCount, verbose);
 		test.start();
 	}
 
@@ -154,7 +141,7 @@ public class UniquenessTest2 {
 		// a new generator that creates time-based UUIDs (v1),
 		// that uses a hash instead of a random node identifier,
 		// and that uses a fixed millisecond to simulate a loop faster than the clock
-		return new TimeBasedFactory.Builder().withHashNodeIdFunction().build();
+		return new TimeBasedFactory.Builder().withHashNodeId().build();
 	}
 
 	public static void main(String[] args) {
@@ -167,11 +154,10 @@ public class UniquenessTest2 {
 		TimeBasedFactory factory = newFactory();
 
 		boolean verbose = true;
-		boolean exception = false;
 		int threadCount = 16; // Number of threads to run
 		int requestCount = 1_000_000; // Number of requests for thread
 
-		execute(factory, threadCount, requestCount, verbose, exception);
+		execute(factory, threadCount, requestCount, verbose);
 
 		System.out.println();
 		System.out.println("-----------------------------------------------------");
@@ -182,11 +168,10 @@ public class UniquenessTest2 {
 		factory = null;
 
 		verbose = true;
-		exception = false;
 		threadCount = 16; // Number of threads to run
 		requestCount = 1_000_000; // Number of requests for thread
 
-		execute(factory, threadCount, requestCount, verbose, exception);
+		execute(factory, threadCount, requestCount, verbose);
 
 	}
 }

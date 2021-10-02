@@ -18,13 +18,15 @@ import static com.github.f4b6a3.uuid.codec.base.function.BaseNRemainderDecoderTe
 public class BaseNRemainderEncoderTest {
 
 	private static final int UUID_BYTES = 16;
+	
+	private static final Random RANDOM = new Random();
 
 	@Test
 	public void testEncode() {
-		Random random = new Random();
+
 		for (int i = 0; i < 1000; i++) {
 			byte[] bytes = new byte[UUID_BYTES];
-			random.nextBytes(bytes);
+			RANDOM.nextBytes(bytes);
 			UUID uuid = BinaryCodec.INSTANCE.decode(bytes);
 			String string = Base62Codec.INSTANCE.encode(uuid);
 			assertEquals(encode(Base62Codec.INSTANCE.getBase(), bytes), string);
@@ -33,12 +35,11 @@ public class BaseNRemainderEncoderTest {
 
 	@Test
 	public void testReminder() {
-		Random random = new Random();
 
 		for (int i = 0; i < 1000; i++) {
 			byte[] bytes = new byte[UUID_BYTES];
-			random.nextBytes(bytes);
-			int divisor = random.nextInt() & 0x7fffffff; // positive divisor
+			RANDOM.nextBytes(bytes);
+			int divisor = RANDOM.nextInt() & 0x7fffffff; // positive divisor
 
 			BigInteger number1 = new BigInteger(1, bytes);
 			BigInteger quotient1 = number1.divide(BigInteger.valueOf(divisor));

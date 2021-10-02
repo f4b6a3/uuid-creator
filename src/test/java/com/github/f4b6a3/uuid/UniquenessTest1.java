@@ -140,7 +140,7 @@ public class UniquenessTest1 {
 		// a new generator that creates time-based UUIDs (v1),
 		// that uses a hash instead of a random node identifier,
 		// and that uses a fixed millisecond to simulate a loop faster than the clock
-		return new TimeBasedFactory.Builder().withHashNodeIdFunction().build();
+		return new TimeBasedFactory.Builder().withHashNodeId().build();
 	}
 
 	public static void main(String[] args) {

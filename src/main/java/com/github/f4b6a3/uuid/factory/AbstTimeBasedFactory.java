@@ -368,9 +368,6 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 		private NodeIdFunction nodeidFunction;
 		private ClockSeqFunction clockseqFunction;
 
-		public Builder() {
-		}
-
 		public Builder<T> withTimeFunction(TimeFunction timeFunction) {
 			this.timeFunction = timeFunction;
 			return this;
@@ -416,17 +413,17 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 			return this;
 		}
 
-		public Builder<T> withMacNodeIdFunction() {
+		public Builder<T> withMacNodeId() {
 			this.nodeidFunction = new MacNodeIdFunction();
 			return this;
 		}
 
-		public Builder<T> withHashNodeIdFunction() {
+		public Builder<T> withHashNodeId() {
 			this.nodeidFunction = new HashNodeIdFunction();
 			return this;
 		}
 
-		public Builder<T> withRandomNodeIdFunction() {
+		public Builder<T> withRandomNodeId() {
 			this.nodeidFunction = new RandomNodeIdFunction();
 			return this;
 		}
