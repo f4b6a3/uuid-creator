@@ -38,77 +38,72 @@ Most people will not be affected by the changes because they only use the static
 
 List of changes:
 
-- The strategy interfaces was replaced by JDK functional interfaces.
-
-- The subclasses of `AbstractUuidCreator` was replaced by subclasses of `UuidFactory`.
-
-- The new time-based factories can be instantiated using the Builder pattern.
-
-- The abstract time-based factory is ready to implement [new proposed versions](https://github.com/uuid6/uuid6-ietf-draft) of UUIDs.
-
-- The `README.md` was simplified. Most of it's contents was moved to [Github Wiki](https://github.com/f4b6a3/uuid-creator/wiki).
-
+-   The strategy interfaces was replaced by JDK functional interfaces.
+-   The subclasses of `AbstractUuidCreator` was replaced by subclasses of `UuidFactory`.
+-   The new time-based factories can be instantiated using the Builder pattern.
+-   The abstract time-based factory is ready to implement [new proposed versions](https://github.com/uuid6/uuid6-ietf-draft) of UUIDs.
+-   The `README.md` was simplified. Most of it's contents was moved to [Github Wiki](https://github.com/f4b6a3/uuid-creator/wiki).
 
 ### Added
 
-- Added `ClockSeqFunction`
-- Added `NodeIdFunction`
-- Added `RandomFunction`
-- Added `TimeFunction`
-- Added `DefaultClockSeqFunction`
-- Added `DefaultTimeFunction`
-- Added `DefaultRandomFunction`
-- Added `DefaultNodeIdFunction`
-- Added `MacNodeIdFunction`
-- Added `HashNodeIdFunction`
-- Added `RandomNodeIdFunction`
-- Added `CHANGELOG.md`
-- Added benchmark code
+-   Added `ClockSeqFunction`
+-   Added `NodeIdFunction`
+-   Added `RandomFunction`
+-   Added `TimeFunction`
+-   Added `DefaultClockSeqFunction`
+-   Added `DefaultTimeFunction`
+-   Added `DefaultRandomFunction`
+-   Added `DefaultNodeIdFunction`
+-   Added `MacNodeIdFunction`
+-   Added `HashNodeIdFunction`
+-   Added `RandomNodeIdFunction`
+-   Added `CHANGELOG.md`
+-   Added benchmark code
 
 ### Changed
 
-- Modified `UuidCreator`
-- Modified `UuidTime`
-- Modified `UuidUtil`
-- Modified `README.md`
+-   Modified `UuidCreator`
+-   Modified `UuidTime`
+-   Modified `UuidUtil`
+-   Modified `README.md`
 
 ### Renamed
 
-- Renamed `AbstractUuidCreator` to `UuidFactory`
-- Renamed `NoArgumentsUuidCreator` to `NoArgsFactory`
-- Renamed `AbstractNameBasedUuidCreator` to `AbstNameBasedFactory`
-- Renamed `AbstractRandomBasedUuidCreator` to `AbstRandomBasedFactory`
-- Renamed `AbstractTimeBasedUuidCreator` to `AbstTimeBasedFactory`
-- Renamed `NameBasedMd5UuidCreator` to `NameBasedMd5Factory`
-- Renamed `NameBasedSha1UuidCreator` to `NameBasedSha1Factory`
-- Renamed `RandomBasedUuidCreator` to `RandomBasedFactory`
-- Renamed `TimeBasedUuidCreator` to `TimeBasedFactory`
-- Renamed `TimeOrderedUuidCreator` to `TimeOrderedFactory`
-- Renamed `DceSecurityUuidCreator` to `DceSecurityFactory`
-- Renamed `PrefixCombCreator` to `PrefixCombFactory`
-- Renamed `ShortPrefixCombCreator` to `ShortPrefixCombFactory`
-- Renamed `SuffixCombCreator` to `SuffixCombFactory`
-- Renamed `ShortSuffixCombCreator` to `ShortSuffixCombFactory`
+-   Renamed `AbstractUuidCreator` to `UuidFactory`
+-   Renamed `NoArgumentsUuidCreator` to `NoArgsFactory`
+-   Renamed `AbstractNameBasedUuidCreator` to `AbstNameBasedFactory`
+-   Renamed `AbstractRandomBasedUuidCreator` to `AbstRandomBasedFactory`
+-   Renamed `AbstractTimeBasedUuidCreator` to `AbstTimeBasedFactory`
+-   Renamed `NameBasedMd5UuidCreator` to `NameBasedMd5Factory`
+-   Renamed `NameBasedSha1UuidCreator` to `NameBasedSha1Factory`
+-   Renamed `RandomBasedUuidCreator` to `RandomBasedFactory`
+-   Renamed `TimeBasedUuidCreator` to `TimeBasedFactory`
+-   Renamed `TimeOrderedUuidCreator` to `TimeOrderedFactory`
+-   Renamed `DceSecurityUuidCreator` to `DceSecurityFactory`
+-   Renamed `PrefixCombCreator` to `PrefixCombFactory`
+-   Renamed `ShortPrefixCombCreator` to `ShortPrefixCombFactory`
+-   Renamed `SuffixCombCreator` to `SuffixCombFactory`
+-   Renamed `ShortSuffixCombCreator` to `ShortSuffixCombFactory`
 
 ### Removed
 
-- Removed `ClockSequenceStrategy` // replaced by `ClockSeqFunction`
-- Removed `DefaultClockSequenceStrategy` // replaced by `DefaultClockSecFunction`
-- Removed `TimestampStrategy` // replaced by `TimeFunction`
-- Removed `DefaultTimestampStrategy` // replaced by `DefaultTimeFunction`
-- Removed `RandomStrategy` // replaced by `RandomFunction`
-- Removed `DefaultRandomStrategy` // replaced by `DefaultRandomFunction`
-- Removed `NodeIdentifierStrategy` // replaced by `NodeIdFunction`
-- Removed `DefaultNodeIdentifierStrategy` // replaced by `DefaultNodeIdFunction`
-- Removed `MacNodeIdentifierStrategy` // replaced by `MacNodeIdFunction`
-- Removed `HashNodeIdentifierStrategy` // replaced by `HashNodeIdFunction`
-- Removed `RandomNodeIdentifierStrategy` // replaced by `RandomNodeIdFunction`
-- Removed `FixedTimestampStretegy`
-- Removed `FixedClockSequenceStrategy`
-- Removed `FixedNodeIdentifierStrategy`
-- Removed `ClockSequenceController`
-- Removed `OtherRandomStrategy`
-- Removed `UuidConverter`
+-   Removed `ClockSequenceStrategy` // replaced by `ClockSeqFunction`
+-   Removed `DefaultClockSequenceStrategy` // replaced by `DefaultClockSecFunction`
+-   Removed `TimestampStrategy` // replaced by `TimeFunction`
+-   Removed `DefaultTimestampStrategy` // replaced by `DefaultTimeFunction`
+-   Removed `RandomStrategy` // replaced by `RandomFunction`
+-   Removed `DefaultRandomStrategy` // replaced by `DefaultRandomFunction`
+-   Removed `NodeIdentifierStrategy` // replaced by `NodeIdFunction`
+-   Removed `DefaultNodeIdentifierStrategy` // replaced by `DefaultNodeIdFunction`
+-   Removed `MacNodeIdentifierStrategy` // replaced by `MacNodeIdFunction`
+-   Removed `HashNodeIdentifierStrategy` // replaced by `HashNodeIdFunction`
+-   Removed `RandomNodeIdentifierStrategy` // replaced by `RandomNodeIdFunction`
+-   Removed `FixedTimestampStretegy`
+-   Removed `FixedClockSequenceStrategy`
+-   Removed `FixedNodeIdentifierStrategy`
+-   Removed `ClockSequenceController`
+-   Removed `OtherRandomStrategy`
+-   Removed `UuidConverter`
 
 ## [3.7.3] - 2021-07-04
 
@@ -140,10 +135,10 @@ Added method `extractInstant()` to extract time from COMB #35
 
 ### Added
 
-- Added `CombUtil.extractPrefix()` // unix time
-- Added `CombUtil.extractSuffix()` // unix time
-- Added `CombUtil.extractPrefixInstant()` // Instant
-- Added `CombUtil.extractSuffixInstant()` // Instant
+-   Added `CombUtil.extractPrefix()` // unix time
+-   Added `CombUtil.extractSuffix()` // unix time
+-   Added `CombUtil.extractPrefixInstant()` // Instant
+-   Added `CombUtil.extractSuffixInstant()` // Instant
 
 ## [3.4.2] - 2020-12-31
 
@@ -166,20 +161,20 @@ Added codecs for UUID URIs #32
 
 List of codecs:
 
-- `BinaryCodec`:      for byte arrays
-- `StringCodec`:      for canonical strings
-- `SlugCodec`:        for slugs based on UUID
-- `NcnameCodec`:      for NCNames based on UUID
-- `UriCodec`:         for URNs wrapped with java.net.URI
-- `DotNetGuid1Codec`: for dotNet Guids
-- `DotNetGuid4Codec`: for dotNet Guids
-- `TimeOrderedCodec`: for time-ordered UUIDs
-- `BaseNCodec`:       for base-16, base-32 and base-64
-	- `UuidBase16Codec`: base-16
-	- `UuidBase32Codec`: base-32
-	- `UuidBase32CrockfordCodec`: base-32 crockford
-	- `UuidBase64Codec`: base-64
-	- `UuidBase64UrlCodec`: base-64-url
+-   `BinaryCodec`:      for byte arrays
+-   `StringCodec`:      for canonical strings
+-   `SlugCodec`:        for slugs based on UUID
+-   `NcnameCodec`:      for NCNames based on UUID
+-   `UriCodec`:         for URNs wrapped with java.net.URI
+-   `DotNetGuid1Codec`: for dotNet Guids
+-   `DotNetGuid4Codec`: for dotNet Guids
+-   `TimeOrderedCodec`: for time-ordered UUIDs
+-   `BaseNCodec`:       for base-16, base-32 and base-64
+    -   `UuidBase16Codec`: base-16
+    -   `UuidBase32Codec`: base-32
+    -   `UuidBase32CrockfordCodec`: base-32 crockford
+    -   `UuidBase64Codec`: base-64
+    -   `UuidBase64UrlCodec`: base-64-url
 
 ## [3.3.0] - 2020-12-05
 
@@ -222,17 +217,17 @@ Change name-based generators to prevent thread contention #26
 
 ### Added
 
-- Added `MachineId` // hash-based machine-id (hash of hostname, MAC and IP)
-- Added `SharedRandom` // for classes that need a secure random generator
+-   Added `MachineId` // hash-based machine-id (hash of hostname, MAC and IP)
+-   Added `SharedRandom` // for classes that need a secure random generator
 
 ### Updated
-- Change `DefaultRandomStrategy` // don't use TlsSecureRandom (removed)
-- Change `MacNodeIdentifierStrategy` // don't use NetworkData (removed)
-- Change `HashNodeIdentifierStrategy` // dont't use Fingerprint (removed)
-- Update test case
-- Update README.md
-- Update javadoc
-- Coverage: 85.8%
+-   Change `DefaultRandomStrategy` // don't use TlsSecureRandom (removed)
+-   Change `MacNodeIdentifierStrategy` // don't use NetworkData (removed)
+-   Change `HashNodeIdentifierStrategy` // dont't use Fingerprint (removed)
+-   Update test case
+-   Update README.md
+-   Update javadoc
+-   Coverage: 85.8%
 
 ### Remoded
 Remove `TlsSecureRandom` // replaced by SharedRandom
@@ -244,24 +239,24 @@ Remove `Fingerprint` // too complex
 
 ### Added
 
-- Add test case to `NameBasedMd5UuidCreator` // threads in parallel
-- Add test case to `NameBasedSha1UuidCreator` // threads in parallel
+-   Add test case to `NameBasedMd5UuidCreator` // threads in parallel
+-   Add test case to `NameBasedSha1UuidCreator` // threads in parallel
 
 ### Updated
 
-- Change `AbstractNameBasedUuidCreator` // unecessary MessageDigest.reset()
-- Changed `DefaultTimestampStrategy` // wait next millisec if overrun occurs
-- Updated test cases
-- Updated README.md
-- Updated javadoc
-- Test coverage: 87.4%
+-   Change `AbstractNameBasedUuidCreator` // unecessary MessageDigest.reset()
+-   Changed `DefaultTimestampStrategy` // wait next millisec if overrun occurs
+-   Updated test cases
+-   Updated README.md
+-   Updated javadoc
+-   Test coverage: 87.4%
 
 ### Remoded
 
-- Removed UuidCreatorException // used by overrun exception
-- Removed IllegalUuidException // use IllegalArgumentException instead
-- Removed UuidSettings.getNodeIdentifierDeprecated // remove deprecated
-- Renamed UuidSettings to UuidCreatorSettings
+-   Removed UuidCreatorException // used by overrun exception
+-   Removed IllegalUuidException // use IllegalArgumentException instead
+-   Removed UuidSettings.getNodeIdentifierDeprecated // remove deprecated
+-   Renamed UuidSettings to UuidCreatorSettings
 
 [unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.1.1...HEAD
 [4.1.1]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.1.0...uuid-creator-4.1.1

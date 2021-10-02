@@ -18,6 +18,8 @@ public class BaseNRemainderDecoderTest {
 	private static final int UUID_INTS = 4;
 	private static final int UUID_BYTES = 16;
 
+	private static final Random RANDOM = new Random();
+	
 	@Test
 	public void testDecode() {
 		for (int i = 0; i < 1000; i++) {
@@ -30,13 +32,12 @@ public class BaseNRemainderDecoderTest {
 
 	@Test
 	public void testMultiply() {
-		Random random = new Random();
 
 		for (int i = 0; i < 1000; i++) {
 			byte[] bytes = new byte[UUID_BYTES];
-			random.nextBytes(bytes);
-			int multiplier = random.nextInt() & 0x7fffffff; // positive
-			int addend = random.nextInt() & 0x7fffffff; // positive
+			RANDOM.nextBytes(bytes);
+			int multiplier = RANDOM.nextInt() & 0x7fffffff; // positive
+			int addend = RANDOM.nextInt() & 0x7fffffff; // positive
 
 			BigInteger number1 = new BigInteger(1, bytes);
 			BigInteger product1 = number1.multiply(BigInteger.valueOf(multiplier)).add(BigInteger.valueOf(addend));
@@ -90,12 +91,11 @@ public class BaseNRemainderDecoderTest {
 
 	private String getRandomString(BaseN base) {
 
-		Random random = new Random();
 		char[] chars = new char[base.getLength()];
 
 		chars[0] = base.getPadding(); // to avoid overflow
 		for (int i = 1; i < chars.length; i++) {
-			chars[i] = base.getAlphabet().get(random.nextInt(base.getRadix()));
+			chars[i] = base.getAlphabet().get(RANDOM.nextInt(base.getRadix()));
 		}
 
 		return new String(chars);

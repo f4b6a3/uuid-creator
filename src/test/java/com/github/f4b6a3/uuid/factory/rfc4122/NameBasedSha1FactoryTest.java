@@ -395,52 +395,12 @@ public class NameBasedSha1FactoryTest extends UuidFactoryTest {
 	@Test
 	public void testGetNameBasedSha1InParallel2() throws InterruptedException {
 
-		UUID[][][] list = new UUID[THREAD_TOTAL][3][LIST_DNS.length];
+		UUID[][][] array = new UUID[THREAD_TOTAL][3][LIST_DNS.length];
 		Thread[] threads = new Thread[THREAD_TOTAL];
 
 		// Instantiate and start many threads
 		for (int t = 0; t < THREAD_TOTAL; t++) {
-			final int threadId = t;
-			threads[t] = new Thread(new Runnable() {
-
-				AbstNameBasedFactory crator = new NameBasedSha1Factory();
-
-				@Override
-				public void run() {
-					// Add DNS list
-					for (int i = 0; i < LIST_DNS.length; i++) {
-						String uuid = LIST_DNS[i][0];
-						String name = LIST_DNS[i][1];
-						UUID expected = UUID.fromString(uuid);
-						UUID actual = crator.create(UuidCreator.NAMESPACE_DNS, name);
-						if (actual.equals(expected)) {
-							list[threadId][0][i] = actual;
-						}
-					}
-
-					// Add URL list
-					for (int i = 0; i < LIST_URL.length; i++) {
-						String uuid = LIST_URL[i][0];
-						String name = LIST_URL[i][1];
-						UUID expected = UUID.fromString(uuid);
-						UUID actual = crator.create(UuidCreator.NAMESPACE_URL, name);
-						if (actual.equals(expected)) {
-							list[threadId][1][i] = actual;
-						}
-					}
-
-					// Add movies list
-					for (int i = 0; i < LIST_MOVIES.length; i++) {
-						String uuid = LIST_MOVIES[i][0];
-						String name = LIST_MOVIES[i][1];
-						UUID expected = UUID.fromString(uuid);
-						UUID actual = crator.create(NAMESPACE_MOVIES_UUID, name);
-						if (actual.equals(expected)) {
-							list[threadId][2][i] = actual;
-						}
-					}
-				}
-			});
+			threads[t] = new Thread(new TestRunnable(t, array, new NameBasedSha1Factory()));
 			threads[t].start();
 		}
 
@@ -450,26 +410,70 @@ public class NameBasedSha1FactoryTest extends UuidFactoryTest {
 		}
 
 		for (int t = 0; t < THREAD_TOTAL; t++) {
-			final int threadId = t;
 			// Check DNS list
 			for (int i = 0; i < LIST_DNS.length; i++) {
 				String uuid = LIST_DNS[i][0];
 				UUID expected = UUID.fromString(uuid);
-				assertEquals(expected, list[threadId][0][i]);
+				assertEquals(expected, array[t][0][i]);
 			}
-
 			// Check URL list
 			for (int i = 0; i < LIST_URL.length; i++) {
 				String uuid = LIST_URL[i][0];
 				UUID expected = UUID.fromString(uuid);
-				assertEquals(expected, list[threadId][1][i]);
+				assertEquals(expected, array[t][1][i]);
 			}
-
 			// Check movies list
 			for (int i = 0; i < LIST_MOVIES.length; i++) {
 				String uuid = LIST_MOVIES[i][0];
 				UUID expected = UUID.fromString(uuid);
-				assertEquals(expected, list[threadId][2][i]);
+				assertEquals(expected, array[t][2][i]);
+			}
+		}
+	}
+
+	private static class TestRunnable implements Runnable {
+
+		private final int threadId;
+		private final UUID[][][] array;
+		private final AbstNameBasedFactory factory;
+
+		public TestRunnable(int threadId, UUID[][][] array, AbstNameBasedFactory factory) {
+			this.threadId = threadId;
+			this.factory = factory;
+			this.array = array;
+		}
+
+		@Override
+		public void run() {
+			// Add DNS list
+			for (int i = 0; i < LIST_DNS.length; i++) {
+				String uuid = LIST_DNS[i][0];
+				String name = LIST_DNS[i][1];
+				UUID expected = UUID.fromString(uuid);
+				UUID actual = factory.create(UuidCreator.NAMESPACE_DNS, name);
+				if (actual.equals(expected)) {
+					array[threadId][0][i] = actual;
+				}
+			}
+			// Add URL list
+			for (int i = 0; i < LIST_URL.length; i++) {
+				String uuid = LIST_URL[i][0];
+				String name = LIST_URL[i][1];
+				UUID expected = UUID.fromString(uuid);
+				UUID actual = factory.create(UuidCreator.NAMESPACE_URL, name);
+				if (actual.equals(expected)) {
+					array[threadId][1][i] = actual;
+				}
+			}
+			// Add movies list
+			for (int i = 0; i < LIST_MOVIES.length; i++) {
+				String uuid = LIST_MOVIES[i][0];
+				String name = LIST_MOVIES[i][1];
+				UUID expected = UUID.fromString(uuid);
+				UUID actual = factory.create(NAMESPACE_MOVIES_UUID, name);
+				if (actual.equals(expected)) {
+					array[threadId][2][i] = actual;
+				}
 			}
 		}
 	}

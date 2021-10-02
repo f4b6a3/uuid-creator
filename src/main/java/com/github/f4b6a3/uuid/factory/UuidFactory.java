@@ -95,9 +95,9 @@ public abstract class UuidFactory {
 	 * @param lsb the least significant bits
 	 * @return a UUID
 	 */
-	protected UUID getUuid(long msb, long lsb) {
-		msb = (msb & 0xffffffffffff0fffL) | this.versionMask; // set version
-		lsb = (lsb & 0x3fffffffffffffffL) | 0x8000000000000000L; // set variant
-		return new UUID(msb, lsb);
+	protected UUID getUuid(final long msb, final long lsb) {
+		final long msb0 = (msb & 0xffffffffffff0fffL) | this.versionMask; // set version
+		final long lsb0 = (lsb & 0x3fffffffffffffffL) | 0x8000000000000000L; // set variant
+		return new UUID(msb0, lsb0);
 	}
 }

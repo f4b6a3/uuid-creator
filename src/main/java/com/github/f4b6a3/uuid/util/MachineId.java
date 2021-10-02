@@ -94,8 +94,7 @@ public final class MachineId {
 			final byte[] bytes = getMachineHash();
 			final long msb = toNumber(bytes, 0, 8);
 			final long lsb = toNumber(bytes, 8, 16);
-			uuid = new UUID(msb, lsb);
-			uuid = setVersion(uuid, 4);
+			uuid = setVersion(new UUID(msb, lsb), 4);
 		}
 		return uuid;
 	}

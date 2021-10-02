@@ -16,7 +16,7 @@ public class DceSecurityFactoryTest extends UuidFactoryTest {
 	public void testGetDCESecuritylLocalDomain() {
 
 		DceSecurityFactory factory = new DceSecurityFactory();
-		DceSecurityFactory factoryWithMac = DceSecurityFactory.builder().withMacNodeIdFunction().build();
+		DceSecurityFactory factoryWithMac = DceSecurityFactory.builder().withMacNodeId().build();
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
@@ -38,7 +38,7 @@ public class DceSecurityFactoryTest extends UuidFactoryTest {
 	public void testGetDCESecuritylLocalIdentifier() {
 
 		DceSecurityFactory factory = new DceSecurityFactory();
-		DceSecurityFactory factoryWithMac = DceSecurityFactory.builder().withMacNodeIdFunction().build();
+		DceSecurityFactory factoryWithMac = DceSecurityFactory.builder().withMacNodeId().build();
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 

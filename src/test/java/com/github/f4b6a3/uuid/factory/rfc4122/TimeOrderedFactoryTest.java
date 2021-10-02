@@ -28,13 +28,13 @@ public class TimeOrderedFactoryTest extends UuidFactoryTest {
 	@Test
 	public void testTimeOrderedWithMac() {
 		boolean multicast = false;
-		testGetAbstractTimeBased(TimeOrderedFactory.builder().withMacNodeIdFunction().build(), multicast);
+		testGetAbstractTimeBased(TimeOrderedFactory.builder().withMacNodeId().build(), multicast);
 	}
 
 	@Test
 	public void testTimeOrderedWithHash() {
 		boolean multicast = true;
-		testGetAbstractTimeBased(TimeOrderedFactory.builder().withHashNodeIdFunction().build(), multicast);
+		testGetAbstractTimeBased(TimeOrderedFactory.builder().withHashNodeId().build(), multicast);
 	}
 
 	@Test
@@ -151,7 +151,7 @@ public class TimeOrderedFactoryTest extends UuidFactoryTest {
 
 		// Instantiate and start many threads
 		for (int i = 0; i < THREAD_TOTAL; i++) {
-			TimeOrderedFactory factory = TimeOrderedFactory.builder().withHashNodeIdFunction().build();
+			TimeOrderedFactory factory = TimeOrderedFactory.builder().withHashNodeId().build();
 			threads[i] = new TestThread(factory, DEFAULT_LOOP_MAX);
 			threads[i].start();
 		}

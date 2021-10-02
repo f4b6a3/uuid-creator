@@ -16,13 +16,13 @@ import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import com.github.f4b6a3.uuid.codec.UuidCodec;
-import com.github.f4b6a3.uuid.codec.base.Base16Codec;
-import com.github.f4b6a3.uuid.codec.base.Base32Codec;
-import com.github.f4b6a3.uuid.codec.base.Base36Codec;
-import com.github.f4b6a3.uuid.codec.base.Base58Codec;
-import com.github.f4b6a3.uuid.codec.base.Base62Codec;
-import com.github.f4b6a3.uuid.codec.base.Base64Codec;
+//import com.github.f4b6a3.uuid.codec.UuidCodec;
+//import com.github.f4b6a3.uuid.codec.base.Base16Codec;
+//import com.github.f4b6a3.uuid.codec.base.Base32Codec;
+//import com.github.f4b6a3.uuid.codec.base.Base36Codec;
+//import com.github.f4b6a3.uuid.codec.base.Base58Codec;
+//import com.github.f4b6a3.uuid.codec.base.Base62Codec;
+//import com.github.f4b6a3.uuid.codec.base.Base64Codec;
 
 @Fork(1)
 @Threads(1)
@@ -40,69 +40,69 @@ public class Throughput {
 	/*********** JDK UUID ***********/
 	
 	@Benchmark
-	public String Uuid01_toString() {
+	public String uuid01ToString() {
 		return uuid.toString();
 	}
 
 	@Benchmark
-	public UUID Uuid02_fromString() {
+	public UUID uuid02FromString() {
 		return UUID.fromString(string);
 	}
 
 	@Benchmark
-	public UUID Uuid03_RandomBased() {
+	public UUID uuid03RandomBased() {
 		return UUID.randomUUID();
 	}
 
 	@Benchmark
-	public UUID Uuid04_NameBasedMd5() {
+	public UUID uuid04NameBasedMd5() {
 		return UUID.nameUUIDFromBytes(bytes);
 	}
 	
 	/*********** UUID Creator ***********/
 	
 	@Benchmark
-	public String UuidCreator01_toString() {
+	public String uuidCreator01ToString() {
 		return UuidCreator.toString(uuid);
 	}
 
 	@Benchmark
-	public UUID UuidCreator02_fromString() {
+	public UUID uuidCreator02FromString() {
 		return UuidCreator.fromString(string);
 	}
 
 	@Benchmark
-	public UUID UuidCreator03_RandomBased() {
+	public UUID uuidCreator03RandomBased() {
 		return UuidCreator.getRandomBased();
 	}
 
 	@Benchmark
-	public UUID UuidCreator04_PrefixComb() {
+	public UUID uuidCreator04PrefixComb() {
 		return UuidCreator.getPrefixComb();
 	}
 
 	@Benchmark
-	public UUID UuidCreator05_ShortPrefixComb() {
+	public UUID uuidCreator05ShortPrefixComb() {
 		return UuidCreator.getShortPrefixComb();
 	}
 
 	@Benchmark
-	public UUID UuidCreator06_NameBasedMd5() {
+	public UUID uuidCreator06NameBasedMd5() {
 		return UuidCreator.getNameBasedMd5(bytes);
 	}
 
 	@Benchmark
-	public UUID UuidCreator07_NameBasedSha1() {
+	public UUID uuidCreator07NameBasedSha1() {
 		return UuidCreator.getNameBasedSha1(bytes);
 	}
 
 	@Benchmark
-	public UUID UuidCreator08_TimeBased() {
+	public UUID uuidCreator08TimeBased() {
 		return UuidCreator.getTimeBased();
 	}
 
 	@Benchmark
-	public UUID UuidCreator09_TimeOrdered() {
+	public UUID uuidCreator09TimeOrdered() {
 		return UuidCreator.getTimeOrdered();
 	}
 	
@@ -116,62 +116,62 @@ public class Throughput {
 //	String base64 = Base64Codec.INSTANCE.encode(uuid);
 //	
 //	@Benchmark
-//	public UUID Base16Codec_decode() {
+//	public UUID base16CodecDecode() {
 //		return Base16Codec.INSTANCE.decode(base16);
 //	}
 //	
 //	@Benchmark
-//	public UUID Base32Codec_decode() {
+//	public UUID base32CodecDecode() {
 //		return Base32Codec.INSTANCE.decode(base32);
 //	}
 //	
 //	@Benchmark
-//	public UUID Base36Codec_decode() {
+//	public UUID base36CodecDecode() {
 //		return Base36Codec.INSTANCE.decode(base36);
 //	}
 //	
 //	@Benchmark
-//	public UUID Base58Codec_decode() {
+//	public UUID base58CodecDecode() {
 //		return Base58Codec.INSTANCE.decode(base58);
 //	}
 //	
 //	@Benchmark
-//	public UUID Base62Codec_decode() {
+//	public UUID base62CodecDecode() {
 //		return Base62Codec.INSTANCE.decode(base62);
 //	}
 //	
 //	@Benchmark
-//	public UUID Base64Codec_decode() {
+//	public UUID base64CodecDecode() {
 //		return Base64Codec.INSTANCE.decode(base64);
 //	}
 //	
 //	@Benchmark
-//	public String Base16Codec_encode() {
+//	public String base16CodecEncode() {
 //		return Base16Codec.INSTANCE.encode(uuid);
 //	}
 //	
 //	@Benchmark
-//	public String Base32Codec_encode() {
+//	public String base32CodecEncode() {
 //		return Base32Codec.INSTANCE.encode(uuid);
 //	}
 //	
 //	@Benchmark
-//	public String Base36Codec_encode() {
+//	public String base36CodecEncode() {
 //		return Base36Codec.INSTANCE.encode(uuid);
 //	}
 //	
 //	@Benchmark
-//	public String Base58Codec_encode() {
+//	public String base58CodecEncode() {
 //		return Base58Codec.INSTANCE.encode(uuid);
 //	}
 //	
 //	@Benchmark
-//	public String Base62Codec_encode() {
+//	public String base62CodecEncode() {
 //		return Base62Codec.INSTANCE.encode(uuid);
 //	}
 //	
 //	@Benchmark
-//	public String Base64Codec_encode() {
+//	public String base64CodecEncode() {
 //		return Base64Codec.INSTANCE.encode(uuid);
 //	}
 }

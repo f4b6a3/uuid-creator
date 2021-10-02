@@ -108,17 +108,17 @@ public interface ClockSeqFunction extends LongUnaryOperator {
 		 * @param take value to be taken from the pool
 		 * @return the value to be borrowed if not used.
 		 */
-		public synchronized int take(int take) {
-
+		public synchronized int take(final int take) {
+			int value = take;
 			for (int i = 0; i < POOL_SIZE; i++) {
-				if (setBit(take)) {
-					return take;
+				if (setBit(value)) {
+					return value;
 				}
-				take = ++take % POOL_SIZE;
+				value = ++value % POOL_SIZE;
 			}
 			clearPool();
-			setBit(take);
-			return take;
+			setBit(value);
+			return value;
 		}
 
 		/**
