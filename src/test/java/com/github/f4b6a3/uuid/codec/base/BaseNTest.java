@@ -10,126 +10,6 @@ public class BaseNTest {
 
 	@Test
 	public void testExpand() {
-
-		String string;
-		String expected;
-		String actual;
-
-		// all digits
-		string = "0-9";
-		expected = "0123456789";
-		actual = BaseN.expand(string);
-		assertEquals(expected, actual);
-
-		// all letters
-		string = "a-z";
-		expected = "abcdefghijklmnopqrstuvwxyz";
-		actual = BaseN.expand(string);
-		assertEquals(expected, actual);
-
-		// all letters upper case
-		string = "A-Z";
-		expected = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		actual = BaseN.expand(string);
-		assertEquals(expected, actual);
-
-		// base 16
-		string = "0-9a-f";
-		expected = "0123456789abcdef";
-		actual = BaseN.expand(string);
-		assertEquals(expected, actual);
-
-		// base 16 upper case
-		string = "0-9A-F";
-		expected = "0123456789ABCDEF";
-		actual = BaseN.expand(string);
-		assertEquals(expected, actual);
-
-		// base 32
-		string = "a-z2-7";
-		expected = "abcdefghijklmnopqrstuvwxyz234567";
-		actual = BaseN.expand(string);
-		assertEquals(expected, actual);
-
-		// base 32 upper case
-		string = "A-Z2-7";
-		expected = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-		actual = BaseN.expand(string);
-		assertEquals(expected, actual);
-
-		// base 32 hex
-		string = "0-9a-v";
-		expected = "0123456789abcdefghijklmnopqrstuv";
-		actual = BaseN.expand(string);
-		assertEquals(expected, actual);
-
-		// base 32 hex upper case
-		string = "0-9A-V";
-		expected = "0123456789ABCDEFGHIJKLMNOPQRSTUV";
-		actual = BaseN.expand(string);
-		assertEquals(expected, actual);
-
-		// base 32 crockford
-		string = "0-9a-hjkmnp-tv-z";
-		expected = "0123456789abcdefghjkmnpqrstvwxyz";
-		actual = BaseN.expand(string);
-		assertEquals(expected, actual);
-
-		// base 32 crockford upper case
-		string = "0-9A-HJKMNP-TV-Z";
-		expected = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
-		actual = BaseN.expand(string);
-		assertEquals(expected, actual);
-
-		// base 36
-		string = "0-9a-z";
-		expected = "0123456789abcdefghijklmnopqrstuvwxyz";
-		actual = BaseN.expand(string);
-		assertEquals(expected, actual);
-
-		// base 36 upper case
-		string = "0-9A-Z";
-		expected = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		actual = BaseN.expand(string);
-		assertEquals(expected, actual);
-
-		// base 58
-		string = "0-9A-Za-v";
-		expected = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuv";
-		actual = BaseN.expand(string);
-		assertEquals(expected, actual);
-
-		// base 58 bitcoin
-		string = "1-9A-HJ-NP-Za-km-z";
-		expected = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-		actual = BaseN.expand(string);
-		assertEquals(expected, actual);
-
-		// base 58 flickr
-		string = "1-9a-km-zA-HJ-NP-Z";
-		expected = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
-		actual = BaseN.expand(string);
-		assertEquals(expected, actual);
-
-		// base 62
-		string = "0-9A-Za-z";
-		expected = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-		actual = BaseN.expand(string);
-		assertEquals(expected, actual);
-
-		// base 64
-		string = "A-Za-z0-9+/";
-		expected = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-		actual = BaseN.expand(string);
-		assertEquals(expected, actual);
-
-		// base 64 url
-		string = "A-Za-z0-9-_";
-		expected = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-		actual = BaseN.expand(string);
-		assertEquals(expected, actual);
-
-		// other samples
 		assertEquals("", BaseN.expand(""));
 		assertEquals("0", BaseN.expand("0"));
 		assertEquals("a", BaseN.expand("a"));
@@ -164,106 +44,83 @@ public class BaseNTest {
 	}
 
 	@Test
-	public void testExpandChars() {
-
-		char a;
-		char b;
-		String expected;
-		String actual;
+	public void testExpandBase() {
 
 		// all digits
-		a = '0';
-		b = '9';
-		expected = "0123456789";
-		actual = new String(BaseN.expand(a, b));
-		assertEquals(expected, actual);
-
-		a = '5';
-		b = '5';
-		expected = "5";
-		actual = new String(BaseN.expand(a, b));
-		assertEquals(expected, actual);
-
-		a = '3';
-		b = '6';
-		expected = "3456";
-		actual = new String(BaseN.expand(a, b));
-		assertEquals(expected, actual);
-
-		a = '6';
-		b = '3';
-		expected = "";
-		actual = new String(BaseN.expand(a, b));
-		assertEquals(expected, actual);
-
-		a = '5';
-		b = 'e';
-		expected = "";
-		actual = new String(BaseN.expand(a, b));
-		assertEquals(expected, actual);
-
-		// all letters lower case
-		a = 'a';
-		b = 'z';
-		expected = "abcdefghijklmnopqrstuvwxyz";
-		actual = new String(BaseN.expand(a, b));
-		assertEquals(expected, actual);
-
-		a = 'g';
-		b = 'g';
-		expected = "g";
-		actual = new String(BaseN.expand(a, b));
-		assertEquals(expected, actual);
-
-		a = 'e';
-		b = 'l';
-		expected = "efghijkl";
-		actual = new String(BaseN.expand(a, b));
-		assertEquals(expected, actual);
-
-		a = 'l';
-		b = 'e';
-		expected = "";
-		actual = new String(BaseN.expand(a, b));
-		assertEquals(expected, actual);
-
-		a = 'w';
-		b = 'F';
-		expected = "";
-		actual = new String(BaseN.expand(a, b));
-		assertEquals(expected, actual);
-
+		assertTrue(testExpandBase("0-9", "0123456789"));
+		// all letters
+		assertTrue(testExpandBase("a-z", "abcdefghijklmnopqrstuvwxyz"));
 		// all letters upper case
-		a = 'A';
-		b = 'Z';
-		expected = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		actual = new String(BaseN.expand(a, b));
-		assertEquals(expected, actual);
+		assertTrue(testExpandBase("A-Z", "ABCDEFGHIJKLMNOPQRSTUVWXYZ"));
+		// base 16
+		assertTrue(testExpandBase("0-9a-f", "0123456789abcdef"));
+		// base 16 upper case
+		assertTrue(testExpandBase("0-9A-F", "0123456789ABCDEF"));
+		// base 32
+		assertTrue(testExpandBase("a-z2-7", "abcdefghijklmnopqrstuvwxyz234567"));
+		// base 32 upper case
+		assertTrue(testExpandBase("A-Z2-7", "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"));
+		// base 32 hex
+		assertTrue(testExpandBase("0-9a-v", "0123456789abcdefghijklmnopqrstuv"));
+		// base 32 hex upper case
+		assertTrue(testExpandBase("0-9A-V", "0123456789ABCDEFGHIJKLMNOPQRSTUV"));
+		// base 32 crockford
+		assertTrue(testExpandBase("0-9a-hjkmnp-tv-z", "0123456789abcdefghjkmnpqrstvwxyz"));
+		// base 32 crockford upper case
+		assertTrue(testExpandBase("0-9A-HJKMNP-TV-Z", "0123456789ABCDEFGHJKMNPQRSTVWXYZ"));
+		// base 36
+		assertTrue(testExpandBase("0-9a-z", "0123456789abcdefghijklmnopqrstuvwxyz"));
+		// base 36 upper case
+		assertTrue(testExpandBase("0-9A-Z", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"));
+		// base 58
+		assertTrue(testExpandBase("0-9A-Za-v", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuv"));
+		// base 58 bitcoin
+		assertTrue(testExpandBase("1-9A-HJ-NP-Za-km-z", "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"));
+		// base 58 flickr
+		assertTrue(testExpandBase("1-9a-km-zA-HJ-NP-Z", "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ"));
+		// base 62
+		assertTrue(testExpandBase("0-9A-Za-z", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"));
+		// base 64
+		assertTrue(testExpandBase("A-Za-z0-9+/", "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"));
+		// base 64 url
+		assertTrue(testExpandBase("A-Za-z0-9-_", "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"));
+	}
 
-		a = 'R';
-		b = 'R';
-		expected = "R";
-		actual = new String(BaseN.expand(a, b));
+	private boolean testExpandBase(String string, String expected) {
+		String actual = BaseN.expand(string);
 		assertEquals(expected, actual);
+		return true; // success
+	}
 
-		a = 'M';
-		b = 'W';
-		expected = "MNOPQRSTUVW";
-		actual = new String(BaseN.expand(a, b));
+	@Test
+	public void testExpandChars() {
+
+		// numbers
+		assertTrue(testExpandChars('0', '9', "0123456789"));
+		assertTrue(testExpandChars('5', '5', "5"));
+		assertTrue(testExpandChars('3', '6', "3456"));
+		assertTrue(testExpandChars('6', '3', ""));
+		assertTrue(testExpandChars('5', 'e', ""));
+
+		// lower case
+		assertTrue(testExpandChars('a', 'z', "abcdefghijklmnopqrstuvwxyz"));
+		assertTrue(testExpandChars('g', 'g', "g"));
+		assertTrue(testExpandChars('e', 'l', "efghijkl"));
+		assertTrue(testExpandChars('l', 'e', ""));
+		assertTrue(testExpandChars('w', 'F', ""));
+
+		// upper case
+		assertTrue(testExpandChars('A', 'Z', "ABCDEFGHIJKLMNOPQRSTUVWXYZ"));
+		assertTrue(testExpandChars('R', 'R', "R"));
+		assertTrue(testExpandChars('M', 'W', "MNOPQRSTUVW"));
+		assertTrue(testExpandChars('W', 'M', ""));
+		assertTrue(testExpandChars('T', '4', ""));
+	}
+
+	private boolean testExpandChars(char a, char b, String expected) {
+		String actual = new String(BaseN.expand(a, b));
 		assertEquals(expected, actual);
-
-		a = 'W';
-		b = 'M';
-		expected = "";
-		actual = new String(BaseN.expand(a, b));
-		assertEquals(expected, actual);
-
-		a = 'T';
-		b = '4';
-		expected = "";
-		actual = new String(BaseN.expand(a, b));
-		assertEquals(expected, actual);
-
+		return true; // success
 	}
 
 	@Test

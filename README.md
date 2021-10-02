@@ -4,19 +4,19 @@ A Java library for generating and handling RFC-4122 UUIDs.
 
 RFC-4122 UUIDs:
 
-* __Version 1__: Time-based;
-* __Version 2__: DCE Security;
-* __Version 3__: Name-based with MD5;
-* __Version 4__: Random-based;
-* __Version 5__: Name-based with SHA1;
-* __Version 6__: Time-ordered (proposed).
+*   __Version 1__: Time-based;
+*   __Version 2__: DCE Security;
+*   __Version 3__: Name-based with MD5;
+*   __Version 4__: Random-based;
+*   __Version 5__: Name-based with SHA1;
+*   __Version 6__: Time-ordered (proposed).
 
 Non-standard GUIDs:
 
-* __Prefix COMB__: combination of the creation millisecond (prefix) with random bytes;
-* __Suffix COMB__: combination of the creation millisecond (suffix) with random bytes;
-* __Short Prefix COMB__: combination the creation minute (prefix) with random bytes;
-* __Short Suffix COMB__: combination the creation minute (suffix) with random bytes.
+*   __Prefix COMB__: combination of the creation millisecond (prefix) with random bytes;
+*   __Suffix COMB__: combination of the creation millisecond (suffix) with random bytes;
+*   __Short Prefix COMB__: combination the creation minute (prefix) with random bytes;
+*   __Short Suffix COMB__: combination the creation minute (suffix) with random bytes.
 
 Read the [Wiki pages](https://github.com/f4b6a3/uuid-creator/wiki).
 
@@ -29,7 +29,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>4.1.1</version>
+  <version>4.1.2</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -38,8 +38,8 @@ See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b
 
 Module and bundle names are the same as the root package name.
 
-* JPMS module name: `com.github.f4b6a3.uuid`
-* OSGi symbolic name: `com.github.f4b6a3.uuid`
+*   JPMS module name: `com.github.f4b6a3.uuid`
+*   OSGi symbolic name: `com.github.f4b6a3.uuid`
 
 ## How to Use
 

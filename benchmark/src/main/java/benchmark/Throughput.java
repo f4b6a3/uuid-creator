@@ -40,69 +40,69 @@ public class Throughput {
 	/*********** JDK UUID ***********/
 	
 	@Benchmark
-	public String uuid01ToString() {
+	public String UUID01_toString() {
 		return uuid.toString();
 	}
 
 	@Benchmark
-	public UUID uuid02FromString() {
+	public UUID UUID02_fromString() {
 		return UUID.fromString(string);
 	}
 
 	@Benchmark
-	public UUID uuid03RandomBased() {
+	public UUID UUID03_RandomBased() {
 		return UUID.randomUUID();
 	}
 
 	@Benchmark
-	public UUID uuid04NameBasedMd5() {
+	public UUID UUID04_NameBasedMd5() {
 		return UUID.nameUUIDFromBytes(bytes);
 	}
 	
 	/*********** UUID Creator ***********/
 	
 	@Benchmark
-	public String uuidCreator01ToString() {
+	public String UuidCreator01_toString() {
 		return UuidCreator.toString(uuid);
 	}
 
 	@Benchmark
-	public UUID uuidCreator02FromString() {
+	public UUID UuidCreator02_fromString() {
 		return UuidCreator.fromString(string);
 	}
 
 	@Benchmark
-	public UUID uuidCreator03RandomBased() {
+	public UUID UuidCreator03_RandomBased() {
 		return UuidCreator.getRandomBased();
 	}
 
 	@Benchmark
-	public UUID uuidCreator04PrefixComb() {
+	public UUID UuidCreator04_PrefixComb() {
 		return UuidCreator.getPrefixComb();
 	}
 
 	@Benchmark
-	public UUID uuidCreator05ShortPrefixComb() {
+	public UUID UuidCreator05_ShortPrefixComb() {
 		return UuidCreator.getShortPrefixComb();
 	}
 
 	@Benchmark
-	public UUID uuidCreator06NameBasedMd5() {
+	public UUID UuidCreator06_NameBasedMd5() {
 		return UuidCreator.getNameBasedMd5(bytes);
 	}
 
 	@Benchmark
-	public UUID uuidCreator07NameBasedSha1() {
+	public UUID UuidCreator07_NameBasedSha1() {
 		return UuidCreator.getNameBasedSha1(bytes);
 	}
 
 	@Benchmark
-	public UUID uuidCreator08TimeBased() {
+	public UUID UuidCreator08_TimeBased() {
 		return UuidCreator.getTimeBased();
 	}
 
 	@Benchmark
-	public UUID uuidCreator09TimeOrdered() {
+	public UUID UuidCreator09_TimeOrdered() {
 		return UuidCreator.getTimeOrdered();
 	}
 	
@@ -116,62 +116,62 @@ public class Throughput {
 //	String base64 = Base64Codec.INSTANCE.encode(uuid);
 //	
 //	@Benchmark
-//	public UUID base16CodecDecode() {
+//	public UUID Base16Codec_decode() {
 //		return Base16Codec.INSTANCE.decode(base16);
 //	}
 //	
 //	@Benchmark
-//	public UUID base32CodecDecode() {
+//	public UUID Base32Codec_decode() {
 //		return Base32Codec.INSTANCE.decode(base32);
 //	}
 //	
 //	@Benchmark
-//	public UUID base36CodecDecode() {
+//	public UUID Base36Codec_decode() {
 //		return Base36Codec.INSTANCE.decode(base36);
 //	}
 //	
 //	@Benchmark
-//	public UUID base58CodecDecode() {
+//	public UUID Base58Codec_decode() {
 //		return Base58Codec.INSTANCE.decode(base58);
 //	}
 //	
 //	@Benchmark
-//	public UUID base62CodecDecode() {
+//	public UUID Base62Codec_decode() {
 //		return Base62Codec.INSTANCE.decode(base62);
 //	}
 //	
 //	@Benchmark
-//	public UUID base64CodecDecode() {
+//	public UUID Base64Codec_decode() {
 //		return Base64Codec.INSTANCE.decode(base64);
 //	}
 //	
 //	@Benchmark
-//	public String base16CodecEncode() {
+//	public String Base16Codec_encode() {
 //		return Base16Codec.INSTANCE.encode(uuid);
 //	}
 //	
 //	@Benchmark
-//	public String base32CodecEncode() {
+//	public String Base32Codec_encode() {
 //		return Base32Codec.INSTANCE.encode(uuid);
 //	}
 //	
 //	@Benchmark
-//	public String base36CodecEncode() {
+//	public String Base36Codec_encode() {
 //		return Base36Codec.INSTANCE.encode(uuid);
 //	}
 //	
 //	@Benchmark
-//	public String base58CodecEncode() {
+//	public String Base58Codec_encode() {
 //		return Base58Codec.INSTANCE.encode(uuid);
 //	}
 //	
 //	@Benchmark
-//	public String base62CodecEncode() {
+//	public String Base62Codec_encode() {
 //		return Base62Codec.INSTANCE.encode(uuid);
 //	}
 //	
 //	@Benchmark
-//	public String base64CodecEncode() {
+//	public String Base64Codec_encode() {
 //		return Base64Codec.INSTANCE.encode(uuid);
 //	}
 }
