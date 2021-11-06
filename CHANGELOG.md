@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [4.1.3] - 2021-11-06
+
+Change the counter's reset range from 256 to 10000.
+
 ## [4.1.2] - 2021-10-03
 
 Regular maintenance.
@@ -262,7 +266,8 @@ Remove `Fingerprint` // too complex
 -   Removed UuidSettings.getNodeIdentifierDeprecated // remove deprecated
 -   Renamed UuidSettings to UuidCreatorSettings
 
-[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.1.1...HEAD
+[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.1.3...HEAD
+[4.1.3]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.1.2...uuid-creator-4.1.3
 [4.1.2]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.1.1...uuid-creator-4.1.2
 [4.1.1]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.1.0...uuid-creator-4.1.1
 [4.1.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.0.2...uuid-creator-4.1.0

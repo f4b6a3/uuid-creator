@@ -33,11 +33,8 @@ public final class DefaultTimeFunction implements TimeFunction {
 
 	private long prevTime = -1;
 
-	// initialize the counter with a number between 0 and 255
-	private long counter = RandomUtil.nextLong() & COUNTER_MASK;
-
-	// used to reset the counter to a number between 0 and 255
-	private static final long COUNTER_MASK = 0xff; // 255
+	// start the counter with a random number between 0 and 9,999
+	private long counter = Math.abs(RandomUtil.nextLong() % TICKS_PER_MILLI);
 
 	@Override
 	public long getAsLong() {
@@ -54,8 +51,8 @@ public final class DefaultTimeFunction implements TimeFunction {
 				}
 			}
 		} else {
-			// reset the counter to a number between 0 and 255
-			counter = ++counter & COUNTER_MASK;
+			// reset to a number between 0 and 9,999
+			counter = ++counter % TICKS_PER_MILLI;
 		}
 
 		// save time for the next call
