@@ -68,13 +68,11 @@ public class DotNetGuid1CodecTest {
 		uuidBuffer = ByteBuffer.allocate(4);
 		uuidBuffer.order(ByteOrder.BIG_ENDIAN);
 		uuidBuffer.putInt((int) (uuid.getMostSignificantBits() >>> 32));
-		uuidBuffer.position(0);
 		uuidField = uuidBuffer.array();
 
 		guidBuffer = ByteBuffer.allocate(4);
 		guidBuffer.order(ByteOrder.LITTLE_ENDIAN);
 		guidBuffer.putInt((int) (guid.getMostSignificantBits() >>> 32));
-		uuidBuffer.position(0);
 		guidField = guidBuffer.array();
 
 		// Test the 1st field
@@ -85,13 +83,11 @@ public class DotNetGuid1CodecTest {
 		uuidBuffer = ByteBuffer.allocate(2);
 		uuidBuffer.order(ByteOrder.BIG_ENDIAN);
 		uuidBuffer.putShort((short) ((uuid.getMostSignificantBits() & 0x00000000ffff0000L) >>> 16));
-		uuidBuffer.position(0);
 		uuidField = uuidBuffer.array();
 
 		guidBuffer = ByteBuffer.allocate(2);
 		guidBuffer.order(ByteOrder.LITTLE_ENDIAN);
 		guidBuffer.putShort((short) ((guid.getMostSignificantBits() & 0x00000000ffff0000L) >>> 16));
-		uuidBuffer.position(0);
 		guidField = guidBuffer.array();
 
 		// Test the 2nd field
@@ -102,13 +98,11 @@ public class DotNetGuid1CodecTest {
 		uuidBuffer = ByteBuffer.allocate(4);
 		uuidBuffer.order(ByteOrder.BIG_ENDIAN);
 		uuidBuffer.putShort((short) ((uuid.getMostSignificantBits() & 0x000000000000ffffL)));
-		uuidBuffer.position(0);
 		uuidField = uuidBuffer.array();
 
 		guidBuffer = ByteBuffer.allocate(4);
 		guidBuffer.order(ByteOrder.LITTLE_ENDIAN);
 		guidBuffer.putShort((short) ((guid.getMostSignificantBits() & 0x000000000000ffffL)));
-		uuidBuffer.position(0);
 		guidField = guidBuffer.array();
 
 		// Test the 3nd field

@@ -9,7 +9,7 @@ SCRIPT_DIR=$(dirname "$0")
 cd "${SCRIPT_DIR}/.."
 
 # compile the parent project
-mvn clean install
+mvn clean install -DskipTests
 
 # create a copy with the expected name
 cp "${PWD}/target/${ARTIFACT_ID}"-*-SNAPSHOT.jar "${PWD}/target/${ARTIFACT_ID}"-0.0.1-BENCHMARK.jar

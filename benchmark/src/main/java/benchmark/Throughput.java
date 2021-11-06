@@ -26,7 +26,7 @@ import com.github.f4b6a3.uuid.UuidCreator;
 
 @Fork(1)
 @Threads(1)
-@State(Scope.Thread)
+@State(Scope.Benchmark)
 @Warmup(iterations = 3)
 @Measurement(iterations = 5)
 @BenchmarkMode(Mode.Throughput)
@@ -36,9 +36,9 @@ public class Throughput {
 	String string = "01234567-89ab-cdef-0123-456789abcdef";
 	UUID uuid = UUID.fromString(string);
 	private byte[] bytes = "http:www.github.com".getBytes();
-	
+
 	/*********** JDK UUID ***********/
-	
+
 	@Benchmark
 	public String UUID01_toString() {
 		return uuid.toString();
@@ -58,9 +58,9 @@ public class Throughput {
 	public UUID UUID04_NameBasedMd5() {
 		return UUID.nameUUIDFromBytes(bytes);
 	}
-	
+
 	/*********** UUID Creator ***********/
-	
+
 	@Benchmark
 	public String UuidCreator01_toString() {
 		return UuidCreator.toString(uuid);
@@ -105,9 +105,9 @@ public class Throughput {
 	public UUID UuidCreator09_TimeOrdered() {
 		return UuidCreator.getTimeOrdered();
 	}
-	
+
 	/*********** UUID Codecs ************/
-	
+
 //	String base16 = Base16Codec.INSTANCE.encode(uuid);
 //	String base32 = Base32Codec.INSTANCE.encode(uuid);
 //	String base36 = Base36Codec.INSTANCE.encode(uuid);

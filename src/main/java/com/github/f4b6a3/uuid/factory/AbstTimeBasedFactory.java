@@ -214,7 +214,7 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 	 * @param nodeid   an alternate node (0 to 2^48)
 	 * @return {@link UUID} a UUID value
 	 */
-	public UUID create(final Instant instant, final Integer clockseq, final Long nodeid) {
+	public synchronized UUID create(final Instant instant, final Integer clockseq, final Long nodeid) {
 
 		final long timestamp;
 		final long nodeIdentifier;
