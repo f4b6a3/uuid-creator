@@ -319,4 +319,8 @@ UUID guid = DotNetGuid4Codec.INSTANCE.encode(timeUuid);
 UUID guid = DotNetGuid4Codec.INSTANCE.encode(randomUuid);
 ```
 
-// the end
+## Other identifier generators
+
+*   [ULID Creator](https://github.com/f4b6a3/ulid-creator)
+*   [TSID Creator](https://github.com/f4b6a3/tsid-creator)
+*   [KSUID Creator](https://github.com/f4b6a3/ksuid-creator)
