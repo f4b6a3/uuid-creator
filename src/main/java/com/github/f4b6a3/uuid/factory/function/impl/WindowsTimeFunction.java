@@ -29,27 +29,38 @@ import static com.github.f4b6a3.uuid.util.UuidTime.TICKS_PER_MILLI;
 import com.github.f4b6a3.uuid.factory.function.TimeFunction;
 import com.github.f4b6a3.uuid.util.internal.RandomUtil;
 
-public final class DefaultTimeFunction implements TimeFunction {
+/**
+ * This function is for WINDOWS systems.
+ * 
+ * In WINDOWS, the typical system time granularity is 15.625ms due to a default
+ * 64Hz timer frequency.
+ */
+public final class WindowsTimeFunction implements TimeFunction {
 
 	private long prevTime = -1;
 
-	// start the counter with a random number between 0 and 9,999
-	private long counter = Math.abs(RandomUtil.nextLong() % TICKS_PER_MILLI);
-	// start the counter limit with a number between 10,000 and 19,999
-	private long counterMax = counter + TICKS_PER_MILLI;
+	// arbitrary granularity greater than 15ms
+	private static final long GRANULARITY = 20;
+	private static final long TICKS_PER_GRANULARITY = TICKS_PER_MILLI * GRANULARITY;
+
+	// start the counter with a random number between 0 and 199,999
+	private long counter = Math.abs(RandomUtil.nextLong() % TICKS_PER_GRANULARITY);
+	// start the counter limit with a number between 200,000 and 399,999
+	private long counterMax = counter + TICKS_PER_GRANULARITY;
 
 	/**
 	 * Returns the timestamp.
 	 * 
-	 * It can be up to 1ms ahead of system time due to counter shift.
+	 * It can be up to 60ms ahead of system time due to time granularity and counter
+	 * shift.
 	 */
 	@Override
 	public long getAsLong() {
 
 		counter++; // always increment
 
-		// get the current time
-		final long time = System.currentTimeMillis();
+		// get the calculated time
+		final long time = calculatedTimeMillis();
 
 		// check time change
 		if (time == prevTime) {
@@ -57,15 +68,15 @@ public final class DefaultTimeFunction implements TimeFunction {
 			// check the counter limit
 			if (counter >= counterMax) {
 				// if the counter goes beyond the limit,
-				while (time == System.currentTimeMillis()) {
+				while (time == calculatedTimeMillis()) {
 					// wait the time to change for the next call
 				}
 			}
 		} else {
-			// reset to a number between 0 and 9,999
-			counter = counter % TICKS_PER_MILLI;
-			// reset to a number between 10,000 and 19,999
-			counterMax = counter + TICKS_PER_MILLI;
+			// reset to a number between 0 and 199,999
+			counter = counter % TICKS_PER_GRANULARITY;
+			// reset to a number between 200,000 and 399,999
+			counterMax = counter + TICKS_PER_GRANULARITY;
 		}
 
 		// save time for the next call
@@ -74,5 +85,17 @@ public final class DefaultTimeFunction implements TimeFunction {
 		// RFC-4122 - 4.2.1.2 (P4):
 		// simulate a high resolution clock
 		return (time * TICKS_PER_MILLI) + counter;
+	}
+
+	/**
+	 * Returns the calculated time in milliseconds.
+	 * 
+	 * It can be 20ms ahead of system time due to time granularity.
+	 * 
+	 * @return the calculated time
+	 */
+	private static long calculatedTimeMillis() {
+		final long time = System.currentTimeMillis();
+		return time + GRANULARITY - (time % GRANULARITY);
 	}
 }

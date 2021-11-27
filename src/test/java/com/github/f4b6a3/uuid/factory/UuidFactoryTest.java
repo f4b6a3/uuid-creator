@@ -3,9 +3,6 @@ package com.github.f4b6a3.uuid.factory;
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.codec.BinaryCodec;
 import com.github.f4b6a3.uuid.codec.UuidCodec;
-import com.github.f4b6a3.uuid.factory.AbstNameBasedFactory;
-import com.github.f4b6a3.uuid.factory.AbstTimeBasedFactory;
-import com.github.f4b6a3.uuid.factory.NoArgsFactory;
 import com.github.f4b6a3.uuid.factory.function.NodeIdFunction;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
@@ -53,8 +50,7 @@ public abstract class UuidFactoryTest {
 
 		for (UUID uuid : list) {
 			long creationTime = UuidUtil.getInstant(uuid).toEpochMilli();
-			assertTrue("Creation time was before start time " + creationTime + " " + startTime,
-					creationTime >= startTime);
+			assertTrue("Creation time was before start time", creationTime >= startTime);
 			assertTrue("Creation time was after end time", creationTime <= endTime);
 		}
 
@@ -100,7 +96,10 @@ public abstract class UuidFactoryTest {
 			list[i] = factory.create();
 		}
 
-		long endTime = System.currentTimeMillis() + 1; // TS can be 1ms ahead
+		// Permit 100ms ahead of system time.
+		// In Linux, the timestamp can be up to 1ms ahead.
+		// In Windows, the timestamp can be up to 60ms ahead.
+		long endTime = System.currentTimeMillis() + 100;
 
 		checkNotNull(list);
 		checkVersion(list, factory.getVersion().getValue());

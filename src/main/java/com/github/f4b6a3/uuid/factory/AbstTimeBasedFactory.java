@@ -37,6 +37,7 @@ import com.github.f4b6a3.uuid.factory.function.impl.DefaultTimeFunction;
 import com.github.f4b6a3.uuid.factory.function.impl.HashNodeIdFunction;
 import com.github.f4b6a3.uuid.factory.function.impl.MacNodeIdFunction;
 import com.github.f4b6a3.uuid.factory.function.impl.RandomNodeIdFunction;
+import com.github.f4b6a3.uuid.factory.function.impl.WindowsTimeFunction;
 import com.github.f4b6a3.uuid.util.UuidTime;
 import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 import com.github.f4b6a3.uuid.util.internal.SettingsUtil;
@@ -63,15 +64,15 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 
 		if (builder != null) {
 			this.timeFunction = builder.timeFunction != null ? builder.timeFunction //
-					: new DefaultTimeFunction();
-			this.clockseqFunction = builder.clockseqFunction != null ? builder.clockseqFunction //
-					: new DefaultClockSeqFunction();
+					: selectTimeFunction();
 			this.nodeidFunction = builder.nodeidFunction != null ? builder.nodeidFunction //
 					: selectNodeIdFunction();
+			this.clockseqFunction = builder.clockseqFunction != null ? builder.clockseqFunction //
+					: new DefaultClockSeqFunction();
 		} else {
-			this.timeFunction = new DefaultTimeFunction();
-			this.clockseqFunction = new DefaultClockSeqFunction();
+			this.timeFunction = selectTimeFunction();
 			this.nodeidFunction = selectNodeIdFunction();
+			this.clockseqFunction = new DefaultClockSeqFunction();
 		}
 	}
 
@@ -318,10 +319,10 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 	}
 
 	/**
-	 * Select the node identifier strategy.
+	 * Select the node identifier function.
 	 * 
 	 * This method reads the system property 'uuidcreator.node' and the environment
-	 * variable 'UUIDCREATOR_NODE' to decide what node identifier strategy must be
+	 * variable 'UUIDCREATOR_NODE' to decide what node identifier function must be
 	 * used.
 	 * 
 	 * 1. If it finds the string "mac", the generator will use the MAC address.
@@ -360,6 +361,26 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 		}
 
 		return new DefaultNodeIdFunction();
+	}
+
+	/**
+	 * Select the time function.
+	 * 
+	 * If the operating system is WINDOWS, it returns a function that is more
+	 * efficient for its typical time granularity (15.6ms). Otherwise, it returns
+	 * the default time function.
+	 * 
+	 * @return a time function
+	 */
+	protected static TimeFunction selectTimeFunction() {
+
+		// check if the operating system is WINDOWS
+		final String os = System.getProperty("os.name");
+		if (os != null && os.toLowerCase().startsWith("win")) {
+			return new WindowsTimeFunction();
+		}
+
+		return new DefaultTimeFunction();
 	}
 
 	public abstract static class Builder<T> {

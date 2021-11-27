@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [4.2.0] - 2021-11-27
+
+Time function for windows.
+
+Optimize network util.
+
 ## [4.1.4] - 2021-11-27
 
 Optimize default time function.
@@ -272,7 +278,8 @@ Remove `Fingerprint` // too complex
 -   Removed UuidSettings.getNodeIdentifierDeprecated // remove deprecated
 -   Renamed UuidSettings to UuidCreatorSettings
 
-[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.1.4...HEAD
+[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.2.0...HEAD
+[4.2.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.1.4...uuid-creator-4.2.0
 [4.1.4]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.1.3...uuid-creator-4.1.4
 [4.1.3]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.1.2...uuid-creator-4.1.3
 [4.1.2]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.1.1...uuid-creator-4.1.2

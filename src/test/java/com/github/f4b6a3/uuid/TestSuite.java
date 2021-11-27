@@ -18,6 +18,7 @@ import com.github.f4b6a3.uuid.factory.AbstTimeBasedFactoryTest;
 import com.github.f4b6a3.uuid.factory.function.ClockSeqPoolTest;
 import com.github.f4b6a3.uuid.factory.function.impl.DefaultClockSeqFunctionTest;
 import com.github.f4b6a3.uuid.factory.function.impl.DefaultTimeFunctionTest;
+import com.github.f4b6a3.uuid.factory.function.impl.WindowsTimeFunctionTest;
 import com.github.f4b6a3.uuid.factory.nonstandard.PrefixCombFactoryTest;
 import com.github.f4b6a3.uuid.factory.nonstandard.ShortPrefixCombFactoryTest;
 import com.github.f4b6a3.uuid.factory.nonstandard.ShortSuffixCombFactoryTest;
@@ -74,6 +75,7 @@ import com.github.f4b6a3.uuid.util.UuidValidatorTest;
 	UuidTimeTest.class,
 	UuidUtilTest.class,
 	UuidValidatorTest.class,
+	WindowsTimeFunctionTest.class,
 })
 
 /**
