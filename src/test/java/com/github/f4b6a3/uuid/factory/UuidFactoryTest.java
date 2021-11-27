@@ -100,7 +100,7 @@ public abstract class UuidFactoryTest {
 			list[i] = factory.create();
 		}
 
-		long endTime = System.currentTimeMillis();
+		long endTime = System.currentTimeMillis() + 1; // TS can be 1ms ahead
 
 		checkNotNull(list);
 		checkVersion(list, factory.getVersion().getValue());

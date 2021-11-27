@@ -35,31 +35,39 @@ public final class DefaultTimeFunction implements TimeFunction {
 
 	// start the counter with a random number between 0 and 9,999
 	private long counter = Math.abs(RandomUtil.nextLong() % TICKS_PER_MILLI);
+	// start the counter limit with a number between 10,000 and 19,999
+	private long counterMax = counter + TICKS_PER_MILLI;
 
 	@Override
 	public long getAsLong() {
 
+		counter++; // always increment
+
 		// get the current time
 		final long time = System.currentTimeMillis();
 
+		// check time change
 		if (time == prevTime) {
-			// increment the counter
-			if (++counter >= TICKS_PER_MILLI) {
-				// if the counter goes beyond the limit:
+			// if the time repeats,
+			// check the counter limit
+			if (counter >= counterMax) {
+				// if the counter goes beyond the limit,
 				while (time == System.currentTimeMillis()) {
-					// wait the time change for the next call
+					// wait the time to change for the next call
 				}
 			}
 		} else {
 			// reset to a number between 0 and 9,999
-			counter = ++counter % TICKS_PER_MILLI;
+			counter = counter % TICKS_PER_MILLI;
+			// reset to a number between 10,000 and 19,999
+			counterMax = counter + TICKS_PER_MILLI;
 		}
 
 		// save time for the next call
 		prevTime = time;
 
-		// RFC-4122 - 4.2.1.2 (P4):
-		// simulate high resolution
+		// RFC-4122 - 4.2.1.2 (P4): simulate a high resolution clock.
+		// it may be up to 1ms ahead of system clock due to counter shift.
 		return (time * TICKS_PER_MILLI) + counter;
 	}
 }

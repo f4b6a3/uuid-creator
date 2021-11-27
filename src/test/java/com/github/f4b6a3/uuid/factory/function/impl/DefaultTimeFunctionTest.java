@@ -17,7 +17,7 @@ public class DefaultTimeFunctionTest {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			long m1 = System.currentTimeMillis() * 10000L;
 			long ts = supplier.getAsLong();
-			long m2 = System.currentTimeMillis() * 10000L + 10000L; // TS can be 10,000 ticks ahead
+			long m2 = System.currentTimeMillis() * 10000L + 20000L; // TS can be 20,000 ticks ahead
 			assertTrue("The current timstamp millisecond is incorrect", ts >= m1 && ts <= m2);
 		}
 	}
@@ -29,7 +29,7 @@ public class DefaultTimeFunctionTest {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			long m1 = System.currentTimeMillis();
 			long ts = supplier.getAsLong() / 10000L;
-			long m2 = System.currentTimeMillis();
+			long m2 = System.currentTimeMillis() + 1; // TS can be 1ms ahead
 			assertTrue("The current timstamp millisecond is incorrect", ts >= m1 && ts <= m2);
 		}
 	}
