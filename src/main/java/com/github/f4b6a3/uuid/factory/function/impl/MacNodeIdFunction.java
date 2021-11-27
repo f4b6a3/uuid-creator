@@ -26,13 +26,11 @@ package com.github.f4b6a3.uuid.factory.function.impl;
 
 import static com.github.f4b6a3.uuid.util.internal.ByteUtil.toNumber;
 
-import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.Enumeration;
 
 import com.github.f4b6a3.uuid.factory.function.NodeIdFunction;
+import com.github.f4b6a3.uuid.util.internal.NetworkUtil;
 
 public final class MacNodeIdFunction implements NodeIdFunction {
 
@@ -49,33 +47,14 @@ public final class MacNodeIdFunction implements NodeIdFunction {
 
 	private long getHardwareAddress() {
 		try {
-
-			// first try: return the MAC associated to the host name
-			InetAddress ip = InetAddress.getLocalHost();
-			NetworkInterface nic = NetworkInterface.getByInetAddress(ip);
-			if (nic != null && !nic.isLoopback()) {
-				byte[] mac = nic.getHardwareAddress();
-				if (mac != null && mac.length == 6) {
-					return toNumber(mac);
-				}
+			NetworkInterface nic = NetworkUtil.nic();
+			if (nic != null) {
+				return toNumber(nic.getHardwareAddress());
 			}
-
-			// second try: return the first MAC found
-			Enumeration<NetworkInterface> nics = NetworkInterface.getNetworkInterfaces();
-			while (nics.hasMoreElements()) {
-				NetworkInterface next = nics.nextElement();
-				if (next != null && !next.isLoopback()) {
-					byte[] mac = next.getHardwareAddress();
-					if (mac != null && mac.length == 6) {
-						return toNumber(mac);
-					}
-				}
-			}
-		} catch (UnknownHostException | SocketException e) {
+		} catch (SocketException e) {
 			// do nothing
 		}
 
-		// Return a random node identifier
 		return NodeIdFunction.getMulticastRandom();
 	}
 }

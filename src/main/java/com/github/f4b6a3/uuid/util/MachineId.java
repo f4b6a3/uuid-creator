@@ -24,18 +24,12 @@
 
 package com.github.f4b6a3.uuid.util;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
 import java.util.UUID;
+
+import com.github.f4b6a3.uuid.util.internal.NetworkUtil;
 
 import static com.github.f4b6a3.uuid.util.UuidUtil.setVersion;
 import static com.github.f4b6a3.uuid.util.internal.ByteUtil.toHexadecimal;
@@ -123,8 +117,13 @@ public final class MachineId {
 	 */
 	public static byte[] getMachineHash() {
 		if (hash == null) {
-			final String string = getMachineString();
-			hash = getMessageDigest().digest(string.getBytes(StandardCharsets.UTF_8));
+			try {
+				final String string = getMachineString();
+				hash = MessageDigest.getInstance("SHA-256").digest(string.getBytes(StandardCharsets.UTF_8));
+			} catch (NoSuchAlgorithmException e) {
+				throw new InternalError("Message digest algorithm not supported.", e);
+			}
+
 		}
 		return hash;
 	}
@@ -140,71 +139,15 @@ public final class MachineId {
 	 */
 	public static String getMachineString() {
 
-		if (string != null) {
-			return string;
+		if (string == null) {
+
+			String hostname = NetworkUtil.hostname();
+			String mac = NetworkUtil.mac();
+			String ip = NetworkUtil.ip();
+
+			string = String.join(" ", hostname, mac, ip);
 		}
 
-		String hostName = null;
-		String nicMac = null;
-		String nicAddr = null;
-
-		try {
-			// Get the host name
-			hostName = InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e) {
-			// do nothing
-		}
-
-		try {
-			// Get the MAC and IP addresses
-			Enumeration<NetworkInterface> nics = NetworkInterface.getNetworkInterfaces();
-			while (nics.hasMoreElements()) {
-				NetworkInterface nic = nics.nextElement();
-				if (nic != null && !nic.isLoopback()) {
-					byte[] mac = nic.getHardwareAddress();
-					Enumeration<InetAddress> ips = nic.getInetAddresses();
-					if (mac != null && mac.length == 6 && ips.hasMoreElements()) {
-						nicMac = formatMac(mac);
-						List<String> list = new ArrayList<>();
-						while (ips.hasMoreElements()) {
-							InetAddress ip = ips.nextElement();
-							list.add(ip.getHostAddress());
-						}
-						Collections.sort(list);
-						nicAddr = String.join(" ", list);
-						break; // take only one
-					}
-				}
-			}
-		} catch (SocketException e) {
-			// do nothing
-		}
-
-		string = String.join(" ", hostName, nicMac, nicAddr);
 		return string;
-	}
-
-	/**
-	 * Returns the string format of a MAC address
-	 * 
-	 * Output format: 00-00-00-00-00-00
-	 * 
-	 * @param mac MAC address bytes
-	 * @return a string
-	 */
-	private static String formatMac(byte[] mac) {
-		String[] hex = new String[mac.length];
-		for (int i = 0; i < mac.length; i++) {
-			hex[i] = String.format("%02X", mac[i]);
-		}
-		return String.join("-", hex);
-	}
-
-	private static MessageDigest getMessageDigest() {
-		try {
-			return MessageDigest.getInstance("SHA-256");
-		} catch (NoSuchAlgorithmException e) {
-			throw new InternalError("Message digest algorithm not supported.", e);
-		}
 	}
 }

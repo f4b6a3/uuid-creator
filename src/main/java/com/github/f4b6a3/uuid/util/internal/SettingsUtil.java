@@ -47,10 +47,9 @@ public final class SettingsUtil {
 
 	public static Long getNodeIdentifier() {
 		String value = getProperty(PROPERTY_NODE);
-		if (value == null || value.isEmpty()) {
+		if (value == null) {
 			return null;
 		}
-
 		try {
 			return Long.decode(value);
 		} catch (NumberFormatException e) {
@@ -64,11 +63,7 @@ public final class SettingsUtil {
 	}
 
 	public static String getSecureRandom() {
-		String value = getProperty(PROPERTY_SECURERANDOM);
-		if (value == null || value.isEmpty()) {
-			return null;
-		}
-		return value;
+		return getProperty(PROPERTY_SECURERANDOM);
 	}
 
 	public static void setSecureRandom(String random) {
