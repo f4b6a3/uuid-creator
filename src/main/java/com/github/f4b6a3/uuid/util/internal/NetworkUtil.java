@@ -156,11 +156,11 @@ public final class NetworkUtil {
 	 * 
 	 * It returns the first network interface that satisfies these conditions:
 	 * 
-	 * - it is not loop back;
+	 * - it is up and running;
 	 * 
-	 * - it has MAC address;
+	 * - it is not loopback;
 	 * 
-	 * - it has IP address.
+	 * - it is not virtual.
 	 * 
 	 * @return a network interface.
 	 */
@@ -193,6 +193,7 @@ public final class NetworkUtil {
 					return nic;
 				}
 			}
+
 		} catch (UnknownHostException | SocketException | NullPointerException e) {
 			// do nothing
 		}
@@ -204,19 +205,13 @@ public final class NetworkUtil {
 	/**
 	 * Checks if the network interface is acceptable.
 	 * 
-	 * In this utility, an acceptable network interface has MAC, has IP, and is not
-	 * loopback.
-	 * 
 	 * @param ni a network interface
 	 * @return true if acceptable
 	 */
 	private static synchronized boolean acceptable(NetworkInterface ni) {
 		try {
-			if (ni != null && !ni.isLoopback() && ni.getInetAddresses().hasMoreElements()) {
-				byte[] mac = ni.getHardwareAddress();
-				if (mac != null && mac.length == 6) {
-					return true;
-				}
+			if (ni != null && ni.isUp() && !ni.isLoopback() && !ni.isVirtual()) {
+				return true;
 			}
 		} catch (SocketException | NullPointerException e) {
 			// do nothing
