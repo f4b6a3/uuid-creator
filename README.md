@@ -321,7 +321,7 @@ UUID guid = DotNetGuid4Codec.INSTANCE.encode(randomUuid);
 
 ## Other identifier generators
 
-If you're in doubt whether a UUID generator is what you're looking for, check out our other ID generators.
+Check out the other ID generators.
 
 *   [ULID Creator](https://github.com/f4b6a3/ulid-creator)
 *   [TSID Creator](https://github.com/f4b6a3/tsid-creator)

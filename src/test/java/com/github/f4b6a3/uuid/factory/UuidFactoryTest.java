@@ -51,7 +51,7 @@ public abstract class UuidFactoryTest {
 		for (int i = 0; i < list.length; i++) {
 			long creationTime = UuidUtil.getInstant(list[i]).toEpochMilli();
 			assertTrue("Creation time was before start time", creationTime >= startTime[i]);
-			assertTrue("Creation time was after end time " + (creationTime - startTime[i]), creationTime <= endTime[i]);
+			assertTrue("Creation time was after end time", creationTime <= endTime[i]);
 		}
 	}
 
@@ -99,8 +99,8 @@ public abstract class UuidFactoryTest {
 
 			// Permit 100ms ahead of system time.
 			// On Linux, the timestamp can be up to 1ms ahead.
-			// On Windows, the timestamp can be up to 32ms ahead.
-			endTime[i] = System.currentTimeMillis() + 32;
+			// On Windows, the timestamp can be up to 48ms ahead.
+			endTime[i] = System.currentTimeMillis() + 100;
 		}
 
 		checkNotNull(list);

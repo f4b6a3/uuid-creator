@@ -15,8 +15,8 @@ public class WindowsTimeFunctionTest {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			long m1 = System.currentTimeMillis();
 			long ts = supplier.getAsLong() / 10000L;
-			// TS can be 32ms ahead due to time granularity and counter shift
-			long m2 = System.currentTimeMillis() + 32;
+			// TS can be 48ms ahead due to time granularity and counter shift
+			long m2 = System.currentTimeMillis() + 48;
 			assertTrue("The current timstamp millisecond is incorrect", ts >= m1 && ts <= m2);
 		}
 	}

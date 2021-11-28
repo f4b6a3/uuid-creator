@@ -51,7 +51,7 @@ public final class WindowsTimeFunction implements TimeFunction {
 	/**
 	 * Returns the timestamp.
 	 * 
-	 * It can be up to 32ms ahead of system time due to time granularity and counter
+	 * It can be up to 48ms ahead of system time due to time granularity and counter
 	 * shift.
 	 */
 	@Override
