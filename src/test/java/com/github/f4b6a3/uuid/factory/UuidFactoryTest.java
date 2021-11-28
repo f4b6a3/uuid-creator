@@ -44,16 +44,15 @@ public abstract class UuidFactoryTest {
 		}
 	}
 
-	protected void checkCreationTime(UUID[] list, long startTime, long endTime) {
+	protected void checkCreationTime(UUID[] list, long[] startTime, long[] endTime) {
 
-		assertTrue("Start time was after end time", startTime <= endTime);
+		assertTrue("Start time was after end time", startTime[0] <= endTime[0]);
 
-		for (UUID uuid : list) {
-			long creationTime = UuidUtil.getInstant(uuid).toEpochMilli();
-			assertTrue("Creation time was before start time", creationTime >= startTime);
-			assertTrue("Creation time was after end time", creationTime <= endTime);
+		for (int i = 0; i < list.length; i++) {
+			long creationTime = UuidUtil.getInstant(list[i]).toEpochMilli();
+			assertTrue("Creation time was before start time", creationTime >= startTime[i]);
+			assertTrue("Creation time was after end time " + (creationTime - startTime[i]), creationTime <= endTime[i]);
 		}
-
 	}
 
 	protected void checkNodeIdentifier(UUID[] list, boolean multicast) {
@@ -89,17 +88,20 @@ public abstract class UuidFactoryTest {
 	protected void testGetAbstractTimeBased(AbstTimeBasedFactory factory, boolean multicast) {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-
-		long startTime = System.currentTimeMillis();
+		long[] startTime = new long[DEFAULT_LOOP_MAX];
+		long[] endTime = new long[DEFAULT_LOOP_MAX];
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = factory.create();
-		}
 
-		// Permit 100ms ahead of system time.
-		// In Linux, the timestamp can be up to 1ms ahead.
-		// In Windows, the timestamp can be up to 60ms ahead.
-		long endTime = System.currentTimeMillis() + 100;
+			startTime[i] = System.currentTimeMillis();
+
+			list[i] = factory.create();
+
+			// Permit 100ms ahead of system time.
+			// On Linux, the timestamp can be up to 1ms ahead.
+			// On Windows, the timestamp can be up to 32ms ahead.
+			endTime[i] = System.currentTimeMillis() + 32;
+		}
 
 		checkNotNull(list);
 		checkVersion(list, factory.getVersion().getValue());

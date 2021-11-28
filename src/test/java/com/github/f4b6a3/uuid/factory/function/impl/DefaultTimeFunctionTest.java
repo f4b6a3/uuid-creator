@@ -9,19 +9,6 @@ public class DefaultTimeFunctionTest {
 	private static final int DEFAULT_LOOP_MAX = 1_000_000;
 
 	@Test
-	public void testGetTimestampTicks() {
-		// 1ms = 10,000 ticks
-		DefaultTimeFunction supplier = new DefaultTimeFunction();
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			long m1 = System.currentTimeMillis() * 10000L;
-			long ts = supplier.getAsLong();
-			// TS can be 20,000 ticks ahead due to counter shift
-			long m2 = System.currentTimeMillis() * 10000L + 20000L;
-			assertTrue("The current timstamp millisecond is incorrect", ts >= m1 && ts <= m2);
-		}
-	}
-
-	@Test
 	public void testGetTimestampMillisecond() {
 		// 1ms = 10,000 ticks
 		DefaultTimeFunction supplier = new DefaultTimeFunction();

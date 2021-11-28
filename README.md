@@ -29,7 +29,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>4.2.0</version>
+  <version>4.2.1</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -320,6 +320,8 @@ UUID guid = DotNetGuid4Codec.INSTANCE.encode(randomUuid);
 ```
 
 ## Other identifier generators
+
+If you're in doubt whether a UUID generator is what you're looking for, check out our other ID generators.
 
 *   [ULID Creator](https://github.com/f4b6a3/ulid-creator)
 *   [TSID Creator](https://github.com/f4b6a3/tsid-creator)

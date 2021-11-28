@@ -40,18 +40,18 @@ public final class WindowsTimeFunction implements TimeFunction {
 	private long prevTime = -1;
 
 	// arbitrary granularity greater than 15ms
-	private static final long GRANULARITY = 20;
+	private static final long GRANULARITY = 16;
 	private static final long TICKS_PER_GRANULARITY = TICKS_PER_MILLI * GRANULARITY;
 
-	// start the counter with a random number between 0 and 199,999
+	// start the counter with a random number between 0 and 159,999
 	private long counter = Math.abs(RandomUtil.nextLong() % TICKS_PER_GRANULARITY);
-	// start the counter limit with a number between 200,000 and 399,999
+	// start the counter limit with a number between 160,000 and 319,999
 	private long counterMax = counter + TICKS_PER_GRANULARITY;
 
 	/**
 	 * Returns the timestamp.
 	 * 
-	 * It can be up to 60ms ahead of system time due to time granularity and counter
+	 * It can be up to 32ms ahead of system time due to time granularity and counter
 	 * shift.
 	 */
 	@Override
@@ -73,9 +73,9 @@ public final class WindowsTimeFunction implements TimeFunction {
 				}
 			}
 		} else {
-			// reset to a number between 0 and 199,999
+			// reset to a number between 0 and 159,999
 			counter = counter % TICKS_PER_GRANULARITY;
-			// reset to a number between 200,000 and 399,999
+			// reset to a number between 160,000 and 319,999
 			counterMax = counter + TICKS_PER_GRANULARITY;
 		}
 
@@ -90,7 +90,7 @@ public final class WindowsTimeFunction implements TimeFunction {
 	/**
 	 * Returns the calculated time in milliseconds.
 	 * 
-	 * It can be 20ms ahead of system time due to time granularity.
+	 * It can be 16ms ahead of system time due to time granularity.
 	 * 
 	 * @return the calculated time
 	 */
