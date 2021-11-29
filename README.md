@@ -54,38 +54,38 @@ UUID uuid = UuidCreator.getRandomBased();
 Create a [Time-based](https://github.com/f4b6a3/uuid-creator/wiki/1.1.-Time-based) UUID:
 
 ```java
-// with a static random node ID
+// with a static random number as node identifier
 UUID uuid = UuidCreator.getTimeBased();
 ```
 ```java
-// with a MAC address node ID
+// with a MAC address as node identifier
 UUID uuid = UuidCreator.getTimeBasedWithMac();
 ```
 ```java
-// with a hash of Hostname+MAC+IP node ID
+// with a hash of hostname, MAC and IP as node identifier
 UUID uuid = UuidCreator.getTimeBasedWithHash();
 ```
 ```java
-// with a changing random node ID
+// with a changing random number as node identifier
 UUID uuid = UuidCreator.getTimeBasedWithRandom();
 ```
 
 Create a [Time-ordered](https://github.com/f4b6a3/uuid-creator/wiki/1.6.-Time-ordered) UUID:
 
 ```java
-// with a static random node ID
+// with a static random number as node identifier
 UUID uuid = UuidCreator.getTimeOrdered();
 ```
 ```java
-// with a MAC address node ID
+// with a MAC address as node identifier
 UUID uuid = UuidCreator.getTimeOrderedWithMac();
 ```
 ```java
-// with a hash of Hostname+MAC+IP node ID
+// with a hash of hostname, MAC and IP as node identifier
 UUID uuid = UuidCreator.getTimeOrderedWithHash();
 ```
 ```java
-// with a changing random node ID
+// with a changing random number as node identifier
 UUID uuid = UuidCreator.getTimeOrderedWithRandom();
 ```
 
@@ -118,10 +118,8 @@ UUID uuid = UuidCreator.getNameBasedSha1(UuidNamespace.NAMESPACE_URL, name);
 Create a [DCE Security](https://github.com/f4b6a3/uuid-creator/wiki/1.2.-DCE-Security) UUID:
 
 ```java
-// DCE Security
 int localIdentifier = 1701;
-UuidLocalDomain localDomain = UuidLocalDomain.LOCAL_DOMAIN_PERSON;
-UUID uuid = UuidCreator.getDceSecurity(localDomain, localIdentifier);
+UUID uuid = UuidCreator.getDceSecurity(UuidLocalDomain.LOCAL_DOMAIN_PERSON, localIdentifier);
 ```
 
 Create a [Prefix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.1.-Prefix-COMB) GUID:
@@ -207,19 +205,15 @@ UUID uuid = BinaryCodec.INSTANCE.decode(bytes);
 Convert a UUID to and from [canonical string](https://github.com/f4b6a3/uuid-creator/wiki/4.0.-Library-codecs#stringcodec):
 
 ```java
-// It is 7x faster than `UUID.toString()` in JDK 8.
-String string = StringCodec.INSTANCE.encode(uuid);
-// It is 7x faster than `UUID.fromString()` in JDK 8.
-UUID uuid = StringCodec.INSTANCE.decode(string);
+String string = StringCodec.INSTANCE.encode(uuid); // 7x faster than `UUID.toString()`
+UUID uuid = StringCodec.INSTANCE.decode(string);   // 7x faster than `UUID.fromString()`
 ```
 
 Convert a UUID to and from [URI](https://github.com/f4b6a3/uuid-creator/wiki/4.0.-Library-codecs#uricodec):
 
 ```java
-// uuid: 01234567-89AB-4DEF-A123-456789ABCDEF
-// uri:: urn:uuid:01234567-89ab-4def-a123-456789abcdef
-URI uri = UriCodec.INSTANCE.encode(uuid);
-UUID uuid = UriCodec.INSTANCE.decode(uri);
+URI uri = UriCodec.INSTANCE.encode(uuid);  // 01234567-89AB-4DEF-A123-456789ABCDEF
+UUID uuid = UriCodec.INSTANCE.decode(uri); // urn:uuid:01234567-89ab-4def-a123-456789abcdef
 ```
 
 #### Base-N codecs
@@ -231,59 +225,47 @@ Custom codecs can be instantiated with `BaseNCodec.newInstance(int|String)`.
 Convert a UUID to and from [base-n](https://github.com/f4b6a3/uuid-creator/wiki/4.0.-Library-codecs#base-n-codecs):
 
 ```java
-// uuid::: 01234567-89AB-4DEF-A123-456789ABCDEF
-// base16: 0123456789ab4defa123456789abcdef
-// It is 22x faster than `UUID.toString().replaceAll("-", "")`.
-String string = Base16Codec.INSTANCE.encode(uuid);
-UUID uuid = Base16Codec.INSTANCE.decode(string);
+// 22x faster than `UUID.toString().replaceAll("-", "")`
+String string = Base16Codec.INSTANCE.encode(uuid); // 01234567-89AB-4DEF-A123-456789ABCDEF
+UUID uuid = Base16Codec.INSTANCE.decode(string);   // 0123456789ab4defa123456789abcdef
 ```
 
 ```java
-// uuid::: 01234567-89AB-4DEF-A123-456789ABCDEF
-// base32: aerukz4jvng67ijdivtytk6n54
-String string = Base32Codec.INSTANCE.encode(uuid);
-UUID uuid = Base32Codec.INSTANCE.decode(string);
+String string = Base32Codec.INSTANCE.encode(uuid); // 01234567-89AB-4DEF-A123-456789ABCDEF
+UUID uuid = Base32Codec.INSTANCE.decode(string);   // aerukz4jvng67ijdivtytk6n54
 ```
 
 ```java
-// uuid::: 01234567-89AB-4DEF-A123-456789ABCDEF
-// base58: 199dn6s7UNiX3LyNkQ1Cfx
-String string = Base58BitcoinCodec.INSTANCE.encode(uuid);
-UUID uuid = Base58BitcoinCodec.INSTANCE.decode(string);
+String string = Base58BitcoinCodec.INSTANCE.encode(uuid); // 01234567-89AB-4DEF-A123-456789ABCDEF
+UUID uuid = Base58BitcoinCodec.INSTANCE.decode(string);   // 199dn6s7UNiX3LyNkQ1Cfx
 ```
 
 ```java
-// uuid::: 01234567-89AB-4DEF-A123-456789ABCDEF
-// base62: 0296tiiBY28FKCYq1PVSGd
-String string = Base62Codec.INSTANCE.encode(uuid);
-UUID uuid = Base62Codec.INSTANCE.decode(string);
+String string = Base62Codec.INSTANCE.encode(uuid); // 01234567-89AB-4DEF-A123-456789ABCDEF
+UUID uuid = Base62Codec.INSTANCE.decode(string);   // 0296tiiBY28FKCYq1PVSGd
 ```
 
 ```java
-// uuid::: 01234567-89AB-4DEF-A123-456789ABCDEF
-// base64: ASNFZ4mrTe-hI0VniavN7w
-String string = Base64UrlCodec.INSTANCE.encode(uuid);
-UUID uuid = Base64UrlCodec.INSTANCE.decode(string);
+String string = Base64UrlCodec.INSTANCE.encode(uuid); // 01234567-89AB-4DEF-A123-456789ABCDEF
+UUID uuid = Base64UrlCodec.INSTANCE.decode(string);   // ASNFZ4mrTe-hI0VniavN7w
 ```
 
 Convert a UUID to and from a *custom* base-n:
 
 ```java
 // Returns a base-20 string using a CUSTOM radix (20)
-// uuid::: 01234567-89AB-4DEF-A123-456789ABCDEF
-// base20: 00b5740h195313554732654bjhj9e7
+UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
 int radix = 20; // expanded to alphabet "0123456789abcdefghij"
 UuidCodec<String> codec = BaseNCodec.newInstance(radix);
-String string = codec.encode(uuid);
+String string = codec.encode(uuid); // 00b5740h195313554732654bjhj9e7
 ```
 
 ```java
 // Returns a base-10 string using a CUSTOM alphabet ("0-9")
-// uuid::: 01234567-89AB-4DEF-A123-456789ABCDEF
-// base10: 001512366075203566477668990085887675887
+UUID uuid = UUID.fromString("01234567-89AB-4DEF-A123-456789ABCDEF");
 String alphabet = "0-9"; // expanded to alphabet "0123456789"
 UuidCodec<String> codec = BaseNCodec.newInstance(alphabet);
-String string = codec.encode(uuid);
+String string = codec.encode(uuid); // 001512366075203566477668990085887675887
 ```
 
 #### Other codecs
@@ -303,20 +285,20 @@ Convert a UUID to and from [NCName](https://github.com/f4b6a3/uuid-creator/wiki/
 // uuid: 01234567-89AB-4DEF-A123-456789ABCDEF
 // name: EASNFZ4mr3vEjRWeJq83vK
 String name = NcnameCodec.INSTANCE.encode(uuid);
-UUID uuid = NcnameCodec.INSTANCE.encode(name);
+UUID uuid = NcnameCodec.INSTANCE.decode(name);
 ```
 
 Convert a UUID to and from [.Net Guid](https://github.com/f4b6a3/uuid-creator/wiki/4.0.-Library-codecs#dotnetguid1codec-and-dotnetguid4codec):
 
 ```java
 // Convert time-based (version 1) to .Net Guid
-UUID guid = DotNetGuid1Codec.INSTANCE.encode(timeUuid);
-UUID guid = DotNetGuid1Codec.INSTANCE.encode(randomUuid);
+UUID guid = DotNetGuid1Codec.INSTANCE.encode(uuid);
+UUID uuid = DotNetGuid1Codec.INSTANCE.decode(guid);
 ```
 ```java
 // Convert time-based (version 4) to .Net Guid
-UUID guid = DotNetGuid4Codec.INSTANCE.encode(timeUuid);
-UUID guid = DotNetGuid4Codec.INSTANCE.encode(randomUuid);
+UUID guid = DotNetGuid4Codec.INSTANCE.encode(uuid);
+UUID uuid = DotNetGuid4Codec.INSTANCE.encode(guid);
 ```
 
 ## Other identifier generators
