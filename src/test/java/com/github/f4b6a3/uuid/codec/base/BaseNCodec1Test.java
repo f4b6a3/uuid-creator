@@ -401,26 +401,23 @@ public class BaseNCodec1Test {
 
 	private static char[] lpad(char[] chars, int length, char fill) {
 
-		int delta = 0;
-		int limit = 0;
+		if (chars.length < length) {
 
-		if (length > chars.length) {
-			delta = length - chars.length;
-			limit = length;
-		} else {
-			delta = 0;
-			limit = chars.length;
-		}
+			int delta = length - chars.length;
 
-		char[] output = new char[chars.length + delta];
-		for (int i = 0; i < limit; i++) {
-			if (i < delta) {
-				output[i] = fill;
-			} else {
-				output[i] = chars[i - delta];
+			char[] output = new char[length];
+			for (int i = 0; i < length; i++) {
+				if (i < delta) {
+					output[i] = fill;
+				} else {
+					output[i] = chars[i - delta];
+				}
 			}
+
+			return output;
 		}
-		return output;
+
+		return chars;
 	}
 
 	private static char[] zerofill(char[] chars, int length) {
