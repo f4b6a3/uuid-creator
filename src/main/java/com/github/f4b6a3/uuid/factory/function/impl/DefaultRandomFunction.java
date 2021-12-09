@@ -24,19 +24,51 @@
 
 package com.github.f4b6a3.uuid.factory.function.impl;
 
-import java.security.SecureRandom;
+import java.util.Random;
 
 import com.github.f4b6a3.uuid.factory.function.RandomFunction;
 import com.github.f4b6a3.uuid.util.internal.RandomUtil;
 
 public final class DefaultRandomFunction implements RandomFunction {
 
-	protected static final ThreadLocal<SecureRandom> RANDOM = ThreadLocal.withInitial(RandomUtil::getSecureRandom);
+	// the more processors, the better the machine
+	private static final int POOL_SIZE = processors();
+	private static final Random[] POOL = new Random[POOL_SIZE];
 
 	@Override
 	public byte[] apply(final int length) {
 		final byte[] bytes = new byte[length];
-		RANDOM.get().nextBytes(bytes);
+		current().nextBytes(bytes);
 		return bytes;
+	}
+
+	private static Random current() {
+
+		// calculate the pool index given the current thread ID
+		final int index = (int) Thread.currentThread().getId() % POOL_SIZE;
+
+		// lazy loading instance
+		if (POOL[index] == null) {
+			POOL[index] = RandomUtil.getSecureRandom();
+		}
+
+		return POOL[index];
+	}
+
+	private static int processors() {
+
+		final int min = 1;
+		final int max = 32;
+
+		// get the number of processors from the runtime
+		final int processors = Runtime.getRuntime().availableProcessors();
+
+		if (processors < min) {
+			return min;
+		} else if (processors > max) {
+			return max;
+		}
+
+		return processors;
 	}
 }
