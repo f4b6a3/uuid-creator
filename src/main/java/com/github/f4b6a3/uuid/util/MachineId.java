@@ -140,12 +140,7 @@ public final class MachineId {
 	public static String getMachineString() {
 
 		if (string == null) {
-
-			String hostname = NetworkUtil.hostname();
-			String mac = NetworkUtil.mac();
-			String ip = NetworkUtil.ip();
-
-			string = String.join(" ", hostname, mac, ip);
+			string = NetworkUtil.getMachineString();
 		}
 
 		return string;

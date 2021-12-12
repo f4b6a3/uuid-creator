@@ -35,7 +35,6 @@ import java.util.Enumeration;
  */
 public final class NetworkUtil {
 
-	private static NetworkInterface nic;
 	private static String hostname;
 	private static String mac;
 	private static String ip;
@@ -96,16 +95,15 @@ public final class NetworkUtil {
 	 * 
 	 * @return a string
 	 */
-	public static synchronized String mac() {
+	public static synchronized String mac(NetworkInterface nic) {
 
 		if (mac != null) {
 			return mac;
 		}
 
 		try {
-			NetworkInterface ni = nic();
-			if (ni != null) {
-				byte[] ha = ni.getHardwareAddress();
+			if (nic != null) {
+				byte[] ha = nic.getHardwareAddress();
 				String[] hex = new String[ha.length];
 				for (int i = 0; i < ha.length; i++) {
 					hex[i] = String.format("%02X", ha[i]);
@@ -128,16 +126,15 @@ public final class NetworkUtil {
 	 * 
 	 * @return a string
 	 */
-	public static synchronized String ip() {
+	public static synchronized String ip(NetworkInterface nic) {
 
 		if (ip != null) {
 			return ip;
 		}
 
 		try {
-			NetworkInterface ni = nic();
-			if (ni != null) {
-				Enumeration<InetAddress> ips = ni.getInetAddresses();
+			if (nic != null) {
+				Enumeration<InetAddress> ips = nic.getInetAddresses();
 				if (ips.hasMoreElements()) {
 					ip = ips.nextElement().getHostAddress();
 					return ip;
@@ -149,6 +146,26 @@ public final class NetworkUtil {
 
 		// not found
 		return null;
+	}
+
+	/**
+	 * Returns a string containing host name, MAC and IP.
+	 * 
+	 * Output format: "hostname123 11-22-33-44-55-66 123.123.123.123"
+	 * 
+	 * Note: a network interface may have more than one IP address.
+	 * 
+	 * @return a string
+	 */
+	public static synchronized String getMachineString() {
+
+		NetworkInterface nic = nic();
+
+		String hostname = NetworkUtil.hostname();
+		String mac = NetworkUtil.mac(nic);
+		String ip = NetworkUtil.ip(nic);
+
+		return String.join(" ", hostname, mac, ip);
 	}
 
 	/**
@@ -166,9 +183,7 @@ public final class NetworkUtil {
 	 */
 	public static synchronized NetworkInterface nic() {
 
-		if (nic != null) {
-			return nic;
-		}
+		NetworkInterface nic;
 
 		try {
 

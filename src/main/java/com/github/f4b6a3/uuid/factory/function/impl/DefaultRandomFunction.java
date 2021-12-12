@@ -31,7 +31,6 @@ import com.github.f4b6a3.uuid.util.internal.RandomUtil;
 
 public final class DefaultRandomFunction implements RandomFunction {
 
-	// the more processors, the better the machine
 	private static final int POOL_SIZE = processors();
 	private static final Random[] POOL = new Random[POOL_SIZE];
 
@@ -58,7 +57,7 @@ public final class DefaultRandomFunction implements RandomFunction {
 	private static int processors() {
 
 		final int min = 1;
-		final int max = 32;
+		final int max = 16;
 
 		// get the number of processors from the runtime
 		final int processors = Runtime.getRuntime().availableProcessors();
