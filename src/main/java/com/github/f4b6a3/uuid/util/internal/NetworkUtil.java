@@ -193,8 +193,10 @@ public final class NetworkUtil {
 
 			// try to find the network interface for the host name
 			ip = InetAddress.getByName(hostname());
+			// sometimes ip would be localhost ip (127.0.0.1) for normal hostname (e.g. myHostName)
 			ni = NetworkInterface.getByInetAddress(ip);
-			if (acceptable(ni)) {
+			// ni would be null for localhost ip (127.0.0.1)
+			if (ni != null && acceptable(ni)) {
 				nic = ni;
 				return nic;
 			}
@@ -225,7 +227,8 @@ public final class NetworkUtil {
 	 */
 	private static synchronized boolean acceptable(NetworkInterface ni) {
 		try {
-			if (ni != null && ni.isUp() && !ni.isLoopback() && !ni.isVirtual()) {
+			// isVirtual() returns false and getHardwareAddress() returns null for (at least some) openconnect interfaces
+			if (ni != null && ni.isUp() && !ni.isLoopback() && !ni.isVirtual() && ni.getHardwareAddress() != null) {
 				return true;
 			}
 		} catch (SocketException | NullPointerException e) {
