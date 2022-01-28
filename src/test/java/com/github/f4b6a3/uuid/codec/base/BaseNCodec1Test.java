@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import com.github.f4b6a3.uuid.codec.BinaryCodec;
 import com.github.f4b6a3.uuid.codec.UuidCodec;
-import com.github.f4b6a3.uuid.exception.UuidCodecException;
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
 import java.math.BigInteger;
 import java.util.Base64;
@@ -30,20 +30,6 @@ public class BaseNCodec1Test {
 			byte[] bytes = CODEC_BYTES.encode(uuid);
 			BigInteger n = new BigInteger(1, bytes);
 			String string = zerofill(n.toString(16), 32);
-			String actual = codec.encode(uuid);
-			assertEquals(string, actual);
-		}
-	}
-
-	@Test
-	public void testEncodeBase16Upper() {
-
-		final UuidCodec<String> codec = new Base16UCodec();
-		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUID.randomUUID();
-			byte[] bytes = CODEC_BYTES.encode(uuid);
-			BigInteger n = new BigInteger(1, bytes);
-			String string = zerofill(n.toString(16), 32).toUpperCase();
 			String actual = codec.encode(uuid);
 			assertEquals(string, actual);
 		}
@@ -82,24 +68,6 @@ public class BaseNCodec1Test {
 	}
 
 	@Test
-	public void testEncodeBase32Upper() {
-
-		final BaseNCodec codec = new Base32UCodec();
-		char[] alphabet = codec.getBase().getAlphabet().array();
-
-		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUID.randomUUID();
-			byte[] bytes = CODEC_BYTES.encode(uuid);
-			byte[] padded = getPadded(bytes);
-			BigInteger n = new BigInteger(1, padded);
-			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet) //
-					.substring(0, 26); // remove padding
-			String actual = codec.encode(uuid);
-			assertEquals(string, actual);
-		}
-	}
-
-	@Test
 	public void testDecodeBase32() {
 
 		final BaseNCodec codec = new Base32Codec();
@@ -118,9 +86,9 @@ public class BaseNCodec1Test {
 	}
 
 	@Test
-	public void testEncodeBase32Hex() {
+	public void testEncodeBase32Crf() {
 
-		final BaseNCodec codec = new Base32HexCodec();
+		final BaseNCodec codec = new Base32CrfCodec();
 		char[] alphabet = codec.getBase().getAlphabet().array();
 
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
@@ -136,9 +104,9 @@ public class BaseNCodec1Test {
 	}
 
 	@Test
-	public void testEncodeBase32HexUpper() {
+	public void testDecodeBase32Crf() {
 
-		final BaseNCodec codec = new Base32UHexCodec();
+		final BaseNCodec codec = new Base32CrfCodec();
 		char[] alphabet = codec.getBase().getAlphabet().array();
 
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
@@ -148,78 +116,6 @@ public class BaseNCodec1Test {
 			BigInteger n = new BigInteger(1, padded);
 			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet) //
 					.substring(0, 26); // remove padding
-			String actual = codec.encode(uuid);
-			assertEquals(string, actual);
-		}
-	}
-
-	@Test
-	public void testDecodeBase32Hex() {
-
-		final BaseNCodec codec = new Base32HexCodec();
-		char[] alphabet = codec.getBase().getAlphabet().array();
-
-		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUID.randomUUID();
-			byte[] bytes = CODEC_BYTES.encode(uuid);
-			byte[] padded = getPadded(bytes);
-			BigInteger n = new BigInteger(1, padded);
-			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet) //
-					.substring(0, 26); // remove padding
-			UUID actual = codec.decode(string);
-			assertEquals(uuid.toString(), actual.toString());
-		}
-	}
-
-	@Test
-	public void testEncodeBase32Crockford() {
-
-		final BaseNCodec codec = new Base32CrockfordCodec();
-		char[] alphabet = codec.getBase().getAlphabet().array();
-
-		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUID.randomUUID();
-			byte[] bytes = CODEC_BYTES.encode(uuid);
-			byte[] padded = getPadded(bytes);
-			BigInteger n = new BigInteger(1, padded);
-			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet) //
-					.substring(0, 26); // remove padding
-			String actual = codec.encode(uuid);
-			assertEquals(string, actual);
-		}
-	}
-
-	@Test
-	public void testEncodeBase32CrockfordUpper() {
-
-		final BaseNCodec codec = new Base32UCrockfordCodec();
-		char[] alphabet = codec.getBase().getAlphabet().array();
-
-		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUID.randomUUID();
-			byte[] bytes = CODEC_BYTES.encode(uuid);
-			byte[] padded = getPadded(bytes);
-			BigInteger n = new BigInteger(1, padded);
-			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet) //
-					.substring(0, 26); // remove padding
-			String actual = codec.encode(uuid);
-			assertEquals(string, actual);
-		}
-	}
-
-	@Test
-	public void testDecodeBase32Crockford() {
-
-		final BaseNCodec codec = new Base32CrockfordCodec();
-		char[] alphabet = codec.getBase().getAlphabet().array();
-
-		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUID.randomUUID();
-			byte[] bytes = CODEC_BYTES.encode(uuid);
-			byte[] padded = getPadded(bytes);
-			BigInteger n = new BigInteger(1, padded);
-			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet). //
-					substring(0, 26); // remove padding
 			UUID actual = codec.decode(string);
 			assertEquals(uuid.toString(), actual.toString());
 		}
@@ -288,13 +184,8 @@ public class BaseNCodec1Test {
 	@Test
 	public void testEncodeAndDecode() {
 		testEncodeAndDecode(new Base16Codec());
-		testEncodeAndDecode(new Base16UCodec());
 		testEncodeAndDecode(new Base32Codec());
-		testEncodeAndDecode(new Base32UCodec());
-		testEncodeAndDecode(new Base32HexCodec());
-		testEncodeAndDecode(new Base32UHexCodec());
-		testEncodeAndDecode(new Base32CrockfordCodec());
-		testEncodeAndDecode(new Base32UCrockfordCodec());
+		testEncodeAndDecode(new Base32CrfCodec());
 		testEncodeAndDecode(new Base64Codec());
 		testEncodeAndDecode(new Base64UrlCodec());
 	}
@@ -304,8 +195,7 @@ public class BaseNCodec1Test {
 
 		String base16 = "9CC570EFBFCC45A8BF46C4CA7E039341";
 		String base32 = "E4YVYO7P6MIWUL6RWEZJ7AHE2B";
-		String base32hex = "4SOLOEVFUC8MKBUHM4P9V074Q1";
-		String base32crockford = "4WRNREZFYC8PMBYHP4S9Z074T1";
+		String base32crf = "4WRNREZFYC8PMBYHP4S9Z074T1";
 		String base64 = "CcxXDvv8xFqL9GxMp+A5NB";
 		String base64url = "CcxXDvv8xFqL9GxMp-A5NB";
 
@@ -323,19 +213,12 @@ public class BaseNCodec1Test {
 		testExceptionBaseN(Base32Codec.INSTANCE, base32.substring(0, 25));
 		testExceptionBaseN(Base32Codec.INSTANCE, base32 + "E");
 
-		testExceptionBaseN(Base32HexCodec.INSTANCE, "");
-		testExceptionBaseN(Base32HexCodec.INSTANCE, null);
-		testExceptionBaseN(Base32HexCodec.INSTANCE, base32hex.replace('4', 'Z'));
-		testExceptionBaseN(Base32HexCodec.INSTANCE, base32hex.replace('4', '.'));
-		testExceptionBaseN(Base32HexCodec.INSTANCE, base32hex.substring(0, 25));
-		testExceptionBaseN(Base32HexCodec.INSTANCE, base32hex + "4");
-
-		testExceptionBaseN(Base32CrockfordCodec.INSTANCE, "");
-		testExceptionBaseN(Base32CrockfordCodec.INSTANCE, null);
-		testExceptionBaseN(Base32CrockfordCodec.INSTANCE, base32crockford.replace('4', 'U'));
-		testExceptionBaseN(Base32CrockfordCodec.INSTANCE, base32crockford.replace('4', '.'));
-		testExceptionBaseN(Base32CrockfordCodec.INSTANCE, base32crockford.substring(0, 25));
-		testExceptionBaseN(Base32CrockfordCodec.INSTANCE, base32crockford + "4");
+		testExceptionBaseN(Base32CrfCodec.INSTANCE, "");
+		testExceptionBaseN(Base32CrfCodec.INSTANCE, null);
+		testExceptionBaseN(Base32CrfCodec.INSTANCE, base32crf.replace('4', 'U'));
+		testExceptionBaseN(Base32CrfCodec.INSTANCE, base32crf.replace('4', '.'));
+		testExceptionBaseN(Base32CrfCodec.INSTANCE, base32crf.substring(0, 25));
+		testExceptionBaseN(Base32CrfCodec.INSTANCE, base32crf + "4");
 
 		testExceptionBaseN(Base64Codec.INSTANCE, "");
 		testExceptionBaseN(Base64Codec.INSTANCE, null);
@@ -364,7 +247,7 @@ public class BaseNCodec1Test {
 		try {
 			codec.decode(string);
 			fail(string);
-		} catch (UuidCodecException e) {
+		} catch (InvalidUuidException e) {
 			// success
 		}
 	}

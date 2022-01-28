@@ -24,7 +24,6 @@
 
 package com.github.f4b6a3.uuid.codec.base;
 
-import com.github.f4b6a3.uuid.exception.UuidCodecException;
 import com.github.f4b6a3.uuid.util.immutable.CharArray;
 import com.github.f4b6a3.uuid.util.immutable.LongArray;
 
@@ -125,7 +124,7 @@ public final class BaseN {
 
 		// check the alphabet length
 		if (charset.length() < RADIX_MIN || charset.length() > RADIX_MAX) {
-			throw new UuidCodecException("Unsupported length: " + charset.length());
+			throw new IllegalArgumentException("Unsupported length: " + charset.length());
 		}
 
 		// set the radix field
@@ -213,7 +212,7 @@ public final class BaseN {
 
 	private static String expand(int radix) {
 		if (radix < RADIX_MIN || radix > RADIX_MAX) {
-			throw new UuidCodecException("Unsupported radix: " + radix);
+			throw new IllegalArgumentException("Unsupported radix: " + radix);
 		}
 		if (radix > 36) {
 			return ALPHABET_64.substring(0, radix); // 0-9A-Za-z-_

@@ -28,7 +28,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import com.github.f4b6a3.uuid.codec.base.BaseN;
-import com.github.f4b6a3.uuid.exception.UuidCodecException;
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.immutable.LongArray;
 
 /**
@@ -53,11 +53,11 @@ public abstract class BaseNDecoder implements Function<String, UUID> {
 
 	protected char[] toCharArray(String string) {
 		if (string == null) {
-			throw new UuidCodecException("Invalid string: null");
+			throw new InvalidUuidException("Invalid string: null");
 		}
 		char[] chars = string.toCharArray();
 		if (!base.isValid(chars)) {
-			throw new UuidCodecException("Invalid string: \"" + string + "\"");
+			throw new InvalidUuidException("Invalid string: \"" + string + "\"");
 		}
 		return chars;
 	}

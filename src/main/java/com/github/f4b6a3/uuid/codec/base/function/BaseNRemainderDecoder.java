@@ -27,7 +27,7 @@ package com.github.f4b6a3.uuid.codec.base.function;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.codec.base.BaseN;
-import com.github.f4b6a3.uuid.exception.UuidCodecException;
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
 /**
  * Function that decodes a base-n string to a UUID.
@@ -82,7 +82,7 @@ public final class BaseNRemainderDecoder extends BaseNDecoder {
 		}
 
 		if (validate && overflow != 0) {
-			throw new UuidCodecException("Invalid string (overflow)");
+			throw new InvalidUuidException("Invalid string (overflow)");
 		}
 
 		return product;

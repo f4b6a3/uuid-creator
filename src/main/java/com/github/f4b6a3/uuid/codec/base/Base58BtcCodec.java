@@ -30,17 +30,19 @@ package com.github.f4b6a3.uuid.codec.base;
  * It is case SENSITIVE.
  * 
  * It encodes using remainder operator (modulus).
+ * 
+ * The alphabet for this codec is the same used in Bitcoin (BTC).
+ * 
+ * Read: https://tools.ietf.org/html/draft-msporny-base58-03
  */
-public final class Base58Codec extends BaseNCodec {
+public final class Base58BtcCodec extends BaseNCodec {
 
-	private static final BaseN BASE_N = new BaseN("0-9A-Za-v");
+	private static final BaseN BASE_N = new BaseN("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz");
 
-	/**
-	 * A shared immutable instance.
-	 */
-	public static final Base58Codec INSTANCE = new Base58Codec();
+	// a shared immutable instance
+	public static final Base58BtcCodec INSTANCE = new Base58BtcCodec();
 
-	public Base58Codec() {
+	public Base58BtcCodec() {
 		super(BASE_N);
 	}
 }

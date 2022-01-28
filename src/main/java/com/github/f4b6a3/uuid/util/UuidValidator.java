@@ -93,7 +93,7 @@ public final class UuidValidator {
 	 * @return true if valid, false if invalid
 	 */
 	public static boolean isValid(final String uuid) {
-		return uuid != null && uuid.length() != 0 && isUuidString(uuid.toCharArray());
+		return uuid != null && uuid.length() != 0 && isParseable(uuid.toCharArray());
 	}
 
 	/**
@@ -104,7 +104,7 @@ public final class UuidValidator {
 	 * @return true if valid, false if invalid
 	 */
 	public static boolean isValid(final String uuid, int version) {
-		return uuid != null && uuid.length() != 0 && isUuidString(uuid.toCharArray(), version);
+		return uuid != null && uuid.length() != 0 && isParseable(uuid.toCharArray(), version);
 	}
 
 	/**
@@ -114,7 +114,7 @@ public final class UuidValidator {
 	 * @return true if valid, false if invalid
 	 */
 	public static boolean isValid(final char[] uuid) {
-		return uuid != null && uuid.length != 0 && isUuidString(uuid);
+		return uuid != null && uuid.length != 0 && isParseable(uuid);
 	}
 
 	/**
@@ -125,7 +125,7 @@ public final class UuidValidator {
 	 * @return true if valid, false if invalid
 	 */
 	public static boolean isValid(final char[] uuid, int version) {
-		return uuid != null && uuid.length != 0 && isUuidString(uuid, version);
+		return uuid != null && uuid.length != 0 && isParseable(uuid, version);
 	}
 
 	/**
@@ -135,7 +135,7 @@ public final class UuidValidator {
 	 * @throws InvalidUuidException if invalid
 	 */
 	public static void validate(final String uuid) {
-		if (uuid == null || !isUuidString(uuid.toCharArray())) {
+		if (uuid == null || !isParseable(uuid.toCharArray())) {
 			throwInvalidUuidException(uuid);
 		}
 	}
@@ -148,7 +148,7 @@ public final class UuidValidator {
 	 * @throws InvalidUuidException if invalid
 	 */
 	public static void validate(final String uuid, int version) {
-		if (uuid == null || !isUuidString(uuid.toCharArray(), version)) {
+		if (uuid == null || !isParseable(uuid.toCharArray(), version)) {
 			throwInvalidUuidException(uuid);
 		}
 	}
@@ -160,7 +160,7 @@ public final class UuidValidator {
 	 * @throws InvalidUuidException if invalid
 	 */
 	public static void validate(final char[] uuid) {
-		if (uuid == null || !isUuidString(uuid)) {
+		if (uuid == null || !isParseable(uuid)) {
 			throwInvalidUuidException(uuid);
 		}
 	}
@@ -173,27 +173,27 @@ public final class UuidValidator {
 	 * @throws InvalidUuidException if invalid
 	 */
 	public static void validate(final char[] uuid, int version) {
-		if (uuid == null || !isUuidString(uuid, version)) {
+		if (uuid == null || !isParseable(uuid, version)) {
 			throwInvalidUuidException(uuid);
 		}
 	}
 
 	/**
-	 * Checks if the UUID char array in the standard format.
+	 * Checks if the UUID char array is valid.
 	 * 
 	 * <pre>
 	 * Examples of accepted formats:
 	 * 
-	 * 12345678abcdabcdabcd123456789abcd       (32 hexadecimal chars, lower case and without hyphen)
-	 * 12345678ABCDABCDABCD123456789ABCD       (32 hexadecimal chars, UPPER CASE and without hyphen)
 	 * 12345678-abcd-abcd-abcd-123456789abcd   (36 hexadecimal chars, lower case and with hyphen)
 	 * 12345678-ABCD-ABCD-ABCD-123456789ABCD   (36 hexadecimal chars, UPPER CASE and with hyphen)
+	 * 12345678abcdabcdabcd123456789abcd       (32 hexadecimal chars, lower case and WITHOUT hyphen)
+	 * 12345678ABCDABCDABCD123456789ABCD       (32 hexadecimal chars, UPPER CASE and WITHOUT hyphen)
 	 * </pre>
 	 * 
 	 * @param chars a char array
 	 * @return true if valid, false if invalid
 	 */
-	protected static boolean isUuidString(final char[] chars) {
+	protected static boolean isParseable(final char[] chars) {
 
 		int hyphens = 0;
 		for (int i = 0; i < chars.length; i++) {
@@ -215,14 +215,14 @@ public final class UuidValidator {
 	}
 
 	/**
-	 * Checks if the UUID char array in the standard format.
+	 * Checks if the UUID char array is valid.
 	 * 
 	 * @param chars   a char array
 	 * @param version a version number
 	 * @return true if valid, false if invalid
 	 */
-	protected static boolean isUuidString(final char[] chars, int version) {
-		return isVersion(chars, version) && isUuidString(chars);
+	protected static boolean isParseable(final char[] chars, int version) {
+		return isVersion(chars, version) && isParseable(chars);
 	}
 
 	protected static boolean isVersion(byte[] bytes, int version) {

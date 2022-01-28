@@ -28,27 +28,25 @@ import com.github.f4b6a3.uuid.codec.base.function.Base32Decoder;
 import com.github.f4b6a3.uuid.codec.base.function.Base32Encoder;
 
 /**
- * Codec for UPPER CASE base-32 as defined in RFC-4648.
+ * Codec for Crockford's base-32.
  * 
  * It is case insensitive, so it decodes from lower and upper case, but encodes
- * to UPPER CASE only.
+ * to lower case only.
  * 
  * This codec complies with RFC-4648, encoding a byte array sequentially. If you
  * need a codec that encodes integers using the remainder operator (modulus),
  * use the static factory {@link BaseNCodec#newInstance(BaseN)}.
  * 
- * See: https://tools.ietf.org/html/rfc4648
+ * See: https://www.crockford.com/base32.html
  */
-public final class Base32UCodec extends BaseNCodec {
+public final class Base32CrfCodec extends BaseNCodec {
 
-	private static final BaseN BASE_N = new BaseN("A-Z2-7");
+	private static final BaseN BASE_N = new BaseN("0123456789abcdefghjkmnpqrstvwxyz");
 
-	/**
-	 * A shared immutable instance.
-	 */
-	public static final Base32UCodec INSTANCE = new Base32UCodec();
+	// a shared immutable instance
+	public static final Base32CrfCodec INSTANCE = new Base32CrfCodec();
 
-	public Base32UCodec() {
+	public Base32CrfCodec() {
 		super(BASE_N, new Base32Encoder(BASE_N), new Base32Decoder(BASE_N));
 	}
 }

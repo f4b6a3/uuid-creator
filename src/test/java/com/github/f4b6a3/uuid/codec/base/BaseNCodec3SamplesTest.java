@@ -3,7 +3,7 @@ package com.github.f4b6a3.uuid.codec.base;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.exception.UuidCodecException;
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
 import java.util.UUID;
 
@@ -16,94 +16,93 @@ public class BaseNCodec3SamplesTest {
 
 	@Test
 	public void testEncodeBase36() {
+
+		BaseNCodec codec = BaseNCodec.newInstance(36);
+
 		for (int i = 0; i < SAMPLES_BASE_36.length; i++) {
 			UUID uuid = UUID.fromString(SAMPLES_BASE_36[i][0]);
 			String expected = SAMPLES_BASE_36[i][1];
-			String actual = Base36Codec.INSTANCE.encode(uuid);
-			assertEquals(expected, actual);
-		}
-	}
-
-	@Test
-	public void testEncodeBase36Upper() {
-		for (int i = 0; i < SAMPLES_BASE_36.length; i++) {
-			UUID uuid = UUID.fromString(SAMPLES_BASE_36[i][0]);
-			String expected = SAMPLES_BASE_36[i][1].toUpperCase();
-			String actual = Base36UCodec.INSTANCE.encode(uuid);
+			String actual = codec.encode(uuid);
 			assertEquals(expected, actual);
 		}
 	}
 
 	@Test
 	public void testDecodeBase36() {
+
+		BaseNCodec codec = BaseNCodec.newInstance(36);
+
 		for (int i = 0; i < SAMPLES_BASE_36.length; i++) {
 			String string = SAMPLES_BASE_36[i][1];
 			UUID expected = UUID.fromString(SAMPLES_BASE_36[i][0]);
-			UUID actual = Base36Codec.INSTANCE.decode(string);
+			UUID actual = codec.decode(string);
 			assertEquals(expected.toString(), actual.toString());
 		}
 
 		// overflow exception
-		int radix = Base36Codec.INSTANCE.base.getRadix();
-		char max = Base36Codec.INSTANCE.base.getAlphabet().array()[radix - 1];
+		int radix = codec.base.getRadix();
+		char max = codec.base.getAlphabet().array()[radix - 1];
 		UUID uuid = new UUID(0xffffffffffffffffL, 0xffffffffffffffffL);
-		String string = max + Base36Codec.INSTANCE.encode(uuid).substring(1);
+		String string = max + codec.encode(uuid).substring(1);
 		try {
-			Base36Codec.INSTANCE.decode(string);
+			codec.decode(string);
 			fail("Should throw overflow exception");
-		} catch (UuidCodecException e) {
+		} catch (InvalidUuidException e) {
 			// success!
 		}
 	}
 
 	@Test
 	public void testEncodeBase58() {
+
 		for (int i = 0; i < SAMPLES_BASE_58.length; i++) {
 			UUID uuid = UUID.fromString(SAMPLES_BASE_58[i][0]);
 			String expected = SAMPLES_BASE_58[i][1];
-			String actual = Base58BitcoinCodec.INSTANCE.encode(uuid);
+			String actual = Base58BtcCodec.INSTANCE.encode(uuid);
 			assertEquals(expected, actual);
 		}
 
 		for (int i = 0; i < SAMPLE_BASE_58_SPECIAL.length; i++) {
 			UUID uuid = UUID.fromString(SAMPLE_BASE_58_SPECIAL[i][0]);
 			String expected = SAMPLE_BASE_58_SPECIAL[i][1];
-			String actual = Base58BitcoinCodec.INSTANCE.encode(uuid);
+			String actual = Base58BtcCodec.INSTANCE.encode(uuid);
 			assertEquals(expected, actual);
 		}
 	}
 
 	@Test
 	public void testDecodeBase58() {
+
 		for (int i = 0; i < SAMPLES_BASE_58.length; i++) {
 			String string = SAMPLES_BASE_58[i][1];
 			UUID expected = UUID.fromString(SAMPLES_BASE_58[i][0]);
-			UUID actual = Base58BitcoinCodec.INSTANCE.decode(string);
+			UUID actual = Base58BtcCodec.INSTANCE.decode(string);
 			assertEquals(expected.toString(), actual.toString());
 		}
 
 		for (int i = 0; i < SAMPLE_BASE_58_SPECIAL.length; i++) {
 			String string = SAMPLE_BASE_58_SPECIAL[i][1];
 			UUID expected = UUID.fromString(SAMPLE_BASE_58_SPECIAL[i][0]);
-			UUID actual = Base58BitcoinCodec.INSTANCE.decode(string);
+			UUID actual = Base58BtcCodec.INSTANCE.decode(string);
 			assertEquals(expected.toString(), actual.toString());
 		}
 
 		// overflow exception
-		int radix = Base58BitcoinCodec.INSTANCE.base.getRadix();
-		char max = Base58BitcoinCodec.INSTANCE.base.getAlphabet().array()[radix - 1];
+		int radix = Base58BtcCodec.INSTANCE.base.getRadix();
+		char max = Base58BtcCodec.INSTANCE.base.getAlphabet().array()[radix - 1];
 		UUID uuid = new UUID(0xffffffffffffffffL, 0xffffffffffffffffL);
-		String string = max + Base58BitcoinCodec.INSTANCE.encode(uuid).substring(1);
+		String string = max + Base58BtcCodec.INSTANCE.encode(uuid).substring(1);
 		try {
-			Base58BitcoinCodec.INSTANCE.decode(string);
+			Base58BtcCodec.INSTANCE.decode(string);
 			fail("Should throw overflow exception");
-		} catch (UuidCodecException e) {
+		} catch (InvalidUuidException e) {
 			// success!
 		}
 	}
 
 	@Test
 	public void testEncodeBase62() {
+
 		for (int i = 0; i < SAMPLES_BASE_62.length; i++) {
 			UUID uuid = UUID.fromString(SAMPLES_BASE_62[i][0]);
 			String expected = SAMPLES_BASE_62[i][1];
@@ -114,6 +113,7 @@ public class BaseNCodec3SamplesTest {
 
 	@Test
 	public void testDecodeBase62() {
+
 		for (int i = 0; i < SAMPLES_BASE_62.length; i++) {
 			String string = SAMPLES_BASE_62[i][1];
 			UUID expected = UUID.fromString(SAMPLES_BASE_62[i][0]);
@@ -129,7 +129,7 @@ public class BaseNCodec3SamplesTest {
 		try {
 			Base62Codec.INSTANCE.decode(string);
 			fail("Should throw overflow exception");
-		} catch (UuidCodecException e) {
+		} catch (InvalidUuidException e) {
 			// success!
 		}
 	}

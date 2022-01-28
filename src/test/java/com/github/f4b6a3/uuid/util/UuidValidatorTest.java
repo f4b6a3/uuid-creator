@@ -177,25 +177,25 @@ public class UuidValidatorTest {
 		// Lower case with hyphens
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			String string = UUID.randomUUID().toString();
-			assertTrue(UuidValidator.isUuidString(string.toCharArray()));
+			assertTrue(UuidValidator.isParseable(string.toCharArray()));
 		}
 
 		// Lower case without hyphens
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			String string = UUID.randomUUID().toString();
-			assertTrue(UuidValidator.isUuidString(string.replace("-", "").toCharArray()));
+			assertTrue(UuidValidator.isParseable(string.replace("-", "").toCharArray()));
 		}
 
 		// Upper case with hyphens
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			String string = UUID.randomUUID().toString();
-			assertTrue(UuidValidator.isUuidString(string.toUpperCase().toCharArray()));
+			assertTrue(UuidValidator.isParseable(string.toUpperCase().toCharArray()));
 		}
 
 		// Upper case without hyphens
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			String string = UUID.randomUUID().toString();
-			assertTrue(UuidValidator.isUuidString(string.toUpperCase().replace("-", "").toCharArray()));
+			assertTrue(UuidValidator.isParseable(string.toUpperCase().replace("-", "").toCharArray()));
 		}
 	}
 }

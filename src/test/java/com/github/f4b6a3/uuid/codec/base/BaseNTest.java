@@ -125,11 +125,14 @@ public class BaseNTest {
 
 	@Test
 	public void testConstructorCompare() {
-		assertEquals(Base16Codec.INSTANCE.getBase().getAlphabet(), (new BaseN(16)).getAlphabet());
-		assertEquals(Base32HexCodec.INSTANCE.getBase().getAlphabet(), (new BaseN(32)).getAlphabet());
-		assertEquals(Base36Codec.INSTANCE.getBase().getAlphabet(), (new BaseN(36)).getAlphabet());
-		assertEquals(Base58Codec.INSTANCE.getBase().getAlphabet(), (new BaseN(58)).getAlphabet());
-		assertEquals(Base62Codec.INSTANCE.getBase().getAlphabet(), (new BaseN(62)).getAlphabet());
+		assertEquals(BaseNCodec.newInstance("01").getBase().getAlphabet(), (new BaseN(2)).getAlphabet());
+		assertEquals(BaseNCodec.newInstance("0-9").getBase().getAlphabet(), (new BaseN(10)).getAlphabet());
+		assertEquals(BaseNCodec.newInstance("0-9a-f").getBase().getAlphabet(), (new BaseN(16)).getAlphabet());
+		assertEquals(BaseNCodec.newInstance("0-9a-v").getBase().getAlphabet(), (new BaseN(32)).getAlphabet());
+		assertEquals(BaseNCodec.newInstance("0-9a-z").getBase().getAlphabet(), (new BaseN(36)).getAlphabet());
+		assertEquals(BaseNCodec.newInstance("0-9A-Za-v").getBase().getAlphabet(), (new BaseN(58)).getAlphabet());
+		assertEquals(BaseNCodec.newInstance("0-9A-Za-z").getBase().getAlphabet(), (new BaseN(62)).getAlphabet());
+		assertEquals(BaseNCodec.newInstance("0-9A-Za-z-_").getBase().getAlphabet(), (new BaseN(64)).getAlphabet());
 	}
 
 	@Test
