@@ -1,0 +1,16 @@
+
+# Credits
+
+I would like to recognize some of the people who contributed to this open source project.
+
+*   [lbruun](https://github.com/lbruun)
+*   [Chris Curtin](https://github.com/ChrisCurtin)
+*   [nimo23](https://github.com/nimo23)
+*   [rohithXluffy](https://github.com/rohithXluffy)
+*   [Imteyaz Ahmad](https://github.com/ahmadimt)
+*   [Bertrand Florat](https://github.com/bflorat)
+*   [Caleb Cushing](https://github.com/xenoterracide)
+*   [Slawomir Dymitrow](https://github.com/eXsio)
+*   [buko](https://github.com/buko)
+*   [Björn Michael](https://github.com/bjmi)
+*   [Andrey](https://github.com/tyushkin)
