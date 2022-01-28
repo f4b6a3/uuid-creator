@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [4.4.0] - 2022-01-28
+
+This version contains has breaking changes.
+
+Add credits file for contributors. #58
+
+Remove excessive base-n codecs (breaking changes). #59
+
 ## [4.3.2] - 2022-01-26
 
 Fixed an NPE that occurred since v4.1.4 when trying to get the hardware address on machines with OpenConnect virtual interfaces (by Andrey). #56
@@ -294,7 +302,8 @@ Remove `Fingerprint` // too complex
 -   Removed UuidSettings.getNodeIdentifierDeprecated // remove deprecated
 -   Renamed UuidSettings to UuidCreatorSettings
 
-[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.3.2...HEAD
+[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.4.0...HEAD
+[4.4.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.3.2...uuid-creator-4.4.0
 [4.3.2]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.3.1...uuid-creator-4.3.2
 [4.3.1]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.3.0...uuid-creator-4.3.1
 [4.3.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.2.1...uuid-creator-4.3.0

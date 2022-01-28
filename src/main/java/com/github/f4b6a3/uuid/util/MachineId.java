@@ -40,13 +40,13 @@ import static com.github.f4b6a3.uuid.util.internal.ByteUtil.toNumber;
  * 
  * It works in three steps:
  * 
- * 1. Create a string containing host name, MAC and IP;
+ * 1. Create a string containing HOSTNAME, MAC and IP;
  * 
  * 2. Create a hash of the string using SHA-256 algorithm;
  * 
  * 3. Create the identifier using part of the resulting hash.
  * 
- * If the host name, MAC or IP changes, the identifier will also change.
+ * If the HOSTNAME, MAC or IP changes, the identifier will also change.
  */
 public final class MachineId {
 
@@ -132,8 +132,6 @@ public final class MachineId {
 	 * Returns a string containing host name, MAC and IP.
 	 * 
 	 * Output format: "hostname123 11-22-33-44-55-66 123.123.123.123"
-	 * 
-	 * Note: a network interface may have more than one IP address.
 	 * 
 	 * @return a string
 	 */

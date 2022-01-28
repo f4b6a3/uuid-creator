@@ -31,7 +31,7 @@ import java.net.UnknownHostException;
 import java.util.Enumeration;
 
 /**
- * Utility that returns host name, MAC and IP.
+ * Utility that returns HOSTNAME, MAC and IP.
  */
 public final class NetworkUtil {
 
@@ -43,7 +43,7 @@ public final class NetworkUtil {
 	}
 
 	/**
-	 * Returns the MAC host name if found.
+	 * Returns the host name if found.
 	 * 
 	 * Sequence of HOSTNAME search:
 	 * 
@@ -52,7 +52,7 @@ public final class NetworkUtil {
 	 * 2. Try to find the COMPUTERNAME variable in WINDOWS environment;
 	 * 
 	 * 3. Try to find the host name by calling {code
-	 * InetAddress.getLocalHost().getHostName()};
+	 * InetAddress.getLocalHost().getHostName()} (the hard way);
 	 * 
 	 * @return a string
 	 */
@@ -62,13 +62,13 @@ public final class NetworkUtil {
 			return hostname;
 		}
 
-		// try to find HOSTNAME in LINUX
+		// try to find HOSTNAME on LINUX
 		hostname = System.getenv("HOSTNAME");
 		if (hostname != null && !hostname.isEmpty()) {
 			return hostname;
 		}
 
-		// try to find COMPUTERNAME in WINDOWS
+		// try to find COMPUTERNAME on WINDOWS
 		hostname = System.getenv("COMPUTERNAME");
 		if (hostname != null && !hostname.isEmpty()) {
 			return hostname;
@@ -153,8 +153,6 @@ public final class NetworkUtil {
 	 * 
 	 * Output format: "hostname123 11-22-33-44-55-66 123.123.123.123"
 	 * 
-	 * Note: a network interface may have more than one IP address.
-	 * 
 	 * @return a string
 	 */
 	public static synchronized String getMachineString() {
@@ -171,13 +169,20 @@ public final class NetworkUtil {
 	/**
 	 * Returns a network interface.
 	 * 
-	 * It returns the first network interface that satisfies these conditions:
+	 * It tries to return the network interface associated to the host name.
+	 * 
+	 * If that network interface is not found, it tries to return the first network
+	 * interface that satisfies these conditions:
 	 * 
 	 * - it is up and running;
 	 * 
 	 * - it is not loopback;
 	 * 
-	 * - it is not virtual.
+	 * - it is not virtual;
+	 * 
+	 * - it has a hardware address.
+	 * 
+	 * If no acceptable network interface is found, it returns null.
 	 * 
 	 * @return a network interface.
 	 */
@@ -193,10 +198,8 @@ public final class NetworkUtil {
 
 			// try to find the network interface for the host name
 			ip = InetAddress.getByName(hostname());
-			// sometimes ip would be localhost ip (127.0.0.1) for normal hostname (e.g. myHostName)
 			ni = NetworkInterface.getByInetAddress(ip);
-			// ni would be null for localhost ip (127.0.0.1)
-			if (ni != null && acceptable(ni)) {
+			if (acceptable(ni)) {
 				nic = ni;
 				return nic;
 			}
@@ -227,7 +230,6 @@ public final class NetworkUtil {
 	 */
 	private static synchronized boolean acceptable(NetworkInterface ni) {
 		try {
-			// isVirtual() returns false and getHardwareAddress() returns null for (at least some) openconnect interfaces
 			if (ni != null && ni.isUp() && !ni.isLoopback() && !ni.isVirtual() && ni.getHardwareAddress() != null) {
 				return true;
 			}
