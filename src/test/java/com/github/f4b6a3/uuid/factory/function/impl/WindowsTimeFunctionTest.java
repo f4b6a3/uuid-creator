@@ -29,10 +29,9 @@ public class WindowsTimeFunctionTest {
 	@Test
 	public void testGetTimestampMillisecondWithClock() {
 
-		final int bits = 60;
-		final long bound = (long) Math.pow(2, bits);
-
 		// 1ms = 10,000 ticks
+		final long ticks = (long) Math.pow(10, 4);
+		final long bound = (long) Math.pow(2, 60) / ticks;
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
@@ -45,7 +44,7 @@ public class WindowsTimeFunctionTest {
 
 			// TS can be 48ms ahead due to time granularity and counter shift
 			long tolerance = millis + 48;
-			assertTrue("The current timstamp millisecond is incorrect", ts == millis || ts <= tolerance);
+			assertTrue("The current timstamp millisecond is incorrect", ts >= millis && ts <= tolerance);
 		}
 	}
 
