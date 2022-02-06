@@ -26,6 +26,8 @@ package com.github.f4b6a3.uuid.factory.function.impl;
 
 import static com.github.f4b6a3.uuid.util.UuidTime.TICKS_PER_MILLI;
 
+import java.time.Clock;
+
 import com.github.f4b6a3.uuid.factory.function.TimeFunction;
 import com.github.f4b6a3.uuid.util.internal.RandomUtil;
 
@@ -37,6 +39,8 @@ import com.github.f4b6a3.uuid.util.internal.RandomUtil;
  */
 public final class WindowsTimeFunction implements TimeFunction {
 
+	private final Clock clock;
+
 	private long prevTime = -1;
 
 	// arbitrary granularity greater than 15ms
@@ -47,6 +51,14 @@ public final class WindowsTimeFunction implements TimeFunction {
 	private long counter = Math.abs(RandomUtil.nextLong() % TICKS_PER_GRANULARITY);
 	// start the counter limit with a number between 160,000 and 319,999
 	private long counterMax = counter + TICKS_PER_GRANULARITY;
+
+	public WindowsTimeFunction() {
+		this.clock = Clock.systemUTC();
+	}
+
+	public WindowsTimeFunction(Clock clock) {
+		this.clock = clock;
+	}
 
 	/**
 	 * Returns the timestamp.
@@ -94,8 +106,8 @@ public final class WindowsTimeFunction implements TimeFunction {
 	 * 
 	 * @return the calculated time
 	 */
-	private static long calculatedTimeMillis() {
-		final long time = System.currentTimeMillis();
+	private long calculatedTimeMillis() {
+		final long time = clock.millis();
 		return time + GRANULARITY - (time % GRANULARITY);
 	}
 }

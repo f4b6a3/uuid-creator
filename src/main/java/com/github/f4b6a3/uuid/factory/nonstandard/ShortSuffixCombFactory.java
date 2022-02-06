@@ -24,6 +24,7 @@
 
 package com.github.f4b6a3.uuid.factory.nonstandard;
 
+import java.time.Clock;
 import java.util.Random;
 import java.util.UUID;
 
@@ -48,18 +49,33 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  */
 public final class ShortSuffixCombFactory extends AbstRandomBasedFactory {
 
-	protected static final int ONE_MINUTE = 60_000;
+	private final Clock clock;
+
+	private static final int ONE_MINUTE = 60_000;
 
 	public ShortSuffixCombFactory() {
 		this(new DefaultRandomFunction());
+	}
+
+	public ShortSuffixCombFactory(Clock clock) {
+		this(new DefaultRandomFunction(), clock);
 	}
 
 	public ShortSuffixCombFactory(Random random) {
 		this(getRandomFunction(random));
 	}
 
+	public ShortSuffixCombFactory(Random random, Clock clock) {
+		this(getRandomFunction(random), clock);
+	}
+
 	public ShortSuffixCombFactory(RandomFunction randomFunction) {
+		this(randomFunction, Clock.systemUTC());
+	}
+
+	public ShortSuffixCombFactory(RandomFunction randomFunction, Clock clock) {
 		super(UuidVersion.VERSION_RANDOM_BASED, randomFunction);
+		this.clock = clock;
 	}
 
 	/**
@@ -80,7 +96,7 @@ public final class ShortSuffixCombFactory extends AbstRandomBasedFactory {
 		long lsb = ByteUtil.toNumber(bytes, 8, 14);
 
 		// Insert the short suffix in the LSB
-		final long timestamp = System.currentTimeMillis() / ONE_MINUTE;
+		final long timestamp = clock.millis() / ONE_MINUTE;
 		lsb = ((lsb & 0x0000ffff00000000L) << 16) | (lsb & 0x00000000ffffffffL)
 				| ((timestamp & 0x000000000000ffffL) << 32);
 

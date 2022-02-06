@@ -24,6 +24,7 @@
 
 package com.github.f4b6a3.uuid.factory.nonstandard;
 
+import java.time.Clock;
 import java.util.Random;
 import java.util.UUID;
 
@@ -48,18 +49,33 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  */
 public final class ShortPrefixCombFactory extends AbstRandomBasedFactory {
 
-	protected static final int ONE_MINUTE = 60_000;
+	private final Clock clock;
+
+	private static final int ONE_MINUTE = 60_000;
 
 	public ShortPrefixCombFactory() {
 		this(new DefaultRandomFunction());
+	}
+
+	public ShortPrefixCombFactory(Clock clock) {
+		this(new DefaultRandomFunction(), clock);
 	}
 
 	public ShortPrefixCombFactory(Random random) {
 		this(getRandomFunction(random));
 	}
 
+	public ShortPrefixCombFactory(Random random, Clock clock) {
+		this(getRandomFunction(random), clock);
+	}
+
 	public ShortPrefixCombFactory(RandomFunction randomFunction) {
+		this(randomFunction, Clock.systemUTC());
+	}
+
+	public ShortPrefixCombFactory(RandomFunction randomFunction, Clock clock) {
 		super(UuidVersion.VERSION_RANDOM_BASED, randomFunction);
+		this.clock = clock;
 	}
 
 	/**
@@ -80,7 +96,7 @@ public final class ShortPrefixCombFactory extends AbstRandomBasedFactory {
 		long lsb = ByteUtil.toNumber(bytes, 0, 8);
 
 		// Insert the short prefix in the MSB
-		final long timestamp = System.currentTimeMillis() / ONE_MINUTE;
+		final long timestamp = clock.millis() / ONE_MINUTE;
 		msb |= ((timestamp & 0x000000000000ffffL) << 48);
 
 		// Set the version and variant bits

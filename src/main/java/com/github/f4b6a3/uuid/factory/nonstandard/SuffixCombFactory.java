@@ -24,6 +24,7 @@
 
 package com.github.f4b6a3.uuid.factory.nonstandard;
 
+import java.time.Clock;
 import java.util.Random;
 import java.util.UUID;
 
@@ -46,16 +47,31 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  */
 public final class SuffixCombFactory extends AbstRandomBasedFactory {
 
+	private final Clock clock;
+
 	public SuffixCombFactory() {
 		this(new DefaultRandomFunction());
+	}
+
+	public SuffixCombFactory(Clock clock) {
+		this(new DefaultRandomFunction(), clock);
 	}
 
 	public SuffixCombFactory(Random random) {
 		this(getRandomFunction(random));
 	}
 
+	public SuffixCombFactory(Random random, Clock clock) {
+		this(getRandomFunction(random), clock);
+	}
+
 	public SuffixCombFactory(RandomFunction randomFunction) {
+		this(randomFunction, Clock.systemUTC());
+	}
+
+	public SuffixCombFactory(RandomFunction randomFunction, Clock clock) {
 		super(UuidVersion.VERSION_RANDOM_BASED, randomFunction);
+		this.clock = clock;
 	}
 
 	/**
@@ -74,7 +90,7 @@ public final class SuffixCombFactory extends AbstRandomBasedFactory {
 		long lsb = ((bytes[8] & 0xffL) << 8) | (bytes[9] & 0xff);
 
 		// Insert the suffix in the LSB
-		final long timestamp = System.currentTimeMillis();
+		final long timestamp = clock.millis();
 		lsb = (lsb << 48) | (timestamp & 0x0000ffffffffffffL);
 
 		// Set the version and variant bits

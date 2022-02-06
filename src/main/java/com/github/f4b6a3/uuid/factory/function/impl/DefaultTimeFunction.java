@@ -26,10 +26,14 @@ package com.github.f4b6a3.uuid.factory.function.impl;
 
 import static com.github.f4b6a3.uuid.util.UuidTime.TICKS_PER_MILLI;
 
+import java.time.Clock;
+
 import com.github.f4b6a3.uuid.factory.function.TimeFunction;
 import com.github.f4b6a3.uuid.util.internal.RandomUtil;
 
 public final class DefaultTimeFunction implements TimeFunction {
+
+	private final Clock clock;
 
 	private long prevTime = -1;
 
@@ -37,6 +41,14 @@ public final class DefaultTimeFunction implements TimeFunction {
 	private long counter = Math.abs(RandomUtil.nextLong() % TICKS_PER_MILLI);
 	// start the counter limit with a number between 10,000 and 19,999
 	private long counterMax = counter + TICKS_PER_MILLI;
+
+	public DefaultTimeFunction() {
+		this.clock = Clock.systemUTC();
+	}
+
+	public DefaultTimeFunction(Clock clock) {
+		this.clock = clock;
+	}
 
 	/**
 	 * Returns the timestamp.
@@ -49,7 +61,7 @@ public final class DefaultTimeFunction implements TimeFunction {
 		counter++; // always increment
 
 		// get the current time
-		final long time = System.currentTimeMillis();
+		final long time = clock.millis();
 
 		// check time change
 		if (time == prevTime) {
@@ -57,7 +69,7 @@ public final class DefaultTimeFunction implements TimeFunction {
 			// check the counter limit
 			if (counter >= counterMax) {
 				// if the counter goes beyond the limit,
-				while (time == System.currentTimeMillis()) {
+				while (time == clock.millis()) {
 					// wait the time to change for the next call
 				}
 			}
