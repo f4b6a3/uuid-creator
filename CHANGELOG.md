@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [4.5.0] - 2022-02-14
+
+This version contains has a breaking change.
+
+Remove the `Base32CrfCodec` created 16 days ago to wait for the new base-32 format proposed in an [IETF draft](https://github.com/uuid6/uuid6-ietf-draft). #61
+
 ## [4.4.1] - 2022-02-05
 
 Add `Clock` parameter for COMB factories and time functions for tests.
@@ -306,7 +312,8 @@ Remove `Fingerprint` // too complex
 -   Removed UuidSettings.getNodeIdentifierDeprecated // remove deprecated
 -   Renamed UuidSettings to UuidCreatorSettings
 
-[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.4.1...HEAD
+[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.5.0...HEAD
+[4.5.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.4.1...uuid-creator-4.5.0
 [4.4.1]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.4.0...uuid-creator-4.4.1
 [4.4.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.3.2...uuid-creator-4.4.0
 [4.3.2]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.3.1...uuid-creator-4.3.2

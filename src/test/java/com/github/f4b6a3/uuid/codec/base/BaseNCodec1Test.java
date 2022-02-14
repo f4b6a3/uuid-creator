@@ -86,42 +86,6 @@ public class BaseNCodec1Test {
 	}
 
 	@Test
-	public void testEncodeBase32Crf() {
-
-		final BaseNCodec codec = new Base32CrfCodec();
-		char[] alphabet = codec.getBase().getAlphabet().array();
-
-		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUID.randomUUID();
-			byte[] bytes = CODEC_BYTES.encode(uuid);
-			byte[] padded = getPadded(bytes);
-			BigInteger n = new BigInteger(1, padded);
-			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet) //
-					.substring(0, 26); // remove padding
-			String actual = codec.encode(uuid);
-			assertEquals(string, actual);
-		}
-	}
-
-	@Test
-	public void testDecodeBase32Crf() {
-
-		final BaseNCodec codec = new Base32CrfCodec();
-		char[] alphabet = codec.getBase().getAlphabet().array();
-
-		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
-			UUID uuid = UUID.randomUUID();
-			byte[] bytes = CODEC_BYTES.encode(uuid);
-			byte[] padded = getPadded(bytes);
-			BigInteger n = new BigInteger(1, padded);
-			String string = replace(zerofill(n.toString(32), 32), ALPHABET_JAVA, alphabet) //
-					.substring(0, 26); // remove padding
-			UUID actual = codec.decode(string);
-			assertEquals(uuid.toString(), actual.toString());
-		}
-	}
-
-	@Test
 	public void testEncodeBase64() {
 
 		final UuidCodec<String> codec = new Base64Codec();
@@ -185,7 +149,6 @@ public class BaseNCodec1Test {
 	public void testEncodeAndDecode() {
 		testEncodeAndDecode(new Base16Codec());
 		testEncodeAndDecode(new Base32Codec());
-		testEncodeAndDecode(new Base32CrfCodec());
 		testEncodeAndDecode(new Base64Codec());
 		testEncodeAndDecode(new Base64UrlCodec());
 	}
@@ -195,7 +158,6 @@ public class BaseNCodec1Test {
 
 		String base16 = "9CC570EFBFCC45A8BF46C4CA7E039341";
 		String base32 = "E4YVYO7P6MIWUL6RWEZJ7AHE2B";
-		String base32crf = "4WRNREZFYC8PMBYHP4S9Z074T1";
 		String base64 = "CcxXDvv8xFqL9GxMp+A5NB";
 		String base64url = "CcxXDvv8xFqL9GxMp-A5NB";
 
@@ -212,13 +174,6 @@ public class BaseNCodec1Test {
 		testExceptionBaseN(Base32Codec.INSTANCE, base32.replace('E', '.'));
 		testExceptionBaseN(Base32Codec.INSTANCE, base32.substring(0, 25));
 		testExceptionBaseN(Base32Codec.INSTANCE, base32 + "E");
-
-		testExceptionBaseN(Base32CrfCodec.INSTANCE, "");
-		testExceptionBaseN(Base32CrfCodec.INSTANCE, null);
-		testExceptionBaseN(Base32CrfCodec.INSTANCE, base32crf.replace('4', 'U'));
-		testExceptionBaseN(Base32CrfCodec.INSTANCE, base32crf.replace('4', '.'));
-		testExceptionBaseN(Base32CrfCodec.INSTANCE, base32crf.substring(0, 25));
-		testExceptionBaseN(Base32CrfCodec.INSTANCE, base32crf + "4");
 
 		testExceptionBaseN(Base64Codec.INSTANCE, "");
 		testExceptionBaseN(Base64Codec.INSTANCE, null);
