@@ -1,7 +1,7 @@
 
 # UUID Creator
 
-A Java library for generating and handling RFC-4122 UUIDs.
+A Java library to generate RFC-4122 Universally Unique Identifiers (UUID).
 
 RFC-4122 UUIDs:
 
@@ -305,6 +305,6 @@ UUID uuid = DotNetGuid4Codec.INSTANCE.encode(guid);
 
 Check out the other ID generators.
 
-*   [ULID Creator](https://github.com/f4b6a3/ulid-creator)
-*   [TSID Creator](https://github.com/f4b6a3/tsid-creator)
-*   [KSUID Creator](https://github.com/f4b6a3/ksuid-creator)
+*   [ULID Creator](https://github.com/f4b6a3/ulid-creator): Universally Unique Lexicographically Sortable Identifiers
+*   [TSID Creator](https://github.com/f4b6a3/tsid-creator): Time Sortable Identifiers
+*   [KSUID Creator](https://github.com/f4b6a3/ksuid-creator): K-Sortable Unique Identifiers

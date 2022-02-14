@@ -14,3 +14,4 @@ I would like to recognize some of the people who contributed to this open source
 *   [buko](https://github.com/buko)
 *   [Björn Michael](https://github.com/bjmi)
 *   [Andrey](https://github.com/tyushkin)
+*   [Damir Murat](https://github.com/dmurat)

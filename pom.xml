@@ -8,7 +8,7 @@
 
 	<name>uuid-creator</name>
 	<url>https://github.com/f4b6a3/uuid-creator</url>
-	<description>A Java library for generating and handling RFC-4122 UUIDs.</description>
+	<description>A Java library to generate RFC-4122 Universally Unique Identifiers (UUID).</description>
 
 	<licenses>
 		<license>
