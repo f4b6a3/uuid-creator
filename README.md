@@ -1,7 +1,8 @@
 
-# UUID Creator
+UUID Creator
+======================================================
 
-A Java library to generate RFC-4122 Universally Unique Identifiers (UUID).
+This is a Java library for [RFC-4122 Universally Unique Identifiers](https://en.wikipedia.org/wiki/Universally_unique_identifier).
 
 RFC-4122 UUIDs:
 
@@ -21,7 +22,8 @@ Non-standard GUIDs:
 
 Read the [Wiki pages](https://github.com/f4b6a3/uuid-creator/wiki).
 
-## Maven dependency
+Maven dependency
+------------------------------------------------------
 
 Add these lines to your `pom.xml`:
 
@@ -42,7 +44,8 @@ Module and bundle names are the same as the root package name.
 *   JPMS module name: `com.github.f4b6a3.uuid`
 *   OSGi symbolic name: `com.github.f4b6a3.uuid`
 
-## How to Use
+How to Use
+------------------------------------------------------
 
 ### Library Facade
 
@@ -301,10 +304,16 @@ UUID guid = DotNetGuid4Codec.INSTANCE.encode(uuid);
 UUID uuid = DotNetGuid4Codec.INSTANCE.encode(guid);
 ```
 
-## Other identifier generators
+Other identifier generators
+------------------------------------------------------
 
-Check out the other ID generators.
+Check out the other ID generators from the same family:
 
 *   [ULID Creator](https://github.com/f4b6a3/ulid-creator): Universally Unique Lexicographically Sortable Identifiers
 *   [TSID Creator](https://github.com/f4b6a3/tsid-creator): Time Sortable Identifiers
 *   [KSUID Creator](https://github.com/f4b6a3/ksuid-creator): K-Sortable Unique Identifiers
+
+License
+------------------------------------------------------
+
+This library is Open Source software released under the [MIT license](https://opensource.org/licenses/MIT).
