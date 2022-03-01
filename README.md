@@ -20,6 +20,8 @@ Non-standard GUIDs:
 *   __Short Prefix COMB__: combination the creation minute (prefix) with random bytes;
 *   __Short Suffix COMB__: combination the creation minute (suffix) with random bytes.
 
+This library contains a good amount of [unit tests](https://github.com/f4b6a3/uuid-creator/tree/master/src/test/java/com/github/f4b6a3/uuid). It also has a [micro benchmark](https://github.com/f4b6a3/uuid-creator/tree/master/benchmark) for you to check if the performance is good enough.
+
 Read the [Wiki pages](https://github.com/f4b6a3/uuid-creator/wiki).
 
 Maven dependency
