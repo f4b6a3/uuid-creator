@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-Nothing unreleased.
+Added `UuidComparator` for comparing and sorting UUIDs.
 
 ## [4.5.0] - 2022-02-14
 

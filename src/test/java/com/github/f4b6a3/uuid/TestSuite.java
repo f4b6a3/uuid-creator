@@ -35,6 +35,7 @@ import com.github.f4b6a3.uuid.codec.UriCodecTest;
 import com.github.f4b6a3.uuid.util.internal.ByteUtilTest;
 import com.github.f4b6a3.uuid.util.internal.SettingsUtilTest;
 import com.github.f4b6a3.uuid.util.CombUtilTest;
+import com.github.f4b6a3.uuid.util.UuidComparatorTest;
 import com.github.f4b6a3.uuid.util.UuidTimeTest;
 import com.github.f4b6a3.uuid.util.UuidUtilTest;
 import com.github.f4b6a3.uuid.util.UuidValidatorTest;
@@ -72,6 +73,7 @@ import com.github.f4b6a3.uuid.util.UuidValidatorTest;
 	TimeOrderedCodecTest.class,
 	TimeOrderedFactoryTest.class,
 	UriCodecTest.class,
+	UuidComparatorTest.class,
 	UuidTimeTest.class,
 	UuidUtilTest.class,
 	UuidValidatorTest.class,
