@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 Added `UuidComparator` for comparing and sorting UUIDs.
 
+Added `CustomDivisor` to be used with `BaseNCodec`.
+
 ## [4.5.0] - 2022-02-14
 
 This version contains has a breaking change.

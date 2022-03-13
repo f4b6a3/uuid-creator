@@ -43,7 +43,7 @@ public abstract class BaseNEncoder implements Function<UUID, String> {
 	protected final CharArray alphabet;
 
 	/**
-	 * @param base an enumeration that represents the base-n encoding
+	 * @param base an object that represents the base-n encoding
 	 */
 	public BaseNEncoder(BaseN base) {
 		this.base = base;

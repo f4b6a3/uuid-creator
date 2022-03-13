@@ -39,14 +39,13 @@ import com.github.f4b6a3.uuid.exception.InvalidUuidException;
  */
 public final class BaseNRemainderDecoder extends BaseNDecoder {
 
-	private final int radix;
+	private final int multiplier;
 
-	private static final int UUID_INTS = 4;
-	private static final long HALF_LONG_MASK = 0x00000000ffffffffL;
+	private static final long MASK = 0x00000000ffffffffL;
 
 	public BaseNRemainderDecoder(BaseN base) {
 		super(base);
-		radix = base.getRadix();
+		multiplier = base.getRadix();
 	}
 
 	@Override
@@ -54,37 +53,52 @@ public final class BaseNRemainderDecoder extends BaseNDecoder {
 
 		final char[] chars = toCharArray(string);
 
-		// unsigned 128 bit number
-		int[] number = new int[UUID_INTS];
+		long msb = 0;
+		long lsb = 0;
+
+		long rem = 0; // remainder
+		long[] ans; // [product, overflow]
 
 		for (int i = 0; i < chars.length; i++) {
-			final int remainder = (int) map.get(chars[i]);
-			final int[] product = multiply(number, radix, remainder, true);
-			number = product;
+			rem = (int) map.get(chars[i]);
+			ans = multiply(lsb, multiplier, rem);
+			lsb = ans[0];
+			rem = ans[1];
+			ans = multiply(msb, multiplier, rem);
+			msb = ans[0];
+			rem = ans[1];
 		}
 
-		final long msb = ((number[0] & HALF_LONG_MASK) << 32) | (number[1] & HALF_LONG_MASK);
-		final long lsb = ((number[2] & HALF_LONG_MASK) << 32) | (number[3] & HALF_LONG_MASK);
+		if (rem != 0) {
+			throw new InvalidUuidException("Invalid string (overflow)");
+		}
 
 		return new UUID(msb, lsb);
 	}
 
-	protected static int[] multiply(int[] number, int multiplier, int addend, boolean validate) {
+	// multiply a long as unsigned 64 bit integer
+	protected static long[] multiply(final long x, final long multiplier, final long rem) {
 
-		long temporary = 0;
-		long overflow = addend;
-		final int[] product = new int[UUID_INTS];
+		long mul;
+		long overflow;
+		final long product1;
+		final long product2;
 
-		for (int i = UUID_INTS - 1; i >= 0; i--) {
-			temporary = ((number[i] & HALF_LONG_MASK) * multiplier) + overflow;
-			product[i] = (int) temporary;
-			overflow = (temporary >>> 32);
-		}
+		// multiply the last 32 bits
+		mul = ((x & MASK) * multiplier) + rem;
+		product1 = mul & MASK;
+		overflow = mul >>> 32;
 
-		if (validate && overflow != 0) {
-			throw new InvalidUuidException("Invalid string (overflow)");
-		}
+		// multiply the first 32 bits
+		mul = ((x >>> 32) * multiplier) + overflow;
+		product2 = mul & MASK;
+		overflow = mul >>> 32;
 
-		return product;
+		// prepare the answer
+		final long[] answer = new long[2];
+		answer[0] = (product2 << 32) | (product1 & MASK);
+		answer[1] = overflow;
+
+		return answer;
 	}
 }

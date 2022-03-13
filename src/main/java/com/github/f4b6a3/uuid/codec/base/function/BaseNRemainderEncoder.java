@@ -26,6 +26,7 @@ package com.github.f4b6a3.uuid.codec.base.function;
 
 import java.util.UUID;
 import com.github.f4b6a3.uuid.codec.base.BaseN;
+import com.github.f4b6a3.uuid.codec.base.BaseNCodec.CustomDivider;
 
 /**
  * Function that encodes a UUID to a base-n string.
@@ -37,42 +38,55 @@ import com.github.f4b6a3.uuid.codec.base.BaseN;
  */
 public final class BaseNRemainderEncoder extends BaseNEncoder {
 
-	private final int radix;
 	private final int length;
 	private final char padding;
+	protected final CustomDivider divider;
 
-	private static final int UUID_INTS = 4;
-	private static final long HALF_LONG_MASK = 0x00000000ffffffffL;
+	private static final long MASK = 0x00000000ffffffffL;
 
 	public BaseNRemainderEncoder(BaseN base) {
+		this(base, null);
+	}
+
+	public BaseNRemainderEncoder(BaseN base, CustomDivider divider) {
 		super(base);
-		radix = base.getRadix();
+
 		length = base.getLength();
 		padding = base.getPadding();
+		final long radix = base.getRadix();
+
+		if (divider != null) {
+			this.divider = divider;
+		} else {
+			this.divider = x -> new long[] { x / radix, x % radix };
+		}
 	}
 
 	@Override
 	public String apply(UUID uuid) {
 
-		// unsigned 128 bit number
-		int[] number = new int[UUID_INTS];
-		number[0] = (int) (uuid.getMostSignificantBits() >>> 32);
-		number[1] = (int) (uuid.getMostSignificantBits() & HALF_LONG_MASK);
-		number[2] = (int) (uuid.getLeastSignificantBits() >>> 32);
-		number[3] = (int) (uuid.getLeastSignificantBits() & HALF_LONG_MASK);
+		long msb = uuid.getMostSignificantBits();
+		long lsb = uuid.getLeastSignificantBits();
 
-		char[] buffer = new char[length];
 		int b = length; // buffer index
+		char[] buffer = new char[length];
 
-		// fill in the buffer backwards using remainder operation
-		while (!isZero(number)) {
-			final int[] quotient = new int[UUID_INTS]; // division output
-			final int remainder = remainder(number, radix, quotient);
-			buffer[--b] = alphabet.get(remainder);
-			number = quotient;
+		long rem = 0; // remainder
+		long[] ans; // [quotient, remainder]
+
+		// fill in the buffer backwards
+		while (msb != 0 || lsb != 0) {
+			rem = 0;
+			ans = divide(msb, divider, rem);
+			msb = ans[0]; // quotient
+			rem = ans[1]; // remainder
+			ans = divide(lsb, divider, rem);
+			lsb = ans[0]; // quotient
+			rem = ans[1]; // remainder
+			buffer[--b] = alphabet.get((int) rem);
 		}
 
-		// add padding to the leading
+		// complete padding
 		while (b > 0) {
 			buffer[--b] = padding;
 		}
@@ -80,21 +94,29 @@ public final class BaseNRemainderEncoder extends BaseNEncoder {
 		return new String(buffer);
 	}
 
-	protected static int remainder(int[] number, int divisor, int[] quotient /* division output */) {
+	// divide a long as unsigned 64 bit integer
+	protected static long[] divide(final long x, CustomDivider divider, final long rem) {
 
-		long temporary = 0;
-		long remainder = 0;
+		long[] div;
+		long remainder;
+		final long quotient1;
+		final long quotient2;
 
-		for (int i = 0; i < UUID_INTS; i++) {
-			temporary = (remainder << 32) | (number[i] & HALF_LONG_MASK);
-			quotient[i] = (int) (temporary / divisor);
-			remainder = temporary % divisor;
-		}
+		// divide the first 32 bits
+		div = divider.divide((rem << 32) | (x >>> 32));
+		quotient1 = div[0];
+		remainder = div[1];
 
-		return (int) remainder;
-	}
+		// divide the last 32 bits
+		div = divider.divide((remainder << 32) | (x & MASK));
+		quotient2 = div[0];
+		remainder = div[1];
 
-	private boolean isZero(int[] number) {
-		return number[0] == 0 && number[1] == 0 && number[2] == 0 && number[3] == 0;
+		// prepare the answer
+		final long[] answer = new long[2];
+		answer[0] = (quotient1 << 32) | (quotient2 & MASK);
+		answer[1] = remainder;
+
+		return answer;
 	}
 }

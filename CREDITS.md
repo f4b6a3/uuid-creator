@@ -15,3 +15,4 @@ I would like to recognize some of the people who contributed to this open source
 *   [Björn Michael](https://github.com/bjmi)
 *   [Andrey](https://github.com/tyushkin)
 *   [Damir Murat](https://github.com/dmurat)
+*   [Adam Gent](https://github.com/agentgt)

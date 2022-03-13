@@ -54,7 +54,8 @@ public class DefaultTimeFunctionTest {
 		DefaultTimeFunction function = new DefaultTimeFunction();
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			long ts = function.getAsLong();
-			assertTrue("The current timstamp should be greater than the last one", ts > lastTs);
+			String msg = "The current timstamp should be greater than the previous one: curr = %s, last = %s.";
+			assertTrue(String.format(msg, ts, lastTs), ts > lastTs);
 			lastTs = ts;
 		}
 	}

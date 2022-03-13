@@ -277,6 +277,17 @@ UUID uuid = codec.decode("001512366075203566477668990085887675887");
 String string = codec.encode(uuid);
 ```
 
+Using a fast division library to boost encoding speed:
+
+```java
+// a base-62 codec using a fast division library, i.e., `libdivide`
+CustomDivider divider = x -> {
+    /* my division code here */
+    return new long[] { quotient, remainder };
+};
+BaseNCodec codec = BaseNCodec.newInstance(62, divider);
+```
+
 #### Other codecs
 
 Convert a UUID to and from [Slug](https://github.com/f4b6a3/uuid-creator/wiki/4.0.-Library-codecs#slugcodec):

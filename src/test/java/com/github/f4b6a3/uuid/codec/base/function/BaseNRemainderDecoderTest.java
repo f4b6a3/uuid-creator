@@ -15,11 +15,10 @@ import com.github.f4b6a3.uuid.codec.base.BaseN;
 
 public class BaseNRemainderDecoderTest {
 
-	private static final int UUID_INTS = 4;
 	private static final int UUID_BYTES = 16;
 
 	private static final Random RANDOM = new Random();
-	
+
 	@Test
 	public void testDecode() {
 		for (int i = 0; i < 1000; i++) {
@@ -36,8 +35,8 @@ public class BaseNRemainderDecoderTest {
 		for (int i = 0; i < 1000; i++) {
 			byte[] bytes = new byte[UUID_BYTES];
 			RANDOM.nextBytes(bytes);
-			int multiplier = RANDOM.nextInt() & 0x7fffffff; // positive
-			int addend = RANDOM.nextInt() & 0x7fffffff; // positive
+			long multiplier = RANDOM.nextInt() & 0x7fffffff; // positive
+			long addend = RANDOM.nextInt() & 0x7fffffff; // positive
 
 			BigInteger number1 = new BigInteger(1, bytes);
 			BigInteger product1 = number1.multiply(BigInteger.valueOf(multiplier)).add(BigInteger.valueOf(addend));
@@ -52,41 +51,30 @@ public class BaseNRemainderDecoderTest {
 			}
 			byte[] productBytes1 = temp1;
 
-			int[] number2 = toInts(bytes);
-			int[] product2 = BaseNRemainderDecoder.multiply(number2, multiplier, addend, false);
-			byte[] productBytes2 = fromInts(product2);
+			long[] number2 = toLongs(bytes);
+			long[] product2 = new long[] { 0, 0 };
+			long overflow2 = 0;
+			long[] answer0 = BaseNRemainderDecoder.multiply(number2[1], multiplier, addend); // multiply LSB
+			product2[1] = answer0[0];
+			overflow2 = answer0[1];
+			long[] answer1 = BaseNRemainderDecoder.multiply(number2[0], multiplier, overflow2); // multiply MSB
+			product2[0] = answer1[0];
+			overflow2 = answer1[1];
+			byte[] productBytes2 = fromLongs(product2);
 
-			assertEquals(number1, new BigInteger(1, fromInts(number2)));
+			assertEquals(number1, new BigInteger(1, fromLongs(number2)));
 			assertEquals(Arrays.toString(productBytes1), Arrays.toString(productBytes2));
 		}
 	}
 
-	protected static int[] toInts(byte[] bytes) {
-
-		int[] ints = new int[UUID_INTS];
-
-		for (int i = 0, j = 0; i < ints.length; i++, j += 4) {
-			ints[i] |= (bytes[j + 0] & 0xff) << 0x18;
-			ints[i] |= (bytes[j + 1] & 0xff) << 0x10;
-			ints[i] |= (bytes[j + 2] & 0xff) << 0x08;
-			ints[i] |= (bytes[j + 3] & 0xff) << 0x00;
-		}
-
-		return ints;
+	protected static long[] toLongs(byte[] bytes) {
+		UUID uuid = BinaryCodec.INSTANCE.decode(bytes);
+		return new long[] { uuid.getMostSignificantBits(), uuid.getLeastSignificantBits() };
 	}
 
-	protected static byte[] fromInts(int[] ints) {
-
-		byte[] bytes = new byte[UUID_BYTES];
-
-		for (int i = 0, j = 0; i < ints.length; i++, j += 4) {
-			bytes[j + 0] = (byte) ((ints[i] >>> 0x18) & 0xff);
-			bytes[j + 1] = (byte) ((ints[i] >>> 0x10) & 0xff);
-			bytes[j + 2] = (byte) ((ints[i] >>> 0x08) & 0xff);
-			bytes[j + 3] = (byte) ((ints[i] >>> 0x00) & 0xff);
-		}
-
-		return bytes;
+	protected static byte[] fromLongs(long[] longs) {
+		UUID uuid = new UUID(longs[0], longs[1]);
+		return BinaryCodec.INSTANCE.encode(uuid);
 	}
 
 	private String getRandomString(BaseN base) {

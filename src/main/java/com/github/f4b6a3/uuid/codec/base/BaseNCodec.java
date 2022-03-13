@@ -45,10 +45,39 @@ public abstract class BaseNCodec implements UuidCodec<String> {
 	protected final Function<String, UUID> decoder;
 
 	/**
+	 * A division function that returns quotient and remainder.
+	 * 
+	 * It MUST perform SIGNED long division.
+	 * 
+	 * Example:
+	 * 
+	 * {@code
+	 * 
+	 * CustomDivider divideBy64 = x -> new long[] { x / 64, x % 64 };
+	 * 
+	 * long[] answer = divideBy64(1024);
+	 * 
+	 * }
+	 */
+	@FunctionalInterface
+	public static interface CustomDivider {
+		// [x / divider, x % divider]
+		public long[] divide(long x);
+	}
+
+	/**
 	 * @param base an object that represents the base-n encoding
 	 */
 	protected BaseNCodec(BaseN base) {
-		this(base, new BaseNRemainderEncoder(base), new BaseNRemainderDecoder(base));
+		this(base, null);
+	}
+
+	/**
+	 * @param base    an object that represents the base-n encoding
+	 * @param divider a division function that returns quotient and remainder
+	 */
+	protected BaseNCodec(BaseN base, CustomDivider divider) {
+		this(base, new BaseNRemainderEncoder(base, divider), new BaseNRemainderDecoder(base));
 	}
 
 	/**
@@ -80,8 +109,7 @@ public abstract class BaseNCodec implements UuidCodec<String> {
 	 * @return a {@link BaseNCodec}
 	 */
 	public static BaseNCodec newInstance(BaseN base) {
-		return new BaseNCodec(base) {
-		};
+		return newInstance(base, null);
 	}
 
 	/**
@@ -113,8 +141,7 @@ public abstract class BaseNCodec implements UuidCodec<String> {
 	 * @return a {@link BaseNCodec}
 	 */
 	public static BaseNCodec newInstance(int radix) {
-		BaseN base = new BaseN(radix);
-		return newInstance(base);
+		return newInstance(radix, null);
 	}
 
 	/**
@@ -149,8 +176,46 @@ public abstract class BaseNCodec implements UuidCodec<String> {
 	 * @return a {@link BaseNCodec}
 	 */
 	public static BaseNCodec newInstance(String alphabet) {
+		return newInstance(alphabet, null);
+	}
+
+	/**
+	 * Static factory that returns a new instance of {@link BaseNCodec} using the
+	 * specified {@link BaseN} and a {@link CustomDivider}.
+	 * 
+	 * @param base    an object that represents the base-n encoding
+	 * @param divider a division function that returns quotient and remainder
+	 * @return a {@link BaseNCodec}
+	 */
+	public static BaseNCodec newInstance(BaseN base, CustomDivider divider) {
+		return new BaseNCodec(base, divider) {
+		};
+	}
+
+	/**
+	 * Static factory that returns a new instance of {@link BaseNCodec} using the
+	 * specified radix and a {@link CustomDivider}.
+	 * 
+	 * @param radix   the radix to be used
+	 * @param divider a division function that returns quotient and remainder
+	 * @return a {@link BaseNCodec}
+	 */
+	public static BaseNCodec newInstance(int radix, CustomDivider divider) {
+		BaseN base = new BaseN(radix);
+		return newInstance(base, divider);
+	}
+
+	/**
+	 * Static factory that returns a new instance of {@link BaseNCodec} using the
+	 * specified alphabet and a {@link CustomDivider}.
+	 * 
+	 * @param radix   the radix to be used
+	 * @param divider a division function that returns quotient and remainder
+	 * @return a {@link BaseNCodec}
+	 */
+	public static BaseNCodec newInstance(String alphabet, CustomDivider divider) {
 		BaseN base = new BaseN(alphabet);
-		return newInstance(base);
+		return newInstance(base, divider);
 	}
 
 	@Override

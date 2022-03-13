@@ -19,8 +19,7 @@ import com.github.f4b6a3.uuid.UuidCreator;
 //import com.github.f4b6a3.uuid.codec.UuidCodec;
 //import com.github.f4b6a3.uuid.codec.base.Base16Codec;
 //import com.github.f4b6a3.uuid.codec.base.Base32Codec;
-//import com.github.f4b6a3.uuid.codec.base.Base36Codec;
-//import com.github.f4b6a3.uuid.codec.base.Base58Codec;
+//import com.github.f4b6a3.uuid.codec.base.Base58BtcCodec;
 //import com.github.f4b6a3.uuid.codec.base.Base62Codec;
 //import com.github.f4b6a3.uuid.codec.base.Base64Codec;
 
@@ -110,8 +109,7 @@ public class Throughput {
 
 //	String base16 = Base16Codec.INSTANCE.encode(uuid);
 //	String base32 = Base32Codec.INSTANCE.encode(uuid);
-//	String base36 = Base36Codec.INSTANCE.encode(uuid);
-//	String base58 = Base58Codec.INSTANCE.encode(uuid);
+//	String base58 = Base58BtcCodec.INSTANCE.encode(uuid);
 //	String base62 = Base62Codec.INSTANCE.encode(uuid);
 //	String base64 = Base64Codec.INSTANCE.encode(uuid);
 //	
@@ -126,13 +124,8 @@ public class Throughput {
 //	}
 //	
 //	@Benchmark
-//	public UUID Base36Codec_decode() {
-//		return Base36Codec.INSTANCE.decode(base36);
-//	}
-//	
-//	@Benchmark
 //	public UUID Base58Codec_decode() {
-//		return Base58Codec.INSTANCE.decode(base58);
+//		return Base58BtcCodec.INSTANCE.decode(base58);
 //	}
 //	
 //	@Benchmark
@@ -156,13 +149,8 @@ public class Throughput {
 //	}
 //	
 //	@Benchmark
-//	public String Base36Codec_encode() {
-//		return Base36Codec.INSTANCE.encode(uuid);
-//	}
-//	
-//	@Benchmark
 //	public String Base58Codec_encode() {
-//		return Base58Codec.INSTANCE.encode(uuid);
+//		return Base58BtcCodec.INSTANCE.encode(uuid);
 //	}
 //	
 //	@Benchmark
