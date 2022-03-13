@@ -13,8 +13,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
-import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class TimeBasedFactoryTest extends UuidFactoryTest {
 
@@ -63,7 +63,7 @@ public class TimeBasedFactoryTest extends UuidFactoryTest {
 
 		assertEquals(clockseq1, clockseq2);
 	}
-	
+
 	@Test
 	public void testGetTimeBasedWithInstant() {
 
@@ -134,19 +134,17 @@ public class TimeBasedFactoryTest extends UuidFactoryTest {
 	@Test
 	public void testGetTimeBasedWithOptionalArguments() {
 
-		Random random = new Random();
-
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
 			// Get 46 random bits to generate a date from the year 1970 to 2193.
 			// (2^46 / 10000 / 60 / 60 / 24 / 365.25 + 1970 A.D. = ~2193 A.D.)
-			final Instant instant = Instant.ofEpochMilli(random.nextLong() >>> 24);
+			final Instant instant = Instant.ofEpochMilli(ThreadLocalRandom.current().nextLong() >>> 24);
 
 			// Get 14 random bits random to generate the clock sequence
-			final int clockseq = random.nextInt() & 0x000003ff;
+			final int clockseq = ThreadLocalRandom.current().nextInt() & 0x000003ff;
 
 			// Get 48 random bits for the node identifier, and set the multicast bit to ONE
-			final long nodeid = random.nextLong() & 0x0000ffffffffffffL | 0x0000010000000000L;
+			final long nodeid = ThreadLocalRandom.current().nextLong() & 0x0000ffffffffffffL | 0x0000010000000000L;
 
 			// Create a time-based UUID with those random values
 			UUID uuid = UuidCreator.getTimeBased(instant, clockseq, nodeid);

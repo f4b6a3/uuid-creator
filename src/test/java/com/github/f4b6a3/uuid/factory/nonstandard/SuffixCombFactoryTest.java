@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class SuffixCombFactoryTest extends UuidFactoryTest {
 
@@ -77,10 +78,9 @@ public class SuffixCombFactoryTest extends UuidFactoryTest {
 	public void testGetSuffixCombWithRandomFunction() {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		Random random = new Random();
 		RandomFunction randomFunction = x -> {
 			final byte[] bytes = new byte[x];
-			random.nextBytes(bytes);
+			ThreadLocalRandom.current().nextBytes(bytes);
 			return bytes;
 		};
 		SuffixCombFactory factory = new SuffixCombFactory(randomFunction);

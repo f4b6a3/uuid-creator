@@ -237,7 +237,7 @@ public final class DceSecurityFactory extends AbstTimeBasedFactory {
 	 * @throws UnsupportedOperationException always
 	 */
 	@Override
-	public UUID create(final Instant instant, final Integer clockseq, final Long nodeid) {
+	public synchronized UUID create(final Instant instant, final Integer clockseq, final Long nodeid) {
 		throw new UnsupportedOperationException("Unsuported operation for DCE Security UUID factory");
 	}
 

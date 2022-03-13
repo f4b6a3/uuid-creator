@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ShortSuffixCombFactoryTest extends UuidFactoryTest {
 
@@ -79,10 +80,9 @@ public class ShortSuffixCombFactoryTest extends UuidFactoryTest {
 	public void testGetShortSuffixCombWithRandomFunction() {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		Random random = new Random();
 		RandomFunction randomFunction = x -> {
 			final byte[] bytes = new byte[x];
-			random.nextBytes(bytes);
+			ThreadLocalRandom.current().nextBytes(bytes);
 			return bytes;
 		};
 		ShortSuffixCombFactory factory = new ShortSuffixCombFactory(randomFunction);

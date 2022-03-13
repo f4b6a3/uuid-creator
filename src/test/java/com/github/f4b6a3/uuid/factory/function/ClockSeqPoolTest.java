@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 import java.util.HashSet;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.github.f4b6a3.uuid.factory.function.ClockSeqFunction.ClockSeqPool;
 
@@ -20,8 +20,6 @@ public class ClockSeqPoolTest {
 			2048, 10453, 15206, 2533, 6466, 11108, 12106, 13723, 13236, 10137, 6942, 8197, 12575, 3484, 6880, 10050,
 			12873, 11826, 14003, 3343, 3032, 8230, 254, 10790, 11390, 3908, 8850, 1949, 11262, 15259, 4556, 8030, 12627,
 			9773, 5979, 16241, 3883, 6881 };
-
-	private static final Random random = new Random();
 
 	private static int availableProcessors() {
 		int processors = Runtime.getRuntime().availableProcessors();
@@ -138,7 +136,7 @@ public class ClockSeqPoolTest {
 
 		@Override
 		public void run() {
-			int take = random.nextInt(CLOCK_SEQUENCE_MAX);
+			int take = ThreadLocalRandom.current().nextInt(CLOCK_SEQUENCE_MAX);
 			list[index] = pool.take(take);
 		}
 	}

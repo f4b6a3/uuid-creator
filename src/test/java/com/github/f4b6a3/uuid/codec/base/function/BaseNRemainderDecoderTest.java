@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.Test;
 
@@ -16,8 +16,6 @@ import com.github.f4b6a3.uuid.codec.base.BaseN;
 public class BaseNRemainderDecoderTest {
 
 	private static final int UUID_BYTES = 16;
-
-	private static final Random RANDOM = new Random();
 
 	@Test
 	public void testDecode() {
@@ -34,9 +32,9 @@ public class BaseNRemainderDecoderTest {
 
 		for (int i = 0; i < 1000; i++) {
 			byte[] bytes = new byte[UUID_BYTES];
-			RANDOM.nextBytes(bytes);
-			long multiplier = RANDOM.nextInt() & 0x7fffffff; // positive
-			long addend = RANDOM.nextInt() & 0x7fffffff; // positive
+			ThreadLocalRandom.current().nextBytes(bytes);
+			long multiplier = ThreadLocalRandom.current().nextInt() & 0x7fffffff; // positive
+			long addend = ThreadLocalRandom.current().nextInt() & 0x7fffffff; // positive
 
 			BigInteger number1 = new BigInteger(1, bytes);
 			BigInteger product1 = number1.multiply(BigInteger.valueOf(multiplier)).add(BigInteger.valueOf(addend));
@@ -83,7 +81,7 @@ public class BaseNRemainderDecoderTest {
 
 		chars[0] = base.getPadding(); // to avoid overflow
 		for (int i = 1; i < chars.length; i++) {
-			chars[i] = base.getAlphabet().get(RANDOM.nextInt(base.getRadix()));
+			chars[i] = base.getAlphabet().get(ThreadLocalRandom.current().nextInt(base.getRadix()));
 		}
 
 		return new String(chars);

@@ -2,7 +2,7 @@ package com.github.f4b6a3.uuid.util.internal;
 
 import static org.junit.Assert.*;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -11,8 +11,6 @@ import org.junit.Test;
 import com.github.f4b6a3.uuid.util.internal.SettingsUtil;
 
 public class SettingsUtilTest {
-
-	Random random = new Random();
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -27,7 +25,7 @@ public class SettingsUtilTest {
 	@Test
 	public void testSetNodeIdentifier() {
 		for (int i = 0; i < 100; i++) {
-			long number = this.random.nextLong() >>> 16;
+			long number = ThreadLocalRandom.current().nextLong() >>> 16;
 			SettingsUtil.setNodeIdentifier(number);
 			long result = SettingsUtil.getNodeIdentifier();
 			assertEquals(number, result);
@@ -37,7 +35,7 @@ public class SettingsUtilTest {
 	@Test
 	public void testSetProperty() {
 		for (int i = 0; i < 100; i++) {
-			long number = random.nextLong() >>> 16;
+			long number = ThreadLocalRandom.current().nextLong() >>> 16;
 			String string = Long.toString(number);
 			SettingsUtil.setProperty(SettingsUtil.PROPERTY_NODE, string);
 			long result = SettingsUtil.getNodeIdentifier();
@@ -47,7 +45,7 @@ public class SettingsUtilTest {
 
 	@Test
 	public void testSetPropertyWith0x() {
-		long number = random.nextLong() >>> 16;
+		long number = ThreadLocalRandom.current().nextLong() >>> 16;
 		String string = "0x" + Long.toHexString(number);
 		SettingsUtil.setProperty(SettingsUtil.PROPERTY_NODE, string);
 		long result = SettingsUtil.getNodeIdentifier();

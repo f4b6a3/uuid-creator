@@ -11,7 +11,7 @@ import com.github.f4b6a3.uuid.util.internal.SettingsUtil;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.Test;
 
@@ -21,7 +21,6 @@ public class AbstTimeBasedFactoryTest extends UuidFactoryTest {
 	public void testSelectNodeIdentifierStrategy() {
 
 		NodeIdFunction supplier;
-		Random random = new Random();
 
 		SettingsUtil.setProperty(SettingsUtil.PROPERTY_NODE, "mac");
 		supplier = AbstTimeBasedFactory.selectNodeIdFunction();
@@ -41,7 +40,7 @@ public class AbstTimeBasedFactoryTest extends UuidFactoryTest {
 			fail("It should use Random node identifier supplier");
 		}
 
-		Long number = random.nextLong() & 0x0000ffffffffffffL;
+		Long number = ThreadLocalRandom.current().nextLong() & 0x0000ffffffffffffL;
 		SettingsUtil.setProperty(SettingsUtil.PROPERTY_NODE, number.toString());
 		supplier = AbstTimeBasedFactory.selectNodeIdFunction();
 		assertEquals(number.longValue(), supplier.getAsLong());

@@ -3,8 +3,8 @@ package com.github.f4b6a3.uuid.codec.base.function;
 import static org.junit.Assert.assertEquals;
 
 import java.math.BigInteger;
-import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.Test;
 
@@ -20,14 +20,12 @@ public class BaseNRemainderEncoderTest {
 
 	private static final int UUID_BYTES = 16;
 
-	private static final Random RANDOM = new Random();
-
 	@Test
 	public void testEncode() {
 
 		for (int i = 0; i < 1000; i++) {
 			byte[] bytes = new byte[UUID_BYTES];
-			RANDOM.nextBytes(bytes);
+			ThreadLocalRandom.current().nextBytes(bytes);
 			UUID uuid = BinaryCodec.INSTANCE.decode(bytes);
 			String string = Base62Codec.INSTANCE.encode(uuid);
 			assertEquals(encode(Base62Codec.INSTANCE.getBase(), bytes), string);
@@ -39,8 +37,8 @@ public class BaseNRemainderEncoderTest {
 
 		for (int i = 0; i < 1000; i++) {
 			byte[] bytes = new byte[UUID_BYTES];
-			RANDOM.nextBytes(bytes);
-			int divisor = RANDOM.nextInt() & 0x7fffffff; // positive divisor
+			ThreadLocalRandom.current().nextBytes(bytes);
+			int divisor = ThreadLocalRandom.current().nextInt() & 0x7fffffff; // positive divisor
 
 			CustomDivider divider = x -> new long[] { x / divisor, x % divisor };
 

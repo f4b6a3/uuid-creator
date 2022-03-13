@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class RandomBasedFactoryTest extends UuidFactoryTest {
 
@@ -49,10 +50,9 @@ public class RandomBasedFactoryTest extends UuidFactoryTest {
 	public void testGetRandomBasedWithRandomFactory() {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		Random random = new Random();
 		RandomFunction randomFunction = x -> {
 			final byte[] bytes = new byte[x];
-			random.nextBytes(bytes);
+			ThreadLocalRandom.current().nextBytes(bytes);
 			return bytes;
 		};
 		RandomBasedFactory factory = new RandomBasedFactory(randomFunction);
