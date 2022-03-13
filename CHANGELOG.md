@@ -4,9 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-Added `UuidComparator` for comparing and sorting UUIDs.
+Nothing unreleased.
 
-Added `CustomDivisor` to be used with `BaseNCodec`.
+## [4.6.0] - 2022-03-12
+
+Added `UuidComparator` for comparing and sorting UUIDs. #62
+
+Added `CustomDivisor` to be used with `BaseNCodec`. #63
 
 ## [4.5.0] - 2022-02-14
 
@@ -314,7 +318,8 @@ Remove `Fingerprint` // too complex
 -   Removed UuidSettings.getNodeIdentifierDeprecated // remove deprecated
 -   Renamed UuidSettings to UuidCreatorSettings
 
-[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.5.0...HEAD
+[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.6.0...HEAD
+[4.6.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.5.0...uuid-creator-4.6.0
 [4.5.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.4.1...uuid-creator-4.5.0
 [4.4.1]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.4.0...uuid-creator-4.4.1
 [4.4.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.3.2...uuid-creator-4.4.0

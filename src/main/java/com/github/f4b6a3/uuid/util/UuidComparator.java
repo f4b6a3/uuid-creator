@@ -56,8 +56,6 @@ public final class UuidComparator implements Comparator<UUID> {
 	 * Creates a default implementation of {@code UuidComparator}.
 	 * 
 	 * @see {@link UuidComparator#defaultCompare(UUID, UUID)}
-	 * 
-	 * @return a {@code UuidComparator}
 	 */
 	public UuidComparator() {
 		this(UuidComparator::defaultCompare);

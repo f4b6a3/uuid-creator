@@ -209,8 +209,8 @@ public abstract class BaseNCodec implements UuidCodec<String> {
 	 * Static factory that returns a new instance of {@link BaseNCodec} using the
 	 * specified alphabet and a {@link CustomDivider}.
 	 * 
-	 * @param radix   the radix to be used
-	 * @param divider a division function that returns quotient and remainder
+	 * @param alphabet the alphabet to be used
+	 * @param divider  a division function that returns quotient and remainder
 	 * @return a {@link BaseNCodec}
 	 */
 	public static BaseNCodec newInstance(String alphabet, CustomDivider divider) {

@@ -3,7 +3,7 @@
 
 	<groupId>com.github.f4b6a3</groupId>
 	<artifactId>uuid-creator</artifactId>
-	<version>4.4.2-SNAPSHOT</version>
+	<version>4.5.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>uuid-creator</name>
