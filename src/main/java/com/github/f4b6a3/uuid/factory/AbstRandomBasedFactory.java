@@ -29,6 +29,7 @@ import java.util.UUID;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.function.RandomFunction;
+import com.github.f4b6a3.uuid.factory.function.impl.DefaultRandomFunction;
 
 /**
  * Factory that creates random-based UUIDs.
@@ -41,7 +42,7 @@ public abstract class AbstRandomBasedFactory extends UuidFactory implements NoAr
 
 	protected AbstRandomBasedFactory(UuidVersion version, RandomFunction randomFunction) {
 		super(version);
-		this.randomFunction = randomFunction;
+		this.randomFunction = randomFunction != null ? randomFunction : new DefaultRandomFunction();
 	}
 
 	/**
@@ -73,10 +74,15 @@ public abstract class AbstRandomBasedFactory extends UuidFactory implements NoAr
 	/**
 	 * It instantiates a function that returns a byte array of a given length.
 	 * 
+	 * If the a null parameter is given, {@code DefaultRandomFunction} is implied.
+	 * 
 	 * @param random a {@link Random} generator
 	 * @return a random function that returns a byte array of a given length
 	 */
 	protected static RandomFunction getRandomFunction(Random random) {
+		if (random == null) {
+			return new DefaultRandomFunction();
+		}
 		return (final int length) -> {
 			final byte[] bytes = new byte[length];
 			random.nextBytes(bytes);

@@ -50,15 +50,13 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 public final class ShortPrefixCombFactory extends AbstRandomBasedFactory {
 
 	private final Clock clock;
+	private final int interval;
 
-	private static final int ONE_MINUTE = 60_000;
+	// default interval length in milliseconds
+	private static final int DEFAULT_INTERVAL = 60_000;
 
 	public ShortPrefixCombFactory() {
 		this(new DefaultRandomFunction());
-	}
-
-	public ShortPrefixCombFactory(Clock clock) {
-		this(new DefaultRandomFunction(), clock);
 	}
 
 	public ShortPrefixCombFactory(Random random) {
@@ -69,13 +67,22 @@ public final class ShortPrefixCombFactory extends AbstRandomBasedFactory {
 		this(getRandomFunction(random), clock);
 	}
 
+	public ShortPrefixCombFactory(Random random, Clock clock, int interval) {
+		this(getRandomFunction(random), clock, interval);
+	}
+
 	public ShortPrefixCombFactory(RandomFunction randomFunction) {
-		this(randomFunction, Clock.systemUTC());
+		this(randomFunction, Clock.systemUTC(), DEFAULT_INTERVAL);
 	}
 
 	public ShortPrefixCombFactory(RandomFunction randomFunction, Clock clock) {
+		this(randomFunction, clock, DEFAULT_INTERVAL);
+	}
+
+	public ShortPrefixCombFactory(RandomFunction randomFunction, Clock clock, int interval) {
 		super(UuidVersion.VERSION_RANDOM_BASED, randomFunction);
-		this.clock = clock;
+		this.clock = clock != null ? clock : Clock.systemUTC();
+		this.interval = interval;
 	}
 
 	/**
@@ -96,7 +103,7 @@ public final class ShortPrefixCombFactory extends AbstRandomBasedFactory {
 		long lsb = ByteUtil.toNumber(bytes, 0, 8);
 
 		// Insert the short prefix in the MSB
-		final long timestamp = clock.millis() / ONE_MINUTE;
+		final long timestamp = clock.millis() / interval;
 		msb |= ((timestamp & 0x000000000000ffffL) << 48);
 
 		// Set the version and variant bits
