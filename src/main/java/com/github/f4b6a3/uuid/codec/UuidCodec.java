@@ -26,13 +26,36 @@ package com.github.f4b6a3.uuid.codec;
 
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
+
 /**
  * Interface to be implemented by all codecs of this package.
+ * 
+ * All implementations of this interface throw {@link InvalidUuidException} if
+ * an invalid argument argument is given.
+ * 
+ * The {@link RuntimeException} cases that can be detected beforehand are
+ * translated into an {@link InvalidUuidException}.
  * 
  * @param <T> the type encoded to and decoded from.
  */
 public interface UuidCodec<T> {
+
+	/**
+	 * Get a generic type from a UUID.
+	 * 
+	 * @param uuid a UUID
+	 * @return a generic type
+	 * @throws InvalidUuidException if the argument is invalid
+	 */
 	public T encode(UUID uuid);
 
-	public UUID decode(T item);
+	/**
+	 * Get a UUID from a generic type.
+	 * 
+	 * @param type a generic type
+	 * @return a UUID
+	 * @throws InvalidUuidException if the argument is invalid
+	 */
+	public UUID decode(T type);
 }

@@ -29,19 +29,22 @@ import static com.github.f4b6a3.uuid.codec.other.DotNetGuid1Codec.toAndFromDotNe
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.codec.UuidCodec;
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.UuidUtil;
+import com.github.f4b6a3.uuid.util.UuidValidator;
 
+/**
+ * Codec for random-based .Net Guids.
+ */
 public class DotNetGuid4Codec implements UuidCodec<UUID> {
 
 	/**
 	 * A shared immutable instance.
 	 */
 	public static final DotNetGuid4Codec INSTANCE = new DotNetGuid4Codec();
-	
+
 	/**
-	 * Codec for .Net Guids.
-	 * 
-	 * This codec converts a random-based UUID (v4) to a .Net Guid.
+	 * Get a .Ned Guid from a random-based UUID (v4).
 	 * 
 	 * It rearranges the most significant bytes from big-endian to little-endian,
 	 * and vice-versa.
@@ -51,17 +54,19 @@ public class DotNetGuid4Codec implements UuidCodec<UUID> {
 	 * 
 	 * @param uuid a UUID
 	 * @return another UUID
+	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	@Override
 	public UUID encode(UUID uuid) {
+		UuidValidator.validate(uuid);
 		if (!UuidUtil.isRandomBased(uuid)) {
-			throw new IllegalArgumentException(String.format("Not a random-based UUID: %s.", uuid.toString()));
+			throw new InvalidUuidException(String.format("Not a random-based UUID: %s.", uuid.toString()));
 		}
 		return toAndFromDotNetGuid(uuid);
 	}
 
 	/**
-	 * Convert a .Net Guid to a random-based UUID (v4).
+	 * Get a random-based UUID (v4) from a .Net Guid.
 	 * 
 	 * It rearranges the most significant bytes from big-endian to little-endian,
 	 * and vice-versa.
@@ -71,12 +76,14 @@ public class DotNetGuid4Codec implements UuidCodec<UUID> {
 	 * 
 	 * @param uuid a UUID
 	 * @return another UUID
+	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	@Override
 	public UUID decode(UUID uuid) {
+		UuidValidator.validate(uuid);
 		UUID uuidv4 = toAndFromDotNetGuid(uuid);
 		if (!UuidUtil.isRandomBased(uuidv4)) {
-			throw new IllegalArgumentException(String.format("Not a random-based UUID: %s.", uuidv4.toString()));
+			throw new InvalidUuidException(String.format("Not a random-based UUID: %s.", uuidv4.toString()));
 		}
 		return uuidv4;
 	}

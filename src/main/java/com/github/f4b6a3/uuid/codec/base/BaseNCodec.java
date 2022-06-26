@@ -32,6 +32,8 @@ import com.github.f4b6a3.uuid.codec.base.function.BaseNDecoder;
 import com.github.f4b6a3.uuid.codec.base.function.BaseNEncoder;
 import com.github.f4b6a3.uuid.codec.base.function.BaseNRemainderDecoder;
 import com.github.f4b6a3.uuid.codec.base.function.BaseNRemainderEncoder;
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
+import com.github.f4b6a3.uuid.util.UuidValidator;
 
 /**
  * Abstract class that contains the basic functionality for base-n codecs of
@@ -218,17 +220,46 @@ public abstract class BaseNCodec implements UuidCodec<String> {
 		return newInstance(base, divider);
 	}
 
-	@Override
-	public String encode(UUID uuid) {
-		return encoder.apply(uuid);
-	}
-
-	@Override
-	public UUID decode(String string) {
-		return decoder.apply(string);
-	}
-
+	/**
+	 * Get the base-n encoding object.
+	 * 
+	 * @return a base-n encoding object
+	 */
 	public BaseN getBase() {
 		return this.base;
+	}
+
+	/**
+	 * Get an encoded string from a UUID.
+	 * 
+	 * @param uuid a UUID
+	 * @return an encoded string
+	 * @throws InvalidUuidException if the argument is invalid
+	 */
+	@Override
+	public String encode(UUID uuid) {
+		try {
+			UuidValidator.validate(uuid);
+			return encoder.apply(uuid);
+		} catch (RuntimeException e) {
+			throw new InvalidUuidException(e.toString(), e);
+		}
+	}
+
+	/**
+	 * Get a UUID from an encoded string.
+	 * 
+	 * @param string the encoded string
+	 * @return a UUID
+	 * @throws InvalidUuidException if the argument is invalid
+	 */
+	@Override
+	public UUID decode(String string) {
+		try {
+			base.validate(string);
+			return decoder.apply(string);
+		} catch (RuntimeException e) {
+			throw new InvalidUuidException(e.toString(), e);
+		}
 	}
 }

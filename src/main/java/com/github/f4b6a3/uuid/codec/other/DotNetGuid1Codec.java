@@ -27,17 +27,22 @@ package com.github.f4b6a3.uuid.codec.other;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.codec.UuidCodec;
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.UuidUtil;
+import com.github.f4b6a3.uuid.util.UuidValidator;
 
+/**
+ * Codec for time-based .Net Guids.
+ */
 public class DotNetGuid1Codec implements UuidCodec<UUID> {
 
 	/**
 	 * A shared immutable instance.
 	 */
 	public static final DotNetGuid1Codec INSTANCE = new DotNetGuid1Codec();
-	
+
 	/**
-	 * Codec for .Net Guid.
+	 * Get a .Ned Guid from a time-based UUID (v1).
 	 * 
 	 * This codec converts a time-based UUID (v1) to a .Net Guid.
 	 * 
@@ -49,17 +54,19 @@ public class DotNetGuid1Codec implements UuidCodec<UUID> {
 	 * 
 	 * @param uuid a UUID
 	 * @return another UUID
+	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	@Override
 	public UUID encode(UUID uuid) {
+		UuidValidator.validate(uuid);
 		if (!UuidUtil.isTimeBased(uuid)) {
-			throw new IllegalArgumentException(String.format("Not a time-based UUID: %s.", uuid.toString()));
+			throw new InvalidUuidException(String.format("Not a time-based UUID: %s.", uuid.toString()));
 		}
 		return toAndFromDotNetGuid(uuid);
 	}
 
 	/**
-	 * Convert a .Net Guid to a time-based UUID (v1).
+	 * Get a time-based UUID (v4) from a .Net Guid.
 	 * 
 	 * It rearranges the most significant bytes from big-endian to little-endian,
 	 * and vice-versa.
@@ -69,12 +76,14 @@ public class DotNetGuid1Codec implements UuidCodec<UUID> {
 	 * 
 	 * @param uuid a UUID
 	 * @return another UUID
+	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	@Override
 	public UUID decode(UUID uuid) {
+		UuidValidator.validate(uuid);
 		UUID uuidv1 = toAndFromDotNetGuid(uuid);
 		if (!UuidUtil.isTimeBased(uuidv1)) {
-			throw new IllegalArgumentException(String.format("Not a time-based UUID: %s.", uuidv1.toString()));
+			throw new InvalidUuidException(String.format("Not a time-based UUID: %s.", uuidv1.toString()));
 		}
 		return uuidv1;
 	}

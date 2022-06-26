@@ -82,9 +82,12 @@ public class StringCodec implements UuidCodec<String> {
 	 * 
 	 * @param uuid a UUID
 	 * @return a UUID string
+	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	@Override
 	public String encode(UUID uuid) {
+
+		UuidValidator.validate(uuid);
 
 		if (JAVA_VERSION_GREATER_THAN_8) {
 			return uuid.toString();
@@ -153,7 +156,7 @@ public class StringCodec implements UuidCodec<String> {
 	 * 
 	 * @param string a UUID string
 	 * @return a UUID
-	 * @throws InvalidUuidException if invalid
+	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	@Override
 	public UUID decode(String string) {

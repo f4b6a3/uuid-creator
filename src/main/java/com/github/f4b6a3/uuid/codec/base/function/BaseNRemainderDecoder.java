@@ -48,10 +48,9 @@ public final class BaseNRemainderDecoder extends BaseNDecoder {
 		multiplier = base.getRadix();
 	}
 
-	@Override
 	public UUID apply(String string) {
 
-		final char[] chars = toCharArray(string);
+		final char[] chars = string.toCharArray();
 
 		long msb = 0;
 		long lsb = 0;
@@ -70,7 +69,7 @@ public final class BaseNRemainderDecoder extends BaseNDecoder {
 		}
 
 		if (rem != 0) {
-			throw new InvalidUuidException("Invalid string (overflow)");
+			throw new InvalidUuidException("Invalid encoded string (overflow): " + string);
 		}
 
 		return new UUID(msb, lsb);

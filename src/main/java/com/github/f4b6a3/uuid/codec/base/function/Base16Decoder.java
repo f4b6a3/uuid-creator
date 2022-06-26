@@ -44,7 +44,7 @@ public final class Base16Decoder extends BaseNDecoder {
 	@Override
 	public UUID apply(String string) {
 
-		char[] chars = toCharArray(string);
+		char[] chars = string.toCharArray();
 
 		long msb = 0;
 		long lsb = 0;

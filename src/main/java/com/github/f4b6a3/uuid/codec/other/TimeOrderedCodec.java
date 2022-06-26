@@ -27,7 +27,9 @@ package com.github.f4b6a3.uuid.codec.other;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.codec.UuidCodec;
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.UuidUtil;
+import com.github.f4b6a3.uuid.util.UuidValidator;
 
 /**
  * Codec for time-ordered UUIDs
@@ -41,11 +43,20 @@ public class TimeOrderedCodec implements UuidCodec<UUID> {
 	 */
 	public static final TimeOrderedCodec INSTANCE = new TimeOrderedCodec();
 
+	/**
+	 * Get a time-ordered UUID from a time-based UUID.
+	 * 
+	 * @param a time-based UUID
+	 * @return a time-ordered UUID
+	 * @throws InvalidUuidException if the argument is invalid
+	 */
 	@Override
 	public UUID encode(UUID uuid) {
 
+		UuidValidator.validate(uuid);
+
 		if (!UuidUtil.isTimeBased(uuid)) {
-			throw new IllegalArgumentException(String.format("Not a time-based UUID: %s.", uuid.toString()));
+			throw new InvalidUuidException("Not a time-based UUID: " + uuid);
 		}
 
 		long timestamp = UuidUtil.getTimestamp(uuid);
@@ -59,11 +70,20 @@ public class TimeOrderedCodec implements UuidCodec<UUID> {
 		return new UUID(msb, lsb);
 	}
 
+	/**
+	 * Get a time-based UUID from a time-ordered UUID.
+	 * 
+	 * @param a time-ordered UUID
+	 * @return a time-based UUID
+	 * @throws InvalidUuidException if the argument is invalid
+	 */
 	@Override
 	public UUID decode(UUID uuid) {
 
+		UuidValidator.validate(uuid);
+
 		if (!UuidUtil.isTimeOrdered(uuid)) {
-			throw new IllegalArgumentException(String.format("Not a time-ordered UUID: %s.", uuid.toString()));
+			throw new InvalidUuidException("Not a time-ordered UUID: " + uuid);
 		}
 
 		long timestamp = UuidUtil.getTimestamp(uuid);

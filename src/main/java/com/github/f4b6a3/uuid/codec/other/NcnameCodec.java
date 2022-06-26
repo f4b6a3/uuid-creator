@@ -31,6 +31,8 @@ import com.github.f4b6a3.uuid.codec.UuidCodec;
 import com.github.f4b6a3.uuid.codec.base.Base32Codec;
 import com.github.f4b6a3.uuid.codec.base.Base64UrlCodec;
 import com.github.f4b6a3.uuid.codec.base.BaseNCodec;
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
+import com.github.f4b6a3.uuid.util.UuidValidator;
 import com.github.f4b6a3.uuid.util.immutable.CharArray;
 import com.github.f4b6a3.uuid.util.immutable.LongArray;
 
@@ -148,8 +150,17 @@ public final class NcnameCodec implements UuidCodec<String> {
 		}
 	}
 
+	/**
+	 * Get a NCName from a UUID.
+	 * 
+	 * @param uuid a UUID
+	 * @return a NCName
+	 * @throws InvalidUuidException if the argument is invalid
+	 */
 	@Override
-	public String encode(final UUID uuid) {
+	public String encode(UUID uuid) {
+
+		UuidValidator.validate(uuid);
 
 		int version = uuid.version();
 		byte[] bytes = BinaryCodec.INSTANCE.encode(uuid);
@@ -173,8 +184,19 @@ public final class NcnameCodec implements UuidCodec<String> {
 		return v + encoded;
 	}
 
+	/**
+	 * Get a UUID from a NCName.
+	 * 
+	 * @param ncname a NCName
+	 * @return a UUID
+	 * @throws InvalidUuidException if the argument is invalid
+	 */
 	@Override
 	public UUID decode(String ncname) {
+
+		if (ncname == null || ncname.length() != this.length) {
+			throw new InvalidUuidException("Invalid UUID NCName: " + ncname);
+		}
 
 		int version = (int) VERSION_MAP.get(ncname.charAt(0));
 		String substring = ncname.substring(1, ncname.length());

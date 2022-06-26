@@ -51,9 +51,12 @@ public class BinaryCodec implements UuidCodec<byte[]> {
 	 * 
 	 * @param uuid a UUID
 	 * @return an array of bytes
+	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	@Override
 	public byte[] encode(final UUID uuid) {
+
+		UuidValidator.validate(uuid);
 
 		final byte[] bytes = new byte[16];
 		final long msb = uuid.getMostSignificantBits();
@@ -85,7 +88,7 @@ public class BinaryCodec implements UuidCodec<byte[]> {
 	 * 
 	 * @param bytes an array of bytes
 	 * @return a UUID
-	 * @throws InvalidUuidException if invalid
+	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	@Override
 	public UUID decode(final byte[] bytes) {

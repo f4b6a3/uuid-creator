@@ -30,6 +30,8 @@ import com.github.f4b6a3.uuid.codec.UuidCodec;
 import com.github.f4b6a3.uuid.codec.base.Base32Codec;
 import com.github.f4b6a3.uuid.codec.base.Base64UrlCodec;
 import com.github.f4b6a3.uuid.codec.base.BaseNCodec;
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
+import com.github.f4b6a3.uuid.util.UuidValidator;
 
 /**
  * Codec for UUID Slugs.
@@ -102,6 +104,7 @@ public final class SlugCodec implements UuidCodec<String> {
 	 */
 	public static final SlugCodec INSTANCE = new SlugCodec();
 
+	private final int length;
 	private final BaseNCodec codec;
 
 	public SlugCodec() {
@@ -116,10 +119,20 @@ public final class SlugCodec implements UuidCodec<String> {
 			throw new IllegalArgumentException("Null codec");
 		}
 		this.codec = codec;
+		this.length = codec.getBase().getLength();
 	}
 
+	/**
+	 * Get a Slug from a UUID.
+	 * 
+	 * @param uuid a UUID
+	 * @return a Slug
+	 * @throws InvalidUuidException if the argument is invalid
+	 */
 	@Override
 	public String encode(UUID uuid) {
+
+		UuidValidator.validate(uuid);
 
 		long long1 = uuid.getMostSignificantBits();
 		long long2 = uuid.getLeastSignificantBits();
@@ -138,10 +151,21 @@ public final class SlugCodec implements UuidCodec<String> {
 		return this.codec.encode(new UUID(msb, lsb));
 	}
 
+	/**
+	 * Get a UUID from a Slug.
+	 * 
+	 * @param slug a Slug
+	 * @return a UUID
+	 * @throws InvalidUuidException if the argument is invalid
+	 */
 	@Override
-	public UUID decode(String string) {
+	public UUID decode(String slug) {
 
-		UUID uuid = this.codec.decode(string);
+		if (slug == null || slug.length() != this.length) {
+			throw new InvalidUuidException("Invalid Slug: " + slug);
+		}
+
+		UUID uuid = this.codec.decode(slug);
 
 		long long1 = uuid.getMostSignificantBits();
 		long long2 = uuid.getLeastSignificantBits();

@@ -24,6 +24,8 @@
 
 package com.github.f4b6a3.uuid.util;
 
+import java.util.UUID;
+
 import com.github.f4b6a3.uuid.codec.base.Base16Codec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.immutable.LongArray;
@@ -38,6 +40,27 @@ public final class UuidValidator {
 	private static final LongArray MAP = Base16Codec.INSTANCE.getBase().getMap();
 
 	private UuidValidator() {
+	}
+
+	/**
+	 * Checks if the UUID is valid.
+	 * 
+	 * @param uuid a UUID
+	 * @return true if valid, false if invalid
+	 */
+	public static boolean isValid(final UUID uuid) {
+		return uuid != null;
+	}
+
+	/**
+	 * Checks if the UUID is valid.
+	 * 
+	 * @param uuid    a UUID
+	 * @param version a version number
+	 * @return true if valid, false if invalid
+	 */
+	public static boolean isValid(final UUID uuid, int version) {
+		return uuid != null && isVersion(uuid, version);
 	}
 
 	/**
@@ -59,31 +82,6 @@ public final class UuidValidator {
 	 */
 	public static boolean isValid(final byte[] uuid, int version) {
 		return uuid != null && uuid.length == 16 && isVersion(uuid, version);
-	}
-
-	/**
-	 * Checks if the UUID byte array is valid.
-	 * 
-	 * @param uuid a UUID byte array
-	 * @throws InvalidUuidException if invalid
-	 */
-	public static void validate(final byte[] uuid) {
-		if (uuid == null || uuid.length != 16) {
-			throw new InvalidUuidException("Invalid UUID byte array.");
-		}
-	}
-
-	/**
-	 * Checks if the UUID byte array is valid.
-	 * 
-	 * @param uuid    a UUID byte array
-	 * @param version a version number
-	 * @throws InvalidUuidException if invalid
-	 */
-	public static void validate(final byte[] uuid, int version) {
-		if (uuid == null || uuid.length != 16 || !isVersion(uuid, version)) {
-			throw new InvalidUuidException("Invalid UUID byte array.");
-		}
 	}
 
 	/**
@@ -129,10 +127,60 @@ public final class UuidValidator {
 	}
 
 	/**
+	 * Checks if the UUID is valid.
+	 * 
+	 * @param uuid a UUID
+	 * @throws InvalidUuidException if the argument is invalid
+	 */
+	public static void validate(final UUID uuid) {
+		if (uuid == null) {
+			throwInvalidUuidException(uuid);
+		}
+	}
+
+	/**
+	 * Checks if the UUID is valid.
+	 * 
+	 * @param uuid    a UUID
+	 * @param version a version number
+	 * @throws InvalidUuidException if the argument is invalid
+	 */
+	public static void validate(final UUID uuid, int version) {
+		if (uuid == null || !isVersion(uuid, version)) {
+			throwInvalidUuidException(uuid);
+		}
+	}
+
+	/**
+	 * Checks if the UUID byte array is valid.
+	 * 
+	 * @param uuid a UUID byte array
+	 * @throws InvalidUuidException if the argument is invalid
+	 */
+	public static void validate(final byte[] uuid) {
+		if (uuid == null || uuid.length != 16) {
+			throwInvalidUuidException(uuid);
+		}
+	}
+
+	/**
+	 * Checks if the UUID byte array is valid.
+	 * 
+	 * @param uuid    a UUID byte array
+	 * @param version a version number
+	 * @throws InvalidUuidException if the argument is invalid
+	 */
+	public static void validate(final byte[] uuid, int version) {
+		if (uuid == null || uuid.length != 16 || !isVersion(uuid, version)) {
+			throwInvalidUuidException(uuid);
+		}
+	}
+
+	/**
 	 * Checks if the UUID string is a valid.
 	 * 
 	 * @param uuid a UUID string
-	 * @throws InvalidUuidException if invalid
+	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	public static void validate(final String uuid) {
 		if (uuid == null || !isParseable(uuid.toCharArray())) {
@@ -145,7 +193,7 @@ public final class UuidValidator {
 	 * 
 	 * @param uuid    a UUID string
 	 * @param version a version number
-	 * @throws InvalidUuidException if invalid
+	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	public static void validate(final String uuid, int version) {
 		if (uuid == null || !isParseable(uuid.toCharArray(), version)) {
@@ -157,7 +205,7 @@ public final class UuidValidator {
 	 * Checks if the UUID char array is a valid.
 	 * 
 	 * @param uuid a UUID char array
-	 * @throws InvalidUuidException if invalid
+	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	public static void validate(final char[] uuid) {
 		if (uuid == null || !isParseable(uuid)) {
@@ -170,7 +218,7 @@ public final class UuidValidator {
 	 * 
 	 * @param uuid    a UUID char array
 	 * @param version a version number
-	 * @throws InvalidUuidException if invalid
+	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	public static void validate(final char[] uuid, int version) {
 		if (uuid == null || !isParseable(uuid, version)) {
@@ -225,6 +273,12 @@ public final class UuidValidator {
 		return isVersion(chars, version) && isParseable(chars);
 	}
 
+	protected static boolean isVersion(UUID uuid, int version) {
+		boolean versionOk = ((version & ~0xf) == 0) && (uuid.version() == version);
+		boolean variantOk = uuid.variant() == 2; // RFC-4122
+		return versionOk && variantOk;
+	}
+
 	protected static boolean isVersion(byte[] bytes, int version) {
 		boolean versionOk = ((version & ~0xf) == 0) && (((bytes[6] & 0xff) >>> 4) == version);
 		boolean variantOk = ((bytes[8] & 0xff) >>> 6) == 2; // RFC-4122
@@ -263,12 +317,7 @@ public final class UuidValidator {
 		return versionOk && variantOk;
 	}
 
-	private static void throwInvalidUuidException(char[] chars) {
-		String string = chars == null ? null : new String(chars);
-		throw new InvalidUuidException("Invalid UUID: \"" + string + "\"");
-	}
-
-	private static void throwInvalidUuidException(String string) {
-		throw new InvalidUuidException("Invalid UUID: \"" + string + "\"");
+	private static void throwInvalidUuidException(Object object) {
+		throw new InvalidUuidException("Invalid UUID: " + object);
 	}
 }

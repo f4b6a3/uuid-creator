@@ -24,6 +24,7 @@
 
 package com.github.f4b6a3.uuid.codec.base;
 
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.immutable.CharArray;
 import com.github.f4b6a3.uuid.util.immutable.LongArray;
 
@@ -170,20 +171,34 @@ public final class BaseN {
 		return this.map;
 	}
 
+	/**
+	 * Checks if the UUID string is valid.
+	 * 
+	 * @param uuid a UUID string
+	 * @return true if valid, false if invalid
+	 */
 	public boolean isValid(String string) {
-		return string != null && isValid(string.toCharArray());
-	}
-
-	public boolean isValid(char[] chars) {
-		if (chars == null || chars.length != this.length) {
+		if (string == null || string.length() != this.length) {
 			return false;
 		}
-		for (int i = 0; i < chars.length; i++) {
-			if (this.map.get(chars[i]) == -1) {
+		for (int i = 0; i < this.length; i++) {
+			if (this.map.get(string.charAt(i)) == -1) {
 				return false;
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Checks if the UUID string is a valid.
+	 * 
+	 * @param uuid a UUID string
+	 * @throws InvalidUuidException if the argument is invalid
+	 */
+	public void validate(String string) {
+		if (!isValid(string)) {
+			throw new InvalidUuidException("Invalid encoded string: " + string);
+		}
 	}
 
 	private static boolean sensitive(String charset) {
