@@ -24,68 +24,72 @@
 
 package com.github.f4b6a3.uuid.codec;
 
-import java.net.URI;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
+import com.github.f4b6a3.uuid.util.UuidValidator;
 
 /**
- * Codec for UUID URIs (specifically URNs).
+ * Codec for UUID URNs.
  * 
- * The {@link UriCodec} encodes UUID to and from an opaque {@link java.net.URI}.
+ * The {@link UrnCodec} encodes UUID to and from an URN.
  * 
  * The URN representation adds the prefix 'urn:uuid:' to a UUID canonical
  * representation.
  * 
- * See: https://github.com/f4b6a3/uuid-creator/issues/32
+ * See: https://github.com/f4b6a3/uuid-creator/issues/66
  * 
  * See also:
  * https://stackoverflow.com/questions/4913343/what-is-the-difference-between-uri-url-and-urn
  */
-public class UriCodec implements UuidCodec<URI> {
+public class UrnCodec implements UuidCodec<String> {
 
 	/**
 	 * A shared immutable instance.
 	 */
-	public static final UriCodec INSTANCE = new UriCodec();
+	public static final UrnCodec INSTANCE = new UrnCodec();
+
+	private static final String URN_PREFIX = "urn:uuid:";
 
 	/**
-	 * Get a URI from a UUID.
+	 * Get a URN string from a UUID.
 	 * 
 	 * @param uuid a UUID
-	 * @return a URI
+	 * @return a URN string
 	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	@Override
-	public URI encode(UUID uuid) {
-		return URI.create(UrnCodec.INSTANCE.encode(uuid));
+	public String encode(UUID uuid) {
+		UuidValidator.validate(uuid);
+		return URN_PREFIX + StringCodec.INSTANCE.encode(uuid);
 	}
 
 	/**
-	 * Get a UUID from a URI.
+	 * Get a UUID from a URN string.
 	 * 
-	 * @param uri a URI
+	 * @param urn a URN string
 	 * @return a UUID
 	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	@Override
-	public UUID decode(URI uri) {
-		if (!isUuidUri(uri)) {
-			throw new InvalidUuidException("Invalid URI: " + uri);
+	public UUID decode(String urn) {
+		if (!isUuidUrn(urn)) {
+			throw new InvalidUuidException("Invalid URN: " + urn);
 		}
-		return UrnCodec.INSTANCE.decode(uri.toString());
+		return StringCodec.INSTANCE.decode(urn);
 	}
 
 	/**
-	 * Check if the URI is a UUID URN.
+	 * Check if a URN string is a UUID URN.
 	 * 
-	 * @param uri a URI
+	 * @param urn a string
 	 * @return true if the it's a URN
 	 */
-	public static boolean isUuidUri(URI uri) {
-		if (uri == null) {
-			return false;
+	public static boolean isUuidUrn(String urn) {
+		if (urn != null && urn.startsWith(URN_PREFIX)) {
+			String uuid = urn.substring(URN_PREFIX.length());
+			return UuidValidator.isValid(uuid);
 		}
-		return UrnCodec.isUuidUrn(uri.toString());
+		return false;
 	}
 }
