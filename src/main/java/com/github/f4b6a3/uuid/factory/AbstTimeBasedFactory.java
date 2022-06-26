@@ -48,32 +48,17 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 	protected NodeIdFunction nodeidFunction;
 	protected ClockSeqFunction clockseqFunction;
 
-	protected final long epochTimestamp;
-
-	public static final Instant EPOCH_UNIX = UuidTime.EPOCH_UNIX; // 0s
-	public static final Instant EPOCH_GREG = UuidTime.EPOCH_GREG; // -12219292800s
-
 	private static final String NODE_MAC = "mac";
 	private static final String NODE_HASH = "hash";
 	private static final String NODE_RANDOM = "random";
 
-	protected AbstTimeBasedFactory(UuidVersion version, Instant epoch, Builder<?> builder) {
+	private static final long EPOCH_TIMESTAMP = TimeFunction.toTimestamp(UuidTime.EPOCH_GREG);
+
+	protected AbstTimeBasedFactory(UuidVersion version, Builder<?> builder) {
 		super(version);
-
-		this.epochTimestamp = TimeFunction.toTimestamp(epoch);
-
-		if (builder != null) {
-			this.timeFunction = builder.timeFunction != null ? builder.timeFunction //
-					: selectTimeFunction();
-			this.nodeidFunction = builder.nodeidFunction != null ? builder.nodeidFunction //
-					: selectNodeIdFunction();
-			this.clockseqFunction = builder.clockseqFunction != null ? builder.clockseqFunction //
-					: new DefaultClockSeqFunction();
-		} else {
-			this.timeFunction = selectTimeFunction();
-			this.nodeidFunction = selectNodeIdFunction();
-			this.clockseqFunction = new DefaultClockSeqFunction();
-		}
+		this.timeFunction = builder.getTimeFunction();
+		this.nodeidFunction = builder.getNodeIdFunction();
+		this.clockseqFunction = builder.getClockSeqFunction();
 	}
 
 	/**
@@ -170,77 +155,13 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 	public synchronized UUID create() {
 
 		// (3a) get the timestamp
-		final long timestamp = this.timeFunction.getAsLong() - epochTimestamp;
+		final long timestamp = this.timeFunction.getAsLong() - EPOCH_TIMESTAMP;
 
 		// (4a)(5a) get the node identifier
 		final long nodeIdentifier = this.nodeidFunction.getAsLong();
 
 		// (5a)(6a) get the sequence value
 		final long clockSequence = this.clockseqFunction.applyAsLong(timestamp);
-
-		// (9a) format the most significant bits
-		final long msb = this.formatMostSignificantBits(timestamp);
-
-		// (9a) format the least significant bits
-		final long lsb = this.formatLeastSignificantBits(nodeIdentifier, clockSequence);
-
-		// (9a) format a UUID from the MSB and LSB
-		return new UUID(msb, lsb);
-	}
-
-	/**
-	 * Returns a time-based UUID.
-	 * 
-	 * This method overrides some or all parts of the new UUID.
-	 * 
-	 * For example, If you need to replace the default node identifier, you can pass
-	 * another node identifier as argument.
-	 * 
-	 * The timestamp has 100-nanos resolution, but its accuracy depends on the
-	 * argument passed. In some JVMs the {@link java.time.Instant} accuracy may be
-	 * limited to milliseconds, for example, in the OpenJDK-8.
-	 * 
-	 * The node identifier range is from 0 to 281474976710655 (2^48 - 1). If the
-	 * value passed by argument is out of range, the result of MOD 2^48 is used
-	 * instead.
-	 * 
-	 * The clock sequence range is from 0 to 16383 (2^14 - 1). If the value passed
-	 * by argument is out of range, the result of MOD 2^14 is used instead.
-	 * 
-	 * The null arguments are ignored. If all arguments are null, this method works
-	 * exactly as the method {@link AbstTimeBasedFactory#create()}.
-	 * 
-	 * @param instant  an alternate instant
-	 * @param clockseq an alternate clock sequence (0 to 16,383)
-	 * @param nodeid   an alternate node (0 to 2^48)
-	 * @return {@link UUID} a UUID value
-	 */
-	public synchronized UUID create(final Instant instant, final Integer clockseq, final Long nodeid) {
-
-		final long timestamp;
-		final long nodeIdentifier;
-		final long clockSequence;
-
-		// (3a) get the timestamp
-		if (instant != null) {
-			timestamp = TimeFunction.toTimestamp(instant) - epochTimestamp;
-		} else {
-			timestamp = this.timeFunction.getAsLong() - epochTimestamp;
-		}
-
-		// (4a)(5a) get the node identifier
-		if (nodeid != null) {
-			nodeIdentifier = NodeIdFunction.toExpectedRange(nodeid);
-		} else {
-			nodeIdentifier = this.nodeidFunction.getAsLong();
-		}
-
-		// (5a)(6a) get the sequence value
-		if (clockseq != null) {
-			clockSequence = ClockSeqFunction.toExpectedRange(clockseq);
-		} else {
-			clockSequence = this.clockseqFunction.applyAsLong(timestamp);
-		}
 
 		// (9a) format the most significant bits
 		final long msb = this.formatMostSignificantBits(timestamp);
@@ -385,9 +306,30 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 
 	public abstract static class Builder<T> {
 
-		private TimeFunction timeFunction;
-		private NodeIdFunction nodeidFunction;
-		private ClockSeqFunction clockseqFunction;
+		protected TimeFunction timeFunction;
+		protected NodeIdFunction nodeidFunction;
+		protected ClockSeqFunction clockseqFunction;
+
+		protected TimeFunction getTimeFunction() {
+			if (this.timeFunction == null) {
+				this.timeFunction = selectTimeFunction();
+			}
+			return this.timeFunction;
+		}
+
+		protected NodeIdFunction getNodeIdFunction() {
+			if (this.nodeidFunction == null) {
+				this.nodeidFunction = selectNodeIdFunction();
+			}
+			return this.nodeidFunction;
+		}
+
+		protected ClockSeqFunction getClockSeqFunction() {
+			if (this.clockseqFunction == null) {
+				this.clockseqFunction = new DefaultClockSeqFunction();
+			}
+			return this.clockseqFunction;
+		}
 
 		public Builder<T> withTimeFunction(TimeFunction timeFunction) {
 			this.timeFunction = timeFunction;
@@ -416,13 +358,13 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 			return this;
 		}
 
-		public Builder<T> withClockSeq(final byte[] clockseq) {
+		public Builder<T> withClockSeq(byte[] clockseq) {
 			final long clockSequence = ClockSeqFunction.toExpectedRange(ByteUtil.toNumber(clockseq));
 			this.clockseqFunction = x -> clockSequence;
 			return this;
 		}
 
-		public Builder<T> withNodeId(final long nodeid) {
+		public Builder<T> withNodeId(long nodeid) {
 			final long nodeIdentifier = NodeIdFunction.toExpectedRange(nodeid);
 			this.nodeidFunction = () -> nodeIdentifier;
 			return this;

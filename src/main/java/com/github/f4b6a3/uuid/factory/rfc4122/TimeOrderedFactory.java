@@ -39,11 +39,11 @@ import com.github.f4b6a3.uuid.factory.AbstTimeBasedFactory;
 public final class TimeOrderedFactory extends AbstTimeBasedFactory {
 
 	public TimeOrderedFactory() {
-		this(null);
+		this(builder());
 	}
 
 	private TimeOrderedFactory(Builder builder) {
-		super(UuidVersion.VERSION_TIME_ORDERED, EPOCH_GREG, builder);
+		super(UuidVersion.VERSION_TIME_ORDERED, builder);
 	}
 
 	public static Builder builder() {

@@ -32,6 +32,12 @@ public class UuidUtilTest {
 	}
 
 	@Test
+	public void testIsMax() {
+		UUID uuid = new UUID(-1L, -1L);
+		assertTrue(isMax(uuid));
+	}
+
+	@Test
 	public void testIsNameBasedMd5() {
 		UUID uuid = UUID.nameUUIDFromBytes("test".getBytes());
 		assertTrue(isNameBasedMd5(uuid));

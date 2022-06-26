@@ -35,7 +35,9 @@ public enum UuidVersion {
 	VERSION_NAME_BASED_MD5(3), //
 	VERSION_RANDOM_BASED(4), //
 	VERSION_NAME_BASED_SHA1(5), //
-	VERSION_TIME_ORDERED(6); // proposal
+	VERSION_TIME_ORDERED(6), //
+	VERSION_TIME_ORDERED_EPOCH(7), //
+	VERSION_CUSTOM(8); //
 
 	private final int value;
 

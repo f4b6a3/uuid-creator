@@ -29,9 +29,8 @@ import java.util.Random;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
-import com.github.f4b6a3.uuid.factory.AbstRandomBasedFactory;
+import com.github.f4b6a3.uuid.factory.AbstCombFactory;
 import com.github.f4b6a3.uuid.factory.function.RandomFunction;
-import com.github.f4b6a3.uuid.factory.function.impl.DefaultRandomFunction;
 import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
@@ -45,33 +44,61 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  * http://www.informit.com/articles/article.aspx?p=25862
  * 
  */
-public final class SuffixCombFactory extends AbstRandomBasedFactory {
-
-	private final Clock clock;
+public final class SuffixCombFactory extends AbstCombFactory {
 
 	public SuffixCombFactory() {
-		this(new DefaultRandomFunction());
+		this(builder());
 	}
 
 	public SuffixCombFactory(Clock clock) {
-		this(new DefaultRandomFunction(), clock);
+		this(builder().withClock(clock));
 	}
 
 	public SuffixCombFactory(Random random) {
-		this(getRandomFunction(random));
+		this(builder().withRandom(random));
 	}
 
 	public SuffixCombFactory(Random random, Clock clock) {
-		this(getRandomFunction(random), clock);
+		this(builder().withRandom(random).withClock(clock));
 	}
 
 	public SuffixCombFactory(RandomFunction randomFunction) {
-		this(randomFunction, Clock.systemUTC());
+		this(builder().withRandomFunction(randomFunction));
 	}
 
 	public SuffixCombFactory(RandomFunction randomFunction, Clock clock) {
-		super(UuidVersion.VERSION_RANDOM_BASED, randomFunction);
-		this.clock = clock;
+		this(builder().withRandomFunction(randomFunction).withClock(clock));
+	}
+
+	private SuffixCombFactory(Builder builder) {
+		super(UuidVersion.VERSION_RANDOM_BASED, builder);
+	}
+
+	public static class Builder extends AbstCombFactory.Builder<SuffixCombFactory> {
+
+		@Override
+		public Builder withClock(Clock clock) {
+			return (Builder) super.withClock(clock);
+		}
+
+		@Override
+		public Builder withRandom(Random random) {
+			return (Builder) super.withRandom(random);
+		}
+
+		@Override
+		public Builder withRandomFunction(RandomFunction randomFunction) {
+			return (Builder) super.withRandomFunction(randomFunction);
+		}
+
+		@Override
+		public SuffixCombFactory build() {
+			return new SuffixCombFactory(this);
+		}
+	}
+
+	public static Builder builder() {
+		return new Builder();
 	}
 
 	/**

@@ -35,11 +35,11 @@ import com.github.f4b6a3.uuid.factory.AbstTimeBasedFactory;
 public final class TimeBasedFactory extends AbstTimeBasedFactory {
 
 	public TimeBasedFactory() {
-		this(null);
+		this(builder());
 	}
 
 	private TimeBasedFactory(Builder builder) {
-		super(UuidVersion.VERSION_TIME_BASED, EPOCH_GREG, builder);
+		super(UuidVersion.VERSION_TIME_BASED, builder);
 	}
 
 	public static Builder builder() {

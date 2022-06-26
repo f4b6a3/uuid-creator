@@ -230,8 +230,11 @@ public final class NetworkUtil {
 	 */
 	private static synchronized boolean acceptable(NetworkInterface ni) {
 		try {
-			if (ni != null && ni.isUp() && !ni.isLoopback() && !ni.isVirtual() && ni.getHardwareAddress() != null) {
-				return true;
+			if (ni != null && ni.isUp() && !ni.isLoopback() && !ni.isVirtual()) {
+				byte[] mac = ni.getHardwareAddress();
+				if (mac != null && mac.length == 6) {
+					return true;
+				}
 			}
 		} catch (SocketException | NullPointerException e) {
 			// do nothing

@@ -24,7 +24,6 @@
 
 package com.github.f4b6a3.uuid.factory.rfc4122;
 
-import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -66,11 +65,11 @@ public final class DceSecurityFactory extends AbstTimeBasedFactory {
 	private final byte localDomain;
 
 	public DceSecurityFactory() {
-		this(null);
+		this(builder());
 	}
 
 	private DceSecurityFactory(Builder builder) {
-		super(UuidVersion.VERSION_DCE_SECURITY, EPOCH_GREG, builder);
+		super(UuidVersion.VERSION_DCE_SECURITY, builder);
 		this.localDomain = builder != null ? builder.localDomain : 0;
 		this.counter = new AtomicInteger();
 	}
@@ -225,19 +224,6 @@ public final class DceSecurityFactory extends AbstTimeBasedFactory {
 	 */
 	@Override
 	public synchronized UUID create() {
-		throw new UnsupportedOperationException("Unsuported operation for DCE Security UUID factory");
-	}
-
-	/**
-	 * Throws an exception.
-	 * 
-	 * Overrides the create(Instant, Long, Integer) method from
-	 * {@link AbstTimeBasedFactory}.
-	 * 
-	 * @throws UnsupportedOperationException always
-	 */
-	@Override
-	public synchronized UUID create(final Instant instant, final Integer clockseq, final Long nodeid) {
 		throw new UnsupportedOperationException("Unsuported operation for DCE Security UUID factory");
 	}
 

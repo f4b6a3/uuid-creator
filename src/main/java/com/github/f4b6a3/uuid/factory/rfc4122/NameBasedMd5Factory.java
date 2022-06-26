@@ -26,8 +26,6 @@ package com.github.f4b6a3.uuid.factory.rfc4122;
 
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.codec.BinaryCodec;
-import com.github.f4b6a3.uuid.codec.StringCodec;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstNameBasedFactory;
@@ -44,15 +42,15 @@ public final class NameBasedMd5Factory extends AbstNameBasedFactory {
 	}
 
 	public NameBasedMd5Factory(UUID namespace) {
-		this(BinaryCodec.INSTANCE.encode(namespace));
+		this(bytes(namespace));
 	}
 
 	public NameBasedMd5Factory(String namespace) {
-		this(BinaryCodec.INSTANCE.encode(StringCodec.INSTANCE.decode(namespace)));
+		this(bytes(namespace));
 	}
 
 	public NameBasedMd5Factory(UuidNamespace namespace) {
-		this(BinaryCodec.INSTANCE.encode(namespace.getValue()));
+		this(bytes(namespace));
 	}
 
 	private NameBasedMd5Factory(byte[] namespace) {

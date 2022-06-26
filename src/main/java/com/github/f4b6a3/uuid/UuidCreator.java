@@ -32,6 +32,7 @@ import com.github.f4b6a3.uuid.codec.StringCodec;
 import com.github.f4b6a3.uuid.enums.UuidLocalDomain;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
+import com.github.f4b6a3.uuid.factory.AbstTimeBasedFactory;
 import com.github.f4b6a3.uuid.factory.nonstandard.PrefixCombFactory;
 import com.github.f4b6a3.uuid.factory.nonstandard.ShortPrefixCombFactory;
 import com.github.f4b6a3.uuid.factory.nonstandard.ShortSuffixCombFactory;
@@ -42,6 +43,7 @@ import com.github.f4b6a3.uuid.factory.rfc4122.NameBasedSha1Factory;
 import com.github.f4b6a3.uuid.factory.rfc4122.RandomBasedFactory;
 import com.github.f4b6a3.uuid.factory.rfc4122.TimeBasedFactory;
 import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedFactory;
+import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedEpochFactory;
 
 /**
  * Facade to all the UUID generators.
@@ -50,14 +52,15 @@ public final class UuidCreator {
 
 	public static final UuidNamespace NAMESPACE_DNS = UuidNamespace.NAMESPACE_DNS;
 	public static final UuidNamespace NAMESPACE_URL = UuidNamespace.NAMESPACE_URL;
-	public static final UuidNamespace NAMESPACE_ISO_OID = UuidNamespace.NAMESPACE_ISO_OID;
-	public static final UuidNamespace NAMESPACE_X500_DN = UuidNamespace.NAMESPACE_X500_DN;
+	public static final UuidNamespace NAMESPACE_OID = UuidNamespace.NAMESPACE_OID;
+	public static final UuidNamespace NAMESPACE_X500 = UuidNamespace.NAMESPACE_X500;
 
 	public static final UuidLocalDomain LOCAL_DOMAIN_PERSON = UuidLocalDomain.LOCAL_DOMAIN_PERSON;
 	public static final UuidLocalDomain LOCAL_DOMAIN_GROUP = UuidLocalDomain.LOCAL_DOMAIN_GROUP;
 	public static final UuidLocalDomain LOCAL_DOMAIN_ORG = UuidLocalDomain.LOCAL_DOMAIN_ORG;
 
-	private static final UUID UUID_NIL = new UUID(0L, 0L);
+	private static final UUID UUID_NIL = new UUID(0x0000000000000000L, 0x0000000000000000L);
+	private static final UUID UUID_MAX = new UUID(0x1111111111111111L, 0x1111111111111111L);
 
 	private UuidCreator() {
 	}
@@ -67,6 +70,7 @@ public final class UuidCreator {
 	 * 
 	 * @param uuid a UUID
 	 * @return an array of bytes
+	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	public static byte[] toBytes(final UUID uuid) {
 		return BinaryCodec.INSTANCE.encode(uuid);
@@ -79,7 +83,7 @@ public final class UuidCreator {
 	 * 
 	 * @param uuid a byte array
 	 * @return a UUID
-	 * @throws InvalidUuidException if invalid
+	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	public static UUID fromBytes(byte[] uuid) {
 		return BinaryCodec.INSTANCE.decode(uuid);
@@ -94,6 +98,7 @@ public final class UuidCreator {
 	 * 
 	 * @param uuid a UUID
 	 * @return a UUID string
+	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	public static String toString(UUID uuid) {
 		return StringCodec.INSTANCE.encode(uuid);
@@ -118,7 +123,7 @@ public final class UuidCreator {
 	 * 
 	 * @param uuid a UUID string
 	 * @return a UUID
-	 * @throws InvalidUuidException if invalid
+	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	public static UUID fromString(String uuid) {
 		return StringCodec.INSTANCE.decode(uuid);
@@ -127,12 +132,23 @@ public final class UuidCreator {
 	/**
 	 * Returns a Nil UUID.
 	 * 
-	 * The Nil UUID is special UUID that has all 128 bits set to zero.
+	 * The Nil UUID is a special UUID that has all 128 bits set to ZERO.
 	 * 
 	 * @return a Nil UUID
 	 */
 	public static UUID getNil() {
 		return UUID_NIL;
+	}
+
+	/**
+	 * Returns a Max UUID.
+	 * 
+	 * The Max UUID is a special UUID that has all 128 bits set to ONE.
+	 * 
+	 * @return a Max UUID
+	 */
+	public static UUID getMax() {
+		return UUID_MAX;
 	}
 
 	/**
@@ -223,64 +239,36 @@ public final class UuidCreator {
 	 * - Node identifier: random
 	 * </pre>
 	 * 
+	 * The {@link java.time.Instant} accuracy is be limited to 1 millisecond on
+	 * Linux with JDK 8. On Windows, its accuracy can be limited to 15 milliseconds.
+	 * 
+	 * The node identifier range is from 0 to 281474976710655 (2^48 - 1). If the
+	 * value passed by argument is out of range, the result of MOD 2^48 is used
+	 * instead.
+	 * 
+	 * The clock sequence range is from 0 to 16383 (2^14 - 1). If the value passed
+	 * by argument is out of range, the result of MOD 2^14 is used instead.
+	 * 
+	 * The null arguments are ignored. If all arguments are null, this method works
+	 * exactly as the method {@link AbstTimeBasedFactory#create()}.
+	 * 
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
-	 * @param nodeid   an alternate node (0 to 2^48-1)
+	 * @param nodeid   an alternate node identifier (0 to 2^48-1)
 	 * @return a version 1 UUID
 	 */
 	public static UUID getTimeBased(Instant instant, Integer clockseq, Long nodeid) {
-		return TimeBasedHolder.INSTANCE.create(instant, clockseq, nodeid);
-	}
-
-	/**
-	 * Returns a time-based UUID with hardware address as node identifier.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 1
-	 * - Node identifier: MAC
-	 * </pre>
-	 * 
-	 * @param instant  an alternate instant
-	 * @param clockseq an alternate clock sequence (0 to 16,383)
-	 * @return a version 1 UUID
-	 */
-	public static UUID getTimeBasedWithMac(Instant instant, Integer clockseq) {
-		return TimeBasedWithMacHolder.INSTANCE.create(instant, clockseq, null);
-	}
-
-	/**
-	 * Returns a time-based UUID with system data hash as node identifier.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 1
-	 * - Node identifier: system data hash
-	 * </pre>
-	 * 
-	 * @param instant  an alternate instant
-	 * @param clockseq an alternate clock sequence (0 to 16,383)
-	 * @return a version 1 UUID
-	 */
-	public static UUID getTimeBasedWithHash(Instant instant, Integer clockseq) {
-		return TimeBasedWithHashHolder.INSTANCE.create(instant, clockseq, null);
-	}
-
-	/**
-	 * Returns a time-based UUID with random node identifier.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 1
-	 * - Node identifier: random (always changing)
-	 * </pre>
-	 * 
-	 * @param instant  an alternate instant
-	 * @param clockseq an alternate clock sequence (0 to 16,383)
-	 * @return a version 1 UUID
-	 */
-	public static UUID getTimeBasedWithRandom(Instant instant, Integer clockseq) {
-		return TimeBasedWithRandomHolder.INSTANCE.create(instant, clockseq, null);
+		TimeBasedFactory.Builder builder = TimeBasedFactory.builder();
+		if (instant != null) {
+			builder.withInstant(instant);
+		}
+		if (clockseq != null) {
+			builder.withClockSeq(clockseq);
+		}
+		if (nodeid != null) {
+			builder.withNodeId(nodeid);
+		}
+		return builder.build().create();
 	}
 
 	/**
@@ -355,64 +343,36 @@ public final class UuidCreator {
 	 * - Node identifier: random
 	 * </pre>
 	 * 
+	 * The {@link java.time.Instant} accuracy is be limited to 1 millisecond on
+	 * Linux with JDK 8. On Windows, its accuracy can be limited to 15 milliseconds.
+	 * 
+	 * The node identifier range is from 0 to 281474976710655 (2^48 - 1). If the
+	 * value passed by argument is out of range, the result of MOD 2^48 is used
+	 * instead.
+	 * 
+	 * The clock sequence range is from 0 to 16383 (2^14 - 1). If the value passed
+	 * by argument is out of range, the result of MOD 2^14 is used instead.
+	 * 
+	 * The null arguments are ignored. If all arguments are null, this method works
+	 * exactly as the method {@link AbstTimeBasedFactory#create()}.
+	 * 
 	 * @param instant  an alternate instant
 	 * @param clockseq an alternate clock sequence (0 to 16,383)
-	 * @param nodeid   an alternate node (0 to 2^48-1)
+	 * @param nodeid   an alternate node identifier (0 to 2^48-1)
 	 * @return a version 6 UUID
 	 */
 	public static UUID getTimeOrdered(Instant instant, Integer clockseq, Long nodeid) {
-		return TimeOrderedHolder.INSTANCE.create(instant, clockseq, nodeid);
-	}
-
-	/**
-	 * Returns a time-ordered UUID with hardware address as node identifier.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 6
-	 * - Node identifier: MAC
-	 * </pre>
-	 * 
-	 * @param instant  an alternate instant
-	 * @param clockseq an alternate clock sequence (0 to 16,383)
-	 * @return a version 6 UUID
-	 */
-	public static UUID getTimeOrderedWithMac(Instant instant, Integer clockseq) {
-		return TimeOrderedWithMacHolder.INSTANCE.create(instant, clockseq, null);
-	}
-
-	/**
-	 * Returns a time-ordered UUID with system data hash as node identifier.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 6
-	 * - Node identifier: system data hash
-	 * </pre>
-	 * 
-	 * @param instant  an alternate instant
-	 * @param clockseq an alternate clock sequence (0 to 16,383)
-	 * @return a version 6 UUID
-	 */
-	public static UUID getTimeOrderedWithHash(Instant instant, Integer clockseq) {
-		return TimeOrderedWithHashHolder.INSTANCE.create(instant, clockseq, null);
-	}
-
-	/**
-	 * Returns a time-ordered UUID with random node identifier.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 6
-	 * - Node identifier: random (always changing)
-	 * </pre>
-	 * 
-	 * @param instant  an alternate instant
-	 * @param clockseq an alternate clock sequence (0 to 16,383)
-	 * @return a version 6 UUID
-	 */
-	public static UUID getTimeOrderedWithRandom(Instant instant, Integer clockseq) {
-		return TimeOrderedWithRandomHolder.INSTANCE.create(instant, clockseq, null);
+		TimeOrderedFactory.Builder builder = TimeOrderedFactory.builder();
+		if (instant != null) {
+			builder.withInstant(instant);
+		}
+		if (clockseq != null) {
+			builder.withClockSeq(clockseq);
+		}
+		if (nodeid != null) {
+			builder.withNodeId(nodeid);
+		}
+		return builder.build().create();
 	}
 
 	/**
@@ -1198,6 +1158,51 @@ public final class UuidCreator {
 		return ShortSuffixCombHolder.INSTANCE.create();
 	}
 
+	/**
+	 * Returns a Unix Epoch time-based UUID.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 7
+	 * - Random part: always randomized
+	 * </pre>
+	 * 
+	 * @return a version 7 UUID
+	 */
+	public static UUID getTimeOrderedEpoch() {
+		return TimeOrderedEpochHolder.INSTANCE.create();
+	}
+
+	/**
+	 * Returns a Unix Epoch time-based UUID in increments of 1.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 7
+	 * - Random part: incremented by 1
+	 * </pre>
+	 * 
+	 * @return a version 7 UUID
+	 */
+	public static UUID getTimeOrderedEpochPlus1() {
+		return TimeOrderedEpochPlus1Holder.INSTANCE.create();
+	}
+
+	/**
+	 * Returns a Unix Epoch time-based UUID in increments of N.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 7
+	 * - Random part: incremented by N, where 1 <= N <= 2^48
+	 * </pre>
+	 * 
+	 * @return a version 7 UUID
+	 */
+	public static UUID getTimeOrderedEpochPlusN() {
+		return TimeOrderedEpochPlusNHolder.INSTANCE.create();
+	}
+
 	/*
 	 * Private classes for lazy holders
 	 */
@@ -1276,5 +1281,17 @@ public final class UuidCreator {
 
 	private static class ShortSuffixCombHolder {
 		static final ShortSuffixCombFactory INSTANCE = new ShortSuffixCombFactory();
+	}
+
+	private static class TimeOrderedEpochHolder {
+		static final TimeOrderedEpochFactory INSTANCE = new TimeOrderedEpochFactory();
+	}
+
+	private static class TimeOrderedEpochPlus1Holder {
+		static final TimeOrderedEpochFactory INSTANCE = TimeOrderedEpochFactory.builder().withIncrementPlus1().build();
+	}
+
+	private static class TimeOrderedEpochPlusNHolder {
+		static final TimeOrderedEpochFactory INSTANCE = TimeOrderedEpochFactory.builder().withIncrementPlusN().build();
 	}
 }

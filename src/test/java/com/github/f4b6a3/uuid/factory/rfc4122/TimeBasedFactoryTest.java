@@ -156,32 +156,6 @@ public class TimeBasedFactoryTest extends UuidFactoryTest {
 			assertEquals("The timestamp is incorrect.", instant, UuidUtil.getInstant(uuid));
 			assertEquals("The node identifier is incorrect", nodeid, UuidUtil.getNodeIdentifier(uuid));
 			assertEquals("The clock sequence is incorrect", clockseq, UuidUtil.getClockSequence(uuid));
-
-			// Repeat the same tests to time-based UUIDs with hardware address, ignoring the
-			// node identifier
-
-			// Create a time-based UUID with those random values
-			uuid = UuidCreator.getTimeBasedWithMac(instant, clockseq);
-
-			// Check if it is valid
-			assertTrue(UuidUtil.isRfc4122(uuid));
-
-			// Check if the embedded values are correct.
-			assertEquals("The timestamp is incorrect.", instant, UuidUtil.getInstant(uuid));
-			assertEquals("The clock sequence is incorrect", clockseq, UuidUtil.getClockSequence(uuid));
-
-			// Repeat the same tests to time-based UUIDs with system data hash, ignoring the
-			// node identifier
-
-			// Create a time-based UUID with those random values
-			uuid = UuidCreator.getTimeBasedWithHash(instant, clockseq);
-
-			// Check if it is valid
-			assertTrue(UuidUtil.isRfc4122(uuid));
-
-			// Check if the embedded values are correct.
-			assertEquals("The timestamp is incorrect.", instant, UuidUtil.getInstant(uuid));
-			assertEquals("The clock sequence is incorrect", clockseq, UuidUtil.getClockSequence(uuid));
 		}
 	}
 }

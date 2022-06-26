@@ -10,8 +10,6 @@ import com.github.f4b6a3.uuid.factory.nonstandard.ShortPrefixCombFactory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.security.SecureRandom;
-import java.time.Clock;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
@@ -63,10 +61,8 @@ public class ShortPrefixCombFactoryTest extends UuidFactoryTest {
 	@Test
 	public void testGetShortPrefixCombCheckTimeWithDifferentInterval() {
 
-		Random random = new SecureRandom();
-		Clock clock = Clock.systemUTC();
 		int interval = 1000; // increment the prefix every 1 second interval
-		ShortPrefixCombFactory factory = new ShortPrefixCombFactory(random, clock, interval);
+		ShortPrefixCombFactory factory = ShortPrefixCombFactory.builder().withInterval(interval).build();
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
 		long startTime = (System.currentTimeMillis() / interval) & 0x000000000000ffffL;

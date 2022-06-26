@@ -28,6 +28,7 @@ import com.github.f4b6a3.uuid.factory.rfc4122.NameBasedMd5FactoryTest;
 import com.github.f4b6a3.uuid.factory.rfc4122.NameBasedSha1FactoryTest;
 import com.github.f4b6a3.uuid.factory.rfc4122.RandomBasedFactoryTest;
 import com.github.f4b6a3.uuid.factory.rfc4122.TimeBasedFactoryTest;
+import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedEpochFactoryTest;
 import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedFactoryTest;
 import com.github.f4b6a3.uuid.codec.BinaryCodecTest;
 import com.github.f4b6a3.uuid.codec.StringCodecTest;
@@ -71,6 +72,7 @@ import com.github.f4b6a3.uuid.util.UuidValidatorTest;
 	SuffixCombFactoryTest.class,
 	TimeBasedFactoryTest.class,
 	TimeOrderedCodecTest.class,
+	TimeOrderedEpochFactoryTest.class,
 	TimeOrderedFactoryTest.class,
 	UriCodecTest.class,
 	UuidComparatorTest.class,

@@ -25,11 +25,11 @@
 package com.github.f4b6a3.uuid.util;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.enums.UuidVariant;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
-import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
 /**
  * Utility that provides methods for checking UUID version, for extracting
@@ -38,6 +38,7 @@ import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 public final class UuidUtil {
 
 	private static final String MESSAGE_NOT_A_TIME_BASED_UUID = "Not a time-based, time-ordered or DCE Security UUID: %s.";
+	private static final String MESSAGE_NOT_A_TIME_ORDERED_EPOCH_UUID = "Not a Unix Epoch time-ordered UUID: %s.";
 	private static final String MESSAGE_NOT_A_DCE_SECURITY_UUID = "Not a DCE Security UUID: %s.";
 
 	private UuidUtil() {
@@ -85,16 +86,29 @@ public final class UuidUtil {
 	/**
 	 * Checks whether the UUID is equal to the Nil UUID.
 	 * 
-	 * The nil UUID is special UUID that has all 128 bits set to zero.
+	 * The Nil UUID is special UUID that has all 128 bits set to zero.
 	 * 
 	 * @param uuid a UUID
 	 * @return boolean true if it is an RFC4122 variant
+	 * @exception NullPointerException if null
 	 */
 	public static boolean isNil(UUID uuid) {
-		if (uuid == null) {
-			throw new InvalidUuidException("Null UUID is not comparable to Nil UUID");
-		}
+		Objects.requireNonNull(uuid, "Null UUID is not equal to Nil UUID");
 		return uuid.getMostSignificantBits() == 0L && uuid.getLeastSignificantBits() == 0L;
+	}
+
+	/**
+	 * Checks whether the UUID is equal to the Max UUID.
+	 * 
+	 * The Max UUID is special UUID that has all 128 bits set to one.
+	 * 
+	 * @param uuid a UUID
+	 * @return boolean true if it is an RFC4122 variant
+	 * @exception NullPointerException if null
+	 */
+	public static boolean isMax(UUID uuid) {
+		Objects.requireNonNull(uuid, "Null UUID is not equal to Max UUID");
+		return uuid.getMostSignificantBits() == -1L && uuid.getLeastSignificantBits() == -1L;
 	}
 
 	/**
@@ -188,6 +202,16 @@ public final class UuidUtil {
 	}
 
 	/**
+	 * Checks whether the UUID version 7.
+	 * 
+	 * @param uuid a UUID
+	 * @return boolean true if it is a time-ordered with Unix Epoch UUID
+	 */
+	public static boolean isTimeOrderedEpoch(UUID uuid) {
+		return isVersion(uuid, UuidVersion.VERSION_TIME_ORDERED_EPOCH);
+	}
+
+	/**
 	 * Checks whether the UUID version 2.
 	 * 
 	 * @param uuid a UUID
@@ -195,6 +219,16 @@ public final class UuidUtil {
 	 */
 	public static boolean isDceSecurity(UUID uuid) {
 		return isVersion(uuid, UuidVersion.VERSION_DCE_SECURITY);
+	}
+
+	/**
+	 * Checks whether the UUID version 8.
+	 * 
+	 * @param uuid a UUID
+	 * @return boolean true if it is a custom UUID
+	 */
+	public static boolean isCustom(UUID uuid) {
+		return isVersion(uuid, UuidVersion.VERSION_CUSTOM);
 	}
 
 	/**
@@ -206,8 +240,13 @@ public final class UuidUtil {
 	 *                                  time-ordered or DCE Security UUID.
 	 */
 	public static Instant getInstant(UUID uuid) {
-		final long gregTimestamp = getTimestamp(uuid);
-		return UuidTime.fromGregTimestamp(gregTimestamp);
+		if (isTimeOrderedEpoch(uuid)) {
+			final long unixTimestamp = getUnixTimestamp(uuid);
+			return UuidTime.fromUnixTimestamp(unixTimestamp);
+		} else {
+			final long gregTimestamp = getGregTimestamp(uuid);
+			return UuidTime.fromGregTimestamp(gregTimestamp);
+		}
 	}
 
 	/**
@@ -222,6 +261,22 @@ public final class UuidUtil {
 	 *                                  time-ordered or DCE Security UUID.
 	 */
 	public static long getTimestamp(UUID uuid) {
+		if (isTimeOrderedEpoch(uuid)) {
+			return UuidTime.toGregTimestamp(getUnixTimestamp(uuid));
+		} else {
+			return getGregTimestamp(uuid);
+		}
+	}
+
+	private static long getUnixTimestamp(UUID uuid) {
+		if (UuidUtil.isTimeOrderedEpoch(uuid)) {
+			return getTimeOrderedEpochTimestamp(uuid.getMostSignificantBits());
+		} else {
+			throw new IllegalArgumentException(String.format(MESSAGE_NOT_A_TIME_ORDERED_EPOCH_UUID, uuid.toString()));
+		}
+	}
+
+	private static long getGregTimestamp(UUID uuid) {
 		if (UuidUtil.isTimeBased(uuid)) {
 			return getTimeBasedTimestamp(uuid.getMostSignificantBits());
 		} else if (UuidUtil.isTimeOrdered(uuid)) {
@@ -303,17 +358,29 @@ public final class UuidUtil {
 		return (int) (uuid.getMostSignificantBits() >>> 32);
 	}
 
+	/**
+	 * Check the UUID variant.
+	 * 
+	 * @param uuid    a UUID
+	 * @param variant a variant
+	 * @return true if the the the variant is correct
+	 * @exception NullPointerException if null
+	 */
 	private static boolean isVariant(UUID uuid, UuidVariant variant) {
-		if (uuid == null) {
-			throw new InvalidUuidException("Null UUID has no variant");
-		}
+		Objects.requireNonNull(uuid, "Null UUID");
 		return (uuid.variant() == variant.getValue());
 	}
 
+	/**
+	 * Check the UUID version.
+	 * 
+	 * @param uuid    a UUID
+	 * @param variant a version
+	 * @return true if the the the version is correct
+	 * @exception NullPointerException if null
+	 */
 	private static boolean isVersion(UUID uuid, UuidVersion version) {
-		if (uuid == null) {
-			throw new InvalidUuidException("Null UUID has no version");
-		}
+		Objects.requireNonNull(uuid, "Null UUID");
 		return isRfc4122(uuid) && (uuid.version() == version.getValue());
 	}
 
@@ -332,5 +399,11 @@ public final class UuidUtil {
 		long low = (msb & 0x0000000000000fffL);
 
 		return (himid | low);
+	}
+
+	private static long getTimeOrderedEpochTimestamp(long msb) {
+		// 100ns ticks since 1970
+		final long ticksPerMilli = 10_000; // 1ms = 10,000 ticks
+		return ((msb & 0xffffffffffff0000L) >>> 16) * ticksPerMilli;
 	}
 }

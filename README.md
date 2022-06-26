@@ -11,7 +11,8 @@ RFC-4122 UUIDs:
 *   __Version 3__: Name-based with MD5;
 *   __Version 4__: Random-based;
 *   __Version 5__: Name-based with SHA1;
-*   __Version 6__: Time-ordered ([IETF draft](https://github.com/uuid6/uuid6-ietf-draft)).
+*   __Version 6__: Time-ordered ([IETF draft](https://github.com/uuid6/uuid6-ietf-draft));
+*   __Version 7__: Time-ordered with Unix Epoch ([IETF draft](https://github.com/uuid6/uuid6-ietf-draft)).
 
 Non-standard GUIDs:
 
@@ -34,7 +35,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>4.6.1</version>
+  <version>5.0.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -60,50 +61,24 @@ UUID uuid = UuidCreator.getRandomBased();
 Create a [Time-based](https://github.com/f4b6a3/uuid-creator/wiki/1.1.-Time-based) UUID:
 
 ```java
-// with a static random number as node identifier
 UUID uuid = UuidCreator.getTimeBased();
-```
-```java
-// with a MAC address as node identifier
-UUID uuid = UuidCreator.getTimeBasedWithMac();
-```
-```java
-// with a hash of HOSTNAME, MAC and IP as node identifier
-UUID uuid = UuidCreator.getTimeBasedWithHash();
-```
-```java
-// with a changing random number as node identifier
-UUID uuid = UuidCreator.getTimeBasedWithRandom();
 ```
 
 Create a [Time-ordered](https://github.com/f4b6a3/uuid-creator/wiki/1.6.-Time-ordered) UUID:
 
 ```java
-// with a static random number as node identifier
 UUID uuid = UuidCreator.getTimeOrdered();
 ```
+
+Create a [Time-ordered with Unix Epoch](https://github.com/f4b6a3/uuid-creator/wiki/1.7.-Time-ordered-with-Epoch) UUID:
+
 ```java
-// with a MAC address as node identifier
-UUID uuid = UuidCreator.getTimeOrderedWithMac();
-```
-```java
-// with a hash of HOSTNAME, MAC and IP as node identifier
-UUID uuid = UuidCreator.getTimeOrderedWithHash();
-```
-```java
-// with a changing random number as node identifier
-UUID uuid = UuidCreator.getTimeOrderedWithRandom();
+UUID uuid = UuidCreator.getTimeOrderedEpoch();
 ```
 
 Create a [Name-based with MD5](https://github.com/f4b6a3/uuid-creator/wiki/1.3.-Name-based-with-MD5) UUID:
 
 ```java
-// without namespace
-String name = "https://github.com/";
-UUID uuid = UuidCreator.getNameBasedMd5(name);
-```
-```java
-// with namespace
 String name = "https://github.com/";
 UUID uuid = UuidCreator.getNameBasedMd5(UuidNamespace.NAMESPACE_URL, name);
 ```
@@ -111,12 +86,6 @@ UUID uuid = UuidCreator.getNameBasedMd5(UuidNamespace.NAMESPACE_URL, name);
 Create a [Name-based with SHA-1](https://github.com/f4b6a3/uuid-creator/wiki/1.5.-Name-based-with-SHA-1) UUID:
 
 ```java
-// without namespace
-String name = "https://github.com/";
-UUID uuid = UuidCreator.getNameBasedSha1(name);
-```
-```java
-// with namespace
 String name = "https://github.com/";
 UUID uuid = UuidCreator.getNameBasedSha1(UuidNamespace.NAMESPACE_URL, name);
 ```

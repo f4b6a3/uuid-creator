@@ -29,9 +29,8 @@ import java.util.Random;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
-import com.github.f4b6a3.uuid.factory.AbstRandomBasedFactory;
+import com.github.f4b6a3.uuid.factory.AbstCombFactory;
 import com.github.f4b6a3.uuid.factory.function.RandomFunction;
-import com.github.f4b6a3.uuid.factory.function.impl.DefaultRandomFunction;
 import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
@@ -47,42 +46,80 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  * https://www.2ndquadrant.com/en/blog/sequential-uuid-generators/
  * 
  */
-public final class ShortSuffixCombFactory extends AbstRandomBasedFactory {
+public final class ShortSuffixCombFactory extends AbstCombFactory {
 
-	private final Clock clock;
-	private final int interval;
-
-	// default interval length in milliseconds
-	private static final int DEFAULT_INTERVAL = 60_000;
+	// interval in milliseconds
+	protected final int interval;
+	protected static final int DEFAULT_INTERVAL = 60_000;
 
 	public ShortSuffixCombFactory() {
-		this(new DefaultRandomFunction());
+		this(builder());
+	}
+
+	public ShortSuffixCombFactory(Clock clock) {
+		this(builder().withClock(clock));
 	}
 
 	public ShortSuffixCombFactory(Random random) {
-		this(getRandomFunction(random));
+		this(builder().withRandom(random));
 	}
 
 	public ShortSuffixCombFactory(Random random, Clock clock) {
-		this(getRandomFunction(random), clock);
-	}
-
-	public ShortSuffixCombFactory(Random random, Clock clock, int interval) {
-		this(getRandomFunction(random), clock, interval);
+		this(builder().withRandom(random).withClock(clock));
 	}
 
 	public ShortSuffixCombFactory(RandomFunction randomFunction) {
-		this(randomFunction, Clock.systemUTC(), DEFAULT_INTERVAL);
+		this(builder().withRandomFunction(randomFunction));
 	}
 
 	public ShortSuffixCombFactory(RandomFunction randomFunction, Clock clock) {
-		this(randomFunction, clock, DEFAULT_INTERVAL);
+		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
 
-	public ShortSuffixCombFactory(RandomFunction randomFunction, Clock clock, int interval) {
-		super(UuidVersion.VERSION_RANDOM_BASED, randomFunction);
-		this.clock = clock != null ? clock : Clock.systemUTC();
-		this.interval = interval;
+	private ShortSuffixCombFactory(Builder builder) {
+		super(UuidVersion.VERSION_RANDOM_BASED, builder);
+		this.interval = builder.getInterval();
+	}
+
+	public static class Builder extends AbstCombFactory.Builder<ShortSuffixCombFactory> {
+
+		private Integer interval;
+
+		protected int getInterval() {
+			if (this.interval == null) {
+				this.interval = DEFAULT_INTERVAL;
+			}
+			return this.interval;
+		}
+
+		@Override
+		public Builder withClock(Clock clock) {
+			return (Builder) super.withClock(clock);
+		}
+
+		@Override
+		public Builder withRandom(Random random) {
+			return (Builder) super.withRandom(random);
+		}
+
+		@Override
+		public Builder withRandomFunction(RandomFunction randomFunction) {
+			return (Builder) super.withRandomFunction(randomFunction);
+		}
+
+		public Builder withInterval(int interval) {
+			this.interval = interval;
+			return this;
+		}
+
+		@Override
+		public ShortSuffixCombFactory build() {
+			return new ShortSuffixCombFactory(this);
+		}
+	}
+
+	public static Builder builder() {
+		return new Builder();
 	}
 
 	/**

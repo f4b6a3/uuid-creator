@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [5.0.0] - 2022-??-??
+
+To be done.
+
 ## [4.6.1] - 2022-03-19
 
 Added time interval parameter for `ShortPrefixCombFactory` and `ShortSuffixCombFactory` constructors. #64
@@ -322,7 +326,8 @@ Remove `Fingerprint` // too complex
 -   Removed UuidSettings.getNodeIdentifierDeprecated // remove deprecated
 -   Renamed UuidSettings to UuidCreatorSettings
 
-[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.6.1...HEAD
+[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.0.0...HEAD
+[5.0.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.6.1...uuid-creator-5.0.0
 [4.6.1]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.6.0...uuid-creator-4.6.1
 [4.6.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.5.0...uuid-creator-4.6.0
 [4.5.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.4.1...uuid-creator-4.5.0

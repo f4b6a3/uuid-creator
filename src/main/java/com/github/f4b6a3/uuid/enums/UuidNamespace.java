@@ -47,8 +47,8 @@ public enum UuidNamespace {
 
 	NAMESPACE_DNS(new UUID(0x6ba7b8109dad11d1L, 0x80b400c04fd430c8L)), // Domain Name System
 	NAMESPACE_URL(new UUID(0x6ba7b8119dad11d1L, 0x80b400c04fd430c8L)), // Uniform Resource Locator
-	NAMESPACE_ISO_OID(new UUID(0x6ba7b8129dad11d1L, 0x80b400c04fd430c8L)), // ISO Object ID
-	NAMESPACE_X500_DN(new UUID(0x6ba7b8149dad11d1L, 0x80b400c04fd430c8L)); // X.500 Distinguished Name
+	NAMESPACE_OID(new UUID(0x6ba7b8129dad11d1L, 0x80b400c04fd430c8L)), // ISO Object ID
+	NAMESPACE_X500(new UUID(0x6ba7b8149dad11d1L, 0x80b400c04fd430c8L)); // X.500 Distinguished Name
 
 	private final UUID value;
 

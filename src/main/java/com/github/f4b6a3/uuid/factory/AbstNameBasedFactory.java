@@ -35,6 +35,9 @@ import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
+import static com.github.f4b6a3.uuid.enums.UuidVersion.VERSION_NAME_BASED_MD5;
+import static com.github.f4b6a3.uuid.enums.UuidVersion.VERSION_NAME_BASED_SHA1;
+
 /**
  * Factory that creates name-based UUIDs.
  * 
@@ -66,18 +69,34 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	/**
 	 * This constructor receives the name of a message digest.
 	 * 
-	 * @param version   the version number
-	 * @param algorithm a message digest algorithm
+	 * @param version   the version number (3 or 5)
+	 * @param algorithm a message digest algorithm (MD5 or SHA-1)
+	 * @param namespace a namespace byte array (null or 16 bytes)
 	 */
 	public AbstNameBasedFactory(UuidVersion version, String algorithm, byte[] namespace) {
 		super(version);
 
-		if (namespace != null && namespace.length != 16) {
-			throw new InvalidUuidException("Invalid namespace length");
+		if (!VERSION_NAME_BASED_MD5.equals(version) && !VERSION_NAME_BASED_SHA1.equals(version)) {
+			throw new IllegalArgumentException("Invalid UUID version");
 		}
 
-		this.algorithm = algorithm;
-		this.namespace = namespace;
+		if (ALGORITHM_MD5.equals(algorithm) || ALGORITHM_SHA1.equals(algorithm)) {
+			this.algorithm = algorithm;
+		} else {
+			throw new IllegalArgumentException("Invalid message digest algorithm");
+		}
+
+		if (namespace == null) {
+			// null is accepted
+			this.namespace = null;
+		} else {
+			if (namespace.length == 16) {
+				// must be 16 bytes length
+				this.namespace = namespace;
+			} else {
+				throw new IllegalArgumentException("Invalid namespace length");
+			}
+		}
 	}
 
 	/**
@@ -115,7 +134,7 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	 * @return a name-based UUID
 	 */
 	public UUID create(final UUID name) {
-		return create(this.namespace, BinaryCodec.INSTANCE.encode(name));
+		return create(this.namespace, bytes(name));
 	}
 
 	/**
@@ -165,7 +184,7 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	 * @return a name-based UUID
 	 */
 	public UUID create(final UUID namespace, final byte[] name) {
-		final byte[] ns = namespace == null ? null : BinaryCodec.INSTANCE.encode(namespace);
+		final byte[] ns = namespace == null ? null : bytes(namespace);
 		return create(ns, name);
 	}
 
@@ -184,7 +203,7 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	 * @return a name-based UUID
 	 */
 	public UUID create(final UUID namespace, final String name) {
-		final byte[] ns = namespace == null ? null : BinaryCodec.INSTANCE.encode(namespace);
+		final byte[] ns = namespace == null ? null : bytes(namespace);
 		final byte[] n = name.getBytes(StandardCharsets.UTF_8);
 		return create(ns, n);
 	}
@@ -197,8 +216,8 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	 * @return a name-based UUID
 	 */
 	public UUID create(final UUID namespace, final UUID name) {
-		final byte[] ns = namespace == null ? null : BinaryCodec.INSTANCE.encode(namespace);
-		final byte[] n = BinaryCodec.INSTANCE.encode(name);
+		final byte[] ns = namespace == null ? null : bytes(namespace);
+		final byte[] n = bytes(name);
 		return create(ns, n);
 	}
 
@@ -211,8 +230,7 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	 * @throws InvalidUuidException if the namespace is invalid
 	 */
 	public UUID create(final String namespace, final byte[] name) {
-		final byte[] ns = namespace == null ? null
-				: BinaryCodec.INSTANCE.encode(StringCodec.INSTANCE.decode(namespace));
+		final byte[] ns = namespace == null ? null : bytes(namespace);
 		return create(ns, name);
 	}
 
@@ -232,8 +250,7 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	 * @throws InvalidUuidException if the namespace is invalid
 	 */
 	public UUID create(final String namespace, final String name) {
-		final byte[] ns = namespace == null ? null
-				: BinaryCodec.INSTANCE.encode(StringCodec.INSTANCE.decode(namespace));
+		final byte[] ns = namespace == null ? null : bytes(namespace);
 		final byte[] n = name.getBytes(StandardCharsets.UTF_8);
 		return create(ns, n);
 	}
@@ -247,9 +264,8 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	 * @throws InvalidUuidException if the namespace is invalid
 	 */
 	public UUID create(final String namespace, final UUID name) {
-		final byte[] ns = namespace == null ? null
-				: BinaryCodec.INSTANCE.encode(StringCodec.INSTANCE.decode(namespace));
-		final byte[] n = BinaryCodec.INSTANCE.encode(name);
+		final byte[] ns = namespace == null ? null : bytes(namespace);
+		final byte[] n = bytes(name);
 		return create(ns, n);
 	}
 
@@ -261,7 +277,7 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	 * @return a name-based UUID
 	 */
 	public UUID create(final UuidNamespace namespace, final byte[] name) {
-		final byte[] ns = namespace == null ? null : BinaryCodec.INSTANCE.encode(namespace.getValue());
+		final byte[] ns = namespace == null ? null : bytes(namespace);
 		return create(ns, name);
 	}
 
@@ -280,7 +296,7 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	 * @return a name-based UUID
 	 */
 	public UUID create(final UuidNamespace namespace, final String name) {
-		final byte[] ns = namespace == null ? null : BinaryCodec.INSTANCE.encode(namespace.getValue());
+		final byte[] ns = namespace == null ? null : bytes(namespace);
 		final byte[] n = name.getBytes(StandardCharsets.UTF_8);
 		return create(ns, n);
 	}
@@ -293,9 +309,21 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	 * @return a name-based UUID
 	 */
 	public UUID create(final UuidNamespace namespace, final UUID name) {
-		final byte[] ns = namespace == null ? null : BinaryCodec.INSTANCE.encode(namespace.getValue());
-		final byte[] n = BinaryCodec.INSTANCE.encode(name);
+		final byte[] ns = namespace == null ? null : bytes(namespace);
+		final byte[] n = bytes(name);
 		return create(ns, n);
+	}
+
+	protected static byte[] bytes(UuidNamespace namespace) {
+		return bytes(namespace.getValue());
+	}
+
+	protected static byte[] bytes(UUID namespace) {
+		return BinaryCodec.INSTANCE.encode(namespace);
+	}
+
+	protected static byte[] bytes(String namespace) {
+		return BinaryCodec.INSTANCE.encode(StringCodec.INSTANCE.decode(namespace));
 	}
 
 	/**

@@ -24,42 +24,61 @@
 
 package com.github.f4b6a3.uuid.factory;
 
+import java.time.Clock;
 import java.util.Random;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.function.RandomFunction;
-import com.github.f4b6a3.uuid.factory.function.impl.DefaultRandomFunction;
 
 /**
- * Factory that creates random-based UUIDs.
+ * Abstract Factory for COMB UUIDs.
+ * 
+ * COMB UUIDs combine a creation time and random bytes.
  */
-public abstract class AbstRandomBasedFactory extends UuidFactory implements NoArgsFactory {
+public abstract class AbstCombFactory extends AbstRandomBasedFactory {
 
-	protected final RandomFunction randomFunction;
+	protected Clock clock;
+	protected static final Clock DEFAULT_CLOCK = Clock.systemUTC();
 
-	protected static final int UUID_BYTES = 16;
-
-	protected AbstRandomBasedFactory(UuidVersion version, RandomFunction randomFunction) {
-		super(version);
-		this.randomFunction = randomFunction != null ? randomFunction : newRandomFunction(null);
+	protected AbstCombFactory(UuidVersion version, Builder<?> builder) {
+		super(version, builder.getRandomFunction());
+		this.clock = builder.getClock();
 	}
 
-	/**
-	 * It instantiates a function that returns a byte array of a given length.
-	 * 
-	 * If the a null parameter is given, {@code DefaultRandomFunction} is implied.
-	 * 
-	 * @param random a {@link Random} generator
-	 * @return a random function that returns a byte array of a given length
-	 */
-	protected static RandomFunction newRandomFunction(Random random) {
-		if (random == null) {
-			return new DefaultRandomFunction();
+	public abstract static class Builder<T> {
+
+		protected Clock clock;
+		protected RandomFunction randomFunction;
+
+		protected Clock getClock() {
+			if (this.clock == null) {
+				this.clock = DEFAULT_CLOCK;
+			}
+			return this.clock;
 		}
-		return (final int length) -> {
-			final byte[] bytes = new byte[length];
-			random.nextBytes(bytes);
-			return bytes;
-		};
+
+		protected RandomFunction getRandomFunction() {
+			if (this.randomFunction == null) {
+				this.randomFunction = newRandomFunction(null);
+			}
+			return this.randomFunction;
+		}
+
+		public Builder<T> withClock(Clock clock) {
+			this.clock = clock;
+			return this;
+		}
+
+		public Builder<T> withRandom(Random random) {
+			this.randomFunction = newRandomFunction(random);
+			return this;
+		}
+
+		public Builder<T> withRandomFunction(RandomFunction randomFunction) {
+			this.randomFunction = randomFunction;
+			return this;
+		}
+
+		public abstract T build();
 	}
 }

@@ -31,8 +31,8 @@ import java.time.Instant;
  * 
  * The UUID timestamp is a 60-bit number.
  * 
- * The UUID timestamp resolution is 100-nanoseconds, i.e., the UUID clock
- * 'ticks' every 100-nanosecond interval.
+ * The UUID timestamp resolution is 100ns, i.e., the UUID clock 'ticks' every
+ * 100-nanosecond interval.
  * 
  * In JDK 8, {@link Instant#now()} has millisecond precision, in spite of
  * {@link Instant} has nanoseconds resolution. In JDK 9+,{@link Instant#now()}
@@ -48,9 +48,6 @@ public final class UuidTime {
 	public static final Instant EPOCH_UNIX = Instant.parse("1970-01-01T00:00:00.000Z"); // 0s
 	public static final Instant EPOCH_GREG = Instant.parse("1582-10-15T00:00:00.000Z"); // -12219292800s
 
-	public static final long EPOCH_UNIX_MILLIS = EPOCH_UNIX.toEpochMilli();
-	public static final long EPOCH_GREG_MILLIS = EPOCH_GREG.toEpochMilli();
-
 	public static final long EPOCH_UNIX_SECONDS = EPOCH_UNIX.getEpochSecond();
 	public static final long EPOCH_GREG_SECONDS = EPOCH_GREG.getEpochSecond();
 
@@ -62,35 +59,55 @@ public final class UuidTime {
 	}
 
 	/**
-	 * This method returns the number of 100-nanoseconds since 1970-01-01 (Unix
-	 * epoch).
+	 * This method returns the number of 100ns since 1970-01-01 (Unix epoch).
 	 * 
 	 * It uses {@code Instant.now()} to get the the current time.
 	 * 
-	 * @return a number of 100-nanoseconds since 1970-01-01 (Unix epoch).
+	 * @return a number of 100ns since 1970-01-01 (Unix epoch).
 	 */
 	public static long getUnixTimestamp() {
 		return toUnixTimestamp(Instant.now());
 	}
 
 	/**
-	 * This method returns the number of 100-nanoseconds since 1582-10-15 (Gregorian
-	 * epoch).
+	 * This method returns the number of 100ns since 1582-10-15 (Gregorian epoch).
 	 * 
 	 * It uses {@code Instant.now()} to get the the current time.
 	 * 
-	 * @return a number of 100-nanoseconds since 1582-10-15 (Gregorian epoch).
+	 * @return a number of 100ns since 1582-10-15 (Gregorian epoch).
 	 */
 	public static long getGregTimestamp() {
 		return toGregTimestamp(Instant.now());
 	}
 
 	/**
-	 * This method converts an {@code Instant} into a number of 100-nanoseconds
-	 * since 1970-01-01 (Unix epoch).
+	 * This method converts a number of 100ns since 1582-10-15 (Gregorian epoch)
+	 * into a number of 100ns since 1970-01-01 (Unix epoch).
+	 * 
+	 * @param gregTimestamp a number of 100ns since 1582-10-15 (Gregorian epoch)
+	 * @return a number of 100ns since 1970-01-01 (Unix epoch)
+	 */
+	public static long toUnixTimestamp(final long gregTimestamp) {
+		return gregTimestamp + (EPOCH_GREG_SECONDS * TICKS_PER_SECOND);
+	}
+
+	/**
+	 * This method converts a number of 100ns since 1970-01-01 (Unix epoch) into a
+	 * number of 100ns since 1582-10-15 (Gregorian epoch).
+	 * 
+	 * @param unixTimestamp a number of 100ns since 1970-01-01 (Unix epoch)
+	 * @return a number of 100ns since 1582-10-15 (Gregorian epoch).
+	 */
+	public static long toGregTimestamp(final long unixTimestamp) {
+		return unixTimestamp - (EPOCH_GREG_SECONDS * TICKS_PER_SECOND);
+	}
+
+	/**
+	 * This method converts an {@code Instant} into a number of 100ns since
+	 * 1970-01-01 (Unix epoch).
 	 * 
 	 * @param instant an instant
-	 * @return a number of 100-nanoseconds since 1970-01-01 (Unix epoch).
+	 * @return a number of 100ns since 1970-01-01 (Unix epoch).
 	 */
 	public static long toUnixTimestamp(final Instant instant) {
 		final long seconds = instant.getEpochSecond() * TICKS_PER_SECOND;
@@ -99,11 +116,11 @@ public final class UuidTime {
 	}
 
 	/**
-	 * This method converts an {@code Instant} into a number of 100-nanoseconds
-	 * since 1582-10-15 (Gregorian epoch).
+	 * This method converts an {@code Instant} into a number of 100ns since
+	 * 1582-10-15 (Gregorian epoch).
 	 * 
 	 * @param instant an instant
-	 * @return a number of 100-nanoseconds since 1582-10-15 (Gregorian epoch).
+	 * @return a number of 100ns since 1582-10-15 (Gregorian epoch).
 	 */
 	public static long toGregTimestamp(final Instant instant) {
 		final long seconds = (instant.getEpochSecond() - EPOCH_GREG_SECONDS) * TICKS_PER_SECOND;
@@ -112,11 +129,10 @@ public final class UuidTime {
 	}
 
 	/**
-	 * This method converts a number of 100-nanoseconds since 1970-01-01 (Unix
-	 * epoch) into an {@code Instant}.
+	 * This method converts a number of 100ns since 1970-01-01 (Unix epoch) into an
+	 * {@code Instant}.
 	 * 
-	 * @param unixTimestamp a number of 100-nanoseconds since 1970-01-01 (Unix
-	 *                      epoch)
+	 * @param unixTimestamp a number of 100ns since 1970-01-01 (Unix epoch)
 	 * @return an instant
 	 */
 	public static Instant fromUnixTimestamp(final long unixTimestamp) {
@@ -126,11 +142,10 @@ public final class UuidTime {
 	}
 
 	/**
-	 * This method converts a number of 100-nanoseconds since 1582-10-15 (Gregorian
-	 * epoch) into an {@code Instant}.
+	 * This method converts a number of 100ns since 1582-10-15 (Gregorian epoch)
+	 * into an {@code Instant}.
 	 * 
-	 * @param gregTimestamp a number of 100-nanoseconds since 1582-10-15 (Gregorian
-	 *                      epoch)
+	 * @param gregTimestamp a number of 100ns since 1582-10-15 (Gregorian epoch)
 	 * @return an instant
 	 */
 	public static Instant fromGregTimestamp(final long gregTimestamp) {
