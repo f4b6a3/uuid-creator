@@ -42,21 +42,27 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  * 
  * This library implements 3 types:
  * 
- * * Without increment: the random part is always randomized. This is the
- * default type.
+ * * Default:
  * 
- * * Increment by 1: the random part is incremented by 1 in the least
- * significant bits when the time repeats between two calls to the factory
- * method. This type of UUID is like a Monotonic ULID. It can be 20x faster than
- * the first type, but it generates an easy-to-guess sequence of identifiers
- * within the same millisecond interval.
+ * The UUID is divided in 3 components: time, counter and random. The counter
+ * component is incremented by 1 when the time repeats. The random part is
+ * always randomized.
  * 
- * * Increment by N: the random part is incremented by a random number between 1
- * and 2^32-1 in the least significant bits when the time repeats between two
- * calls to the factory method. This type of UUID is also like a Monotonic ULID.
- * It can be about 50% faster than the first type as it consumes less entropy, 6
- * random bytes instead of 10. Furthermore, the sequence of identifiers is
- * impossible to guess.
+ * * Plus 1:
+ * 
+ * The UUID is divided in 2 components: time and monotonic random. The monotonic
+ * random component is incremented by 1 when the time repeats. This type of UUID
+ * is like a Monotonic ULID. It can be 20x faster than the first type, but it
+ * generates an easy-to-guess sequence of identifiers within the same
+ * millisecond interval.
+ * 
+ * * Plus N:
+ * 
+ * The UUID is divided in 2 components: time and monotonic random. The monotonic
+ * random component is incremented by a random positive integer between 1 and
+ * 2^32-1 when the time repeats. This type of UUID is also like a Monotonic
+ * ULID. It can be faster than the first type as it consumes less entropy.
+ * Furthermore, the sequence of identifiers is impossible to guess.
  * 
  * RFC-4122 version: 7 (proposed).
  * 
@@ -212,7 +218,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 
 		if (INCREMENT_TYPE_DEFAULT == this.incrementType) {
 			// randomize lower 48 bits
-			lsb &= 0xffff000000000000L;
+			lsb &= 0xffff000000000000L; // clear before randomize
 			lsb |= ByteUtil.toNumber(this.randomFunction.apply(6));
 		}
 

@@ -6,10 +6,14 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.factory.UuidFactoryTest;
 import com.github.f4b6a3.uuid.factory.function.RandomFunction;
 import com.github.f4b6a3.uuid.factory.nonstandard.SuffixCombFactory;
+import com.github.f4b6a3.uuid.util.CombUtil;
+import com.github.f4b6a3.uuid.util.UuidTime;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
@@ -32,12 +36,31 @@ public class SuffixCombFactoryTest extends UuidFactoryTest {
 		checkOrdering(list);
 		checkUniqueness(list);
 	}
-	
+
+	@Test
+	public void testGetSuffixCombCheckTimestamp() {
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+
+			long random = ThreadLocalRandom.current().nextLong(1L << 48);
+			Clock clock = Clock.fixed(Instant.ofEpochMilli(random), Clock.systemUTC().getZone());
+
+			Instant instant1 = clock.instant();
+			long timestamp1 = UuidTime.toUnixTimestamp(instant1);
+			UUID uuid = SuffixCombFactory.builder().withClock(clock).build().create();
+			Instant instant2 = CombUtil.getSuffixInstant(uuid);
+			long timestamp2 = CombUtil.getSuffix(uuid) * 10_000;
+
+			assertEquals(instant1, instant2);
+			assertEquals(timestamp1, timestamp2);
+		}
+	}
+
 	@Test
 	public void testGetSuffixCombCheckTime() {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		
+
 		long startTime = System.currentTimeMillis() & 0x0000ffffffffffffL;
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = UuidCreator.getSuffixComb();
@@ -93,7 +116,7 @@ public class SuffixCombFactoryTest extends UuidFactoryTest {
 		checkOrdering(list);
 		checkUniqueness(list);
 	}
-	
+
 	@Test
 	public void testGetSuffixCombInParallel() throws InterruptedException {
 
@@ -114,7 +137,7 @@ public class SuffixCombFactoryTest extends UuidFactoryTest {
 		// Check if the quantity of unique UUIDs is correct
 		assertEquals(DUPLICATE_UUID_MSG, TestThread.hashSet.size(), (DEFAULT_LOOP_MAX * THREAD_TOTAL));
 	}
-	
+
 	@Override
 	protected void checkOrdering(UUID[] list) {
 		UUID[] other = Arrays.copyOf(list, list.length);
@@ -126,7 +149,7 @@ public class SuffixCombFactoryTest extends UuidFactoryTest {
 			assertEquals("The UUID list is not ordered", x, y);
 		}
 	}
-	
+
 	private long extractSuffix(UUID uuid) {
 		return uuid.getLeastSignificantBits() & 0x0000ffffffffffffL;
 	}

@@ -6,11 +6,15 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.factory.UuidFactoryTest;
 import com.github.f4b6a3.uuid.factory.function.RandomFunction;
 import com.github.f4b6a3.uuid.factory.nonstandard.PrefixCombFactory;
+import com.github.f4b6a3.uuid.util.CombUtil;
+import com.github.f4b6a3.uuid.util.UuidTime;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
@@ -34,7 +38,26 @@ public class PrefixCombFactoryTest extends UuidFactoryTest {
 	}
 
 	@Test
-	public void testPrefixCombCheckTime() {
+	public void testGetPrefixCombCheckTimestamp() {
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+
+			long random = ThreadLocalRandom.current().nextLong(1L << 48);
+			Clock clock = Clock.fixed(Instant.ofEpochMilli(random), Clock.systemUTC().getZone());
+
+			Instant instant1 = clock.instant();
+			long timestamp1 = UuidTime.toUnixTimestamp(instant1);
+			UUID uuid = PrefixCombFactory.builder().withClock(clock).build().create();
+			Instant instant2 = CombUtil.getPrefixInstant(uuid);
+			long timestamp2 = CombUtil.getPrefix(uuid) * 10_000;
+
+			assertEquals(instant1, instant2);
+			assertEquals(timestamp1, timestamp2);
+		}
+	}
+
+	@Test
+	public void testGetPrefixCombCheckTime() {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
 		long startTime = System.currentTimeMillis();

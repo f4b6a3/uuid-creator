@@ -147,6 +147,7 @@ public final class NcnameCodec implements UuidCodec<String> {
 			break;
 		default:
 			this.shift = 0; // unspecified
+			break;
 		}
 	}
 
@@ -195,17 +196,23 @@ public final class NcnameCodec implements UuidCodec<String> {
 	public UUID decode(String ncname) {
 
 		if (ncname == null || ncname.length() != this.length) {
-			throw new InvalidUuidException("Invalid UUID NCName: " + ncname);
+			throw new InvalidUuidException("Invalid UUID NCName: \"" + ncname + "\"");
 		}
 
-		int version = (int) VERSION_MAP.get(ncname.charAt(0));
+		// check if the bookends are valid chars: [A-Pa-p]
+		int bookend1 = (int) VERSION_MAP.get(ncname.charAt(0));
+		int bookend2 = (int) VERSION_MAP.get(ncname.charAt(ncname.length() - 1));
+		if (bookend1 == -1 || bookend2 == -1) {
+			throw new InvalidUuidException("Invalid UUID NCName: \"" + ncname + "\"");
+		}
+
+		int version = bookend1 & 0xf;
+
 		String substring = ncname.substring(1, ncname.length());
 		UUID uuid = this.codec.decode(substring + padding);
 
 		byte[] bytes = BinaryCodec.INSTANCE.encode(uuid);
 		bytes[15] = (byte) ((bytes[15] & 0xff) << this.shift);
-
-		version &= 0xf;
 
 		int[] ints = toInts(bytes);
 

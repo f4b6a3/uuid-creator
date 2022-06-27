@@ -154,7 +154,7 @@ public class BaseNCodec1Test {
 	}
 
 	@Test
-	public void testUuidCodecExceptionException() {
+	public void testInvalidUuidExceptionException() {
 
 		String base16 = "9CC570EFBFCC45A8BF46C4CA7E039341";
 		String base32 = "E4YVYO7P6MIWUL6RWEZJ7AHE2B";

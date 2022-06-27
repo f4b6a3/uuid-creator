@@ -105,6 +105,21 @@ public class Throughput {
 		return UuidCreator.getTimeOrdered();
 	}
 
+	@Benchmark
+	public UUID UuidCreator10_TimeOrderedEpoch() {
+		return UuidCreator.getTimeOrderedEpoch();
+	}
+
+	@Benchmark
+	public UUID UuidCreator11_TimeOrderedEpochPlus1() {
+		return UuidCreator.getTimeOrderedEpochPlus1();
+	}
+
+	@Benchmark
+	public UUID UuidCreator12_TimeOrderedEpochPlusN() {
+		return UuidCreator.getTimeOrderedEpochPlusN();
+	}
+
 	/*********** UUID Codecs ************/
 
 //	String base16 = Base16Codec.INSTANCE.encode(uuid);

@@ -3,13 +3,12 @@ package com.github.f4b6a3.uuid.codec;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import java.net.URI;
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.codec.UriCodec;
+import com.github.f4b6a3.uuid.codec.UrnCodec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
-public class UriCodecTest {
+public class UrnCodecTest {
 
 	private static final int DEFAULT_LOOP_LIMIT = 100;
 
@@ -19,11 +18,11 @@ public class UriCodecTest {
 
 	@Test
 	public void testEncode() {
-		UriCodec codec = new UriCodec();
+		UrnCodec codec = new UrnCodec();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID random = UUID.randomUUID();
 			String expected = URN_PREFIX + random.toString();
-			String actual = codec.encode(random).toString();
+			String actual = codec.encode(random);
 			checkPattern(actual, RFC4122_URN_PATTERN);
 			assertEquals(expected, actual);
 		}
@@ -31,21 +30,21 @@ public class UriCodecTest {
 
 	@Test
 	public void testDecode() {
-		UriCodec codec = new UriCodec();
+		UrnCodec codec = new UrnCodec();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			String string = UUID.randomUUID().toString();
-			UUID uuid = codec.decode(URI.create(URN_PREFIX + string));
+			UUID uuid = codec.decode(URN_PREFIX + string);
 			assertEquals(string, uuid.toString());
 		}
 	}
 
 	@Test
 	public void testEncodeAndDecode() {
-		UriCodec codec = new UriCodec();
+		UrnCodec codec = new UrnCodec();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUID.randomUUID();
-			URI uri = codec.encode(uuid); // encode
-			assertEquals(uuid, codec.decode(uri)); // decode back
+			String urn = codec.encode(uuid); // encode
+			assertEquals(uuid, codec.decode(urn)); // decode back
 		}
 	}
 
@@ -54,32 +53,32 @@ public class UriCodecTest {
 
 		{
 			{
-				URI uri = URI.create(URN_PREFIX + new UUID(0L, 0L).toString());
-				assertTrue("Should be valid", UriCodec.isUuidUri(uri));
+				String string = URN_PREFIX + new UUID(0L, 0L).toString();
+				assertTrue("Should be valid", UrnCodec.isUuidUrn(string));
 			}
 			{
-				URI uri = URI.create(URN_PREFIX + UUID.randomUUID().toString());
-				assertTrue("Should be valid", UriCodec.isUuidUri(uri));
+				String string = URN_PREFIX + UUID.randomUUID().toString();
+				assertTrue("Should be valid", UrnCodec.isUuidUrn(string));
 			}
 		}
 
 		{
 			{
 				// null object
-				URI uri = null;
-				assertFalse("Should not be valid", UriCodec.isUuidUri(uri));
+				String string = null;
+				assertFalse("Should not be valid", UrnCodec.isUuidUrn(string));
 			}
 
 			{
 				// empty string
-				URI uri = URI.create("");
-				assertFalse("Should not be valid", UriCodec.isUuidUri(uri));
+				String string = "";
+				assertFalse("Should not be valid", UrnCodec.isUuidUrn(string));
 			}
 
 			{
 				// incomplete string
-				URI uri = URI.create(URN_PREFIX);
-				assertFalse("Should not be valid", UriCodec.isUuidUri(uri));
+				String string = URN_PREFIX;
+				assertFalse("Should not be valid", UrnCodec.isUuidUrn(string));
 			}
 		}
 	}
@@ -87,7 +86,7 @@ public class UriCodecTest {
 	@Test
 	public void testEncodeInvalidUuidException() {
 
-		UriCodec codec = new UriCodec();
+		UrnCodec codec = new UrnCodec();
 
 		{
 			try {
@@ -121,12 +120,12 @@ public class UriCodecTest {
 	@Test
 	public void testDecodeInvalidUuidException() {
 
-		UriCodec codec = new UriCodec();
+		UrnCodec codec = new UrnCodec();
 
 		{
 			try {
 				String string = URN_PREFIX + new UUID(0L, 0L).toString();
-				codec.decode(URI.create(string));
+				codec.decode(string);
 				// success
 			} catch (InvalidUuidException e) {
 				fail("Should not throw exception");
@@ -134,7 +133,7 @@ public class UriCodecTest {
 
 			try {
 				String string = URN_PREFIX + UUID.randomUUID().toString();
-				codec.decode(URI.create(string));
+				codec.decode(string);
 				// success
 			} catch (InvalidUuidException e) {
 				fail("Should not throw exception");
@@ -144,8 +143,8 @@ public class UriCodecTest {
 		{
 			try {
 				// null object
-				URI uri = null;
-				codec.decode(uri);
+				String string = null;
+				codec.decode(string);
 				fail("Should throw exception");
 			} catch (InvalidUuidException e) {
 				// success
@@ -153,8 +152,8 @@ public class UriCodecTest {
 
 			try {
 				// empty string
-				URI uri = URI.create("");
-				codec.decode(uri);
+				String string = "";
+				codec.decode(string);
 				fail("Should throw exception");
 			} catch (InvalidUuidException e) {
 				// success
@@ -162,8 +161,8 @@ public class UriCodecTest {
 
 			try {
 				// incomplete string
-				URI uri = URI.create(URN_PREFIX);
-				codec.decode(uri);
+				String string = URN_PREFIX;
+				codec.decode(string);
 				fail("Should throw exception");
 			} catch (InvalidUuidException e) {
 				// success

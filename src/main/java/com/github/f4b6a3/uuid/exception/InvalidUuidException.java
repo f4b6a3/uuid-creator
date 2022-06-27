@@ -24,6 +24,8 @@
 
 package com.github.f4b6a3.uuid.exception;
 
+import java.util.Arrays;
+
 public final class InvalidUuidException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
@@ -34,5 +36,25 @@ public final class InvalidUuidException extends RuntimeException {
 
 	public InvalidUuidException(String message, Throwable cause) {
 		super(message, cause);
+	}
+
+	public static InvalidUuidException newInstance(Object obj) {
+
+		String string;
+		if (obj == null) {
+			string = null;
+		} else if (obj instanceof char[]) {
+			string = String.valueOf((char[]) obj);
+		} else if (obj.getClass().isArray()) {
+			string = Arrays.toString((byte[]) obj);
+		} else {
+			string = String.valueOf(obj);
+		}
+
+		if (string != null) {
+			string = "\"" + string + "\"";
+		}
+
+		return new InvalidUuidException("Invalid UUID: " + string);
 	}
 }

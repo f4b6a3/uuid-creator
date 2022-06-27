@@ -162,7 +162,7 @@ public final class SlugCodec implements UuidCodec<String> {
 	public UUID decode(String slug) {
 
 		if (slug == null || slug.length() != this.length) {
-			throw new InvalidUuidException("Invalid Slug: " + slug);
+			throw new InvalidUuidException("Invalid UUID Slug: \"" + slug + "\"");
 		}
 
 		UUID uuid = this.codec.decode(slug);

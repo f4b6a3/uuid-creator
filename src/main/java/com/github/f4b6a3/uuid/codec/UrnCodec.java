@@ -74,7 +74,7 @@ public class UrnCodec implements UuidCodec<String> {
 	@Override
 	public UUID decode(String urn) {
 		if (!isUuidUrn(urn)) {
-			throw new InvalidUuidException("Invalid URN: " + urn);
+			throw InvalidUuidException.newInstance(urn);
 		}
 		return StringCodec.INSTANCE.decode(urn);
 	}

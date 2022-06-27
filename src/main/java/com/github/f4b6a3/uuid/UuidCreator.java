@@ -376,6 +376,51 @@ public final class UuidCreator {
 	}
 
 	/**
+	 * Returns a Unix Epoch time-based UUID.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 7
+	 * - Random part: always randomized
+	 * </pre>
+	 * 
+	 * @return a version 7 UUID
+	 */
+	public static UUID getTimeOrderedEpoch() {
+		return TimeOrderedEpochHolder.INSTANCE.create();
+	}
+
+	/**
+	 * Returns a Unix Epoch time-based UUID in increments of 1.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 7
+	 * - Random part: incremented by 1
+	 * </pre>
+	 * 
+	 * @return a version 7 UUID
+	 */
+	public static UUID getTimeOrderedEpochPlus1() {
+		return TimeOrderedEpochPlus1Holder.INSTANCE.create();
+	}
+
+	/**
+	 * Returns a Unix Epoch time-based UUID in increments of N.
+	 *
+	 * <pre>
+	 * Details: 
+	 * - Version number: 7
+	 * - Random part: incremented by N, where 1 <= N <= 2^32-1
+	 * </pre>
+	 * 
+	 * @return a version 7 UUID
+	 */
+	public static UUID getTimeOrderedEpochPlusN() {
+		return TimeOrderedEpochPlusNHolder.INSTANCE.create();
+	}
+
+	/**
 	 * Returns a name-based UUID (MD5).
 	 * 
 	 * <pre>
@@ -1158,57 +1203,28 @@ public final class UuidCreator {
 		return ShortSuffixCombHolder.INSTANCE.create();
 	}
 
-	/**
-	 * Returns a Unix Epoch time-based UUID.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 7
-	 * - Random part: always randomized
-	 * </pre>
-	 * 
-	 * @return a version 7 UUID
-	 */
-	public static UUID getTimeOrderedEpoch() {
-		return TimeOrderedEpochHolder.INSTANCE.create();
-	}
-
-	/**
-	 * Returns a Unix Epoch time-based UUID in increments of 1.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 7
-	 * - Random part: incremented by 1
-	 * </pre>
-	 * 
-	 * @return a version 7 UUID
-	 */
-	public static UUID getTimeOrderedEpochPlus1() {
-		return TimeOrderedEpochPlus1Holder.INSTANCE.create();
-	}
-
-	/**
-	 * Returns a Unix Epoch time-based UUID in increments of N.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 7
-	 * - Random part: incremented by N, where 1 <= N <= 2^48
-	 * </pre>
-	 * 
-	 * @return a version 7 UUID
-	 */
-	public static UUID getTimeOrderedEpochPlusN() {
-		return TimeOrderedEpochPlusNHolder.INSTANCE.create();
-	}
-
 	/*
 	 * Private classes for lazy holders
 	 */
 
 	private static class RandomBasedHolder {
 		static final RandomBasedFactory INSTANCE = new RandomBasedFactory();
+	}
+
+	private static class TimeBasedHolder {
+		static final TimeBasedFactory INSTANCE = new TimeBasedFactory();
+	}
+
+	private static class TimeBasedWithMacHolder {
+		static final TimeBasedFactory INSTANCE = new TimeBasedFactory.Builder().withMacNodeId().build();
+	}
+
+	private static class TimeBasedWithHashHolder {
+		static final TimeBasedFactory INSTANCE = new TimeBasedFactory.Builder().withHashNodeId().build();
+	}
+
+	private static class TimeBasedWithRandomHolder {
+		static final TimeBasedFactory INSTANCE = new TimeBasedFactory.Builder().withRandomNodeId().build();
 	}
 
 	private static class TimeOrderedHolder {
@@ -1227,20 +1243,16 @@ public final class UuidCreator {
 		static final TimeOrderedFactory INSTANCE = new TimeOrderedFactory.Builder().withRandomNodeId().build();
 	}
 
-	private static class TimeBasedHolder {
-		static final TimeBasedFactory INSTANCE = new TimeBasedFactory();
+	private static class TimeOrderedEpochHolder {
+		static final TimeOrderedEpochFactory INSTANCE = new TimeOrderedEpochFactory();
 	}
 
-	private static class TimeBasedWithMacHolder {
-		static final TimeBasedFactory INSTANCE = new TimeBasedFactory.Builder().withMacNodeId().build();
+	private static class TimeOrderedEpochPlus1Holder {
+		static final TimeOrderedEpochFactory INSTANCE = TimeOrderedEpochFactory.builder().withIncrementPlus1().build();
 	}
 
-	private static class TimeBasedWithHashHolder {
-		static final TimeBasedFactory INSTANCE = new TimeBasedFactory.Builder().withHashNodeId().build();
-	}
-
-	private static class TimeBasedWithRandomHolder {
-		static final TimeBasedFactory INSTANCE = new TimeBasedFactory.Builder().withRandomNodeId().build();
+	private static class TimeOrderedEpochPlusNHolder {
+		static final TimeOrderedEpochFactory INSTANCE = TimeOrderedEpochFactory.builder().withIncrementPlusN().build();
 	}
 
 	private static class NameBasedMd5Holder {
@@ -1281,17 +1293,5 @@ public final class UuidCreator {
 
 	private static class ShortSuffixCombHolder {
 		static final ShortSuffixCombFactory INSTANCE = new ShortSuffixCombFactory();
-	}
-
-	private static class TimeOrderedEpochHolder {
-		static final TimeOrderedEpochFactory INSTANCE = new TimeOrderedEpochFactory();
-	}
-
-	private static class TimeOrderedEpochPlus1Holder {
-		static final TimeOrderedEpochFactory INSTANCE = TimeOrderedEpochFactory.builder().withIncrementPlus1().build();
-	}
-
-	private static class TimeOrderedEpochPlusNHolder {
-		static final TimeOrderedEpochFactory INSTANCE = TimeOrderedEpochFactory.builder().withIncrementPlusN().build();
 	}
 }

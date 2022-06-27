@@ -134,7 +134,7 @@ public final class UuidValidator {
 	 */
 	public static void validate(final UUID uuid) {
 		if (uuid == null) {
-			throwInvalidUuidException(uuid);
+			throw InvalidUuidException.newInstance(uuid);
 		}
 	}
 
@@ -147,7 +147,7 @@ public final class UuidValidator {
 	 */
 	public static void validate(final UUID uuid, int version) {
 		if (uuid == null || !isVersion(uuid, version)) {
-			throwInvalidUuidException(uuid);
+			throw InvalidUuidException.newInstance(uuid);
 		}
 	}
 
@@ -159,7 +159,7 @@ public final class UuidValidator {
 	 */
 	public static void validate(final byte[] uuid) {
 		if (uuid == null || uuid.length != 16) {
-			throwInvalidUuidException(uuid);
+			throw InvalidUuidException.newInstance(uuid);
 		}
 	}
 
@@ -172,7 +172,7 @@ public final class UuidValidator {
 	 */
 	public static void validate(final byte[] uuid, int version) {
 		if (uuid == null || uuid.length != 16 || !isVersion(uuid, version)) {
-			throwInvalidUuidException(uuid);
+			throw InvalidUuidException.newInstance(uuid);
 		}
 	}
 
@@ -184,7 +184,7 @@ public final class UuidValidator {
 	 */
 	public static void validate(final String uuid) {
 		if (uuid == null || !isParseable(uuid.toCharArray())) {
-			throwInvalidUuidException(uuid);
+			throw InvalidUuidException.newInstance(uuid);
 		}
 	}
 
@@ -197,7 +197,7 @@ public final class UuidValidator {
 	 */
 	public static void validate(final String uuid, int version) {
 		if (uuid == null || !isParseable(uuid.toCharArray(), version)) {
-			throwInvalidUuidException(uuid);
+			throw InvalidUuidException.newInstance(uuid);
 		}
 	}
 
@@ -209,7 +209,7 @@ public final class UuidValidator {
 	 */
 	public static void validate(final char[] uuid) {
 		if (uuid == null || !isParseable(uuid)) {
-			throwInvalidUuidException(uuid);
+			throw InvalidUuidException.newInstance(uuid);
 		}
 	}
 
@@ -222,7 +222,7 @@ public final class UuidValidator {
 	 */
 	public static void validate(final char[] uuid, int version) {
 		if (uuid == null || !isParseable(uuid, version)) {
-			throwInvalidUuidException(uuid);
+			throw InvalidUuidException.newInstance(uuid);
 		}
 	}
 
@@ -315,9 +315,5 @@ public final class UuidValidator {
 				|| chars[var] == 'a' || chars[var] == 'b' || chars[var] == 'A' || chars[var] == 'B';
 
 		return versionOk && variantOk;
-	}
-
-	private static void throwInvalidUuidException(Object object) {
-		throw new InvalidUuidException("Invalid UUID: " + object);
 	}
 }

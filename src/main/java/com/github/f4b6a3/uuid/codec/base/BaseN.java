@@ -197,7 +197,7 @@ public final class BaseN {
 	 */
 	public void validate(String string) {
 		if (!isValid(string)) {
-			throw new InvalidUuidException("Invalid encoded string: " + string);
+			throw InvalidUuidException.newInstance(string);
 		}
 	}
 

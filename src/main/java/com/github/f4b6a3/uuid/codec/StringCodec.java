@@ -67,8 +67,8 @@ public class StringCodec implements UuidCodec<String> {
 	 */
 	public static final StringCodec INSTANCE = new StringCodec();
 
-	private static final CharArray ALPHABET = Base16Codec.INSTANCE.getBase().getAlphabet();
 	private static final LongArray MAP = Base16Codec.INSTANCE.getBase().getMap();
+	private static final CharArray ALPHABET = Base16Codec.INSTANCE.getBase().getAlphabet();
 
 	private static final String URN_PREFIX = "urn:uuid:";
 	private static final boolean JAVA_VERSION_GREATER_THAN_8 = getJavaVersion() > 8;
@@ -161,26 +161,7 @@ public class StringCodec implements UuidCodec<String> {
 	@Override
 	public UUID decode(String string) {
 
-		if (string == null) {
-			throw new InvalidUuidException("Invalid UUID: null");
-		}
-
-		char[] chars = string.toCharArray();
-
-		if (chars.length != 32 && chars.length != 36) {
-			if (string.startsWith(URN_PREFIX)) {
-				// Remove URN prefix: "urn:uuid:"
-				char[] substring = new char[chars.length - 9];
-				System.arraycopy(chars, 9, substring, 0, substring.length);
-				chars = substring;
-			} else if (chars.length > 0 && chars[0] == '{' && chars[chars.length - 1] == '}') {
-				// Remove curly braces: '{' and '}'
-				char[] substring = new char[chars.length - 2];
-				System.arraycopy(chars, 1, substring, 0, substring.length);
-				chars = substring;
-			}
-		}
-
+		char[] chars = toCharArray(string);
 		UuidValidator.validate(chars);
 
 		long msb = 0;
@@ -262,6 +243,41 @@ public class StringCodec implements UuidCodec<String> {
 		}
 
 		return new UUID(msb, lsb);
+	}
+
+	/**
+	 * Returns a char array of a string.
+	 * 
+	 * It removes URN prefix and curly braces from the string.
+	 * 
+	 * @param chars a char array
+	 * @return a substring
+	 */
+	protected static char[] toCharArray(String string) {
+
+		if (string == null) {
+			throw new InvalidUuidException("Invalid UUID: null");
+		}
+
+		char[] chars = string.toCharArray();
+
+		// UUID URN format: "urn:uuid:00000000-0000-0000-0000-000000000000"
+		if (chars.length == 45 && string.startsWith(URN_PREFIX)) {
+			// Remove the UUID URN prefix: "urn:uuid:"
+			char[] substring = new char[chars.length - 9];
+			System.arraycopy(chars, 9, substring, 0, substring.length);
+			return substring;
+		}
+
+		// Curly braces format: "{00000000-0000-0000-0000-000000000000}"
+		if (chars.length == 38 && chars[0] == '{' && chars[chars.length - 1] == '}') {
+			// Remove curly braces: '{' and '}'
+			char[] substring = new char[chars.length - 2];
+			System.arraycopy(chars, 1, substring, 0, substring.length);
+			return substring;
+		}
+
+		return chars;
 	}
 
 	/**

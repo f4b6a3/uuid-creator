@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.codec.BinaryCodec;
-import com.github.f4b6a3.uuid.codec.UuidCodec;
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
 public class BinaryCodecTest {
 
@@ -17,10 +17,10 @@ public class BinaryCodecTest {
 	@Test
 	public void testEncode() {
 
-		UuidCodec<byte[]> codec = new BinaryCodec();
+		BinaryCodec codec = new BinaryCodec();
 
-		// UuidCreator.fromBytes();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			// UuidCreator.toBytes();
 			UUID uuid1 = UUID.randomUUID();
 			byte[] bytes = UuidCreator.toBytes(uuid1);
 			ByteBuffer buffer = ByteBuffer.wrap(bytes);
@@ -30,8 +30,8 @@ public class BinaryCodecTest {
 			assertEquals(uuid1, uuid2);
 		}
 
-		// UuidBytesCodec.encode();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			// UuidBytesCodec.encode();
 			UUID uuid1 = UUID.randomUUID();
 			byte[] bytes = codec.encode(uuid1);
 			ByteBuffer buffer = ByteBuffer.wrap(bytes);
@@ -45,10 +45,10 @@ public class BinaryCodecTest {
 	@Test
 	public void testDecode() {
 
-		UuidCodec<byte[]> codec = new BinaryCodec();
+		BinaryCodec codec = new BinaryCodec();
 
-		// UuidCreator.fromBytes();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			// UuidCreator.fromBytes();
 			UUID uuid1 = UUID.randomUUID();
 			ByteBuffer buffer = ByteBuffer.allocate(16);
 			buffer.putLong(uuid1.getMostSignificantBits());
@@ -58,8 +58,8 @@ public class BinaryCodecTest {
 			assertEquals(uuid1, uuid2);
 		}
 
-		// UuidBytesCodec.decode();
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
+			// UuidBytesCodec.decode();
 			UUID uuid1 = UUID.randomUUID();
 			ByteBuffer buffer = ByteBuffer.allocate(16);
 			buffer.putLong(uuid1.getMostSignificantBits());
@@ -72,11 +72,92 @@ public class BinaryCodecTest {
 
 	@Test
 	public void testEncodeAndDecode() {
-		final UuidCodec<byte[]> codec = new BinaryCodec();
+
+		final BinaryCodec codec = new BinaryCodec();
+
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUID.randomUUID();
 			byte[] bytes = codec.encode(uuid); // encode
 			assertEquals(uuid, codec.decode(bytes)); // decode back
+		}
+	}
+
+	@Test
+	public void testEncodeInvalidUuidException() {
+
+		BinaryCodec codec = new BinaryCodec();
+
+		{
+			try {
+				UUID uuid = new UUID(0L, 0L);
+				codec.encode(uuid);
+				// success
+			} catch (InvalidUuidException e) {
+				fail("Should not throw exception");
+			}
+
+			try {
+				UUID uuid = UUID.randomUUID();
+				codec.encode(uuid);
+				// success
+			} catch (InvalidUuidException e) {
+				fail("Should not throw exception");
+			}
+		}
+
+		{
+			try {
+				UUID uuid = null;
+				codec.encode(uuid);
+				fail("Should throw exception");
+			} catch (InvalidUuidException e) {
+				// success
+			}
+		}
+	}
+
+	@Test
+	public void testDecodeInvalidUuidException() {
+
+		BinaryCodec codec = new BinaryCodec();
+
+		{
+			try {
+				// size == 16
+				byte[] bytes = new byte[16];
+				codec.decode(bytes);
+				// success
+			} catch (InvalidUuidException e) {
+				fail("Should not throw exception");
+			}
+		}
+
+		{
+			try {
+				// null object
+				byte[] bytes = null;
+				codec.decode(bytes);
+				fail("Should throw exception");
+			} catch (InvalidUuidException e) {
+				// success
+			}
+			try {
+				// size < 16
+				byte[] bytes = new byte[15];
+				codec.decode(bytes);
+				fail("Should throw exception");
+			} catch (InvalidUuidException e) {
+				// success
+			}
+
+			try {
+				// size > 16
+				byte[] bytes = new byte[17];
+				codec.decode(bytes);
+				fail("Should throw exception");
+			} catch (InvalidUuidException e) {
+				// success
+			}
 		}
 	}
 }

@@ -71,7 +71,7 @@ public class UriCodec implements UuidCodec<URI> {
 	@Override
 	public UUID decode(URI uri) {
 		if (!isUuidUri(uri)) {
-			throw new InvalidUuidException("Invalid URI: " + uri);
+			throw InvalidUuidException.newInstance(uri);
 		}
 		return UrnCodec.INSTANCE.decode(uri.toString());
 	}
@@ -83,9 +83,6 @@ public class UriCodec implements UuidCodec<URI> {
 	 * @return true if the it's a URN
 	 */
 	public static boolean isUuidUri(URI uri) {
-		if (uri == null) {
-			return false;
-		}
-		return UrnCodec.isUuidUrn(uri.toString());
+		return uri != null && UrnCodec.isUuidUrn(uri.toString());
 	}
 }

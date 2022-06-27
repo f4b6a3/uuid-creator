@@ -69,7 +69,7 @@ public final class BaseNRemainderDecoder extends BaseNDecoder {
 		}
 
 		if (rem != 0) {
-			throw new InvalidUuidException("Invalid encoded string (overflow): " + string);
+			throw new InvalidUuidException("Invalid encoded string (overflow): \"" + string + "\"");
 		}
 
 		return new UUID(msb, lsb);

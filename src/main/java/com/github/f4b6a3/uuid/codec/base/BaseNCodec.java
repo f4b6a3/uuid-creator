@@ -242,7 +242,7 @@ public abstract class BaseNCodec implements UuidCodec<String> {
 			UuidValidator.validate(uuid);
 			return encoder.apply(uuid);
 		} catch (RuntimeException e) {
-			throw new InvalidUuidException(e.toString(), e);
+			throw new InvalidUuidException(e.getMessage(), e);
 		}
 	}
 
@@ -259,7 +259,7 @@ public abstract class BaseNCodec implements UuidCodec<String> {
 			base.validate(string);
 			return decoder.apply(string);
 		} catch (RuntimeException e) {
-			throw new InvalidUuidException(e.toString(), e);
+			throw new InvalidUuidException(e.getMessage(), e);
 		}
 	}
 }

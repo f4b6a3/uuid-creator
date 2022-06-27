@@ -35,7 +35,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>5.0.0</version>
+  <version>4.6.1</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -70,7 +70,7 @@ Create a [Time-ordered](https://github.com/f4b6a3/uuid-creator/wiki/1.6.-Time-or
 UUID uuid = UuidCreator.getTimeOrdered();
 ```
 
-Create a [Time-ordered with Unix Epoch](https://github.com/f4b6a3/uuid-creator/wiki/1.7.-Time-ordered-with-Epoch) UUID:
+Create a [Time-ordered with Unix Epoch](https://github.com/f4b6a3/uuid-creator/wiki/1.7.-Time-ordered-epoch) UUID:
 
 ```java
 UUID uuid = UuidCreator.getTimeOrderedEpoch();

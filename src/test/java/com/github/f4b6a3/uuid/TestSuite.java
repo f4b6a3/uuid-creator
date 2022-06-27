@@ -1,3 +1,4 @@
+
 package com.github.f4b6a3.uuid;
 
 import org.junit.runner.RunWith;
@@ -33,6 +34,7 @@ import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedFactoryTest;
 import com.github.f4b6a3.uuid.codec.BinaryCodecTest;
 import com.github.f4b6a3.uuid.codec.StringCodecTest;
 import com.github.f4b6a3.uuid.codec.UriCodecTest;
+import com.github.f4b6a3.uuid.codec.UrnCodecTest;
 import com.github.f4b6a3.uuid.util.internal.ByteUtilTest;
 import com.github.f4b6a3.uuid.util.internal.SettingsUtilTest;
 import com.github.f4b6a3.uuid.util.CombUtilTest;
@@ -75,6 +77,7 @@ import com.github.f4b6a3.uuid.util.UuidValidatorTest;
 	TimeOrderedEpochFactoryTest.class,
 	TimeOrderedFactoryTest.class,
 	UriCodecTest.class,
+	UrnCodecTest.class,
 	UuidComparatorTest.class,
 	UuidTimeTest.class,
 	UuidUtilTest.class,

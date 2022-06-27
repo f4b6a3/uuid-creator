@@ -57,7 +57,7 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 	}
 
 	@Test
-	public void testGetTimeOrderedCheckTimestamp() {
+	public void testGetTimeOrderedEpochCheckTimestamp() {
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
@@ -76,12 +76,13 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 	}
 
 	@Test
-	public void testTimeOrderedEpochCheckTime() {
+	public void testGetTimeOrderedEpochCheckTime() {
 
 		Clock clock = Clock.systemDefaultZone();
 
 		UUID[] list;
-		long startTime, endTime;
+		long startTime;
+		long endTime;
 		TimeOrderedEpochFactory factory;
 
 		list = new UUID[DEFAULT_LOOP_MAX];
