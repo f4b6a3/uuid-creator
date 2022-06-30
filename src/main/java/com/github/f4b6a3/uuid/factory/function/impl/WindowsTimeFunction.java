@@ -72,7 +72,7 @@ public final class WindowsTimeFunction implements TimeFunction {
 		counter++; // always increment
 
 		// get the calculated time
-		final long time = calculatedTimeMillis();
+		long time = calculatedMillis();
 
 		// check time change
 		if (time == prevTime) {
@@ -80,9 +80,14 @@ public final class WindowsTimeFunction implements TimeFunction {
 			// check the counter limit
 			if (counter >= counterMax) {
 				// if the counter goes beyond the limit,
-				while (time == calculatedTimeMillis()) {
-					// wait the time to change for the next call
+				while (time == prevTime) {
+					// wait the time to advance
+					time = calculatedMillis();
 				}
+				// reset to a number between 0 and 159,999
+				counter = counter % TICKS_PER_GRANULARITY;
+				// reset to a number between 160,000 and 319,999
+				counterMax = counter + TICKS_PER_GRANULARITY;
 			}
 		} else {
 			// reset to a number between 0 and 159,999
@@ -106,7 +111,7 @@ public final class WindowsTimeFunction implements TimeFunction {
 	 * 
 	 * @return the calculated time
 	 */
-	private long calculatedTimeMillis() {
+	private long calculatedMillis() {
 		final long time = clock.millis();
 		return time + GRANULARITY - (time % GRANULARITY);
 	}

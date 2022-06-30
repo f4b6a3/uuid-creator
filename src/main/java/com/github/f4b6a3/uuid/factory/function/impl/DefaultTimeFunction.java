@@ -61,7 +61,7 @@ public final class DefaultTimeFunction implements TimeFunction {
 		counter++; // always increment
 
 		// get the current time
-		final long time = clock.millis();
+		long time = clock.millis();
 
 		// check time change
 		if (time == prevTime) {
@@ -69,9 +69,14 @@ public final class DefaultTimeFunction implements TimeFunction {
 			// check the counter limit
 			if (counter >= counterMax) {
 				// if the counter goes beyond the limit,
-				while (time == clock.millis()) {
-					// wait the time to change for the next call
+				while (time == prevTime) {
+					// wait the time to advance
+					time = clock.millis();
 				}
+				// reset to a number between 0 and 9,999
+				counter = counter % TICKS_PER_MILLI;
+				// reset to a number between 10,000 and 19,999
+				counterMax = counter + TICKS_PER_MILLI;
 			}
 		} else {
 			// reset to a number between 0 and 9,999
