@@ -144,6 +144,6 @@ public final class ShortPrefixCombFactory extends AbstCombFactory {
 		msb |= ((timestamp & 0x000000000000ffffL) << 48);
 
 		// Set the version and variant bits
-		return getUuid(msb, lsb);
+		return toUuid(msb, lsb);
 	}
 }

@@ -41,7 +41,7 @@ public final class WindowsTimeFunction implements TimeFunction {
 
 	private final Clock clock;
 
-	private long prevTime = -1;
+	private long lastTime = -1;
 
 	// arbitrary granularity greater than 15ms
 	private static final long GRANULARITY = 16;
@@ -75,12 +75,12 @@ public final class WindowsTimeFunction implements TimeFunction {
 		long time = calculatedMillis();
 
 		// check time change
-		if (time == prevTime) {
+		if (time == lastTime) {
 			// if the time repeats,
 			// check the counter limit
 			if (counter >= counterMax) {
 				// if the counter goes beyond the limit,
-				while (time == prevTime) {
+				while (time == lastTime) {
 					// wait the time to advance
 					time = calculatedMillis();
 				}
@@ -97,7 +97,7 @@ public final class WindowsTimeFunction implements TimeFunction {
 		}
 
 		// save time for the next call
-		prevTime = time;
+		lastTime = time;
 
 		// RFC-4122 - 4.2.1.2 (P4):
 		// simulate a high resolution clock

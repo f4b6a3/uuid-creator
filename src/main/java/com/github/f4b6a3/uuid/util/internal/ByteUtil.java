@@ -53,7 +53,7 @@ public final class ByteUtil {
 	public static long toNumber(final byte[] bytes, final int start, final int end) {
 		long result = 0;
 		for (int i = start; i < end; i++) {
-			result = (result << 8) | (bytes[i] & 0xff);
+			result = (result << 8) | (bytes[i] & 0xffL);
 		}
 		return result;
 	}
@@ -68,9 +68,9 @@ public final class ByteUtil {
 
 		final char[] chars = new char[bytes.length * 2];
 		for (int i = 0, j = 0; i < bytes.length; i++, j += 2) {
-			final int v = bytes[i] & 0xFF;
+			final int v = bytes[i] & 0xff;
 			chars[j] = toHexChar(v >>> 4);
-			chars[j + 1] = toHexChar(v & 0x0F);
+			chars[j + 1] = toHexChar(v & 0x0f);
 		}
 		return new String(chars);
 	}

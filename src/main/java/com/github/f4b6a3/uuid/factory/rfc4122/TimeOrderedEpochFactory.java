@@ -78,7 +78,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	private final int incrementType;
 	private final LongSupplier incrementSupplier;
 
-	private static final int INCREMENT_TYPE_DEFAULT = 0; // add 2^48-1 to `rand_b`
+	private static final int INCREMENT_TYPE_DEFAULT = 0; // add 2^48 to `rand_b`
 	private static final int INCREMENT_TYPE_PLUS_1 = 1; // add 1 to `rand_b`
 	private static final int INCREMENT_TYPE_PLUS_N = 2; // add n to `rand_b`, where 1 <= n <= 2^32-1
 
@@ -89,9 +89,6 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 
 	// Number of random bytes to be generated
 	public static final int RANDOM_BYTES = 10;
-
-	// 0xffffffffffffffffL + 1 = 0x0000000000000000L
-	private static final long INCREMENT_OVERFLOW = 0x0000000000000000L;
 
 	public TimeOrderedEpochFactory() {
 		this(builder());
@@ -206,47 +203,65 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		return copy(this.lastUuid);
 	}
 
-	private UUID increment(UUID uuid) {
+	private synchronized UUID increment(UUID uuid) {
 
-		long msb = uuid.getMostSignificantBits();
-		long lsb = uuid.getLeastSignificantBits() + incrementSupplier.getAsLong();
+		// Used to check if an overflow occurred.
+		final long overflow = 0x0000000000000000L;
 
-		// if the LSB increment overflows,
-		if (lsb == INCREMENT_OVERFLOW) {
-			msb += 1; // increment the MSB.
-		}
+		// Used to propagate increments through bits.
+		final long versionMask = 0x000000000000f000L;
+		final long variantMask = 0xc000000000000000L;
+
+		long msb = (uuid.getMostSignificantBits() | versionMask);
+		long lsb = (uuid.getLeastSignificantBits() | variantMask) + incrementSupplier.getAsLong();
 
 		if (INCREMENT_TYPE_DEFAULT == this.incrementType) {
-			// randomize lower 48 bits
-			lsb &= 0xffff000000000000L; // clear before randomize
+
+			// Used to clear the random component bits.
+			final long clearMask = 0xffff000000000000L;
+
+			// If the counter's 14 bits overflow,
+			if ((lsb & clearMask) == overflow) {
+				msb += 1; // increment the MSB.
+			}
+
+			// And finally, randomize the lower 48 bits of the LSB.
+			lsb &= clearMask; // Clear the random before randomize.
 			lsb |= ByteUtil.toNumber(this.randomFunction.apply(6));
+
+		} else {
+			// If the 62 bits of the monotonic random overflow,
+			if (lsb == overflow) {
+				msb += 1; // increment the MSB.
+			}
 		}
 
-		return getUuid(msb, lsb);
+		return toUuid(msb, lsb);
 	}
 
-	private UUID make(long time, byte[] random) {
+	private synchronized UUID make(long time, byte[] random) {
 
 		long msb = 0;
 		long lsb = 0;
 
 		msb |= time << 16;
-		msb |= (long) (random[0x0] & 0xff) << 8;
-		msb |= (long) (random[0x1] & 0xff);
 
-		lsb |= (long) (random[0x2] & 0xff) << 56;
-		lsb |= (long) (random[0x3] & 0xff) << 48;
-		lsb |= (long) (random[0x4] & 0xff) << 40;
-		lsb |= (long) (random[0x5] & 0xff) << 32;
-		lsb |= (long) (random[0x6] & 0xff) << 24;
-		lsb |= (long) (random[0x7] & 0xff) << 16;
-		lsb |= (long) (random[0x8] & 0xff) << 8;
-		lsb |= (long) (random[0x9] & 0xff);
+		msb |= (random[0x0] & 0xffL) << 8;
+		msb |= (random[0x1] & 0xffL);
 
-		return getUuid(msb, lsb);
+		lsb |= (random[0x2] & 0xffL) << 56;
+		lsb |= (random[0x3] & 0xffL) << 48;
+		lsb |= (random[0x4] & 0xffL) << 40;
+		lsb |= (random[0x5] & 0xffL) << 32;
+		lsb |= (random[0x6] & 0xffL) << 24;
+		lsb |= (random[0x7] & 0xffL) << 16;
+		lsb |= (random[0x8] & 0xffL) << 8;
+		lsb |= (random[0x9] & 0xffL);
+
+		return toUuid(msb, lsb);
 	}
 
-	private UUID copy(UUID uuid) {
-		return getUuid(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits());
+	private synchronized UUID copy(UUID uuid) {
+		return toUuid(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits());
 	}
 }

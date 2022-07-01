@@ -50,7 +50,7 @@ public class UriCodecTest {
 	}
 
 	@Test
-	public void testIsUuidUrn() {
+	public void testIsUuidUri() {
 
 		{
 			{

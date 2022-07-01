@@ -1,5 +1,6 @@
 package com.github.f4b6a3.uuid.factory.rfc4122;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.UuidCreator;
@@ -264,5 +265,29 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 			long y = other[i].getMostSignificantBits() >>> 16;
 			assertEquals("The UUID list is not ordered", x, y);
 		}
+	}
+
+	@Ignore("it takes a long time to execute")
+	public void testVeryLongMonotonicityCheck() {
+
+		// Read: https://github.com/f4b6a3/uuid-creator/issues/69
+		// You can also run the `main()` example given in the issue.
+
+		int i = 0;
+		boolean ok = true;
+		UUID smaller = null;
+		UUID bigger = null;
+
+		for (i = 0; i < Integer.MAX_VALUE; i++) {
+			smaller = UuidCreator.getTimeOrderedEpoch();
+			bigger = UuidCreator.getTimeOrderedEpoch();
+
+			if (!(smaller.compareTo(bigger) < 0)) {
+				ok = false;
+				break;
+			}
+		}
+
+		assertTrue(String.format("Monotonicity is broken: smaller='%s', bigger='%s', i=%s", smaller, bigger, i), ok);
 	}
 }

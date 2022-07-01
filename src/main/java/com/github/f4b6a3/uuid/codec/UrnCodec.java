@@ -86,8 +86,10 @@ public class UrnCodec implements UuidCodec<String> {
 	 * @return true if the it's a URN
 	 */
 	public static boolean isUuidUrn(String urn) {
-		if (urn != null && urn.startsWith(URN_PREFIX)) {
-			String uuid = urn.substring(URN_PREFIX.length());
+		final int stringLength = 45; // URN string length
+		final int prefixLength = 9; // URN prefix length
+		if (urn != null && urn.length() == stringLength) {
+			String uuid = urn.substring(prefixLength);
 			return UuidValidator.isValid(uuid);
 		}
 		return false;

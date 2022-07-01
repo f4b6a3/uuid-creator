@@ -38,10 +38,50 @@ import com.github.f4b6a3.uuid.enums.UuidVersion;
 public final class UuidUtil {
 
 	private static final String MESSAGE_NOT_A_TIME_BASED_UUID = "Not a time-based, time-ordered or DCE Security UUID: %s.";
-	private static final String MESSAGE_NOT_A_TIME_ORDERED_EPOCH_UUID = "Not a Unix Epoch time-ordered UUID: %s.";
+	private static final String MESSAGE_NOT_A_TIME_ORDERED_EPOCH_UUID = "Not a time-ordered with Unix Epoch UUID: %s.";
 	private static final String MESSAGE_NOT_A_DCE_SECURITY_UUID = "Not a DCE Security UUID: %s.";
 
 	private UuidUtil() {
+	}
+
+	/**
+	 * Get a copy of a UUID.
+	 * 
+	 * It is just a convenience method for cloning UUIDs.
+	 * 
+	 * @param uuid a UUID
+	 * @return a copy of a UUID
+	 */
+	public static UUID copy(UUID uuid) {
+		return new UUID(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits());
+	}
+
+	/**
+	 * Checks whether the UUID is equal to the Nil UUID.
+	 * 
+	 * The Nil UUID is special UUID that has all 128 bits set to zero.
+	 * 
+	 * @param uuid a UUID
+	 * @return boolean true if it is an RFC4122 variant
+	 * @exception NullPointerException if null
+	 */
+	public static boolean isNil(UUID uuid) {
+		Objects.requireNonNull(uuid, "Null UUID is not equal to Nil UUID");
+		return uuid.getMostSignificantBits() == 0L && uuid.getLeastSignificantBits() == 0L;
+	}
+
+	/**
+	 * Checks whether the UUID is equal to the Max UUID.
+	 * 
+	 * The Max UUID is special UUID that has all 128 bits set to one.
+	 * 
+	 * @param uuid a UUID
+	 * @return boolean true if it is an RFC4122 variant
+	 * @exception NullPointerException if null
+	 */
+	public static boolean isMax(UUID uuid) {
+		Objects.requireNonNull(uuid, "Null UUID is not equal to Max UUID");
+		return uuid.getMostSignificantBits() == -1L && uuid.getLeastSignificantBits() == -1L;
 	}
 
 	/**
@@ -81,34 +121,6 @@ public final class UuidUtil {
 		msb = (msb & 0xffffffffffff0fffL) | ((version & 0x0000000f) << 12); // apply version
 		lsb = (lsb & 0x3fffffffffffffffL) | 0x8000000000000000L; // apply variant
 		return new UUID(msb, lsb);
-	}
-
-	/**
-	 * Checks whether the UUID is equal to the Nil UUID.
-	 * 
-	 * The Nil UUID is special UUID that has all 128 bits set to zero.
-	 * 
-	 * @param uuid a UUID
-	 * @return boolean true if it is an RFC4122 variant
-	 * @exception NullPointerException if null
-	 */
-	public static boolean isNil(UUID uuid) {
-		Objects.requireNonNull(uuid, "Null UUID is not equal to Nil UUID");
-		return uuid.getMostSignificantBits() == 0L && uuid.getLeastSignificantBits() == 0L;
-	}
-
-	/**
-	 * Checks whether the UUID is equal to the Max UUID.
-	 * 
-	 * The Max UUID is special UUID that has all 128 bits set to one.
-	 * 
-	 * @param uuid a UUID
-	 * @return boolean true if it is an RFC4122 variant
-	 * @exception NullPointerException if null
-	 */
-	public static boolean isMax(UUID uuid) {
-		Objects.requireNonNull(uuid, "Null UUID is not equal to Max UUID");
-		return uuid.getMostSignificantBits() == -1L && uuid.getLeastSignificantBits() == -1L;
 	}
 
 	/**

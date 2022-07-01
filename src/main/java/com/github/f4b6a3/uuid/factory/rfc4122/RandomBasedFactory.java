@@ -73,6 +73,6 @@ public final class RandomBasedFactory extends AbstRandomBasedFactory {
 		final byte[] bytes = this.randomFunction.apply(UUID_BYTES);
 
 		// (1)(2) Set the version and variant bits
-		return getUuid(bytes);
+		return toUuid(bytes);
 	}
 }

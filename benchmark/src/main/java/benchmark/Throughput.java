@@ -1,6 +1,9 @@
 
 package benchmark;
 
+import java.security.SecureRandom;
+import java.util.Random;
+import java.util.SplittableRandom;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -16,18 +19,30 @@ import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-//import com.github.f4b6a3.uuid.codec.UuidCodec;
-//import com.github.f4b6a3.uuid.codec.base.Base16Codec;
-//import com.github.f4b6a3.uuid.codec.base.Base32Codec;
-//import com.github.f4b6a3.uuid.codec.base.Base58BtcCodec;
-//import com.github.f4b6a3.uuid.codec.base.Base62Codec;
-//import com.github.f4b6a3.uuid.codec.base.Base64Codec;
+import com.github.f4b6a3.uuid.codec.base.Base16Codec;
+import com.github.f4b6a3.uuid.codec.base.Base32Codec;
+import com.github.f4b6a3.uuid.codec.base.Base58BtcCodec;
+import com.github.f4b6a3.uuid.codec.base.Base62Codec;
+import com.github.f4b6a3.uuid.codec.base.Base64UrlCodec;
+import com.github.f4b6a3.uuid.factory.UuidFactory;
+import com.github.f4b6a3.uuid.factory.function.ClockSeqFunction;
+import com.github.f4b6a3.uuid.factory.function.NodeIdFunction;
+import com.github.f4b6a3.uuid.factory.function.RandomFunction;
+import com.github.f4b6a3.uuid.factory.function.TimeFunction;
+import com.github.f4b6a3.uuid.factory.function.impl.DefaultClockSeqFunction;
+import com.github.f4b6a3.uuid.factory.function.impl.DefaultRandomFunction;
+import com.github.f4b6a3.uuid.factory.function.impl.DefaultTimeFunction;
+import com.github.f4b6a3.uuid.factory.function.impl.HashNodeIdFunction;
+import com.github.f4b6a3.uuid.factory.function.impl.MacNodeIdFunction;
+import com.github.f4b6a3.uuid.factory.rfc4122.RandomBasedFactory;
+import com.github.f4b6a3.uuid.factory.rfc4122.TimeBasedFactory;
+import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedEpochFactory;
 
 @Fork(1)
 @Threads(1)
 @State(Scope.Benchmark)
-@Warmup(iterations = 3)
-@Measurement(iterations = 5)
+@Warmup(iterations = 5, time = 1)
+@Measurement(iterations = 5, time = 3)
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class Throughput {
@@ -39,142 +54,142 @@ public class Throughput {
 	/*********** JDK UUID ***********/
 
 	@Benchmark
-	public String UUID01_toString() {
+	public String jdk_uuid_01_to_string() {
 		return uuid.toString();
 	}
 
 	@Benchmark
-	public UUID UUID02_fromString() {
+	public UUID jdk_uuid_02_from_string() {
 		return UUID.fromString(string);
 	}
 
 	@Benchmark
-	public UUID UUID03_RandomBased() {
+	public UUID jdk_uuid_03_random_based() {
 		return UUID.randomUUID();
 	}
 
 	@Benchmark
-	public UUID UUID04_NameBasedMd5() {
+	public UUID jdk_uuid_04_name_based_md5() {
 		return UUID.nameUUIDFromBytes(bytes);
 	}
 
 	/*********** UUID Creator ***********/
 
 	@Benchmark
-	public String UuidCreator01_toString() {
+	public String uuid_creator_01_to_string() {
 		return UuidCreator.toString(uuid);
 	}
 
 	@Benchmark
-	public UUID UuidCreator02_fromString() {
+	public UUID uuid_creator_02_from_string() {
 		return UuidCreator.fromString(string);
 	}
 
 	@Benchmark
-	public UUID UuidCreator03_RandomBased() {
+	public UUID uuid_creator_03_random_based() {
 		return UuidCreator.getRandomBased();
 	}
 
 	@Benchmark
-	public UUID UuidCreator04_PrefixComb() {
+	public UUID uuid_creator_04_prefix_comb() {
 		return UuidCreator.getPrefixComb();
 	}
 
 	@Benchmark
-	public UUID UuidCreator05_ShortPrefixComb() {
+	public UUID uuid_creator_05_short_prefix_comb() {
 		return UuidCreator.getShortPrefixComb();
 	}
 
 	@Benchmark
-	public UUID UuidCreator06_NameBasedMd5() {
+	public UUID uuid_creator_06_name_based_md5() {
 		return UuidCreator.getNameBasedMd5(bytes);
 	}
 
 	@Benchmark
-	public UUID UuidCreator07_NameBasedSha1() {
+	public UUID uuid_creator_07_name_based_sha1() {
 		return UuidCreator.getNameBasedSha1(bytes);
 	}
 
 	@Benchmark
-	public UUID UuidCreator08_TimeBased() {
+	public UUID uuid_creator_08_time_based() {
 		return UuidCreator.getTimeBased();
 	}
 
 	@Benchmark
-	public UUID UuidCreator09_TimeOrdered() {
+	public UUID uuid_creator_09_time_ordered() {
 		return UuidCreator.getTimeOrdered();
 	}
 
 	@Benchmark
-	public UUID UuidCreator10_TimeOrderedEpoch() {
+	public UUID uuid_creator_10_time_ordered_epoch() {
 		return UuidCreator.getTimeOrderedEpoch();
 	}
 
 	@Benchmark
-	public UUID UuidCreator11_TimeOrderedEpochPlus1() {
+	public UUID uuid_creator_11_time_ordered_epoch_plus1() {
 		return UuidCreator.getTimeOrderedEpochPlus1();
 	}
 
 	@Benchmark
-	public UUID UuidCreator12_TimeOrderedEpochPlusN() {
+	public UUID uuid_creator_12_time_ordered_epoch_plusn() {
 		return UuidCreator.getTimeOrderedEpochPlusN();
 	}
 
 	/*********** UUID Codecs ************/
 
-//	String base16 = Base16Codec.INSTANCE.encode(uuid);
-//	String base32 = Base32Codec.INSTANCE.encode(uuid);
-//	String base58 = Base58BtcCodec.INSTANCE.encode(uuid);
-//	String base62 = Base62Codec.INSTANCE.encode(uuid);
-//	String base64 = Base64Codec.INSTANCE.encode(uuid);
-//	
-//	@Benchmark
-//	public UUID Base16Codec_decode() {
-//		return Base16Codec.INSTANCE.decode(base16);
-//	}
-//	
-//	@Benchmark
-//	public UUID Base32Codec_decode() {
-//		return Base32Codec.INSTANCE.decode(base32);
-//	}
-//	
-//	@Benchmark
-//	public UUID Base58Codec_decode() {
-//		return Base58BtcCodec.INSTANCE.decode(base58);
-//	}
-//	
-//	@Benchmark
-//	public UUID Base62Codec_decode() {
-//		return Base62Codec.INSTANCE.decode(base62);
-//	}
-//	
-//	@Benchmark
-//	public UUID Base64Codec_decode() {
-//		return Base64Codec.INSTANCE.decode(base64);
-//	}
-//	
-//	@Benchmark
-//	public String Base16Codec_encode() {
-//		return Base16Codec.INSTANCE.encode(uuid);
-//	}
-//	
-//	@Benchmark
-//	public String Base32Codec_encode() {
-//		return Base32Codec.INSTANCE.encode(uuid);
-//	}
-//	
-//	@Benchmark
-//	public String Base58Codec_encode() {
-//		return Base58BtcCodec.INSTANCE.encode(uuid);
-//	}
-//	
-//	@Benchmark
-//	public String Base62Codec_encode() {
-//		return Base62Codec.INSTANCE.encode(uuid);
-//	}
-//	
-//	@Benchmark
-//	public String Base64Codec_encode() {
-//		return Base64Codec.INSTANCE.encode(uuid);
-//	}
+	String base16 = Base16Codec.INSTANCE.encode(uuid);
+	String base32 = Base32Codec.INSTANCE.encode(uuid);
+	String base58 = Base58BtcCodec.INSTANCE.encode(uuid);
+	String base62 = Base62Codec.INSTANCE.encode(uuid);
+	String base64 = Base64UrlCodec.INSTANCE.encode(uuid);
+
+	@Benchmark
+	public UUID uuid_codec_base_16_decode() {
+		return Base16Codec.INSTANCE.decode(base16);
+	}
+
+	@Benchmark
+	public UUID uuid_codec_base_32_decode() {
+		return Base32Codec.INSTANCE.decode(base32);
+	}
+
+	@Benchmark
+	public UUID uuid_codec_base_58_decode() {
+		return Base58BtcCodec.INSTANCE.decode(base58);
+	}
+
+	@Benchmark
+	public UUID uuid_codec_base_62_decode() {
+		return Base62Codec.INSTANCE.decode(base62);
+	}
+
+	@Benchmark
+	public UUID uuid_codec_base_64_decode() {
+		return Base64UrlCodec.INSTANCE.decode(base64);
+	}
+
+	@Benchmark
+	public String uuid_codec_base_16_encode() {
+		return Base16Codec.INSTANCE.encode(uuid);
+	}
+
+	@Benchmark
+	public String uuid_codec_base_32_encode() {
+		return Base32Codec.INSTANCE.encode(uuid);
+	}
+
+	@Benchmark
+	public String uuid_codec_base_58_encode() {
+		return Base58BtcCodec.INSTANCE.encode(uuid);
+	}
+
+	@Benchmark
+	public String uuid_codec_base_62_encode() {
+		return Base62Codec.INSTANCE.encode(uuid);
+	}
+
+	@Benchmark
+	public String uuid_codec_base_64_encode() {
+		return Base64UrlCodec.INSTANCE.encode(uuid);
+	}
 }

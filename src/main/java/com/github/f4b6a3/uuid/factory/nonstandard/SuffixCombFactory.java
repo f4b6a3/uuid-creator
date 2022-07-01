@@ -114,13 +114,13 @@ public final class SuffixCombFactory extends AbstCombFactory {
 		// Get random values for MSB and LSB
 		final byte[] bytes = this.randomFunction.apply(10);
 		long msb = ByteUtil.toNumber(bytes, 0, 8);
-		long lsb = ((bytes[8] & 0xffL) << 8) | (bytes[9] & 0xff);
+		long lsb = ((bytes[8] & 0xffL) << 8) | (bytes[9] & 0xffL);
 
 		// Insert the suffix in the LSB
 		final long timestamp = clock.millis();
 		lsb = (lsb << 48) | (timestamp & 0x0000ffffffffffffL);
 
 		// Set the version and variant bits
-		return getUuid(msb, lsb);
+		return toUuid(msb, lsb);
 	}
 }

@@ -16,3 +16,4 @@ I would like to recognize some of the people who contributed to this open source
 *   [Andrey](https://github.com/tyushkin)
 *   [Damir Murat](https://github.com/dmurat)
 *   [Adam Gent](https://github.com/agentgt)
+*   [BaoHo](https://github.com/tri-bao)

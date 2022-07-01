@@ -26,6 +26,13 @@ public class UuidUtilTest {
 	private static final long NODE_IDENTIFIER_MASK = 0x0000ffffffffffffL;
 
 	@Test
+	public void testCopy() {
+		UUID uuid = UUID.randomUUID();
+		UUID copy = copy(uuid);
+		assertEquals(uuid, copy);
+	}
+
+	@Test
 	public void testIsNil() {
 		UUID uuid = new UUID(0, 0);
 		assertTrue(isNil(uuid));

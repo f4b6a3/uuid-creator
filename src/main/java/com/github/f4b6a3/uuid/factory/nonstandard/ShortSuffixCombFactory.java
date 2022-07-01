@@ -145,6 +145,6 @@ public final class ShortSuffixCombFactory extends AbstCombFactory {
 				| ((timestamp & 0x000000000000ffffL) << 32);
 
 		// Set the version and variant bits
-		return getUuid(msb, lsb);
+		return toUuid(msb, lsb);
 	}
 }

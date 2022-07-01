@@ -184,7 +184,7 @@ public final class DceSecurityFactory extends AbstTimeBasedFactory {
 		long lsb = setLocalDomainBits(uuid.getLeastSignificantBits(), localDomain, this.counter.incrementAndGet());
 
 		// (1b) set version 2
-		return getUuid(msb, lsb);
+		return toUuid(msb, lsb);
 	}
 
 	/**

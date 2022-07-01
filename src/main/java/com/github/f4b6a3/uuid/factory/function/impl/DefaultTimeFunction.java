@@ -35,7 +35,7 @@ public final class DefaultTimeFunction implements TimeFunction {
 
 	private final Clock clock;
 
-	private long prevTime = -1;
+	private long lastTime = -1;
 
 	// start the counter with a random number between 0 and 9,999
 	private long counter = Math.abs(RandomUtil.nextLong() % TICKS_PER_MILLI);
@@ -64,12 +64,12 @@ public final class DefaultTimeFunction implements TimeFunction {
 		long time = clock.millis();
 
 		// check time change
-		if (time == prevTime) {
+		if (time == lastTime) {
 			// if the time repeats,
 			// check the counter limit
 			if (counter >= counterMax) {
 				// if the counter goes beyond the limit,
-				while (time == prevTime) {
+				while (time == lastTime) {
 					// wait the time to advance
 					time = clock.millis();
 				}
@@ -86,7 +86,7 @@ public final class DefaultTimeFunction implements TimeFunction {
 		}
 
 		// save time for the next call
-		prevTime = time;
+		lastTime = time;
 
 		// RFC-4122 - 4.2.1.2 (P4):
 		// simulate a high resolution clock

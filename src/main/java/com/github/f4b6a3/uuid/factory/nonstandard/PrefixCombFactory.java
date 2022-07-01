@@ -113,7 +113,7 @@ public final class PrefixCombFactory extends AbstCombFactory {
 
 		// Get random values for MSB and LSB
 		final byte[] bytes = this.randomFunction.apply(10);
-		long msb = ((bytes[8] & 0xffL) << 8) | (bytes[9] & 0xff);
+		long msb = ((bytes[8] & 0xffL) << 8) | (bytes[9] & 0xffL);
 		long lsb = ByteUtil.toNumber(bytes, 0, 8);
 
 		// Insert the prefix in the MSB
@@ -121,6 +121,6 @@ public final class PrefixCombFactory extends AbstCombFactory {
 		msb |= ((timestamp & 0x0000ffffffffffffL) << 16);
 
 		// Set the version and variant bits
-		return getUuid(msb, lsb);
+		return toUuid(msb, lsb);
 	}
 }

@@ -58,7 +58,7 @@ public abstract class UuidFactory {
 	 * @param bytes a byte array
 	 * @return a UUID
 	 */
-	protected UUID getUuid(final byte[] bytes) {
+	protected UUID toUuid(final byte[] bytes) {
 
 		long msb = 0;
 		long lsb = 0;
@@ -95,7 +95,7 @@ public abstract class UuidFactory {
 	 * @param lsb the least significant bits
 	 * @return a UUID
 	 */
-	protected UUID getUuid(final long msb, final long lsb) {
+	protected UUID toUuid(final long msb, final long lsb) {
 		final long msb0 = (msb & 0xffffffffffff0fffL) | this.versionMask; // set version
 		final long lsb0 = (lsb & 0x3fffffffffffffffL) | 0x8000000000000000L; // set variant
 		return new UUID(msb0, lsb0);

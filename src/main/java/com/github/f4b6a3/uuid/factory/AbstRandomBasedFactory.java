@@ -47,19 +47,30 @@ public abstract class AbstRandomBasedFactory extends UuidFactory implements NoAr
 	/**
 	 * It instantiates a function that returns a byte array of a given length.
 	 * 
-	 * If the a null parameter is given, {@code DefaultRandomFunction} is implied.
+	 * The instances of {@code RandomFunction} created by this method are
+	 * synchronized.
+	 * 
+	 * If the a null parameter is given, an instance of
+	 * {@code DefaultRandomFunction} is returned.
 	 * 
 	 * @param random a {@link Random} generator
 	 * @return a random function that returns a byte array of a given length
 	 */
 	protected static RandomFunction newRandomFunction(Random random) {
+
 		if (random == null) {
 			return new DefaultRandomFunction();
 		}
-		return (final int length) -> {
-			final byte[] bytes = new byte[length];
-			random.nextBytes(bytes);
-			return bytes;
+
+		return new RandomFunction() {
+			private final Random entropy = random;
+
+			@Override
+			public synchronized byte[] apply(final int length) {
+				final byte[] bytes = new byte[length];
+				entropy.nextBytes(bytes);
+				return bytes;
+			}
 		};
 	}
 }

@@ -22,6 +22,5 @@ mvn validate
 mvn clean install
 
 # run the benchmark
-# /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java -jar target/benchmarks.jar
 java -jar target/benchmarks.jar
 

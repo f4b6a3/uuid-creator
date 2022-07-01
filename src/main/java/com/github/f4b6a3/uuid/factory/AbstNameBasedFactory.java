@@ -355,6 +355,6 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 		final byte[] hash = hasher.digest(name);
 
 		// Set the version and variant bits
-		return getUuid(hash);
+		return toUuid(hash);
 	}
 }
