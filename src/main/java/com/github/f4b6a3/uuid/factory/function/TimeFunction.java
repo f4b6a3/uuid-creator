@@ -33,10 +33,6 @@ import com.github.f4b6a3.uuid.util.UuidTime;
 /**
  * It must return a number of 100-nanoseconds since 1970-01-01 (Unix epoch).
  * 
- * Use {@link TimeFunction#toTimestamp(Instant)} to convert the output to
- * 100-nanoseconds since 1970-01-01 (Unix epoch). It also sets the output within
- * the range 0 to 2^60-1.
- * 
  * The {@link AbstTimeBasedFactory} will convert the output time to Gregorian
  * epoch (1582-10-15) for you.
  * 
@@ -44,7 +40,7 @@ import com.github.f4b6a3.uuid.util.UuidTime;
  * 
  * <pre>
  * // A `TimeFunction` that returns the `Instant.now()` as a number of 100-nanoseconds
- * TimeFunction f = () -> TimeFunction.toTimestamp(Instant.now()); // for JDK 9+
+ * TimeFunction f = () -> TimeFunction.toUnixTimestamp(Instant.now()); // for JDK 9+
  * </pre>
  * 
  * In JDK 8, {@link Instant#now()} has millisecond precision, in spite of
@@ -65,7 +61,20 @@ public interface TimeFunction extends LongSupplier {
 	 * @param instant an instant
 	 * @return a number of 100-nanoseconds since 1970-01-01 (Unix epoch)
 	 */
-	public static long toTimestamp(final Instant instant) {
+	public static long toUnixTimestamp(final Instant instant) {
 		return UuidTime.toUnixTimestamp(instant);
+	}
+
+	/**
+	 * This method clears the unnecessary leading bits so that the resulting number
+	 * is in the range 0 to 2^60-1.
+	 * 
+	 * The result is equivalent to {@code n % 2^60}.
+	 * 
+	 * @param timestamp the node identifier
+	 * @return a timestamp in the range 0 to 2^60-1.
+	 */
+	public static long toExpectedRange(final long timestamp) {
+		return timestamp & 0x0_fffffffffffffffL;
 	}
 }

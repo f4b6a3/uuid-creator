@@ -208,7 +208,7 @@ public class TimeOrderedFactoryTest extends UuidFactoryTest {
 			smaller = UuidCreator.getTimeOrdered();
 			bigger = UuidCreator.getTimeOrdered();
 
-			if (!(smaller.compareTo(bigger) < 0)) {
+			if (smaller.compareTo(bigger) >= 0) {
 				ok = false;
 				break;
 			}

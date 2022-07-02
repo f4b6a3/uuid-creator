@@ -52,17 +52,14 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  * 
  * The UUID is divided in 2 components: time and monotonic random. The monotonic
  * random component is incremented by 1 when the time repeats. This type of UUID
- * is like a Monotonic ULID. It can be 20x faster than the first type, but it
- * generates an easy-to-guess sequence of identifiers within the same
- * millisecond interval.
+ * is like a Monotonic ULID. It can be much faster than the other types.
  * 
  * * Plus N:
  * 
  * The UUID is divided in 2 components: time and monotonic random. The monotonic
  * random component is incremented by a random positive integer between 1 and
- * 2^32-1 when the time repeats. This type of UUID is also like a Monotonic
- * ULID. It can be faster than the first type as it consumes less entropy.
- * Furthermore, the sequence of identifiers is impossible to guess.
+ * MAX when the time repeats. If the value of MAX is not specified, MAX is 2^32.
+ * This type of UUID is also like a Monotonic ULID.
  * 
  * RFC-4122 version: 7 (proposed).
  * 
@@ -123,6 +120,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	public static class Builder extends AbstCombFactory.Builder<TimeOrderedEpochFactory> {
 
 		private Integer incrementType;
+		private Long incrementMax;
 
 		@Override
 		public Builder withClock(Clock clock) {
@@ -141,11 +139,19 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 
 		public Builder withIncrementPlus1() {
 			this.incrementType = INCREMENT_TYPE_PLUS_1;
+			this.incrementMax = null;
 			return this;
 		}
 
 		public Builder withIncrementPlusN() {
 			this.incrementType = INCREMENT_TYPE_PLUS_N;
+			this.incrementMax = null;
+			return this;
+		}
+
+		public Builder withIncrementPlusN(long incrementMax) {
+			this.incrementType = INCREMENT_TYPE_PLUS_N;
+			this.incrementMax = incrementMax;
 			return this;
 		}
 
@@ -162,11 +168,25 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 				// add 1 to rand_b
 				return () -> 1;
 			case INCREMENT_TYPE_PLUS_N:
-				return () -> {
-					// add n to rand_b, where 1 <= n <= 2^32-1
-					byte[] bytes = super.randomFunction.apply(4);
-					return (ByteUtil.toNumber(bytes, 0, 4) + 1) & 0x7fffffffL;
-				};
+				if (incrementMax == null) {
+					return () -> {
+						// add n to rand_b, where 1 <= n <= 2^32
+						final byte[] bytes = super.randomFunction.apply(4);
+						return ByteUtil.toNumber(bytes, 0, 4) + 1;
+					};
+				} else {
+
+					// the minimum number of bits and bytes for incrementMax
+					final int bits = (int) Math.ceil(Math.log(incrementMax) / Math.log(2));
+					final int size = ((bits - 1) / Byte.SIZE) + 1;
+
+					return () -> {
+						// add n to rand_b, where 1 <= n <= incrementMax
+						final byte[] bytes = super.randomFunction.apply(size);
+						final long random = ByteUtil.toNumber(bytes, 0, size);
+						return (random % incrementMax) + 1;
+					};
+				}
 			case INCREMENT_TYPE_DEFAULT:
 			default:
 				// add 2^48 to rand_b

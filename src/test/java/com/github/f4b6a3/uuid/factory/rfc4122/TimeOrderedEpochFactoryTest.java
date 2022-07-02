@@ -282,7 +282,7 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 			smaller = UuidCreator.getTimeOrderedEpoch();
 			bigger = UuidCreator.getTimeOrderedEpoch();
 
-			if (!(smaller.compareTo(bigger) < 0)) {
+			if (smaller.compareTo(bigger) >= 0) {
 				ok = false;
 				break;
 			}

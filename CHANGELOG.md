@@ -6,9 +6,17 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
-## [5.0.0] - 2022-??-??
+## [5.0.0] - 2022-07-02
 
-To be done.
+This version contains has breaking changes.
+
+- Added Max UUID. #67
+- Added implementations for UUID v7. #67
+- Added minimum support for UUID v8. #67
+- Added `UriCodec.isUuidUri()`. #66
+- Added `UrnCodec` with `UrnCodec.isUuidUrn()`. #66
+- Changed `UuidCodec` implementations to explicitly and only throw `InvalidUuidException`. #65
+- Fixed out-of-order when trying to generate a huge batch of UUID v6 in a loop. #69
 
 ## [4.6.1] - 2022-03-19
 
@@ -32,7 +40,7 @@ Add `Clock` parameter for COMB factories and time functions for tests. #60
 
 ## [4.4.0] - 2022-01-28
 
-This version contains has breaking changes.
+This version contains breaking changes.
 
 Add credits file for contributors. #58
 

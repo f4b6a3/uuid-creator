@@ -1,9 +1,6 @@
 
 package benchmark;
 
-import java.security.SecureRandom;
-import java.util.Random;
-import java.util.SplittableRandom;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -19,24 +16,11 @@ import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import com.github.f4b6a3.uuid.codec.base.Base16Codec;
-import com.github.f4b6a3.uuid.codec.base.Base32Codec;
-import com.github.f4b6a3.uuid.codec.base.Base58BtcCodec;
-import com.github.f4b6a3.uuid.codec.base.Base62Codec;
-import com.github.f4b6a3.uuid.codec.base.Base64UrlCodec;
-import com.github.f4b6a3.uuid.factory.UuidFactory;
-import com.github.f4b6a3.uuid.factory.function.ClockSeqFunction;
-import com.github.f4b6a3.uuid.factory.function.NodeIdFunction;
-import com.github.f4b6a3.uuid.factory.function.RandomFunction;
-import com.github.f4b6a3.uuid.factory.function.TimeFunction;
-import com.github.f4b6a3.uuid.factory.function.impl.DefaultClockSeqFunction;
-import com.github.f4b6a3.uuid.factory.function.impl.DefaultRandomFunction;
-import com.github.f4b6a3.uuid.factory.function.impl.DefaultTimeFunction;
-import com.github.f4b6a3.uuid.factory.function.impl.HashNodeIdFunction;
-import com.github.f4b6a3.uuid.factory.function.impl.MacNodeIdFunction;
-import com.github.f4b6a3.uuid.factory.rfc4122.RandomBasedFactory;
-import com.github.f4b6a3.uuid.factory.rfc4122.TimeBasedFactory;
-import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedEpochFactory;
+//import com.github.f4b6a3.uuid.codec.base.Base16Codec;
+//import com.github.f4b6a3.uuid.codec.base.Base32Codec;
+//import com.github.f4b6a3.uuid.codec.base.Base58BtcCodec;
+//import com.github.f4b6a3.uuid.codec.base.Base62Codec;
+//import com.github.f4b6a3.uuid.codec.base.Base64UrlCodec;
 
 @Fork(1)
 @Threads(1)
@@ -137,59 +121,59 @@ public class Throughput {
 
 	/*********** UUID Codecs ************/
 
-	String base16 = Base16Codec.INSTANCE.encode(uuid);
-	String base32 = Base32Codec.INSTANCE.encode(uuid);
-	String base58 = Base58BtcCodec.INSTANCE.encode(uuid);
-	String base62 = Base62Codec.INSTANCE.encode(uuid);
-	String base64 = Base64UrlCodec.INSTANCE.encode(uuid);
-
-	@Benchmark
-	public UUID uuid_codec_base_16_decode() {
-		return Base16Codec.INSTANCE.decode(base16);
-	}
-
-	@Benchmark
-	public UUID uuid_codec_base_32_decode() {
-		return Base32Codec.INSTANCE.decode(base32);
-	}
-
-	@Benchmark
-	public UUID uuid_codec_base_58_decode() {
-		return Base58BtcCodec.INSTANCE.decode(base58);
-	}
-
-	@Benchmark
-	public UUID uuid_codec_base_62_decode() {
-		return Base62Codec.INSTANCE.decode(base62);
-	}
-
-	@Benchmark
-	public UUID uuid_codec_base_64_decode() {
-		return Base64UrlCodec.INSTANCE.decode(base64);
-	}
-
-	@Benchmark
-	public String uuid_codec_base_16_encode() {
-		return Base16Codec.INSTANCE.encode(uuid);
-	}
-
-	@Benchmark
-	public String uuid_codec_base_32_encode() {
-		return Base32Codec.INSTANCE.encode(uuid);
-	}
-
-	@Benchmark
-	public String uuid_codec_base_58_encode() {
-		return Base58BtcCodec.INSTANCE.encode(uuid);
-	}
-
-	@Benchmark
-	public String uuid_codec_base_62_encode() {
-		return Base62Codec.INSTANCE.encode(uuid);
-	}
-
-	@Benchmark
-	public String uuid_codec_base_64_encode() {
-		return Base64UrlCodec.INSTANCE.encode(uuid);
-	}
+//	String base16 = Base16Codec.INSTANCE.encode(uuid);
+//	String base32 = Base32Codec.INSTANCE.encode(uuid);
+//	String base58 = Base58BtcCodec.INSTANCE.encode(uuid);
+//	String base62 = Base62Codec.INSTANCE.encode(uuid);
+//	String base64 = Base64UrlCodec.INSTANCE.encode(uuid);
+//
+//	@Benchmark
+//	public UUID uuid_codec_base_16_decode() {
+//		return Base16Codec.INSTANCE.decode(base16);
+//	}
+//
+//	@Benchmark
+//	public UUID uuid_codec_base_32_decode() {
+//		return Base32Codec.INSTANCE.decode(base32);
+//	}
+//
+//	@Benchmark
+//	public UUID uuid_codec_base_58_decode() {
+//		return Base58BtcCodec.INSTANCE.decode(base58);
+//	}
+//
+//	@Benchmark
+//	public UUID uuid_codec_base_62_decode() {
+//		return Base62Codec.INSTANCE.decode(base62);
+//	}
+//
+//	@Benchmark
+//	public UUID uuid_codec_base_64_decode() {
+//		return Base64UrlCodec.INSTANCE.decode(base64);
+//	}
+//
+//	@Benchmark
+//	public String uuid_codec_base_16_encode() {
+//		return Base16Codec.INSTANCE.encode(uuid);
+//	}
+//
+//	@Benchmark
+//	public String uuid_codec_base_32_encode() {
+//		return Base32Codec.INSTANCE.encode(uuid);
+//	}
+//
+//	@Benchmark
+//	public String uuid_codec_base_58_encode() {
+//		return Base58BtcCodec.INSTANCE.encode(uuid);
+//	}
+//
+//	@Benchmark
+//	public String uuid_codec_base_62_encode() {
+//		return Base62Codec.INSTANCE.encode(uuid);
+//	}
+//
+//	@Benchmark
+//	public String uuid_codec_base_64_encode() {
+//		return Base64UrlCodec.INSTANCE.encode(uuid);
+//	}
 }

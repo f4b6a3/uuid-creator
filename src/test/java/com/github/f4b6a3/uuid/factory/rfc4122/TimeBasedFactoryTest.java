@@ -176,7 +176,7 @@ public class TimeBasedFactoryTest extends UuidFactoryTest {
 			smaller = UuidCreator.getTimeBased();
 			bigger = UuidCreator.getTimeBased();
 
-			if (!(UuidComparator.defaultCompare(smaller, bigger) < 0)) {
+			if (UuidComparator.defaultCompare(smaller, bigger) >= 0) {
 				ok = false;
 				break;
 			}

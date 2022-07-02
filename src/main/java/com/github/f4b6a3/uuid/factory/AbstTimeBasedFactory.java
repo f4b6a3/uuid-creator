@@ -52,7 +52,7 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 	private static final String NODE_HASH = "hash";
 	private static final String NODE_RANDOM = "random";
 
-	private static final long EPOCH_TIMESTAMP = TimeFunction.toTimestamp(UuidTime.EPOCH_GREG);
+	private static final long EPOCH_TIMESTAMP = TimeFunction.toUnixTimestamp(UuidTime.EPOCH_GREG);
 
 	protected AbstTimeBasedFactory(UuidVersion version, Builder<?> builder) {
 		super(version);
@@ -155,13 +155,13 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 	public synchronized UUID create() {
 
 		// (3a) get the timestamp
-		final long timestamp = this.timeFunction.getAsLong() - EPOCH_TIMESTAMP;
+		final long timestamp = TimeFunction.toExpectedRange(this.timeFunction.getAsLong() - EPOCH_TIMESTAMP);
 
 		// (4a)(5a) get the node identifier
-		final long nodeIdentifier = this.nodeidFunction.getAsLong();
+		final long nodeIdentifier = NodeIdFunction.toExpectedRange(this.nodeidFunction.getAsLong());
 
 		// (5a)(6a) get the sequence value
-		final long clockSequence = this.clockseqFunction.applyAsLong(timestamp);
+		final long clockSequence = ClockSeqFunction.toExpectedRange(this.clockseqFunction.applyAsLong(timestamp));
 
 		// (9a) format the most significant bits
 		final long msb = this.formatMostSignificantBits(timestamp);
@@ -347,7 +347,7 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 		}
 
 		public Builder<T> withInstant(Instant instant) {
-			final long timestamp = TimeFunction.toTimestamp(instant);
+			final long timestamp = TimeFunction.toUnixTimestamp(instant);
 			this.timeFunction = () -> timestamp;
 			return this;
 		}

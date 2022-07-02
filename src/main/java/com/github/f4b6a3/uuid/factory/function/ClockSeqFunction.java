@@ -72,7 +72,7 @@ public interface ClockSeqFunction extends LongUnaryOperator {
 	 * @param clockseq the clock sequence
 	 * @return a clock sequence in the range 0 to 16383 (2^14-1).
 	 */
-	public static long toExpectedRange(long clockseq) {
+	public static long toExpectedRange(final long clockseq) {
 		return clockseq & 0x0000000000003fffL;
 	}
 

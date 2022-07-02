@@ -81,7 +81,7 @@ public interface NodeIdFunction extends LongSupplier {
 	 * @param nodeid the node identifier
 	 * @return a node identifier in the range 0 to 2^48-1.
 	 */
-	public static long toExpectedRange(long nodeid) {
+	public static long toExpectedRange(final long nodeid) {
 		return nodeid & 0x0000_ffffffffffffL;
 	}
 

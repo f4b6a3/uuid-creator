@@ -24,6 +24,7 @@
 
 package com.github.f4b6a3.uuid.factory;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
@@ -62,15 +63,25 @@ public abstract class AbstRandomBasedFactory extends UuidFactory implements NoAr
 			return new DefaultRandomFunction();
 		}
 
-		return new RandomFunction() {
-			private final Random entropy = random;
-
-			@Override
-			public synchronized byte[] apply(final int length) {
+		if (random instanceof SecureRandom) {
+			final Random entropy = random;
+			return (final int length) -> {
 				final byte[] bytes = new byte[length];
 				entropy.nextBytes(bytes);
 				return bytes;
-			}
-		};
+			};
+		} else {
+			// a synchronized function
+			return new RandomFunction() {
+				private final Random entropy = random;
+
+				@Override
+				public synchronized byte[] apply(final int length) {
+					final byte[] bytes = new byte[length];
+					entropy.nextBytes(bytes);
+					return bytes;
+				}
+			};
+		}
 	}
 }
