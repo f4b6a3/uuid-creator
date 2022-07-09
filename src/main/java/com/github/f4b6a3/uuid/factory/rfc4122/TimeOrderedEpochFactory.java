@@ -156,26 +156,39 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 			switch (getIncrementType()) {
 			case INCREMENT_TYPE_PLUS_1:
 				// add 1 to rand_b
-				return () -> 1;
+				return () -> 1L;
 			case INCREMENT_TYPE_PLUS_N:
 				if (incrementMax == null) {
-					return () -> {
-						// add n to rand_b, where 1 <= n <= 2^32
-						final byte[] bytes = this.random.nextBytes(4);
-						return ByteUtil.toNumber(bytes, 0, 4) + 1;
-					};
+					if (random instanceof ByteRandom) {
+						return () -> {
+							// add n to rand_b, where 1 <= n <= 2^32
+							final byte[] bytes = this.random.nextBytes(4);
+							return ByteUtil.toNumber(bytes, 0, 4) + 1;
+						};
+					} else {
+						return () -> {
+							// add n to rand_b, where 1 <= n <= 2^32
+							return (this.random.nextLong() >>> 32) + 1;
+						};
+					}
 				} else {
-
-					// the minimum number of bits and bytes for incrementMax
-					final int bits = (int) Math.ceil(Math.log(incrementMax) / Math.log(2));
-					final int size = ((bits - 1) / Byte.SIZE) + 1;
-
-					return () -> {
-						// add n to rand_b, where 1 <= n <= incrementMax
-						final byte[] bytes = this.random.nextBytes(size);
-						final long random = ByteUtil.toNumber(bytes, 0, size);
-						return (random % incrementMax) + 1;
-					};
+					final long positive = 0x7fffffffffffffffL;
+					if (random instanceof ByteRandom) {
+						// the minimum number of bits and bytes for incrementMax
+						final int bits = (int) Math.ceil(Math.log(incrementMax) / Math.log(2));
+						final int size = ((bits - 1) / Byte.SIZE) + 1;
+						return () -> {
+							// add n to rand_b, where 1 <= n <= incrementMax
+							final byte[] bytes = this.random.nextBytes(size);
+							final long random = ByteUtil.toNumber(bytes, 0, size);
+							return ((random & positive) % incrementMax) + 1;
+						};
+					} else {
+						return () -> {
+							// add n to rand_b, where 1 <= n <= incrementMax
+							return ((this.random.nextLong() & positive) % incrementMax) + 1;
+						};
+					}
 				}
 			case INCREMENT_TYPE_DEFAULT:
 			default:

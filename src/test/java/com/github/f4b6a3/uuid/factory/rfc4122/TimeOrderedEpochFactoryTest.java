@@ -10,16 +10,93 @@ import com.github.f4b6a3.uuid.util.UuidTime;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.SplittableRandom;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.IntFunction;
+import java.util.function.LongSupplier;
 
 public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
+
+	@Test
+	public void testDefault() {
+		TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory();
+		assertNotNull(factory.create());
+	}
+
+	@Test
+	public void testWithRandom() {
+		{
+			Random random = new Random();
+			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory(random);
+			assertNotNull(factory.create());
+		}
+		{
+			SecureRandom random = new SecureRandom();
+			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory(random);
+			assertNotNull(factory.create());
+		}
+	}
+
+	@Test
+	public void testWithRandomFunction() {
+		{
+			SplittableRandom random = new SplittableRandom();
+			LongSupplier function = () -> random.nextLong();
+			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory(function);
+			assertNotNull(factory.create());
+		}
+		{
+			IntFunction<byte[]> function = (length) -> {
+				byte[] bytes = new byte[length];
+				ThreadLocalRandom.current().nextBytes(bytes);
+				return bytes;
+			};
+			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory(function);
+			assertNotNull(factory.create());
+		}
+		{
+			SplittableRandom random = new SplittableRandom();
+			LongSupplier function = () -> random.nextLong();
+			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory(function, Clock.systemDefaultZone());
+			assertNotNull(factory.create());
+		}
+		{
+			IntFunction<byte[]> function = (length) -> {
+				byte[] bytes = new byte[length];
+				ThreadLocalRandom.current().nextBytes(bytes);
+				return bytes;
+			};
+			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory(function, Clock.systemDefaultZone());
+			assertNotNull(factory.create());
+		}
+	}
+
+	@Test
+	public void testWithRandomNull() {
+		TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory((Random) null);
+		assertNotNull(factory.create());
+	}
+
+	@Test
+	public void testWithRandomFunctionNull() {
+		{
+			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory((LongSupplier) null);
+			assertNotNull(factory.create());
+		}
+		{
+			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory((IntFunction<byte[]>) null);
+			assertNotNull(factory.create());
+		}
+	}
 
 	@Test
 	public void testGetTimeOrderedEpoch() {
@@ -79,57 +156,76 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 	@Test
 	public void testGetTimeOrderedEpochCheckTime() {
 
+		TimeOrderedEpochFactory factory;
 		Clock clock = Clock.systemDefaultZone();
 
-		UUID[] list;
-		long startTime;
-		long endTime;
-		TimeOrderedEpochFactory factory;
+		{
+			UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+			factory = new TimeOrderedEpochFactory(clock);
 
-		list = new UUID[DEFAULT_LOOP_MAX];
-		factory = new TimeOrderedEpochFactory(clock);
+			long startTime = clock.millis();
+			for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+				list[i] = factory.create();
+			}
+			// can be 1ms ahead of time
+			long endTime = clock.millis() + 1;
 
-		startTime = clock.millis();
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = factory.create();
+			checkNotNull(list);
+			checkOrdering(list);
+			checkUniqueness(list);
+			checkCreationTime(list, startTime, endTime);
 		}
-		// can be 1ms ahead of time
-		endTime = clock.millis() + 1;
 
-		checkNotNull(list);
-		checkOrdering(list);
-		checkUniqueness(list);
-		checkCreationTime(list, startTime, endTime);
+		{
+			UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+			factory = TimeOrderedEpochFactory.builder().withClock(clock).withIncrementPlus1().build();
 
-		list = new UUID[DEFAULT_LOOP_MAX];
-		factory = TimeOrderedEpochFactory.builder().withClock(clock).withIncrementPlus1().build();
+			long startTime = clock.millis();
+			for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+				list[i] = factory.create();
+			}
+			// can be 1ms ahead of time
+			long endTime = clock.millis() + 1;
 
-		startTime = clock.millis();
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = factory.create();
+			checkNotNull(list);
+			checkOrdering(list);
+			checkUniqueness(list);
+			checkCreationTime(list, startTime, endTime);
 		}
-		// can be 1ms ahead of time
-		endTime = clock.millis() + 1;
 
-		checkNotNull(list);
-		checkOrdering(list);
-		checkUniqueness(list);
-		checkCreationTime(list, startTime, endTime);
+		{
+			UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+			factory = TimeOrderedEpochFactory.builder().withClock(clock).withIncrementPlusN().build();
 
-		list = new UUID[DEFAULT_LOOP_MAX];
-		factory = TimeOrderedEpochFactory.builder().withClock(clock).withIncrementPlusN().build();
+			long startTime = clock.millis();
+			for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+				list[i] = factory.create();
+			}
+			// can be 1ms ahead of time
+			long endTime = clock.millis() + 1;
 
-		startTime = clock.millis();
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = factory.create();
+			checkNotNull(list);
+			checkOrdering(list);
+			checkUniqueness(list);
+			checkCreationTime(list, startTime, endTime);
 		}
-		// can be 1ms ahead of time
-		endTime = clock.millis() + 1;
 
-		checkNotNull(list);
-		checkOrdering(list);
-		checkUniqueness(list);
-		checkCreationTime(list, startTime, endTime);
+		{
+			UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+			factory = TimeOrderedEpochFactory.builder().withClock(clock).withIncrementPlusN(1_000_000).build();
+
+			long startTime = clock.millis();
+			for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+				list[i] = factory.create();
+			}
+			// can be 1ms ahead of time
+			long endTime = clock.millis() + 1;
+
+			checkNotNull(list);
+			checkOrdering(list);
+			checkUniqueness(list);
+			checkCreationTime(list, startTime, endTime);
+		}
 	}
 
 	private void checkCreationTime(UUID[] list, long startTime, long endTime) {
@@ -147,42 +243,59 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 	public void testGetTimeOrderedEpochWithRandom() {
 
 		Random random = new Random();
-
-		UUID[] list;
 		TimeOrderedEpochFactory factory;
 
-		list = new UUID[DEFAULT_LOOP_MAX];
-		factory = new TimeOrderedEpochFactory(random);
+		{
+			UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+			factory = new TimeOrderedEpochFactory(random);
 
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = factory.create();
+			for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+				list[i] = factory.create();
+			}
+
+			checkNotNull(list);
+			checkOrdering(list);
+			checkUniqueness(list);
 		}
 
-		checkNotNull(list);
-		checkOrdering(list);
-		checkUniqueness(list);
+		{
+			UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+			factory = TimeOrderedEpochFactory.builder().withRandom(random).withIncrementPlus1().build();
 
-		list = new UUID[DEFAULT_LOOP_MAX];
-		factory = TimeOrderedEpochFactory.builder().withRandom(random).withIncrementPlus1().build();
+			for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+				list[i] = factory.create();
+			}
 
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = factory.create();
+			checkNotNull(list);
+			checkOrdering(list);
+			checkUniqueness(list);
 		}
 
-		checkNotNull(list);
-		checkOrdering(list);
-		checkUniqueness(list);
+		{
+			UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+			factory = TimeOrderedEpochFactory.builder().withRandom(random).withIncrementPlusN().build();
 
-		list = new UUID[DEFAULT_LOOP_MAX];
-		factory = TimeOrderedEpochFactory.builder().withRandom(random).withIncrementPlusN().build();
+			for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+				list[i] = factory.create();
+			}
 
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = factory.create();
+			checkNotNull(list);
+			checkOrdering(list);
+			checkUniqueness(list);
 		}
 
-		checkNotNull(list);
-		checkOrdering(list);
-		checkUniqueness(list);
+		{
+			UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+			factory = TimeOrderedEpochFactory.builder().withRandom(random).withIncrementPlusN(1_000_000).build();
+
+			for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+				list[i] = factory.create();
+			}
+
+			checkNotNull(list);
+			checkOrdering(list);
+			checkUniqueness(list);
+		}
 	}
 
 	@Test
@@ -194,41 +307,59 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 			return bytes;
 		};
 
-		UUID[] list;
 		TimeOrderedEpochFactory factory;
 
-		list = new UUID[DEFAULT_LOOP_MAX];
-		factory = new TimeOrderedEpochFactory(randomFunction);
+		{
+			UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+			factory = new TimeOrderedEpochFactory(randomFunction);
 
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = factory.create();
+			for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+				list[i] = factory.create();
+			}
+
+			checkNotNull(list);
+			checkOrdering(list);
+			checkUniqueness(list);
+		}
+		{
+			UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+			factory = TimeOrderedEpochFactory.builder().withRandomFunction(randomFunction).withIncrementPlus1().build();
+
+			for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+				list[i] = factory.create();
+			}
+
+			checkNotNull(list);
+			checkOrdering(list);
+			checkUniqueness(list);
 		}
 
-		checkNotNull(list);
-		checkOrdering(list);
-		checkUniqueness(list);
+		{
+			UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+			factory = TimeOrderedEpochFactory.builder().withRandomFunction(randomFunction).withIncrementPlusN().build();
 
-		list = new UUID[DEFAULT_LOOP_MAX];
-		factory = TimeOrderedEpochFactory.builder().withRandomFunction(randomFunction).withIncrementPlus1().build();
+			for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+				list[i] = factory.create();
+			}
 
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = factory.create();
+			checkNotNull(list);
+			checkOrdering(list);
+			checkUniqueness(list);
 		}
 
-		checkNotNull(list);
-		checkOrdering(list);
-		checkUniqueness(list);
+		{
+			UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+			factory = TimeOrderedEpochFactory.builder().withRandomFunction(randomFunction).withIncrementPlusN(1_000_000)
+					.build();
 
-		list = new UUID[DEFAULT_LOOP_MAX];
-		factory = TimeOrderedEpochFactory.builder().withRandomFunction(randomFunction).withIncrementPlusN().build();
+			for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+				list[i] = factory.create();
+			}
 
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = factory.create();
+			checkNotNull(list);
+			checkOrdering(list);
+			checkUniqueness(list);
 		}
-
-		checkNotNull(list);
-		checkOrdering(list);
-		checkUniqueness(list);
 	}
 
 	@Test

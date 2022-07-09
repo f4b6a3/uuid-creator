@@ -69,10 +69,9 @@ public class TimeOrderedFactoryTest extends UuidFactoryTest {
 	public void testGetTimeOrderedTimestampBitsAreTimeOrdered() {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		TimeOrderedFactory factory = new TimeOrderedFactory();
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = factory.create();
+			list[i] = UuidCreator.getTimeOrdered();
 		}
 
 		long oldTimestemp = 0;
