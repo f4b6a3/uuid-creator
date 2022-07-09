@@ -5,7 +5,6 @@ import org.junit.Test;
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.factory.UuidFactoryTest;
 import com.github.f4b6a3.uuid.factory.function.RandomFunction;
-import com.github.f4b6a3.uuid.factory.nonstandard.SuffixCombFactory;
 import com.github.f4b6a3.uuid.util.CombUtil;
 import com.github.f4b6a3.uuid.util.UuidTime;
 
@@ -34,6 +33,7 @@ public class SuffixCombFactoryTest extends UuidFactoryTest {
 
 		checkNotNull(list);
 		checkOrdering(list);
+		checkVersion(list, 4);
 		checkUniqueness(list);
 	}
 
@@ -69,6 +69,7 @@ public class SuffixCombFactoryTest extends UuidFactoryTest {
 
 		checkNotNull(list);
 		checkOrdering(list);
+		checkVersion(list, 4);
 		checkUniqueness(list);
 
 		long previous = 0;
@@ -94,6 +95,7 @@ public class SuffixCombFactoryTest extends UuidFactoryTest {
 
 		checkNotNull(list);
 		checkOrdering(list);
+		checkVersion(list, 4);
 		checkUniqueness(list);
 	}
 
@@ -114,6 +116,7 @@ public class SuffixCombFactoryTest extends UuidFactoryTest {
 
 		checkNotNull(list);
 		checkOrdering(list);
+		checkVersion(list, 4);
 		checkUniqueness(list);
 	}
 

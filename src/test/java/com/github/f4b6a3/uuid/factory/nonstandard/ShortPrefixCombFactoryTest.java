@@ -5,7 +5,6 @@ import org.junit.Test;
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.factory.UuidFactoryTest;
 import com.github.f4b6a3.uuid.factory.function.RandomFunction;
-import com.github.f4b6a3.uuid.factory.nonstandard.ShortPrefixCombFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -31,6 +30,7 @@ public class ShortPrefixCombFactoryTest extends UuidFactoryTest {
 
 		checkNotNull(list);
 		checkOrdering(list);
+		checkVersion(list, 4);
 		checkUniqueness(list);
 	}
 
@@ -46,6 +46,7 @@ public class ShortPrefixCombFactoryTest extends UuidFactoryTest {
 
 		checkNotNull(list);
 		checkOrdering(list);
+		checkVersion(list, 4);
 		checkUniqueness(list);
 
 		long previous = 0;
@@ -73,6 +74,7 @@ public class ShortPrefixCombFactoryTest extends UuidFactoryTest {
 
 		checkNotNull(list);
 		checkOrdering(list);
+		checkVersion(list, 4);
 		checkUniqueness(list);
 
 		long previous = 0;
@@ -98,6 +100,7 @@ public class ShortPrefixCombFactoryTest extends UuidFactoryTest {
 
 		checkNotNull(list);
 		checkOrdering(list);
+		checkVersion(list, 4);
 		checkUniqueness(list);
 	}
 
@@ -118,6 +121,7 @@ public class ShortPrefixCombFactoryTest extends UuidFactoryTest {
 
 		checkNotNull(list);
 		checkOrdering(list);
+		checkVersion(list, 4);
 		checkUniqueness(list);
 	}
 

@@ -27,11 +27,11 @@ package com.github.f4b6a3.uuid.factory.rfc4122;
 import java.time.Clock;
 import java.util.Random;
 import java.util.UUID;
+import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstCombFactory;
-import com.github.f4b6a3.uuid.factory.function.RandomFunction;
 import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
@@ -84,9 +84,6 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	// system clock jumps back by 1 second due to leap second.
 	protected static final int CLOCK_DRIFT_TOLERANCE = 10_000;
 
-	// Number of random bytes to be generated
-	public static final int RANDOM_BYTES = 10;
-
 	public TimeOrderedEpochFactory() {
 		this(builder());
 	}
@@ -103,11 +100,19 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		this(builder().withRandom(random).withClock(clock));
 	}
 
-	public TimeOrderedEpochFactory(RandomFunction randomFunction) {
+	public TimeOrderedEpochFactory(LongSupplier randomFunction) {
 		this(builder().withRandomFunction(randomFunction));
 	}
 
-	public TimeOrderedEpochFactory(RandomFunction randomFunction, Clock clock) {
+	public TimeOrderedEpochFactory(IntFunction<byte[]> randomFunction) {
+		this(builder().withRandomFunction(randomFunction));
+	}
+
+	public TimeOrderedEpochFactory(LongSupplier randomFunction, Clock clock) {
+		this(builder().withRandomFunction(randomFunction).withClock(clock));
+	}
+
+	public TimeOrderedEpochFactory(IntFunction<byte[]> randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
 
@@ -117,25 +122,10 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		this.incrementSupplier = builder.getIncrementSupplier();
 	}
 
-	public static class Builder extends AbstCombFactory.Builder<TimeOrderedEpochFactory> {
+	public static class Builder extends AbstCombFactory.Builder<TimeOrderedEpochFactory, Builder> {
 
 		private Integer incrementType;
 		private Long incrementMax;
-
-		@Override
-		public Builder withClock(Clock clock) {
-			return (Builder) super.withClock(clock);
-		}
-
-		@Override
-		public Builder withRandom(Random random) {
-			return (Builder) super.withRandom(random);
-		}
-
-		@Override
-		public Builder withRandomFunction(RandomFunction randomFunction) {
-			return (Builder) super.withRandomFunction(randomFunction);
-		}
 
 		public Builder withIncrementPlus1() {
 			this.incrementType = INCREMENT_TYPE_PLUS_1;
@@ -155,14 +145,14 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 			return this;
 		}
 
-		public int getIncrementType() {
+		protected int getIncrementType() {
 			if (this.incrementType == null) {
 				this.incrementType = INCREMENT_TYPE_DEFAULT;
 			}
 			return this.incrementType;
 		}
 
-		public LongSupplier getIncrementSupplier() {
+		protected LongSupplier getIncrementSupplier() {
 			switch (getIncrementType()) {
 			case INCREMENT_TYPE_PLUS_1:
 				// add 1 to rand_b
@@ -171,7 +161,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 				if (incrementMax == null) {
 					return () -> {
 						// add n to rand_b, where 1 <= n <= 2^32
-						final byte[] bytes = super.randomFunction.apply(4);
+						final byte[] bytes = this.random.nextBytes(4);
 						return ByteUtil.toNumber(bytes, 0, 4) + 1;
 					};
 				} else {
@@ -182,7 +172,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 
 					return () -> {
 						// add n to rand_b, where 1 <= n <= incrementMax
-						final byte[] bytes = super.randomFunction.apply(size);
+						final byte[] bytes = this.random.nextBytes(size);
 						final long random = ByteUtil.toNumber(bytes, 0, size);
 						return (random % incrementMax) + 1;
 					};
@@ -216,8 +206,19 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		if ((time > this.lastTime - CLOCK_DRIFT_TOLERANCE) && (time <= this.lastTime)) {
 			this.lastUuid = increment(this.lastUuid);
 		} else {
+
 			this.lastTime = time;
-			this.lastUuid = make(time, this.randomFunction.apply(RANDOM_BYTES));
+
+			if (this.random instanceof ByteRandom) {
+				final byte[] bytes = this.random.nextBytes(10);
+				final long long1 = ByteUtil.toNumber(bytes, 0, 2);
+				final long long2 = ByteUtil.toNumber(bytes, 2, 10);
+				this.lastUuid = make(time, long1, long2);
+			} else {
+				final long long1 = this.random.nextLong();
+				final long long2 = this.random.nextLong();
+				this.lastUuid = make(time, long1, long2);
+			}
 		}
 
 		return copy(this.lastUuid);
@@ -247,7 +248,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 
 			// And finally, randomize the lower 48 bits of the LSB.
 			lsb &= clearMask; // Clear the random before randomize.
-			lsb |= ByteUtil.toNumber(this.randomFunction.apply(6));
+			lsb |= ByteUtil.toNumber(this.random.nextBytes(6));
 
 		} else {
 			// If the 62 bits of the monotonic random overflow,
@@ -259,26 +260,8 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		return toUuid(msb, lsb);
 	}
 
-	private synchronized UUID make(long time, byte[] random) {
-
-		long msb = 0;
-		long lsb = 0;
-
-		msb |= time << 16;
-
-		msb |= (random[0x0] & 0xffL) << 8;
-		msb |= (random[0x1] & 0xffL);
-
-		lsb |= (random[0x2] & 0xffL) << 56;
-		lsb |= (random[0x3] & 0xffL) << 48;
-		lsb |= (random[0x4] & 0xffL) << 40;
-		lsb |= (random[0x5] & 0xffL) << 32;
-		lsb |= (random[0x6] & 0xffL) << 24;
-		lsb |= (random[0x7] & 0xffL) << 16;
-		lsb |= (random[0x8] & 0xffL) << 8;
-		lsb |= (random[0x9] & 0xffL);
-
-		return toUuid(msb, lsb);
+	private UUID make(final long time, final long long1, final long long2) {
+		return toUuid((time << 16) | (long1 & 0x000000000000ffffL), long2);
 	}
 
 	private synchronized UUID copy(UUID uuid) {

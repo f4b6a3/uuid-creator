@@ -27,10 +27,11 @@ package com.github.f4b6a3.uuid.factory.nonstandard;
 import java.time.Clock;
 import java.util.Random;
 import java.util.UUID;
+import java.util.function.IntFunction;
+import java.util.function.LongSupplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstCombFactory;
-import com.github.f4b6a3.uuid.factory.function.RandomFunction;
 import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
@@ -62,11 +63,19 @@ public final class PrefixCombFactory extends AbstCombFactory {
 		this(builder().withRandom(random).withClock(clock));
 	}
 
-	public PrefixCombFactory(RandomFunction randomFunction) {
+	public PrefixCombFactory(LongSupplier randomFunction) {
 		this(builder().withRandomFunction(randomFunction));
 	}
 
-	public PrefixCombFactory(RandomFunction randomFunction, Clock clock) {
+	public PrefixCombFactory(IntFunction<byte[]> randomFunction) {
+		this(builder().withRandomFunction(randomFunction));
+	}
+
+	public PrefixCombFactory(LongSupplier randomFunction, Clock clock) {
+		this(builder().withRandomFunction(randomFunction).withClock(clock));
+	}
+
+	public PrefixCombFactory(IntFunction<byte[]> randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
 
@@ -74,23 +83,7 @@ public final class PrefixCombFactory extends AbstCombFactory {
 		super(UuidVersion.VERSION_RANDOM_BASED, builder);
 	}
 
-	public static class Builder extends AbstCombFactory.Builder<PrefixCombFactory> {
-
-		@Override
-		public Builder withClock(Clock clock) {
-			return (Builder) super.withClock(clock);
-		}
-
-		@Override
-		public Builder withRandom(Random random) {
-			return (Builder) super.withRandom(random);
-		}
-
-		@Override
-		public Builder withRandomFunction(RandomFunction randomFunction) {
-			return (Builder) super.withRandomFunction(randomFunction);
-		}
-
+	public static class Builder extends AbstCombFactory.Builder<PrefixCombFactory, Builder> {
 		@Override
 		public PrefixCombFactory build() {
 			return new PrefixCombFactory(this);
@@ -109,18 +102,23 @@ public final class PrefixCombFactory extends AbstCombFactory {
 	 * The creation millisecond is a PREFIX at the MOST significant bits.
 	 */
 	@Override
-	public UUID create() {
+	public synchronized UUID create() {
 
-		// Get random values for MSB and LSB
-		final byte[] bytes = this.randomFunction.apply(10);
-		long msb = ((bytes[8] & 0xffL) << 8) | (bytes[9] & 0xffL);
-		long lsb = ByteUtil.toNumber(bytes, 0, 8);
+		final long time = clock.millis();
 
-		// Insert the prefix in the MSB
-		final long timestamp = clock.millis();
-		msb |= ((timestamp & 0x0000ffffffffffffL) << 16);
+		if (this.random instanceof ByteRandom) {
+			final byte[] bytes = this.random.nextBytes(10);
+			final long long1 = ByteUtil.toNumber(bytes, 0, 2);
+			final long long2 = ByteUtil.toNumber(bytes, 2, 10);
+			return make(time, long1, long2);
+		} else {
+			final long long1 = this.random.nextLong();
+			final long long2 = this.random.nextLong();
+			return make(time, long1, long2);
+		}
+	}
 
-		// Set the version and variant bits
-		return toUuid(msb, lsb);
+	private UUID make(final long time, final long long1, final long long2) {
+		return toUuid((time << 16) | (long1 & 0x000000000000ffffL), long2);
 	}
 }

@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [5.1.0] - 2022-07-09
+
+Add support for `RandomGenerator` in Java 17. #70
+
 ## [5.0.0] - 2022-07-02
 
 This version contains has breaking changes.
@@ -334,7 +338,8 @@ Remove `Fingerprint` // too complex
 -   Removed UuidSettings.getNodeIdentifierDeprecated // remove deprecated
 -   Renamed UuidSettings to UuidCreatorSettings
 
-[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.0.0...HEAD
+[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.1.0...HEAD
+[5.1.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.0.0...uuid-creator-5.1.0
 [5.0.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.6.1...uuid-creator-5.0.0
 [4.6.1]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.6.0...uuid-creator-4.6.1
 [4.6.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-4.5.0...uuid-creator-4.6.0

@@ -5,7 +5,6 @@ import org.junit.Test;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.UuidFactoryTest;
 import com.github.f4b6a3.uuid.factory.function.RandomFunction;
-import com.github.f4b6a3.uuid.factory.rfc4122.RandomBasedFactory;
 
 import static org.junit.Assert.assertEquals;
 

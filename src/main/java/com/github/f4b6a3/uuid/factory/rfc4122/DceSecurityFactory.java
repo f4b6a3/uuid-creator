@@ -78,7 +78,7 @@ public final class DceSecurityFactory extends AbstTimeBasedFactory {
 		return new Builder();
 	}
 
-	public static class Builder extends AbstTimeBasedFactory.Builder<DceSecurityFactory> {
+	public static class Builder extends AbstTimeBasedFactory.Builder<DceSecurityFactory, Builder> {
 
 		private byte localDomain;
 

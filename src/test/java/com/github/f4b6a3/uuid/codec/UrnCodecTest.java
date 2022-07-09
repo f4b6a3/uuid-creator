@@ -5,7 +5,6 @@ import org.junit.Test;
 
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.codec.UrnCodec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
 public class UrnCodecTest {

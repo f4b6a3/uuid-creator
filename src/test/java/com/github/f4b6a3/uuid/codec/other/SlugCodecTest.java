@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import com.github.f4b6a3.uuid.codec.BinaryCodec;
 import com.github.f4b6a3.uuid.codec.UuidCodec;
-import com.github.f4b6a3.uuid.codec.other.SlugCodec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
 import java.util.Base64;

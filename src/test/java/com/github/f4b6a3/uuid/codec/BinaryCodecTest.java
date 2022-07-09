@@ -7,7 +7,6 @@ import java.nio.ByteBuffer;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import com.github.f4b6a3.uuid.codec.BinaryCodec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
 public class BinaryCodecTest {

@@ -1,8 +1,9 @@
-package com.github.f4b6a3.uuid;
+package com.github.f4b6a3.uuid.uniq;
 
 import java.util.HashSet;
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.TestSuite;
 import com.github.f4b6a3.uuid.factory.rfc4122.TimeBasedFactory;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 

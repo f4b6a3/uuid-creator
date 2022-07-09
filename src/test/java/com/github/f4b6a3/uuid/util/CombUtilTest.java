@@ -14,7 +14,6 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.factory.AbstRandomBasedFactory;
 import com.github.f4b6a3.uuid.factory.nonstandard.PrefixCombFactory;
 import com.github.f4b6a3.uuid.factory.nonstandard.SuffixCombFactory;
-import com.github.f4b6a3.uuid.util.CombUtil;
 
 public class CombUtilTest {
 

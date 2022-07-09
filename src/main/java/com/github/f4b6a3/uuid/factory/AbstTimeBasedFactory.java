@@ -54,7 +54,7 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 
 	private static final long EPOCH_TIMESTAMP = TimeFunction.toUnixTimestamp(UuidTime.EPOCH_GREG);
 
-	protected AbstTimeBasedFactory(UuidVersion version, Builder<?> builder) {
+	protected AbstTimeBasedFactory(UuidVersion version, Builder<?, ?> builder) {
 		super(version);
 		this.timeFunction = builder.getTimeFunction();
 		this.nodeidFunction = builder.getNodeIdFunction();
@@ -304,7 +304,7 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 		return new DefaultTimeFunction();
 	}
 
-	public abstract static class Builder<T> {
+	public abstract static class Builder<T, B extends Builder<T, B>> {
 
 		protected TimeFunction timeFunction;
 		protected NodeIdFunction nodeidFunction;
@@ -331,64 +331,75 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 			return this.clockseqFunction;
 		}
 
-		public Builder<T> withTimeFunction(TimeFunction timeFunction) {
+		@SuppressWarnings("unchecked")
+		public B withTimeFunction(TimeFunction timeFunction) {
 			this.timeFunction = timeFunction;
-			return this;
+			return (B) this;
 		}
 
-		public Builder<T> withNodeIdFunction(NodeIdFunction nodeidFunction) {
+		@SuppressWarnings("unchecked")
+		public B withNodeIdFunction(NodeIdFunction nodeidFunction) {
 			this.nodeidFunction = nodeidFunction;
-			return this;
+			return (B) this;
 		}
 
-		public Builder<T> withClockSeqFunction(ClockSeqFunction clockseqFunction) {
+		@SuppressWarnings("unchecked")
+		public B withClockSeqFunction(ClockSeqFunction clockseqFunction) {
 			this.clockseqFunction = clockseqFunction;
-			return this;
+			return (B) this;
 		}
 
-		public Builder<T> withInstant(Instant instant) {
+		@SuppressWarnings("unchecked")
+		public B withInstant(Instant instant) {
 			final long timestamp = TimeFunction.toUnixTimestamp(instant);
 			this.timeFunction = () -> timestamp;
-			return this;
+			return (B) this;
 		}
 
-		public Builder<T> withClockSeq(long clockseq) {
+		@SuppressWarnings("unchecked")
+		public B withClockSeq(long clockseq) {
 			final long clockSequence = ClockSeqFunction.toExpectedRange(clockseq);
 			this.clockseqFunction = x -> clockSequence;
-			return this;
+			return (B) this;
 		}
 
-		public Builder<T> withClockSeq(byte[] clockseq) {
+		@SuppressWarnings("unchecked")
+		public B withClockSeq(byte[] clockseq) {
 			final long clockSequence = ClockSeqFunction.toExpectedRange(ByteUtil.toNumber(clockseq));
 			this.clockseqFunction = x -> clockSequence;
-			return this;
+			return (B) this;
 		}
 
-		public Builder<T> withNodeId(long nodeid) {
+		@SuppressWarnings("unchecked")
+		public B withNodeId(long nodeid) {
 			final long nodeIdentifier = NodeIdFunction.toExpectedRange(nodeid);
 			this.nodeidFunction = () -> nodeIdentifier;
-			return this;
+			return (B) this;
 		}
 
-		public Builder<T> withNodeId(byte[] nodeid) {
+		@SuppressWarnings("unchecked")
+		public B withNodeId(byte[] nodeid) {
 			final long nodeIdentifier = NodeIdFunction.toExpectedRange(ByteUtil.toNumber(nodeid));
 			this.nodeidFunction = () -> nodeIdentifier;
-			return this;
+			return (B) this;
 		}
 
-		public Builder<T> withMacNodeId() {
+		@SuppressWarnings("unchecked")
+		public B withMacNodeId() {
 			this.nodeidFunction = new MacNodeIdFunction();
-			return this;
+			return (B) this;
 		}
 
-		public Builder<T> withHashNodeId() {
+		@SuppressWarnings("unchecked")
+		public B withHashNodeId() {
 			this.nodeidFunction = new HashNodeIdFunction();
-			return this;
+			return (B) this;
 		}
 
-		public Builder<T> withRandomNodeId() {
+		@SuppressWarnings("unchecked")
+		public B withRandomNodeId() {
 			this.nodeidFunction = new RandomNodeIdFunction();
-			return this;
+			return (B) this;
 		}
 
 		public abstract T build();

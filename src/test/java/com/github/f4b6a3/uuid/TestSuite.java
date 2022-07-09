@@ -15,6 +15,7 @@ import com.github.f4b6a3.uuid.codec.other.DotNetGuid4CodecTest;
 import com.github.f4b6a3.uuid.codec.other.NcnameCodecTest;
 import com.github.f4b6a3.uuid.codec.other.SlugCodecTest;
 import com.github.f4b6a3.uuid.codec.other.TimeOrderedCodecTest;
+import com.github.f4b6a3.uuid.factory.AbstRandomBasedFactoryTest;
 import com.github.f4b6a3.uuid.factory.AbstTimeBasedFactoryTest;
 import com.github.f4b6a3.uuid.factory.function.ClockSeqPoolTest;
 import com.github.f4b6a3.uuid.factory.function.impl.DefaultClockSeqFunctionTest;
@@ -46,6 +47,7 @@ import com.github.f4b6a3.uuid.util.UuidValidatorTest;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	AbstTimeBasedFactoryTest.class,
+	AbstRandomBasedFactoryTest.class,
 	BaseNCodec1Test.class,
 	BaseNCodec2SamplesTest.class,
 	BaseNCodec3SamplesTest.class,

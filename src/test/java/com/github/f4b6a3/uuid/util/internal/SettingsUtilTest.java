@@ -8,8 +8,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.util.internal.SettingsUtil;
-
 public class SettingsUtilTest {
 
 	@BeforeClass

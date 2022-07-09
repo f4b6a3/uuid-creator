@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import com.github.f4b6a3.uuid.codec.base.Base32Codec;
 import com.github.f4b6a3.uuid.codec.base.Base64UrlCodec;
-import com.github.f4b6a3.uuid.codec.other.NcnameCodec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
 public class NcnameCodecTest {

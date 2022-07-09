@@ -26,10 +26,13 @@ package com.github.f4b6a3.uuid.factory.rfc4122;
 
 import java.util.Random;
 import java.util.UUID;
+import java.util.function.IntFunction;
+import java.util.function.LongSupplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
+import com.github.f4b6a3.uuid.factory.AbstCombFactory;
 import com.github.f4b6a3.uuid.factory.AbstRandomBasedFactory;
-import com.github.f4b6a3.uuid.factory.function.RandomFunction;
+import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
  * Factory that creates random-based UUIDs.
@@ -39,15 +42,34 @@ import com.github.f4b6a3.uuid.factory.function.RandomFunction;
 public final class RandomBasedFactory extends AbstRandomBasedFactory {
 
 	public RandomBasedFactory() {
-		this(newRandomFunction(null));
+		this(builder());
 	}
 
 	public RandomBasedFactory(Random random) {
-		this(newRandomFunction(random));
+		this(builder().withRandom(random));
 	}
 
-	public RandomBasedFactory(RandomFunction randomFunction) {
-		super(UuidVersion.VERSION_RANDOM_BASED, randomFunction);
+	public RandomBasedFactory(LongSupplier randomSupplier) {
+		this(builder().withRandomFunction(randomSupplier));
+	}
+
+	public RandomBasedFactory(IntFunction<byte[]> randomFunction) {
+		this(builder().withRandomFunction(randomFunction));
+	}
+
+	private RandomBasedFactory(Builder builder) {
+		super(UuidVersion.VERSION_RANDOM_BASED, builder);
+	}
+
+	public static class Builder extends AbstCombFactory.Builder<RandomBasedFactory, Builder> {
+		@Override
+		public RandomBasedFactory build() {
+			return new RandomBasedFactory(this);
+		}
+	}
+
+	public static Builder builder() {
+		return new Builder();
 	}
 
 	/**
@@ -67,12 +89,16 @@ public final class RandomBasedFactory extends AbstRandomBasedFactory {
 	 * @return a random-based UUID
 	 */
 	@Override
-	public UUID create() {
-
-		// (3) set all bit randomly
-		final byte[] bytes = this.randomFunction.apply(UUID_BYTES);
-
-		// (1)(2) Set the version and variant bits
-		return toUuid(bytes);
+	public synchronized UUID create() {
+		if (this.random instanceof ByteRandom) {
+			final byte[] bytes = this.random.nextBytes(16);
+			final long msb = ByteUtil.toNumber(bytes, 0, 8);
+			final long lsb = ByteUtil.toNumber(bytes, 8, 16);
+			return toUuid(msb, lsb);
+		} else {
+			final long msb = this.random.nextLong();
+			final long lsb = this.random.nextLong();
+			return toUuid(msb, lsb);
+		}
 	}
 }

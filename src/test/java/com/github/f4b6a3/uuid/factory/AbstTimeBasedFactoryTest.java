@@ -1,19 +1,18 @@
 package com.github.f4b6a3.uuid.factory;
 
-import com.github.f4b6a3.uuid.factory.AbstTimeBasedFactory;
-import com.github.f4b6a3.uuid.factory.function.NodeIdFunction;
-import com.github.f4b6a3.uuid.factory.function.impl.DefaultNodeIdFunction;
-import com.github.f4b6a3.uuid.factory.function.impl.HashNodeIdFunction;
-import com.github.f4b6a3.uuid.factory.function.impl.MacNodeIdFunction;
-import com.github.f4b6a3.uuid.factory.function.impl.RandomNodeIdFunction;
-import com.github.f4b6a3.uuid.util.internal.SettingsUtil;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.Test;
+
+import com.github.f4b6a3.uuid.factory.function.NodeIdFunction;
+import com.github.f4b6a3.uuid.factory.function.impl.DefaultNodeIdFunction;
+import com.github.f4b6a3.uuid.factory.function.impl.HashNodeIdFunction;
+import com.github.f4b6a3.uuid.factory.function.impl.MacNodeIdFunction;
+import com.github.f4b6a3.uuid.factory.function.impl.RandomNodeIdFunction;
+import com.github.f4b6a3.uuid.util.internal.SettingsUtil;
 
 public class AbstTimeBasedFactoryTest extends UuidFactoryTest {
 

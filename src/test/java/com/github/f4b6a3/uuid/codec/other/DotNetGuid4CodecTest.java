@@ -9,7 +9,6 @@ import java.util.UUID;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import com.github.f4b6a3.uuid.codec.other.DotNetGuid4Codec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
 public class DotNetGuid4CodecTest {

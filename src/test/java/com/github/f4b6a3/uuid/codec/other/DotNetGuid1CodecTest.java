@@ -10,7 +10,6 @@ import java.util.UUID;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import com.github.f4b6a3.uuid.codec.other.DotNetGuid1Codec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 

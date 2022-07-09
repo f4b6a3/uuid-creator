@@ -34,6 +34,7 @@ import com.github.f4b6a3.uuid.codec.StringCodec;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
+import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 import static com.github.f4b6a3.uuid.enums.UuidVersion.VERSION_NAME_BASED_MD5;
 import static com.github.f4b6a3.uuid.enums.UuidVersion.VERSION_NAME_BASED_SHA1;
@@ -354,7 +355,8 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 		// Compute the hash of the name
 		final byte[] hash = hasher.digest(name);
 
-		// Set the version and variant bits
-		return toUuid(hash);
+		final long msb = ByteUtil.toNumber(hash, 0, 8);
+		final long lsb = ByteUtil.toNumber(hash, 8, 16);
+		return toUuid(msb, lsb);
 	}
 }

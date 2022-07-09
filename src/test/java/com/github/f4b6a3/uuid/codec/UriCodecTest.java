@@ -6,7 +6,6 @@ import org.junit.Test;
 import java.net.URI;
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.codec.UriCodec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
 public class UriCodecTest {

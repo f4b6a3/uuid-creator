@@ -25,10 +25,8 @@
 package com.github.f4b6a3.uuid.factory;
 
 import java.time.Clock;
-import java.util.Random;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
-import com.github.f4b6a3.uuid.factory.function.RandomFunction;
 
 /**
  * Abstract Factory for COMB UUIDs.
@@ -40,15 +38,14 @@ public abstract class AbstCombFactory extends AbstRandomBasedFactory {
 	protected Clock clock;
 	protected static final Clock DEFAULT_CLOCK = Clock.systemUTC();
 
-	protected AbstCombFactory(UuidVersion version, Builder<?> builder) {
-		super(version, builder.getRandomFunction());
+	protected AbstCombFactory(UuidVersion version, Builder<?, ?> builder) {
+		super(version, builder);
 		this.clock = builder.getClock();
 	}
 
-	public abstract static class Builder<T> {
+	public abstract static class Builder<T, B extends Builder<T, B>> extends AbstRandomBasedFactory.Builder<T, B> {
 
 		protected Clock clock;
-		protected RandomFunction randomFunction;
 
 		protected Clock getClock() {
 			if (this.clock == null) {
@@ -57,28 +54,10 @@ public abstract class AbstCombFactory extends AbstRandomBasedFactory {
 			return this.clock;
 		}
 
-		protected RandomFunction getRandomFunction() {
-			if (this.randomFunction == null) {
-				this.randomFunction = newRandomFunction(null);
-			}
-			return this.randomFunction;
-		}
-
-		public Builder<T> withClock(Clock clock) {
+		@SuppressWarnings("unchecked")
+		public B withClock(Clock clock) {
 			this.clock = clock;
-			return this;
+			return (B) this;
 		}
-
-		public Builder<T> withRandom(Random random) {
-			this.randomFunction = newRandomFunction(random);
-			return this;
-		}
-
-		public Builder<T> withRandomFunction(RandomFunction randomFunction) {
-			this.randomFunction = randomFunction;
-			return this;
-		}
-
-		public abstract T build();
 	}
 }

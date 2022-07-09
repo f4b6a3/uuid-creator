@@ -27,10 +27,11 @@ package com.github.f4b6a3.uuid.factory.nonstandard;
 import java.time.Clock;
 import java.util.Random;
 import java.util.UUID;
+import java.util.function.IntFunction;
+import java.util.function.LongSupplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstCombFactory;
-import com.github.f4b6a3.uuid.factory.function.RandomFunction;
 import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
@@ -68,11 +69,19 @@ public final class ShortPrefixCombFactory extends AbstCombFactory {
 		this(builder().withRandom(random).withClock(clock));
 	}
 
-	public ShortPrefixCombFactory(RandomFunction randomFunction) {
+	public ShortPrefixCombFactory(LongSupplier randomFunction) {
 		this(builder().withRandomFunction(randomFunction));
 	}
 
-	public ShortPrefixCombFactory(RandomFunction randomFunction, Clock clock) {
+	public ShortPrefixCombFactory(IntFunction<byte[]> randomFunction) {
+		this(builder().withRandomFunction(randomFunction));
+	}
+
+	public ShortPrefixCombFactory(LongSupplier randomFunction, Clock clock) {
+		this(builder().withRandomFunction(randomFunction).withClock(clock));
+	}
+
+	public ShortPrefixCombFactory(IntFunction<byte[]> randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
 
@@ -81,7 +90,7 @@ public final class ShortPrefixCombFactory extends AbstCombFactory {
 		this.interval = builder.getInterval();
 	}
 
-	public static class Builder extends AbstCombFactory.Builder<ShortPrefixCombFactory> {
+	public static class Builder extends AbstCombFactory.Builder<ShortPrefixCombFactory, Builder> {
 
 		private Integer interval;
 
@@ -90,21 +99,6 @@ public final class ShortPrefixCombFactory extends AbstCombFactory {
 				this.interval = DEFAULT_INTERVAL;
 			}
 			return this.interval;
-		}
-
-		@Override
-		public Builder withClock(Clock clock) {
-			return (Builder) super.withClock(clock);
-		}
-
-		@Override
-		public Builder withRandom(Random random) {
-			return (Builder) super.withRandom(random);
-		}
-
-		@Override
-		public Builder withRandomFunction(RandomFunction randomFunction) {
-			return (Builder) super.withRandomFunction(randomFunction);
 		}
 
 		public Builder withInterval(int interval) {
@@ -132,18 +126,24 @@ public final class ShortPrefixCombFactory extends AbstCombFactory {
 	 * The prefix wraps around every ~45 days (2^16/60/24 = ~45).
 	 */
 	@Override
-	public UUID create() {
+	public synchronized UUID create() {
 
-		// Get random values for MSB and LSB
-		final byte[] bytes = this.randomFunction.apply(14);
-		long msb = ByteUtil.toNumber(bytes, 8, 14);
-		long lsb = ByteUtil.toNumber(bytes, 0, 8);
+		final long time = clock.millis() / interval;
 
-		// Insert the short prefix in the MSB
-		final long timestamp = clock.millis() / interval;
-		msb |= ((timestamp & 0x000000000000ffffL) << 48);
+		if (this.random instanceof ByteRandom) {
+			final byte[] bytes = this.random.nextBytes(14);
+			final long long1 = ByteUtil.toNumber(bytes, 0, 6);
+			final long long2 = ByteUtil.toNumber(bytes, 6, 14);
+			return make(time, long1, long2);
 
-		// Set the version and variant bits
-		return toUuid(msb, lsb);
+		} else {
+			final long long1 = this.random.nextLong();
+			final long long2 = this.random.nextLong();
+			return make(time, long1, long2);
+		}
+	}
+
+	private UUID make(final long time, final long long1, final long long2) {
+		return toUuid((time << 48) | (long1 & 0x0000ffffffffffffL), long2);
 	}
 }

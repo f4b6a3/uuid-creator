@@ -46,7 +46,7 @@ public final class TimeBasedFactory extends AbstTimeBasedFactory {
 		return new Builder();
 	}
 
-	public static class Builder extends AbstTimeBasedFactory.Builder<TimeBasedFactory> {
+	public static class Builder extends AbstTimeBasedFactory.Builder<TimeBasedFactory, Builder> {
 		@Override
 		public TimeBasedFactory build() {
 			return new TimeBasedFactory(this);

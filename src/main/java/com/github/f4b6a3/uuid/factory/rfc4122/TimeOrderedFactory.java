@@ -50,7 +50,7 @@ public final class TimeOrderedFactory extends AbstTimeBasedFactory {
 		return new Builder();
 	}
 
-	public static class Builder extends AbstTimeBasedFactory.Builder<TimeOrderedFactory> {
+	public static class Builder extends AbstTimeBasedFactory.Builder<TimeOrderedFactory, Builder> {
 		@Override
 		public TimeOrderedFactory build() {
 			return new TimeOrderedFactory(this);

@@ -3,7 +3,6 @@ package com.github.f4b6a3.uuid.factory.rfc4122;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.factory.UuidFactoryTest;
-import com.github.f4b6a3.uuid.factory.rfc4122.DceSecurityFactory;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 import static org.junit.Assert.*;

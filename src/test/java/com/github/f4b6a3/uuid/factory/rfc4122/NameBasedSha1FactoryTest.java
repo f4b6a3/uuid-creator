@@ -7,7 +7,6 @@ import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstNameBasedFactory;
 import com.github.f4b6a3.uuid.factory.UuidFactoryTest;
-import com.github.f4b6a3.uuid.factory.rfc4122.NameBasedSha1Factory;
 
 import static org.junit.Assert.assertEquals;
 

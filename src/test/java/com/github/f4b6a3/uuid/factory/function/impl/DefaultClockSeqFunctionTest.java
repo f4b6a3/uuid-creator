@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.factory.function.ClockSeqFunction;
-import com.github.f4b6a3.uuid.factory.function.impl.DefaultClockSeqFunction;
 import com.github.f4b6a3.uuid.factory.rfc4122.TimeBasedFactory;
 import com.github.f4b6a3.uuid.util.UuidTime;
 import com.github.f4b6a3.uuid.util.UuidUtil;
