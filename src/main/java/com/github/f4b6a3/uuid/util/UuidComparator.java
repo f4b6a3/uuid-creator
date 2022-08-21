@@ -28,8 +28,6 @@ import java.util.Comparator;
 import java.util.UUID;
 import java.util.function.ToIntBiFunction;
 
-import com.github.f4b6a3.uuid.UuidCreator;
-
 /**
  * Comparator for UUIDs.
  * 
@@ -113,8 +111,8 @@ public final class UuidComparator implements Comparator<UUID> {
 	 */
 	public static int defaultCompare(UUID uuid1, UUID uuid2) {
 
-		UUID u1 = uuid1 != null ? uuid1 : UuidCreator.getNil();
-		UUID u2 = uuid2 != null ? uuid2 : UuidCreator.getNil();
+		UUID u1 = uuid1 != null ? uuid1 : new UUID(0L, 0L);
+		UUID u2 = uuid2 != null ? uuid2 : new UUID(0L, 0L);
 
 		// time-based comparison is done by timestamp first
 		if (isTimeBased(u1) && isTimeBased(u2)) {
@@ -157,26 +155,27 @@ public final class UuidComparator implements Comparator<UUID> {
 	 */
 	public static int opaqueCompare(UUID uuid1, UUID uuid2) {
 
-		UUID u1 = uuid1 != null ? uuid1 : UuidCreator.getNil();
-		UUID u2 = uuid2 != null ? uuid2 : UuidCreator.getNil();
+		UUID u1 = uuid1 != null ? uuid1 : new UUID(0L, 0L);
+		UUID u2 = uuid2 != null ? uuid2 : new UUID(0L, 0L);
 
-		final long mask = 0xffffffffL;
+		// used to compare as UNSIGNED longs
+		final long min = 0x8000000000000000L;
 
-		final long msb1 = u1.getMostSignificantBits();
-		final long lsb1 = u1.getLeastSignificantBits();
-		final long msb2 = u2.getMostSignificantBits();
-		final long lsb2 = u2.getLeastSignificantBits();
+		final long a = u1.getMostSignificantBits() + min;
+		final long b = u2.getMostSignificantBits() + min;
 
-		final long[] a = { msb1 >>> 32, msb1 & mask, lsb1 >>> 32, lsb1 & mask };
-		final long[] b = { msb2 >>> 32, msb2 & mask, lsb2 >>> 32, lsb2 & mask };
+		if (a > b)
+			return 1;
+		else if (a < b)
+			return -1;
 
-		for (int i = 0; i < a.length; i++) {
-			if (a[i] > b[i]) {
-				return 1;
-			} else if (a[i] < b[i]) {
-				return -1;
-			}
-		}
+		final long c = u1.getLeastSignificantBits() + min;
+		final long d = u2.getLeastSignificantBits() + min;
+
+		if (c > d)
+			return 1;
+		else if (c < d)
+			return -1;
 
 		return 0;
 	}

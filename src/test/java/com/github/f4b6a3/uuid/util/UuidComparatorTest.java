@@ -3,8 +3,9 @@ package com.github.f4b6a3.uuid.util;
 import static org.junit.Assert.*;
 
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.Test;
 
@@ -72,16 +73,17 @@ public class UuidComparatorTest {
 	@Test
 	public void testCompareDefault() {
 
+		final long zero = 0L;
 		byte[] bytes = new byte[16];
-		UuidComparator comparator = UuidComparator.getDefaultInstance();
+		Random random = new Random();
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			ThreadLocalRandom.current().nextBytes(bytes);
+			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(random.nextLong()).array();
 			bytes = setVersion(bytes, 1); // set version 1
 			UUID uuid1 = BinaryCodec.INSTANCE.decode(rearrange(bytes));
 			BigInteger number1 = new BigInteger(1, bytes);
 
-			ThreadLocalRandom.current().nextBytes(bytes);
+			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(random.nextLong()).array();
 			bytes = setVersion(bytes, 1); // set version 1
 			UUID uuid2 = BinaryCodec.INSTANCE.decode(rearrange(bytes));
 			UUID uuid3 = BinaryCodec.INSTANCE.decode(rearrange(bytes));
@@ -89,9 +91,63 @@ public class UuidComparatorTest {
 			BigInteger number3 = new BigInteger(1, bytes);
 
 			// compare numerically
-			assertEquals(number1.compareTo(number2) > 0, comparator.compare(uuid1, uuid2) > 0);
-			assertEquals(number1.compareTo(number2) < 0, comparator.compare(uuid1, uuid2) < 0);
-			assertEquals(number2.compareTo(number3) == 0, comparator.compare(uuid2, uuid3) == 0);
+			assertEquals(number1.compareTo(number2) > 0, UuidComparator.defaultCompare(uuid1, uuid2) > 0);
+			assertEquals(number1.compareTo(number2) < 0, UuidComparator.defaultCompare(uuid1, uuid2) < 0);
+			assertEquals(number2.compareTo(number3) == 0, UuidComparator.defaultCompare(uuid2, uuid3) == 0);
+
+			// compare lexicographically
+			uuid1 = UuidUtil.setVersion(TimeOrderedCodec.INSTANCE.encode(uuid1), 1);
+			uuid2 = UuidUtil.setVersion(TimeOrderedCodec.INSTANCE.encode(uuid2), 1);
+			uuid3 = UuidUtil.setVersion(TimeOrderedCodec.INSTANCE.encode(uuid3), 1);
+			assertEquals(number1.compareTo(number2) > 0, uuid1.toString().compareTo(uuid2.toString()) > 0);
+			assertEquals(number1.compareTo(number2) < 0, uuid1.toString().compareTo(uuid2.toString()) < 0);
+			assertEquals(number2.compareTo(number3) == 0, uuid2.toString().compareTo(uuid3.toString()) == 0);
+		}
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			bytes = ByteBuffer.allocate(16).putLong(zero).putLong(random.nextLong()).array();
+			bytes = setVersion(bytes, 1); // set version 1
+			UUID uuid1 = BinaryCodec.INSTANCE.decode(rearrange(bytes));
+			BigInteger number1 = new BigInteger(1, bytes);
+
+			bytes = ByteBuffer.allocate(16).putLong(zero).putLong(random.nextLong()).array();
+			bytes = setVersion(bytes, 1); // set version 1
+			UUID uuid2 = BinaryCodec.INSTANCE.decode(rearrange(bytes));
+			UUID uuid3 = BinaryCodec.INSTANCE.decode(rearrange(bytes));
+			BigInteger number2 = new BigInteger(1, bytes);
+			BigInteger number3 = new BigInteger(1, bytes);
+
+			// compare numerically
+			assertEquals(number1.compareTo(number2) > 0, UuidComparator.defaultCompare(uuid1, uuid2) > 0);
+			assertEquals(number1.compareTo(number2) < 0, UuidComparator.defaultCompare(uuid1, uuid2) < 0);
+			assertEquals(number2.compareTo(number3) == 0, UuidComparator.defaultCompare(uuid2, uuid3) == 0);
+
+			// compare lexicographically
+			uuid1 = UuidUtil.setVersion(TimeOrderedCodec.INSTANCE.encode(uuid1), 1);
+			uuid2 = UuidUtil.setVersion(TimeOrderedCodec.INSTANCE.encode(uuid2), 1);
+			uuid3 = UuidUtil.setVersion(TimeOrderedCodec.INSTANCE.encode(uuid3), 1);
+			assertEquals(number1.compareTo(number2) > 0, uuid1.toString().compareTo(uuid2.toString()) > 0);
+			assertEquals(number1.compareTo(number2) < 0, uuid1.toString().compareTo(uuid2.toString()) < 0);
+			assertEquals(number2.compareTo(number3) == 0, uuid2.toString().compareTo(uuid3.toString()) == 0);
+		}
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(zero).array();
+			bytes = setVersion(bytes, 1); // set version 1
+			UUID uuid1 = BinaryCodec.INSTANCE.decode(rearrange(bytes));
+			BigInteger number1 = new BigInteger(1, bytes);
+
+			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(zero).array();
+			bytes = setVersion(bytes, 1); // set version 1
+			UUID uuid2 = BinaryCodec.INSTANCE.decode(rearrange(bytes));
+			UUID uuid3 = BinaryCodec.INSTANCE.decode(rearrange(bytes));
+			BigInteger number2 = new BigInteger(1, bytes);
+			BigInteger number3 = new BigInteger(1, bytes);
+
+			// compare numerically
+			assertEquals(number1.compareTo(number2) > 0, UuidComparator.defaultCompare(uuid1, uuid2) > 0);
+			assertEquals(number1.compareTo(number2) < 0, UuidComparator.defaultCompare(uuid1, uuid2) < 0);
+			assertEquals(number2.compareTo(number3) == 0, UuidComparator.defaultCompare(uuid2, uuid3) == 0);
 
 			// compare lexicographically
 			uuid1 = UuidUtil.setVersion(TimeOrderedCodec.INSTANCE.encode(uuid1), 1);
@@ -106,25 +162,69 @@ public class UuidComparatorTest {
 	@Test
 	public void testCompareOpaque() {
 
-		UuidComparator comparator = UuidComparator.getOpaqueInstance();
-
+		final long zero = 0L;
 		byte[] bytes = new byte[16];
+		Random random = new Random();
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			ThreadLocalRandom.current().nextBytes(bytes);
+			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(random.nextLong()).array();
 			UUID uuid1 = BinaryCodec.INSTANCE.decode(bytes);
 			BigInteger number1 = new BigInteger(1, bytes);
 
-			ThreadLocalRandom.current().nextBytes(bytes);
+			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(random.nextLong()).array();
 			UUID uuid2 = BinaryCodec.INSTANCE.decode(bytes);
 			UUID uuid3 = BinaryCodec.INSTANCE.decode(bytes);
 			BigInteger number2 = new BigInteger(1, bytes);
 			BigInteger number3 = new BigInteger(1, bytes);
 
 			// compare numerically
-			assertEquals(number1.compareTo(number2) > 0, comparator.compare(uuid1, uuid2) > 0);
-			assertEquals(number1.compareTo(number2) < 0, comparator.compare(uuid1, uuid2) < 0);
-			assertEquals(number2.compareTo(number3) == 0, comparator.compare(uuid2, uuid3) == 0);
+			assertEquals(number1.compareTo(number2) > 0, UuidComparator.opaqueCompare(uuid1, uuid2) > 0);
+			assertEquals(number1.compareTo(number2) < 0, UuidComparator.opaqueCompare(uuid1, uuid2) < 0);
+			assertEquals(number2.compareTo(number3) == 0, UuidComparator.opaqueCompare(uuid2, uuid3) == 0);
+
+			// compare lexicographically
+			assertEquals(number1.compareTo(number2) > 0, uuid1.toString().compareTo(uuid2.toString()) > 0);
+			assertEquals(number1.compareTo(number2) < 0, uuid1.toString().compareTo(uuid2.toString()) < 0);
+			assertEquals(number2.compareTo(number3) == 0, uuid2.toString().compareTo(uuid3.toString()) == 0);
+		}
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			bytes = ByteBuffer.allocate(16).putLong(zero).putLong(random.nextLong()).array();
+			UUID uuid1 = BinaryCodec.INSTANCE.decode(bytes);
+			BigInteger number1 = new BigInteger(1, bytes);
+
+			bytes = ByteBuffer.allocate(16).putLong(zero).putLong(random.nextLong()).array();
+			UUID uuid2 = BinaryCodec.INSTANCE.decode(bytes);
+			UUID uuid3 = BinaryCodec.INSTANCE.decode(bytes);
+			BigInteger number2 = new BigInteger(1, bytes);
+			BigInteger number3 = new BigInteger(1, bytes);
+
+			// compare numerically
+			assertEquals(number1.compareTo(number2) > 0, UuidComparator.opaqueCompare(uuid1, uuid2) > 0);
+			assertEquals(number1.compareTo(number2) < 0, UuidComparator.opaqueCompare(uuid1, uuid2) < 0);
+			assertEquals(number2.compareTo(number3) == 0, UuidComparator.opaqueCompare(uuid2, uuid3) == 0);
+
+			// compare lexicographically
+			assertEquals(number1.compareTo(number2) > 0, uuid1.toString().compareTo(uuid2.toString()) > 0);
+			assertEquals(number1.compareTo(number2) < 0, uuid1.toString().compareTo(uuid2.toString()) < 0);
+			assertEquals(number2.compareTo(number3) == 0, uuid2.toString().compareTo(uuid3.toString()) == 0);
+		}
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(zero).array();
+			UUID uuid1 = BinaryCodec.INSTANCE.decode(bytes);
+			BigInteger number1 = new BigInteger(1, bytes);
+
+			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(zero).array();
+			UUID uuid2 = BinaryCodec.INSTANCE.decode(bytes);
+			UUID uuid3 = BinaryCodec.INSTANCE.decode(bytes);
+			BigInteger number2 = new BigInteger(1, bytes);
+			BigInteger number3 = new BigInteger(1, bytes);
+
+			// compare numerically
+			assertEquals(number1.compareTo(number2) > 0, UuidComparator.opaqueCompare(uuid1, uuid2) > 0);
+			assertEquals(number1.compareTo(number2) < 0, UuidComparator.opaqueCompare(uuid1, uuid2) < 0);
+			assertEquals(number2.compareTo(number3) == 0, UuidComparator.opaqueCompare(uuid2, uuid3) == 0);
 
 			// compare lexicographically
 			assertEquals(number1.compareTo(number2) > 0, uuid1.toString().compareTo(uuid2.toString()) > 0);
