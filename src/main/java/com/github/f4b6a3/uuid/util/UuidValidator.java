@@ -32,8 +32,20 @@ import com.github.f4b6a3.uuid.util.immutable.LongArray;
 
 /**
  * Utility for UUID validation.
- * 
+ * <p>
  * Using it is much faster than using on regular expression.
+ * <p>
+ * Examples of valid string formats:
+ * <ul>
+ * <li><code>12345678-abcd-abcd-abcd-123456789abcd</code> (36 hexadecimal chars,
+ * lower case and with hyphen)
+ * <li><code>12345678-ABCD-ABCD-ABCD-123456789ABCD</code> (36 hexadecimal chars,
+ * UPPER CASE and with hyphen)
+ * <li><code>12345678abcdabcdabcd123456789abcd</code> (32 hexadecimal chars,
+ * lower case and WITHOUT hyphen)
+ * <li><code>12345678ABCDABCDABCD123456789ABCD</code> (32 hexadecimal chars,
+ * UPPER CASE and WITHOUT hyphen)
+ * </ul>
  */
 public final class UuidValidator {
 
@@ -202,7 +214,7 @@ public final class UuidValidator {
 	}
 
 	/**
-	 * Checks if the UUID char array is a valid.
+	 * Checks if the UUID char array is valid.
 	 * 
 	 * @param uuid a UUID char array
 	 * @throws InvalidUuidException if the argument is invalid
@@ -214,7 +226,7 @@ public final class UuidValidator {
 	}
 
 	/**
-	 * Checks if the UUID char array is a valid.
+	 * Checks if the UUID char array is valid.
 	 * 
 	 * @param uuid    a UUID char array
 	 * @param version a version number
@@ -227,16 +239,7 @@ public final class UuidValidator {
 	}
 
 	/**
-	 * Checks if the UUID char array is valid.
-	 * 
-	 * <pre>
-	 * Examples of accepted formats:
-	 * 
-	 * 12345678-abcd-abcd-abcd-123456789abcd   (36 hexadecimal chars, lower case and with hyphen)
-	 * 12345678-ABCD-ABCD-ABCD-123456789ABCD   (36 hexadecimal chars, UPPER CASE and with hyphen)
-	 * 12345678abcdabcdabcd123456789abcd       (32 hexadecimal chars, lower case and WITHOUT hyphen)
-	 * 12345678ABCDABCDABCD123456789ABCD       (32 hexadecimal chars, UPPER CASE and WITHOUT hyphen)
-	 * </pre>
+	 * Checks if the UUID char array can be parsed.
 	 * 
 	 * @param chars a char array
 	 * @return true if valid, false if invalid
@@ -263,7 +266,7 @@ public final class UuidValidator {
 	}
 
 	/**
-	 * Checks if the UUID char array is valid.
+	 * Checks if the UUID char array can be parsed.
 	 * 
 	 * @param chars   a char array
 	 * @param version a version number
@@ -273,18 +276,39 @@ public final class UuidValidator {
 		return isVersion(chars, version) && isParseable(chars);
 	}
 
+	/**
+	 * Checks the version number of a UUID.
+	 * 
+	 * @param uuid    a UUID
+	 * @param version a version number
+	 * @return true if the UUID version is equal to the expected version number
+	 */
 	protected static boolean isVersion(UUID uuid, int version) {
 		boolean versionOk = ((version & ~0xf) == 0) && (uuid.version() == version);
 		boolean variantOk = uuid.variant() == 2; // RFC-4122
 		return versionOk && variantOk;
 	}
 
+	/**
+	 * Checks the version number of a UUID byte array.
+	 * 
+	 * @param bytes   a byte array
+	 * @param version a version number
+	 * @return true if the UUID version is equal to the expected version number
+	 */
 	protected static boolean isVersion(byte[] bytes, int version) {
 		boolean versionOk = ((version & ~0xf) == 0) && (((bytes[6] & 0xff) >>> 4) == version);
 		boolean variantOk = ((bytes[8] & 0xff) >>> 6) == 2; // RFC-4122
 		return versionOk && variantOk;
 	}
 
+	/**
+	 * Checks the version number of a UUID char array.
+	 * 
+	 * @param chars   a string
+	 * @param version a version number
+	 * @return true if the UUID version is equal to the expected version number
+	 */
 	protected static boolean isVersion(char[] chars, int version) {
 
 		// valid if between 0x0 and 0xf

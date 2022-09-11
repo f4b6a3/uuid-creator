@@ -26,6 +26,13 @@ package com.github.f4b6a3.uuid.factory.function.impl;
 
 import com.github.f4b6a3.uuid.factory.function.NodeIdFunction;
 
+/**
+ * Function that returns a new random multicast node identifier.
+ * <p>
+ * The random value is generated with each new invocation.
+ * 
+ * @see NodeIdFunction
+ */
 public final class RandomNodeIdFunction implements NodeIdFunction {
 
 	@Override

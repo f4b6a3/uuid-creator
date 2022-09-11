@@ -30,14 +30,11 @@ import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
-import com.github.f4b6a3.uuid.factory.AbstCombFactory;
 import com.github.f4b6a3.uuid.factory.AbstRandomBasedFactory;
 import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
- * Factory that creates random-based UUIDs.
- * 
- * RFC-4122 version: 4.
+ * Concrete factory for creating random-based unique identifiers (UUIDv4).
  */
 public final class RandomBasedFactory extends AbstRandomBasedFactory {
 
@@ -61,13 +58,23 @@ public final class RandomBasedFactory extends AbstRandomBasedFactory {
 		super(UuidVersion.VERSION_RANDOM_BASED, builder);
 	}
 
-	public static class Builder extends AbstCombFactory.Builder<RandomBasedFactory, Builder> {
+	/**
+	 * Concrete builder for creating a random-based factory.
+	 * 
+	 * @see AbstRandomBasedFactory.Builder
+	 */
+	public static class Builder extends AbstRandomBasedFactory.Builder<RandomBasedFactory, Builder> {
 		@Override
 		public RandomBasedFactory build() {
 			return new RandomBasedFactory(this);
 		}
 	}
 
+	/**
+	 * Returns a builder of random-based factory.
+	 * 
+	 * @return a builder
+	 */
 	public static Builder builder() {
 		return new Builder();
 	}

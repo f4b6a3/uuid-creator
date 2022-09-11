@@ -27,7 +27,7 @@ package com.github.f4b6a3.uuid.factory.function;
 import java.util.function.IntFunction;
 
 /**
- * It must return an array of bytes with the given length.
+ * Function that must return an array of bytes with the given length.
  */
 @FunctionalInterface
 public interface RandomFunction extends IntFunction<byte[]> {

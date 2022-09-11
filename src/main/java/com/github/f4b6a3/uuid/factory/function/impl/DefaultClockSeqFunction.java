@@ -31,6 +31,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.f4b6a3.uuid.factory.function.ClockSeqFunction;
 
+/**
+ * Function that returns a clock sequence.
+ * 
+ * @see ClockSeqFunction
+ * @see ClockSeqFunction.ClockSeqPool
+ */
 public final class DefaultClockSeqFunction implements ClockSeqFunction {
 
 	private AtomicInteger sequence;
@@ -43,21 +49,6 @@ public final class DefaultClockSeqFunction implements ClockSeqFunction {
 		this.sequence = new AtomicInteger(initial);
 	}
 
-	/**
-	 * Returns the next value for a clock sequence.
-	 * 
-	 * ### RFC-4122 - 4.1.5. Clock Sequence
-	 * 
-	 * (P2) If the clock is set backwards, or might have been set backwards (e.g.,
-	 * while the system was powered off), and the UUID generator can not be sure
-	 * that no UUIDs were generated with timestamps larger than the value to which
-	 * the clock was set, then the clock sequence has to be changed. If the previous
-	 * value of the clock sequence is known, it can just be incremented; otherwise
-	 * it should be set to a random or high-quality pseudo-random value.
-	 * 
-	 * @param timestamp a timestamp
-	 * @return a clock sequence
-	 */
 	@Override
 	public long applyAsLong(final long timestamp) {
 		if (timestamp > this.lastTimestamp) {

@@ -30,13 +30,14 @@ import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstNameBasedFactory;
 
+/**
+ * Concrete factory for creating name-based unique identifiers using SHA-1
+ * hashing (UUIDv5).
+ * 
+ * @see AbstNameBasedFactory
+ */
 public final class NameBasedSha1Factory extends AbstNameBasedFactory {
 
-	/**
-	 * Factory that creates name-based UUIDs (SHA1).
-	 * 
-	 * RFC-4122 version: 5.
-	 */
 	public NameBasedSha1Factory() {
 		this((byte[]) null);
 	}

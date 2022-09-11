@@ -32,18 +32,22 @@ import java.util.function.LongSupplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstCombFactory;
+import com.github.f4b6a3.uuid.factory.AbstRandomBasedFactory;
 import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
- * Factory that creates Suffix COMB GUIDs.
- * 
+ * Concrete factory for creating Suffix COMB GUIDs.
+ * <p>
  * A Suffix COMB GUID is a UUID that combines a creation time with random bits.
- * 
+ * <p>
  * The creation millisecond is a 6 bytes SUFFIX at the LEAST significant bits.
+ * <p>
+ * The created UUID is a UUIDv4 for compatibility with RFC-4122.
  * 
- * Read: The Cost of GUIDs as Primary Keys
- * http://www.informit.com/articles/article.aspx?p=25862
- * 
+ * @see AbstCombFactory
+ * @see AbstRandomBasedFactory
+ * @see <a href="http://www.informit.com/articles/article.aspx?p=25862">The Cost
+ *      of GUIDs as Primary Keys</a>
  */
 public final class SuffixCombFactory extends AbstCombFactory {
 
@@ -95,11 +99,9 @@ public final class SuffixCombFactory extends AbstCombFactory {
 	}
 
 	/**
-	 * Return a Suffix COMB GUID.
+	 * Returns a Suffix COMB GUID.
 	 * 
-	 * It combines a creation time with random bits.
-	 * 
-	 * The creation millisecond is a SUFFIX at the LEAST significant bits.
+	 * @return a UUIDv4
 	 */
 	@Override
 	public synchronized UUID create() {

@@ -28,9 +28,9 @@ import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstTimeBasedFactory;
 
 /**
- * Factory that creates time-based UUIDs.
+ * Concrete factory for creating time-based unique identifiers (UUIDv1).
  * 
- * RFC-4122 version: 1.
+ * @see AbstTimeBasedFactory
  */
 public final class TimeBasedFactory extends AbstTimeBasedFactory {
 
@@ -42,10 +42,20 @@ public final class TimeBasedFactory extends AbstTimeBasedFactory {
 		super(UuidVersion.VERSION_TIME_BASED, builder);
 	}
 
+	/**
+	 * Returns a builder of time-based factory.
+	 * 
+	 * @return a builder
+	 */
 	public static Builder builder() {
 		return new Builder();
 	}
 
+	/**
+	 * Concrete builder for creating a time-based factory.
+	 * 
+	 * @see AbstTimeBasedFactory.Builder
+	 */
 	public static class Builder extends AbstTimeBasedFactory.Builder<TimeBasedFactory, Builder> {
 		@Override
 		public TimeBasedFactory build() {

@@ -29,17 +29,17 @@ import com.github.f4b6a3.uuid.codec.base.function.Base64Encoder;
 
 /**
  * Codec for base-64-url as defined in RFC-4648.
- * 
+ * <p>
  * It is case SENSITIVE.
- * 
+ * <p>
  * The only difference between base-64 and base-64-url is that the second
  * substitutes the chars '+' and '/' with '-' and '_'.
- * 
+ * <p>
  * This codec complies with RFC-4648, encoding a byte array sequentially. If you
  * need a codec that encodes integers using the remainder operator (modulus),
  * use the static factory {@link BaseNCodec#newInstance(BaseN)}.
  * 
- * See: https://tools.ietf.org/html/rfc4648
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc4648">RFC-4648</a>
  */
 public final class Base64UrlCodec extends BaseNCodec {
 

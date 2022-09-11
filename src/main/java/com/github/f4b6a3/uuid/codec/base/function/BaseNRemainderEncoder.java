@@ -30,10 +30,10 @@ import com.github.f4b6a3.uuid.codec.base.BaseNCodec.CustomDivider;
 
 /**
  * Function that encodes a UUID to a base-n string.
- * 
+ * <p>
  * It encodes using remainder operator (modulus), a common approach to encode
  * integers.
- * 
+ * <p>
  * The encoding process is performed using integer arithmetic.
  */
 public final class BaseNRemainderEncoder extends BaseNEncoder {

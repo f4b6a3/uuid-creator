@@ -32,8 +32,7 @@ import com.github.f4b6a3.uuid.enums.UuidVariant;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 
 /**
- * Utility that provides methods for checking UUID version, for extracting
- * information from UUIDs, and etc.
+ * Utility for checking UUID version, extracting UUID details, etc.
  */
 public final class UuidUtil {
 
@@ -46,7 +45,7 @@ public final class UuidUtil {
 
 	/**
 	 * Get a copy of a UUID.
-	 * 
+	 * <p>
 	 * It is just a convenience method for cloning UUIDs.
 	 * 
 	 * @param uuid a UUID
@@ -58,7 +57,7 @@ public final class UuidUtil {
 
 	/**
 	 * Checks whether the UUID is equal to the Nil UUID.
-	 * 
+	 * <p>
 	 * The Nil UUID is special UUID that has all 128 bits set to zero.
 	 * 
 	 * @param uuid a UUID
@@ -72,7 +71,7 @@ public final class UuidUtil {
 
 	/**
 	 * Checks whether the UUID is equal to the Max UUID.
-	 * 
+	 * <p>
 	 * The Max UUID is special UUID that has all 128 bits set to one.
 	 * 
 	 * @param uuid a UUID
@@ -87,10 +86,9 @@ public final class UuidUtil {
 	/**
 	 * Get the UUID version.
 	 * 
-	 * See: {@link UuidVersion}
-	 * 
 	 * @param uuid a UUID
 	 * @return a {@link UuidVersion}
+	 * @see UuidVersion
 	 */
 	public static UuidVersion getVersion(UUID uuid) {
 		return UuidVersion.getVersion(uuid.version());
@@ -99,10 +97,9 @@ public final class UuidUtil {
 	/**
 	 * Get the UUID version.
 	 * 
-	 * See: {@link UuidVariant}
-	 * 
 	 * @param uuid a UUID
 	 * @return a {@link UuidVariant}
+	 * @see UuidVariant
 	 */
 	public static UuidVariant getVariant(UUID uuid) {
 		return UuidVariant.getVariant(uuid.variant());
@@ -244,7 +241,7 @@ public final class UuidUtil {
 	}
 
 	/**
-	 * Get the instant from a time-based, time-ordered or DCE Security UUID.
+	 * Returns the instant from a time-based, time-ordered or DCE Security UUID.
 	 *
 	 * @param uuid a UUID
 	 * @return {@link Instant}
@@ -262,8 +259,8 @@ public final class UuidUtil {
 	}
 
 	/**
-	 * Get the timestamp from a time-based, time-ordered or DCE Security UUID.
-	 *
+	 * Returns the time stamp from a time-based, time-ordered or DCE Security UUID.
+	 * <p>
 	 * The value returned by this method is the number of 100-nanos since 1582-10-15
 	 * (Gregorian epoch).
 	 *

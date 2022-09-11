@@ -29,9 +29,9 @@ import java.time.Clock;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 
 /**
- * Abstract Factory for COMB UUIDs.
- * 
- * COMB UUIDs combine a creation time and random bytes.
+ * Abstract Factory for creating COMB GUIDs.
+ * <p>
+ * COMB GUIDs combine a creation time and random bytes.
  */
 public abstract class AbstCombFactory extends AbstRandomBasedFactory {
 
@@ -43,6 +43,13 @@ public abstract class AbstCombFactory extends AbstRandomBasedFactory {
 		this.clock = builder.getClock();
 	}
 
+	/**
+	 * Abstract builder for creating a COMB factory.
+	 *
+	 * @param <T> factory type
+	 * @param <B> builder type
+	 * @see AbstRandomBasedFactory.Builder
+	 */
 	public abstract static class Builder<T, B extends Builder<T, B>> extends AbstRandomBasedFactory.Builder<T, B> {
 
 		protected Clock clock;

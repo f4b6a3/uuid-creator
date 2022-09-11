@@ -45,10 +45,10 @@ public class DotNetGuid4Codec implements UuidCodec<UUID> {
 
 	/**
 	 * Get a .Ned Guid from a random-based UUID (v4).
-	 * 
+	 * <p>
 	 * It rearranges the most significant bytes from big-endian to little-endian,
 	 * and vice-versa.
-	 * 
+	 * <p>
 	 * The .Net Guid stores the most significant bytes as little-endian, while the
 	 * least significant bytes are stored as big-endian (network order).
 	 * 
@@ -67,10 +67,10 @@ public class DotNetGuid4Codec implements UuidCodec<UUID> {
 
 	/**
 	 * Get a random-based UUID (v4) from a .Net Guid.
-	 * 
+	 * <p>
 	 * It rearranges the most significant bytes from big-endian to little-endian,
 	 * and vice-versa.
-	 * 
+	 * <p>
 	 * The .Net Guid stores the most significant bytes as little-endian, while the
 	 * least significant bytes are stored as big-endian (network order).
 	 * 

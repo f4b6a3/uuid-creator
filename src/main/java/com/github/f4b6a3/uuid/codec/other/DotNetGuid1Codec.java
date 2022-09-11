@@ -43,12 +43,12 @@ public class DotNetGuid1Codec implements UuidCodec<UUID> {
 
 	/**
 	 * Get a .Ned Guid from a time-based UUID (v1).
-	 * 
+	 * <p>
 	 * This codec converts a time-based UUID (v1) to a .Net Guid.
-	 * 
+	 * <p>
 	 * It rearranges the most significant bytes from big-endian to little-endian,
 	 * and vice-versa.
-	 * 
+	 * <p>
 	 * The .Net Guid stores the most significant bytes as little-endian, while the
 	 * least significant bytes are stored as big-endian (network order).
 	 * 
@@ -67,10 +67,10 @@ public class DotNetGuid1Codec implements UuidCodec<UUID> {
 
 	/**
 	 * Get a time-based UUID (v4) from a .Net Guid.
-	 * 
+	 * <p>
 	 * It rearranges the most significant bytes from big-endian to little-endian,
 	 * and vice-versa.
-	 * 
+	 * <p>
 	 * The .Net Guid stores the most significant bytes as little-endian, while the
 	 * least significant bytes are stored as big-endian (network order).
 	 * 
@@ -90,22 +90,19 @@ public class DotNetGuid1Codec implements UuidCodec<UUID> {
 
 	/**
 	 * Convert a UUID to and from a .Net Guid.
-	 * 
+	 * <p>
 	 * It rearranges the most significant bytes from big-endian to little-endian,
 	 * and vice-versa.
-	 * 
+	 * <p>
 	 * The .Net Guid stores the most significant bytes as little-endian, while the
 	 * least significant bytes are stored as big-endian (network order).
 	 * 
-	 * ### References
-	 * 
-	 * * How to Generate Sequential GUIDs for SQL Server in .NET
-	 * 
-	 * https://blogs.msdn.microsoft.com/dbrowne/2012/07/03/how-to-generate-sequential-guids-for-sql-server-in-net/
-	 * 
-	 * * How are GUIDs sorted by SQL Server?
-	 * 
-	 * http://sqlblog.com/blogs/alberto_ferrari/archive/2007/08/31/how-are-guids-sorted-by-sql-server.aspx
+	 * @see <a href=
+	 *      "https://blogs.msdn.microsoft.com/dbrowne/2012/07/03/how-to-generate-sequential-guids-for-sql-server-in-net/">How
+	 *      to Generate Sequential GUIDs for SQL Server in .NET</a>
+	 * @see <a href=
+	 *      "http://sqlblog.com/blogs/alberto_ferrari/archive/2007/08/31/how-are-guids-sorted-by-sql-server.aspx">How
+	 *      are GUIDs sorted by SQL Server?</a>
 	 * 
 	 * @param uuid a UUID
 	 * @return another UUID

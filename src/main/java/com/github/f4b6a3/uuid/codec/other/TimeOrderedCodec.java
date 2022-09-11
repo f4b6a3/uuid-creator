@@ -33,8 +33,8 @@ import com.github.f4b6a3.uuid.util.UuidValidator;
 
 /**
  * Codec for time-ordered UUIDs
- * 
- * This codec converts time-based UUIDs (v1) to time-ordered UUIDs (v6).
+ * <p>
+ * This codec converts time-based UUIDs (UUIDv1) to time-ordered UUIDs (UUIDv6).
  */
 public class TimeOrderedCodec implements UuidCodec<UUID> {
 
@@ -46,7 +46,7 @@ public class TimeOrderedCodec implements UuidCodec<UUID> {
 	/**
 	 * Get a time-ordered UUID from a time-based UUID.
 	 * 
-	 * @param a time-based UUID
+	 * @param uuid a time-based UUID
 	 * @return a time-ordered UUID
 	 * @throws InvalidUuidException if the argument is invalid
 	 */
@@ -73,7 +73,7 @@ public class TimeOrderedCodec implements UuidCodec<UUID> {
 	/**
 	 * Get a time-based UUID from a time-ordered UUID.
 	 * 
-	 * @param a time-ordered UUID
+	 * @param uuid a time-ordered UUID
 	 * @return a time-based UUID
 	 * @throws InvalidUuidException if the argument is invalid
 	 */

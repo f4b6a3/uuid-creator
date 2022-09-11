@@ -26,18 +26,58 @@ package com.github.f4b6a3.uuid.enums;
 
 /**
  * UUID versions defined by RFC-4122.
+ * <p>
+ * List of versions:
+ * <ul>
+ * <li>{@link VERSION_UNKNOWN}: 0
+ * <li>{@link VERSION_TIME_BASED}: 1
+ * <li>{@link VERSION_DCE_SECURITY}: 2
+ * <li>{@link VERSION_NAME_BASED_MD5}: 3
+ * <li>{@link VERSION_RANDOM_BASED}: 4
+ * <li>{@link VERSION_NAME_BASED_SHA1}: 5
+ * <li>{@link VERSION_TIME_ORDERED}: 6
+ * <li>{@link VERSION_TIME_ORDERED_EPOCH}: 7
+ * <li>{@link VERSION_CUSTOM}: 8
+ * <ul>
  */
 public enum UuidVersion {
 
-	VERSION_UNKNOWN(0), //
-	VERSION_TIME_BASED(1), //
-	VERSION_DCE_SECURITY(2), //
-	VERSION_NAME_BASED_MD5(3), //
-	VERSION_RANDOM_BASED(4), //
-	VERSION_NAME_BASED_SHA1(5), //
-	VERSION_TIME_ORDERED(6), //
-	VERSION_TIME_ORDERED_EPOCH(7), //
-	VERSION_CUSTOM(8); //
+	/**
+	 * An unknown version.
+	 */
+	VERSION_UNKNOWN(0),
+	/**
+	 * The time-based version with gregorian epoch specified in RFC-4122.
+	 */
+	VERSION_TIME_BASED(1),
+	/**
+	 * The DCE Security version, with embedded POSIX UIDs.
+	 */
+	VERSION_DCE_SECURITY(2),
+	/**
+	 * The name-based version specified in RFC-4122 that uses MD5 hashing.
+	 */
+	VERSION_NAME_BASED_MD5(3),
+	/**
+	 * The randomly or pseudo-randomly generated version specified in RFC-4122.
+	 */
+	VERSION_RANDOM_BASED(4),
+	/**
+	 * The name-based version specified in RFC-4122 that uses SHA-1 hashing.
+	 */
+	VERSION_NAME_BASED_SHA1(5),
+	/**
+	 * The time-ordered version with gregorian epoch proposed by Peabody and Davis.
+	 */
+	VERSION_TIME_ORDERED(6),
+	/**
+	 * The time-ordered version with Unix epoch proposed by Peabody and Davis.
+	 */
+	VERSION_TIME_ORDERED_EPOCH(7),
+	/**
+	 * The custom or free-form version proposed by Peabody and Davis.
+	 */
+	VERSION_CUSTOM(8);
 
 	private final int value;
 

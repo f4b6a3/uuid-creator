@@ -28,7 +28,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 /**
- * Utility that provides methods for extracting time from COMBs.
+ * Utility for extracting time from COMB GUIDs.
  */
 public final class CombUtil {
 
@@ -36,8 +36,8 @@ public final class CombUtil {
 	}
 
 	/**
-	 * Get the prefix from a Prefix COMB.
-	 *
+	 * Returns the prefix from a Prefix COMB.
+	 * <p>
 	 * The value returned is equivalent to the number of milliseconds since
 	 * 1970-01-01 (Unix epoch).
 	 * 
@@ -49,8 +49,8 @@ public final class CombUtil {
 	}
 
 	/**
-	 * Get the suffix from a Suffix COMB.
-	 *
+	 * Returns the suffix from a Suffix COMB.
+	 * <p>
 	 * The value returned is equivalent to the number of milliseconds since
 	 * 1970-01-01 (Unix epoch).
 	 * 
@@ -62,8 +62,8 @@ public final class CombUtil {
 	}
 
 	/**
-	 * Get the instant from a Prefix COMB.
-	 *
+	 * Returns the instant from a Prefix COMB.
+	 * 
 	 * @param comb a Prefix COMB
 	 * @return {@link Instant}
 	 */
@@ -73,8 +73,8 @@ public final class CombUtil {
 	}
 
 	/**
-	 * Get the instant from a Suffix COMB.
-	 *
+	 * Returns the instant from a Suffix COMB.
+	 * 
 	 * @param comb a Suffix COMB
 	 * @return {@link Instant}
 	 */

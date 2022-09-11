@@ -32,10 +32,8 @@ import com.github.f4b6a3.uuid.util.immutable.CharArray;
 
 /**
  * Abstract function to be extended by all encoder functions of this package.
- * 
+ * <p>
  * If the base-n is case insensitive, it encodes in lower case only.
- * 
- * See: https://tools.ietf.org/html/rfc4648
  */
 public abstract class BaseNEncoder implements Function<UUID, String> {
 

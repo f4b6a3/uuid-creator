@@ -33,32 +33,27 @@ import com.github.f4b6a3.uuid.util.immutable.CharArray;
 import com.github.f4b6a3.uuid.util.immutable.LongArray;
 
 /**
- * Codec for UUID string representation as defined in the RFC-4122.
- * 
+ * Codec for UUID string representation as defined in RFC-4122.
+ * <p>
  * The string representation, also referred as canonical textual representation,
  * is a string of 32 hexadecimal (base-16) digits, displayed in five groups
  * separated by hyphens, in the form 8-4-4-4-12 for a total of 36 characters (32
  * hexadecimal characters and 4 hyphens).
- * 
+ * <p>
  * This codec decodes (parses) strings in these formats, with/without hyphens:
- * 
- * - 00000000-0000-V000-0000-000000000000 (canonical string)
- * 
- * - {00000000-0000-V000-0000-000000000000} (MS GUID string)
- * 
- * - urn:uuid:00000000-0000-V000-0000-000000000000 (URN UUID string)
- * 
+ * <ul>
+ * <li>00000000-0000-V000-0000-000000000000 (canonical string)
+ * <li>{00000000-0000-V000-0000-000000000000} (MS GUID string)
+ * <li>urn:uuid:00000000-0000-V000-0000-000000000000 (URN UUID string)
+ * </ul>
+ * <p>
  * The encoding and decoding processes can be much faster (7x) than
  * {@link UUID#toString()} and {@link UUID#fromString(String)} in JDK 8.
- * 
- * If you prefer a string representation without hyphens, use the
- * {@link Base16Codec} instead of {@link StringCodec}. That other codec can be
- * much faster (22x) than doing
- * <code>uuid.toString().replaceAll("-", "")`</code>.
- *
- * Read: https://tools.ietf.org/html/rfc4122
- * 
- * Read also: https://en.wikipedia.org/wiki/Universally_unique_identifier#Format
+ * <p>
+ * If you prefer a string representation without hyphens, use
+ * {@link Base16Codec} instead of {@link StringCodec}. {@link Base16Codec} can
+ * be much faster (22x) than doing
+ * <code>uuid.toString().replaceAll("-", "")</code>.
  */
 public class StringCodec implements UuidCodec<String> {
 
@@ -75,10 +70,8 @@ public class StringCodec implements UuidCodec<String> {
 
 	/**
 	 * Get a string from a UUID.
-	 * 
+	 * <p>
 	 * It can be much faster than {@link UUID#toString()} in JDK 8.
-	 * 
-	 * In JDK9+ it uses {@link UUID#toString()}.
 	 * 
 	 * @param uuid a UUID
 	 * @return a UUID string
@@ -139,20 +132,18 @@ public class StringCodec implements UuidCodec<String> {
 
 	/**
 	 * Get a UUID from a string.
-	 * 
+	 * <p>
 	 * It accepts strings:
-	 * 
-	 * - With URN prefix: "urn:uuid:";
-	 * 
-	 * - With curly braces: '{' and '}';
-	 * 
-	 * - With upper or lower case;
-	 * 
-	 * - With or without hyphens.
-	 * 
+	 * <ul>
+	 * <li>With URN prefix: "urn:uuid:";
+	 * <li>With curly braces: '{' and '}';
+	 * <li>With upper or lower case;
+	 * <li>With or without hyphens.
+	 * </ul>
+	 * <p>
 	 * It can be much faster than {@link UUID#fromString(String)} in JDK 8.
-	 * 
-	 * In JDK9+ it may be slightly faster.
+	 * <p>
+	 * It also can be twice as fast as {@link UUID#fromString(String)} in JDK 11.
 	 * 
 	 * @param string a UUID string
 	 * @return a UUID
@@ -247,10 +238,10 @@ public class StringCodec implements UuidCodec<String> {
 
 	/**
 	 * Returns a char array of a string.
-	 * 
+	 * <p>
 	 * It removes URN prefix and curly braces from the string.
 	 * 
-	 * @param chars a char array
+	 * @param string a string
 	 * @return a substring
 	 */
 	protected static char[] toCharArray(String string) {
@@ -283,8 +274,7 @@ public class StringCodec implements UuidCodec<String> {
 	/**
 	 * Returns the java major version number.
 	 * 
-	 * See: https://www.oracle.com/java/technologies/javase/naming-and-versions.html
-	 * 
+	 * @see <a href= "https://www.java.com/releases/">JDK Releases</a>
 	 * @return major version number
 	 */
 	protected static int getJavaVersion() {

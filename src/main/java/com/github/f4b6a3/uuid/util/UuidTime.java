@@ -28,20 +28,20 @@ import java.time.Instant;
 
 /**
  * Utility for UUID time stamps.
- * 
- * The UUID timestamp is a 60-bit number.
- * 
- * The UUID timestamp resolution is 100ns, i.e., the UUID clock 'ticks' every
+ * <p>
+ * The UUID time stamp is a 60-bit number.
+ * <p>
+ * The UUID time stamp resolution is 100ns, i.e., the UUID clock ticks every
  * 100-nanosecond interval.
- * 
+ * <p>
  * In JDK 8, {@link Instant#now()} has millisecond precision, in spite of
  * {@link Instant} has nanoseconds resolution. In JDK 9+,{@link Instant#now()}
  * has microsecond precision.
  * 
- * Read: https://stackoverflow.com/questions/1712205
- * 
- * Read also: https://bugs.openjdk.java.net/browse/JDK-8068730
- * 
+ * @see <a href="https://stackoverflow.com/questions/1712205">Current time in
+ *      microseconds in java</a>
+ * @see <a href="https://bugs.openjdk.java.net/browse/JDK-8068730">Increase the
+ *      precision of the implementation of java.time.Clock.systemUTC()</a>
  */
 public final class UuidTime {
 
@@ -59,9 +59,9 @@ public final class UuidTime {
 	}
 
 	/**
-	 * This method returns the number of 100ns since 1970-01-01 (Unix epoch).
-	 * 
-	 * It uses {@code Instant.now()} to get the the current time.
+	 * Returns the number of 100ns since 1970-01-01 (Unix epoch).
+	 * <p>
+	 * It uses {@link Instant#now()} to get the the current time.
 	 * 
 	 * @return a number of 100ns since 1970-01-01 (Unix epoch).
 	 */
@@ -70,9 +70,9 @@ public final class UuidTime {
 	}
 
 	/**
-	 * This method returns the number of 100ns since 1582-10-15 (Gregorian epoch).
-	 * 
-	 * It uses {@code Instant.now()} to get the the current time.
+	 * Returns the number of 100ns since 1582-10-15 (Gregorian epoch).
+	 * <p>
+	 * It uses {@link Instant#now()} to get the the current time.
 	 * 
 	 * @return a number of 100ns since 1582-10-15 (Gregorian epoch).
 	 */
@@ -81,8 +81,8 @@ public final class UuidTime {
 	}
 
 	/**
-	 * This method converts a number of 100ns since 1582-10-15 (Gregorian epoch)
-	 * into a number of 100ns since 1970-01-01 (Unix epoch).
+	 * Converts a number of 100ns since 1582-10-15 (Gregorian epoch) into a number
+	 * of 100ns since 1970-01-01 (Unix epoch).
 	 * 
 	 * @param gregTimestamp a number of 100ns since 1582-10-15 (Gregorian epoch)
 	 * @return a number of 100ns since 1970-01-01 (Unix epoch)
@@ -92,8 +92,8 @@ public final class UuidTime {
 	}
 
 	/**
-	 * This method converts a number of 100ns since 1970-01-01 (Unix epoch) into a
-	 * number of 100ns since 1582-10-15 (Gregorian epoch).
+	 * Converts a number of 100ns since 1970-01-01 (Unix epoch) into a number of
+	 * 100ns since 1582-10-15 (Gregorian epoch).
 	 * 
 	 * @param unixTimestamp a number of 100ns since 1970-01-01 (Unix epoch)
 	 * @return a number of 100ns since 1582-10-15 (Gregorian epoch).
@@ -103,8 +103,8 @@ public final class UuidTime {
 	}
 
 	/**
-	 * This method converts an {@code Instant} into a number of 100ns since
-	 * 1970-01-01 (Unix epoch).
+	 * Converts an {@link Instant} into a number of 100ns since 1970-01-01 (Unix
+	 * epoch).
 	 * 
 	 * @param instant an instant
 	 * @return a number of 100ns since 1970-01-01 (Unix epoch).
@@ -116,8 +116,8 @@ public final class UuidTime {
 	}
 
 	/**
-	 * This method converts an {@code Instant} into a number of 100ns since
-	 * 1582-10-15 (Gregorian epoch).
+	 * Converts an {@link Instant} into a number of 100ns since 1582-10-15
+	 * (Gregorian epoch).
 	 * 
 	 * @param instant an instant
 	 * @return a number of 100ns since 1582-10-15 (Gregorian epoch).
@@ -129,8 +129,8 @@ public final class UuidTime {
 	}
 
 	/**
-	 * This method converts a number of 100ns since 1970-01-01 (Unix epoch) into an
-	 * {@code Instant}.
+	 * Converts a number of 100ns since 1970-01-01 (Unix epoch) into an
+	 * {@link Instant}.
 	 * 
 	 * @param unixTimestamp a number of 100ns since 1970-01-01 (Unix epoch)
 	 * @return an instant
@@ -142,8 +142,8 @@ public final class UuidTime {
 	}
 
 	/**
-	 * This method converts a number of 100ns since 1582-10-15 (Gregorian epoch)
-	 * into an {@code Instant}.
+	 * Converts a number of 100ns since 1582-10-15 (Gregorian epoch) into an
+	 * {@link Instant}.
 	 * 
 	 * @param gregTimestamp a number of 100ns since 1582-10-15 (Gregorian epoch)
 	 * @return an instant

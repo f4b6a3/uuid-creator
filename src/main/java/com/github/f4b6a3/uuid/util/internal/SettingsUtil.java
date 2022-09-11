@@ -25,15 +25,21 @@
 package com.github.f4b6a3.uuid.util.internal;
 
 /**
- * Reads system properties and environment variables.
- * 
- * The system properties has prevalence over environment variables.
- * 
- * Available properties and variables:
- * 
- * - uuidcreator.node
- * 
- * - UUIDCREATOR_NODE
+ * Utility class that reads system properties and environment variables.
+ * <p>
+ * List of system properties:
+ * <ul>
+ * <li>uuidcreator.node
+ * <li>uuidcreator.securerandom
+ * </ul>
+ * <p>
+ * List of environment variables:
+ * <ul>
+ * <li>UUIDCREATOR_NODE
+ * <li>UUIDCREATOR_SECURERANDOM
+ * </ul>
+ * <p>
+ * System properties has prevalence over environment variables.
  */
 public final class SettingsUtil {
 

@@ -28,12 +28,12 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 /**
- * A utility class that wraps a shared {@link SecureRandom} and provides new
+ * Utility class that wraps a shared {@link SecureRandom} and provides new
  * instances of {@link SecureRandom}.
  */
 public final class RandomUtil {
 
-	protected static final SecureRandom SHARED_RANDOM = getSecureRandom();
+	protected static final SecureRandom SHARED_RANDOM = newSecureRandom();
 
 	private RandomUtil() {
 	}
@@ -48,44 +48,45 @@ public final class RandomUtil {
 
 	/**
 	 * Returns a new instance of {@link java.security.SecureRandom}.
-	 * 
+	 * <p>
 	 * It tries to create an instance with the algorithm name specified in the
 	 * system property `uuidcreator.securerandom` or in the environment variable
 	 * `UUIDCREATOR_SECURERANDOM`. If the algorithm name is not supported by the
 	 * runtime, it returns an instance with the default algorithm.
-	 * 
+	 * <p>
 	 * It can be useful to make use of SHA1PRNG or DRBG as a non-blocking source of
-	 * random bytes. The SHA1PRNG algorithm is default in some operating systems
-	 * that don't have '/dev/random' or '/dev/urandom', e.g., in Windows. The DRBG
-	 * algorithm is available in JDK9+.
-	 * 
+	 * random bytes. The SHA1PRNG algorithm is default on operating systems that
+	 * don't have '/dev/random', e.g., on Windows. The DRBG algorithm is available
+	 * in JDK 9+.
+	 * <p>
 	 * To control the algorithm used by this method, use the system property
 	 * `uuidcreator.securerandom` or the environment variable
 	 * `UUIDCREATOR_SECURERANDOM` as in examples below.
-	 * 
+	 * <p>
 	 * System property:
 	 * 
-	 * <pre>
+	 * <pre>{@code
 	 * # Use the the algorithm SHA1PRNG for SecureRandom
 	 * -Duuidcreator.securerandom="SHA1PRNG"
 	 * 
 	 * # Use the the algorithm DRBG for SecureRandom (JDK9+)
 	 * -Duuidcreator.securerandom="DRBG"
-	 * </pre>
+	 * }</pre>
 	 * 
+	 * <p>
 	 * Environment variable:
 	 * 
-	 * <pre>
+	 * <pre>{@code
 	 * # Use the the algorithm SHA1PRNG for SecureRandom
 	 * export UUIDCREATOR_SECURERANDOM="SHA1PRNG"
 	 * 
 	 * # Use the the algorithm DRBG for SecureRandom (JDK9+)
 	 * export UUIDCREATOR_SECURERANDOM="DRBG"
-	 * </pre>
+	 * }</pre>
 	 * 
 	 * @return a new {@link SecureRandom}.
 	 */
-	public static SecureRandom getSecureRandom() {
+	public static SecureRandom newSecureRandom() {
 		String algorithm = SettingsUtil.getSecureRandom();
 		if (algorithm != null) {
 			try {

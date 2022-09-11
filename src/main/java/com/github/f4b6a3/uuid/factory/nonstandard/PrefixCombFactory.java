@@ -35,15 +35,16 @@ import com.github.f4b6a3.uuid.factory.AbstCombFactory;
 import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
- * Factory that creates Prefix COMB GUIDs.
- * 
+ * Concrete factory for creating Prefix COMB GUIDs.
+ * <p>
  * A Prefix COMB GUID is a UUID that combines a creation time with random bits.
- * 
+ * <p>
  * The creation millisecond is a 6 bytes PREFIX at the MOST significant bits.
+ * <p>
+ * The created UUID is a UUIDv4 for compatibility with RFC-4122.
  * 
- * Read: The Cost of GUIDs as Primary Keys
- * http://www.informit.com/articles/article.aspx?p=25862
- * 
+ * @see <a href="http://www.informit.com/articles/article.aspx?p=25862">The Cost
+ *      of GUIDs as Primary Keys</a>
  */
 public final class PrefixCombFactory extends AbstCombFactory {
 
@@ -97,9 +98,7 @@ public final class PrefixCombFactory extends AbstCombFactory {
 	/**
 	 * Returns a Prefix COMB GUID.
 	 * 
-	 * It combines creation time with random bits.
-	 * 
-	 * The creation millisecond is a PREFIX at the MOST significant bits.
+	 * @return a UUIDv4
 	 */
 	@Override
 	public synchronized UUID create() {

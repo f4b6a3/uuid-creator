@@ -31,16 +31,22 @@ import com.github.f4b6a3.uuid.util.UuidValidator;
 
 /**
  * Codec for UUID URNs.
- * 
- * The {@link UrnCodec} encodes UUID to and from an URN.
- * 
+ * <p>
+ * {@link UrnCodec} encodes UUID to and from an URN.
+ * <p>
  * The URN representation adds the prefix 'urn:uuid:' to a UUID canonical
  * representation.
+ * <p>
  * 
- * See: https://github.com/f4b6a3/uuid-creator/issues/66
- * 
- * See also:
- * https://stackoverflow.com/questions/4913343/what-is-the-difference-between-uri-url-and-urn
+ * @see InvalidUuidException
+ * @see <a href= "https://github.com/f4b6a3/uuid-creator/issues/32">UUID
+ *      URIs</a>
+ * @see <a href=
+ *      "https://github.com/f4b6a3/uuid-creator/issues/66">UriCodec.isUuidUrn(java.net.URI
+ *      uri)</a>
+ * @see <a href=
+ *      "https://stackoverflow.com/questions/4913343/what-is-the-difference-between-uri-url-and-urn">What
+ *      is the difference between URI, URL and URN?</a>
  */
 public class UrnCodec implements UuidCodec<String> {
 

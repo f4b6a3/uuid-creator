@@ -31,10 +31,10 @@ import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
 /**
  * Function that decodes a base-n string to a UUID.
- * 
+ * <p>
  * It decodes strings created by encoders that use remainder operator (modulus),
  * a common approach to encode integers.
- * 
+ * <p>
  * The decoding process is performed using integer arithmetic.
  */
 public final class BaseNRemainderDecoder extends BaseNDecoder {

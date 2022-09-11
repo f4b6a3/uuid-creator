@@ -29,67 +29,55 @@ import java.util.function.LongSupplier;
 import com.github.f4b6a3.uuid.util.internal.RandomUtil;
 
 /**
- * It must return a number between 0 and 2^48-1.
+ * Function that must return a number between 0 and 2^48-1.
+ * <p>
+ * Example:
  * 
- * Use {@link NodeIdFunction#toExpectedRange(long)} to set the output within the
- * range 0 to 2^48-1.
- * 
- * If necessary, use {@link NodeIdFunction#toMulticast(long)} to set the
- * multicast bit. It also sets the output within the range 0 to 2^48-1.
- * 
- * Examples:
- * 
- * <pre>
- * // A `NodeIdFunction` that always returns a random number between 0 and 2^48-1.
- * NodeIdFunction f = () -> NodeIdFunction.getRandom();
- * </pre>
- * 
- * <pre>
- * // A `NodeIdFunction` that always returns the same number between 0 and 2^48-1.
- * final long number = 1234567890;
- * NodeIdFunction f = () -> NodeIdFunction.toExpectedRange(number);
- * </pre>
+ * <pre>{@code
+ * // A function that returns new random multicast node identifiers
+ * NodeIdFunction f = () -> NodeIdFunction.getMulticastRandom();
+ * }</pre>
  * 
  */
 @FunctionalInterface
 public interface NodeIdFunction extends LongSupplier {
 
 	/**
-	 * This method return a new random node identifier.
+	 * Returns a new random node identifier.
 	 * 
-	 * @return a node identifier in the range 0 to 2^48-1.
+	 * @return a number in the range 0 to 2^48-1.
 	 */
 	public static long getRandom() {
 		return toExpectedRange(RandomUtil.nextLong());
 	}
 
 	/**
-	 * This method return a new multicast random node identifier.
+	 * Return a new random multicast node identifier.
 	 * 
-	 * @return a node identifier in the range 0 to 2^48-1.
+	 * @return a number in the range 0 to 2^48-1.
 	 */
 	public static long getMulticastRandom() {
 		return toMulticast(RandomUtil.nextLong());
 	}
 
 	/**
-	 * This method clears the unnecessary leading bits so that the resulting number
-	 * is in the range 0 to 2^48-1.
-	 * 
+	 * Clears the leading bits so that the resulting number is in the range 0 to
+	 * 2^48-1.
+	 * <p>
 	 * The result is equivalent to {@code n % 2^48}.
 	 * 
 	 * @param nodeid the node identifier
-	 * @return a node identifier in the range 0 to 2^48-1.
+	 * @return a number in the range 0 to 2^48-1.
 	 */
 	public static long toExpectedRange(final long nodeid) {
 		return nodeid & 0x0000_ffffffffffffL;
 	}
 
 	/**
-	 * This method sets the multicast bit of a node identifier.
-	 * 
-	 * It also clears the unnecessary leading bits so that the resulting number is
-	 * within the range 0 to 281474976710655 (2^48-1).
+	 * Sets the multicast bit of a node identifier.
+	 * <p>
+	 * It also clears leading bits so that the resulting number is within the range
+	 * 0 to 2^48-1.
 	 * 
 	 * @param nodeid the node identifier
 	 * @return a node identifier with the multicast bit set
@@ -99,7 +87,7 @@ public interface NodeIdFunction extends LongSupplier {
 	}
 
 	/**
-	 * This method checks if the multicast bit of a node identifier is set.
+	 * Checks if the multicast bit of a node identifier is set.
 	 * 
 	 * @param nodeid a node identifier
 	 * @return true if the node identifier is multicast

@@ -26,13 +26,33 @@ package com.github.f4b6a3.uuid.enums;
 
 /**
  * UUID variants defined by RFC-4122.
+ * <p>
+ * List of variants:
+ * <ul>
+ * <li>{@link VARIANT_RESERVED_NCS}: 0
+ * <li>{@link VARIANT_RFC_4122}: 2
+ * <li>{@link VARIANT_RESERVED_MICROSOFT}: 6
+ * <li>{@link VARIANT_RESERVED_FUTURE}: 7
+ * </ul>
  */
 public enum UuidVariant {
 
-	VARIANT_RESERVED_NCS(0), //
-	VARIANT_RFC_4122(2), //
-	VARIANT_RESERVED_MICROSOFT(6), //
-	VARIANT_RESERVED_FUTURE(7); //
+	/**
+	 * Reserved for NCS backward compatibility.
+	 */
+	VARIANT_RESERVED_NCS(0),
+	/**
+	 * The variant specified in RFC-4122.
+	 */
+	VARIANT_RFC_4122(2),
+	/**
+	 * Reserved for Microsoft Corporation backward compatibility.
+	 */
+	VARIANT_RESERVED_MICROSOFT(6),
+	/**
+	 * Reserved for future definition.
+	 */
+	VARIANT_RESERVED_FUTURE(7);
 
 	private final int value;
 

@@ -51,28 +51,29 @@ public final class BaseN {
 
 	/**
 	 * Public constructor for the base-n object.
-	 * 
+	 * <p>
 	 * The radix is the alphabet size.
-	 * 
+	 * <p>
 	 * The supported alphabet sizes are from 2 to 64.
-	 * 
+	 * <p>
 	 * If there are mixed cases in the alphabet, the base-n is case SENSITIVE.
-	 * 
+	 * <p>
 	 * The encoded string length is equal to `CEIL(128 / LOG2(n))`, where n is the
 	 * radix. The encoded string is padded to fit the expected length.
-	 * 
+	 * <p>
 	 * The padding character is the first character of the string. For example, the
 	 * padding character for the alphabet "abcdef0123456" is 'a'.
-	 * 
+	 * <p>
 	 * The example below shows how to create a {@link BaseN} for an hypothetical
 	 * base-26 encoding that contains only letters. You only need to pass a number
 	 * 40.
 	 * 
-	 * <pre>
+	 * <pre>{@code
 	 * String radix = 40;
 	 * BaseN base = new BaseN(radix);
-	 * </pre>
+	 * }</pre>
 	 * 
+	 * <p>
 	 * If radix is greater than 36, the alphabet generated is a subset of the
 	 * character sequence "0-9A-Za-z-_". Otherwise it is a subset of "0-9a-z". In
 	 * the example above the resulting alphabet is
@@ -86,35 +87,35 @@ public final class BaseN {
 
 	/**
 	 * Public constructor for the base-n object.
-	 * 
+	 * <p>
 	 * The radix is the alphabet size.
-	 * 
+	 * <p>
 	 * The supported alphabet sizes are from 2 to 64.
-	 * 
+	 * <p>
 	 * If there are mixed cases in the alphabet, the base-n is case SENSITIVE.
-	 * 
+	 * <p>
 	 * The encoded string length is equal to `CEIL(128 / LOG2(n))`, where n is the
 	 * radix. The encoded string is padded to fit the expected length.
-	 * 
+	 * <p>
 	 * The padding character is the first character of the string. For example, the
 	 * padding character for the alphabet "abcdef0123456" is 'a'.
-	 * 
+	 * <p>
 	 * The example below shows how to create a {@link BaseN} for an hypothetical
 	 * base-26 encoding that contains only letters. You only need to pass a string
 	 * with 26 characters.
 	 * 
-	 * <pre>
+	 * <pre>{@code
 	 * String alphabet = "abcdefghijklmnopqrstuvwxyz";
 	 * BaseN base = new BaseN(alphabet);
-	 * </pre>
+	 * }</pre>
 	 * 
 	 * Alphabet strings similar to "a-f0-9" are expanded to "abcdef0123456789". The
 	 * same example using the string "a-z" instead of "abcdefghijklmnopqrstuvwxyz":
 	 * 
-	 * <pre>
+	 * <pre>{@code
 	 * String alphabet = "a-z";
 	 * BaseN base = new BaseN(alphabet);
-	 * </pre>
+	 * }</pre>
 	 * 
 	 * @param alphabet the alphabet to be used
 	 */
@@ -147,26 +148,56 @@ public final class BaseN {
 		this.map = map(charset, sensitive);
 	}
 
+	/**
+	 * Returns the radix of the base-n.
+	 * 
+	 * @return the radix
+	 */
 	public int getRadix() {
 		return radix;
 	}
 
+	/**
+	 * Returns the length of encoded UUIDs.
+	 * 
+	 * @return the length
+	 */
 	public int getLength() {
 		return length;
 	}
 
+	/**
+	 * Return the padding character.
+	 * 
+	 * @return a character
+	 */
 	public char getPadding() {
 		return padding;
 	}
 
+	/**
+	 * Informs if the base-n is case-sensitive.
+	 * 
+	 * @return true if it is case-sensitive
+	 */
 	public boolean isSensitive() {
 		return sensitive;
 	}
 
+	/**
+	 * Returns the alphabet of the base-n.
+	 * 
+	 * @return the alphabet
+	 */
 	public CharArray getAlphabet() {
 		return this.alphabet;
 	}
 
+	/**
+	 * Returns the map of the base-n.
+	 * 
+	 * @return a map
+	 */
 	public LongArray getMap() {
 		return this.map;
 	}
@@ -177,12 +208,12 @@ public final class BaseN {
 	 * @param uuid a UUID string
 	 * @return true if valid, false if invalid
 	 */
-	public boolean isValid(String string) {
-		if (string == null || string.length() != this.length) {
+	public boolean isValid(String uuid) {
+		if (uuid == null || uuid.length() != this.length) {
 			return false;
 		}
 		for (int i = 0; i < this.length; i++) {
-			if (this.map.get(string.charAt(i)) == -1) {
+			if (this.map.get(uuid.charAt(i)) == -1) {
 				return false;
 			}
 		}
@@ -195,9 +226,9 @@ public final class BaseN {
 	 * @param uuid a UUID string
 	 * @throws InvalidUuidException if the argument is invalid
 	 */
-	public void validate(String string) {
-		if (!isValid(string)) {
-			throw InvalidUuidException.newInstance(string);
+	public void validate(String uuid) {
+		if (!isValid(uuid)) {
+			throw InvalidUuidException.newInstance(uuid);
 		}
 	}
 
@@ -236,7 +267,7 @@ public final class BaseN {
 	}
 
 	/**
-	 * Expands char sequences similar to 0-9, a-z and A-Z.
+	 * Expands character sequences similar to 0-9, a-z and A-Z.
 	 * 
 	 * @param string a string to be expanded
 	 * @return a string
@@ -266,6 +297,13 @@ public final class BaseN {
 		return buffer.toString();
 	}
 
+	/**
+	 * Expands a character sequence similar to 0-9, a-z and A-Z.
+	 * 
+	 * @param a the first character of the sequence
+	 * @param b the last character of the sequence
+	 * @return an expanded sequence of characters
+	 */
 	protected static char[] expand(char a, char b) {
 		char[] expanded = expand(a, b, '0', '9'); // digits (0-9)
 		if (expanded.length == 0) {

@@ -30,10 +30,10 @@ import com.github.f4b6a3.uuid.codec.base.BaseN;
 
 /**
  * Function that decodes a base-64 string to a UUID.
- * 
+ * <p>
  * It is case SENSITIVE.
  * 
- * See: https://tools.ietf.org/html/rfc4648
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc4648">RFC-4648</a>
  */
 public final class Base64Decoder extends BaseNDecoder {
 

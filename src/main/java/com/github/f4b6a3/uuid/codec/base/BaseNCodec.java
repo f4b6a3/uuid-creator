@@ -48,18 +48,18 @@ public abstract class BaseNCodec implements UuidCodec<String> {
 
 	/**
 	 * A division function that returns quotient and remainder.
-	 * 
+	 * <p>
 	 * It MUST perform SIGNED long division.
-	 * 
+	 * <p>
 	 * Example:
 	 * 
-	 * {@code
+	 * <pre>{@code
 	 * 
 	 * CustomDivider divideBy64 = x -> new long[] { x / 64, x % 64 };
 	 * 
 	 * long[] answer = divideBy64(1024);
 	 * 
-	 * }
+	 * }</pre>
 	 */
 	@FunctionalInterface
 	public static interface CustomDivider {
@@ -96,13 +96,13 @@ public abstract class BaseNCodec implements UuidCodec<String> {
 	/**
 	 * Static factory that returns a new instance of {@link BaseNCodec} using the
 	 * specified {@link BaseN}.
-	 * 
+	 * <p>
 	 * This method can be used if none of the existing concrete codecs of this
 	 * package class is desired.
-	 *
+	 * <p>
 	 * The {@link BaseNCodec} objects provided by this method encode UUIDs using
 	 * remainder operation (modulus), a common approach to encode integers.
-	 * 
+	 * <p>
 	 * If you need a {@link BaseN} that is not available in this package, use the
 	 * static factories {@link BaseNCodec#newInstance(String)} or
 	 * {@link BaseNCodec#newInstance(int)}.
@@ -117,23 +117,24 @@ public abstract class BaseNCodec implements UuidCodec<String> {
 	/**
 	 * Static factory that returns a new instance of {@link BaseNCodec} using the
 	 * specified radix.
-	 * 
+	 * <p>
 	 * This method can be used if none of the existing concrete codecs of this
 	 * package class is desired.
-	 * 
+	 * <p>
 	 * The {@link BaseNCodec} objects provided by this method encode UUIDs using
 	 * remainder operator (modulus), a common approach to encode integers.
-	 * 
+	 * <p>
 	 * The example below shows how to create a {@link BaseNCodec} for an
 	 * hypothetical base-40 encoding that contains only letters. You only need to
 	 * pass a number 40. The {@link BaseNCodec} instantiates a {@link BaseN} object
 	 * internally. See {@link BaseN}.
 	 * 
-	 * <pre>
+	 * <pre>{@code
 	 * String radix = 40;
 	 * BaseNCodec codec = BaseNCodec.newInstance(radix);
-	 * </pre>
+	 * }</pre>
 	 * 
+	 * <p>
 	 * If radix is greater than 36, the alphabet generated is a subset of the
 	 * character sequence "0-9A-Za-z-_". Otherwise it is a subset of "0-9a-z". In
 	 * the example above the resulting alphabet is
@@ -149,30 +150,31 @@ public abstract class BaseNCodec implements UuidCodec<String> {
 	/**
 	 * Static factory that returns a new instance of {@link BaseNCodec} using the
 	 * specified alphabet.
-	 * 
+	 * <p>
 	 * This method can be used if none of the existing concrete codecs of this
 	 * package class is desired.
-	 * 
+	 * <p>
 	 * The {@link BaseNCodec} objects provided by this method encode UUIDs using
 	 * remainder operator (modulus), a common approach to encode integers.
-	 * 
+	 * <p>
 	 * The example below shows how to create a {@link BaseNCodec} for an
 	 * hypothetical base-26 encoding that contains only letters. You only need to
 	 * pass a string with 26 characters. The {@link BaseNCodec} instantiates a
 	 * {@link BaseN} object internally. See {@link BaseN}.
 	 * 
-	 * <pre>
+	 * <pre>{@code
 	 * String alphabet = "abcdefghijklmnopqrstuvwxyz";
 	 * BaseNCodec codec = BaseNCodec.newInstance(alphabet);
-	 * </pre>
+	 * }</pre>
 	 * 
+	 * <p>
 	 * Alphabet strings similar to "a-f0-9" are expanded to "abcdef0123456789". The
 	 * same example using the string "a-z" instead of "abcdefghijklmnopqrstuvwxyz":
 	 * 
-	 * <pre>
+	 * <pre>{@code
 	 * String alphabet = "a-z";
 	 * BaseNCodec codec = BaseNCodec.newInstance(alphabet);
-	 * </pre>
+	 * }</pre>
 	 * 
 	 * @param alphabet the alphabet to be used
 	 * @return a {@link BaseNCodec}

@@ -24,11 +24,26 @@
 
 package com.github.f4b6a3.uuid.factory.function.impl;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 import com.github.f4b6a3.uuid.factory.function.RandomFunction;
 import com.github.f4b6a3.uuid.util.internal.RandomUtil;
 
+/**
+ * Function that returns an array of bytes with the given length.
+ * <p>
+ * The current implementation uses a pool {@link SecureRandom}.
+ * <p>
+ * The pool size is equal to the number of processors available, up to a maximum
+ * of 16.
+ * <p>
+ * The PRNG algorithm can be specified by system property or environment
+ * variable. See {@link RandomUtil#newSecureRandom()}.
+ * 
+ * @see RandomFunction
+ * @see RandomUtil#newSecureRandom()
+ */
 public final class DefaultRandomFunction implements RandomFunction {
 
 	private static final int POOL_SIZE = processors();
@@ -48,7 +63,7 @@ public final class DefaultRandomFunction implements RandomFunction {
 
 		// lazy loading instance
 		if (POOL[index] == null) {
-			POOL[index] = RandomUtil.getSecureRandom();
+			POOL[index] = RandomUtil.newSecureRandom();
 		}
 
 		return POOL[index];

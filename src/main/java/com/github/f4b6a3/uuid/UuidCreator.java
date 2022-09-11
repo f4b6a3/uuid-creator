@@ -32,7 +32,6 @@ import com.github.f4b6a3.uuid.codec.StringCodec;
 import com.github.f4b6a3.uuid.enums.UuidLocalDomain;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
-import com.github.f4b6a3.uuid.factory.AbstTimeBasedFactory;
 import com.github.f4b6a3.uuid.factory.nonstandard.PrefixCombFactory;
 import com.github.f4b6a3.uuid.factory.nonstandard.ShortPrefixCombFactory;
 import com.github.f4b6a3.uuid.factory.nonstandard.ShortSuffixCombFactory;
@@ -43,10 +42,13 @@ import com.github.f4b6a3.uuid.factory.rfc4122.NameBasedSha1Factory;
 import com.github.f4b6a3.uuid.factory.rfc4122.RandomBasedFactory;
 import com.github.f4b6a3.uuid.factory.rfc4122.TimeBasedFactory;
 import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedFactory;
+import com.github.f4b6a3.uuid.util.MachineId;
 import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedEpochFactory;
 
 /**
- * Facade to all the UUID generators.
+ * Facade for everything.
+ * <p>
+ * All UUID types can be generated from this entry point.
  */
 public final class UuidCreator {
 
@@ -66,7 +68,7 @@ public final class UuidCreator {
 	}
 
 	/**
-	 * Get the array of bytes from a UUID.
+	 * Returns an array of bytes from a UUID.
 	 * 
 	 * @param uuid a UUID
 	 * @return an array of bytes
@@ -78,8 +80,8 @@ public final class UuidCreator {
 
 	/**
 	 * Returns a UUID from a byte array.
-	 * 
-	 * It validates the input byte array.
+	 * <p>
+	 * It also checks if the input byte array is valid.
 	 * 
 	 * @param uuid a byte array
 	 * @return a UUID
@@ -90,11 +92,9 @@ public final class UuidCreator {
 	}
 
 	/**
-	 * Get a string from a UUID.
-	 * 
-	 * It may be much faster than {@link UUID#toString()} in JDK 8.
-	 * 
-	 * In JDK9+ it uses {@link UUID#toString()}.
+	 * Returns a string from a UUID.
+	 * <p>
+	 * It can be much faster than {@link UUID#toString()} in JDK 8.
 	 * 
 	 * @param uuid a UUID
 	 * @return a UUID string
@@ -106,20 +106,18 @@ public final class UuidCreator {
 
 	/**
 	 * Returns a UUID from a string.
-	 * 
+	 * <p>
 	 * It accepts strings:
-	 * 
-	 * - With URN prefix: "urn:uuid:";
-	 * 
-	 * - With curly braces: '{' and '}';
-	 * 
-	 * - With upper or lower case;
-	 * 
-	 * - With or without hyphens.
-	 * 
-	 * It may be much faster than {@link UUID#fromString(String)} in JDK 8.
-	 * 
-	 * In JDK9+ it may be slightly faster.
+	 * <ul>
+	 * <li>With URN prefix: "urn:uuid:";
+	 * <li>With curly braces: '{' and '}';
+	 * <li>With upper or lower case;
+	 * <li>With or without hyphens.
+	 * </ul>
+	 * <p>
+	 * It can be much faster than {@link UUID#fromString(String)} in JDK 8.
+	 * <p>
+	 * It also can be twice as fast as {@link UUID#fromString(String)} in JDK 11.
 	 * 
 	 * @param uuid a UUID string
 	 * @return a UUID
@@ -131,8 +129,11 @@ public final class UuidCreator {
 
 	/**
 	 * Returns a Nil UUID.
-	 * 
-	 * The Nil UUID is a special UUID that has all 128 bits set to ZERO.
+	 * <p>
+	 * Nil UUID is a special UUID that has all 128 bits set to ZERO.
+	 * <p>
+	 * The canonical string of Nil UUID is
+	 * <code>00000000-0000-0000-0000-000000000000</code>.
 	 * 
 	 * @return a Nil UUID
 	 */
@@ -142,120 +143,109 @@ public final class UuidCreator {
 
 	/**
 	 * Returns a Max UUID.
-	 * 
-	 * The Max UUID is a special UUID that has all 128 bits set to ONE.
+	 * <p>
+	 * Max UUID is a special UUID that has all 128 bits set to ONE.
+	 * <p>
+	 * The canonical string of Max UUID is
+	 * <code>FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF</code>.
 	 * 
 	 * @return a Max UUID
+	 * @since 5.0.0
+	 * @see <a href=
+	 *      "https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-04.html">New
+	 *      UUID Formats</a>
 	 */
 	public static UUID getMax() {
 		return UUID_MAX;
 	}
 
 	/**
-	 * Returns a random UUID.
+	 * Returns a random-based unique identifier (UUIDv4).
 	 * 
-	 * The random generator is {@link java.security.SecureRandom}.
-	 * 
-	 * <pre>
-	 * Details: 
-	 * - Version number: 4
-	 * </pre>
-	 * 
-	 * @return a version 4 UUID
+	 * @return a UUIDv4
+	 * @see RandomBasedFactory
 	 */
 	public static UUID getRandomBased() {
 		return RandomBasedHolder.INSTANCE.create();
 	}
 
 	/**
-	 * Returns a time-based UUID.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 1
-	 * - Node identifier: random (default) or user defined
-	 * </pre>
-	 * 
-	 * A user defined node identifier can be provided by the system property
+	 * Returns a time-based unique identifier (UUIDv1).
+	 * <p>
+	 * The default node identifier is a random number that is generated once at
+	 * initialization.
+	 * <p>
+	 * A custom node identifier can be provided by the system property
 	 * 'uuidcreator.node' or the environment variable 'UUIDCREATOR_NODE'.
 	 * 
-	 * @return a version 1 UUID
+	 * @return a UUIDv1
+	 * @see TimeBasedFactory
 	 */
 	public static UUID getTimeBased() {
 		return TimeBasedHolder.INSTANCE.create();
 	}
 
 	/**
-	 * Returns a time-based UUID with hardware address as node identifier.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 1 
-	 * - Node identifier: MAC
-	 * </pre>
+	 * Returns a time-based unique identifier (UUIDv1).
+	 * <p>
+	 * The node identifier is a MAC address that is obtained once at initialization.
 	 * 
-	 * @return a version 1 UUID
+	 * @return a UUIDv1
+	 * @see TimeBasedFactory
 	 */
 	public static UUID getTimeBasedWithMac() {
 		return TimeBasedWithMacHolder.INSTANCE.create();
 	}
 
 	/**
-	 * Returns a time-based UUID with system data hash as node identifier.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 1 
-	 * - Node identifier: system data hash
-	 * </pre>
+	 * Returns a time-based unique identifier (UUIDv1).
+	 * <p>
+	 * The node identifier is a hash that is calculated once at initialization.
+	 * <p>
+	 * The hash input is a string containing host name, MAC and IP.
 	 * 
-	 * @return a version 1 UUID
+	 * @return a UUIDv1
+	 * @see TimeBasedFactory
+	 * @see MachineId
 	 */
 	public static UUID getTimeBasedWithHash() {
 		return TimeBasedWithHashHolder.INSTANCE.create();
 	}
 
 	/**
-	 * Returns a time-based UUID with random node identifier.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 1 
-	 * - Node identifier: random (always changing)
-	 * </pre>
+	 * Returns a time-based unique identifier (UUIDv1).
+	 * <p>
+	 * The node identifier is a random number that is generated with each
+	 * method invocation.
 	 * 
-	 * @return a version 1 UUID
+	 * @return a UUIDv1
+	 * @see TimeBasedFactory
 	 */
 	public static UUID getTimeBasedWithRandom() {
 		return TimeBasedWithRandomHolder.INSTANCE.create();
 	}
 
 	/**
-	 * Returns a time-based UUID.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 1
-	 * - Node identifier: random
-	 * </pre>
-	 * 
-	 * The {@link java.time.Instant} accuracy is be limited to 1 millisecond on
-	 * Linux with JDK 8. On Windows, its accuracy can be limited to 15 milliseconds.
-	 * 
-	 * The node identifier range is from 0 to 281474976710655 (2^48 - 1). If the
-	 * value passed by argument is out of range, the result of MOD 2^48 is used
-	 * instead.
-	 * 
-	 * The clock sequence range is from 0 to 16383 (2^14 - 1). If the value passed
-	 * by argument is out of range, the result of MOD 2^14 is used instead.
-	 * 
-	 * The null arguments are ignored. If all arguments are null, this method works
-	 * exactly as the method {@link AbstTimeBasedFactory#create()}.
+	 * Returns a time-based unique identifier (UUIDv1).
+	 * <p>
+	 * {@link Instant} accuracy is be limited to 1 millisecond on Linux with JDK 8.
+	 * On Windows, its accuracy may be limited to 15.625ms (64hz).
+	 * <p>
+	 * The clock sequence is a number between 0 and 16383 (2^14 - 1). If the value
+	 * passed as an argument is out of range, the result of MOD 2^14 will be used.
+	 * <p>
+	 * The node identifier is a number between 0 and 281474976710655 (2^48 - 1). If
+	 * the value passed as an argument is out of range, the result of MOD 2^48 will
+	 * be used.
+	 * <p>
+	 * Null arguments are ignored. If all arguments are null, this method works just
+	 * like method {@link UuidCreator#getTimeBased()}.
 	 * 
 	 * @param instant  an alternate instant
-	 * @param clockseq an alternate clock sequence (0 to 16,383)
-	 * @param nodeid   an alternate node identifier (0 to 2^48-1)
-	 * @return a version 1 UUID
+	 * @param clockseq an alternate clock sequence between 0 and 2^14-1
+	 * @param nodeid   an alternate node identifier between 0 and 2^48-1
+	 * @return a UUIDv1
+	 * @see TimeBasedFactory
 	 */
 	public static UUID getTimeBased(Instant instant, Integer clockseq, Long nodeid) {
 		TimeBasedFactory.Builder builder = TimeBasedFactory.builder();
@@ -272,94 +262,97 @@ public final class UuidCreator {
 	}
 
 	/**
-	 * Returns a time-ordered UUID.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 6
-	 * - Node identifier: random (default) or user defined
-	 * </pre>
-	 * 
-	 * A user defined node identifier can be provided by the system property
+	 * Returns a time-ordered unique identifier (UUIDv6).
+	 * <p>
+	 * The default node identifier is a random number that is generated once at
+	 * initialization.
+	 * <p>
+	 * A custom node identifier can be provided by the system property
 	 * 'uuidcreator.node' or the environment variable 'UUIDCREATOR_NODE'.
 	 * 
-	 * @return a version 6 UUID
+	 * @return a UUIDv6
+	 * @see TimeOrderedFactory
+	 * @see <a href=
+	 *      "https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-04.html">New
+	 *      UUID Formats</a>
 	 */
 	public static UUID getTimeOrdered() {
 		return TimeOrderedHolder.INSTANCE.create();
 	}
 
 	/**
-	 * Returns a time-ordered UUID with hardware address as node identifier.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 6
-	 * - Node identifier: MAC
-	 * </pre>
+	 * Returns a time-ordered unique identifier (UUIDv6).
+	 * <p>
+	 * The node identifier is a MAC address that is obtained once at initialization.
 	 * 
-	 * @return a version 6 UUID
+	 * @return a UUIDv6
+	 * @see TimeOrderedFactory
+	 * @see <a href=
+	 *      "https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-04.html">New
+	 *      UUID Formats</a>
 	 */
 	public static UUID getTimeOrderedWithMac() {
 		return TimeOrderedWithMacHolder.INSTANCE.create();
 	}
 
 	/**
-	 * Returns a time-ordered UUID with system data hash as node identifier.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 6
-	 * - Node identifier: system data hash
-	 * </pre>
+	 * Returns a time-ordered unique identifier (UUIDv6).
+	 * <p>
+	 * The node identifier is a hash that is calculated once at initialization.
+	 * <p>
+	 * The hash input is a string containing host name, MAC and IP.
 	 * 
-	 * @return a version 6 UUID
+	 * @return a UUIDv6
+	 * @see TimeOrderedFactory
+	 * @see MachineId
+	 * @see <a href=
+	 *      "https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-04.html">New
+	 *      UUID Formats</a>
 	 */
 	public static UUID getTimeOrderedWithHash() {
 		return TimeOrderedWithHashHolder.INSTANCE.create();
 	}
 
 	/**
-	 * Returns a time-ordered UUID with random node identifier.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 6
-	 * - Node identifier: random (always changing)
-	 * </pre>
+	 * Returns a time-ordered unique identifier (UUIDv6).
+	 * <p>
+	 * The node identifier is a random number that is generated with each
+	 * method invocation.
 	 * 
-	 * @return a version 6 UUID
+	 * @return a UUIDv6
+	 * @see TimeOrderedFactory
+	 * @see <a href=
+	 *      "https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-04.html">New
+	 *      UUID Formats</a>
 	 */
 	public static UUID getTimeOrderedWithRandom() {
 		return TimeOrderedWithRandomHolder.INSTANCE.create();
 	}
 
 	/**
-	 * Returns a time-ordered UUID.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 6
-	 * - Node identifier: random
-	 * </pre>
-	 * 
-	 * The {@link java.time.Instant} accuracy is be limited to 1 millisecond on
-	 * Linux with JDK 8. On Windows, its accuracy can be limited to 15 milliseconds.
-	 * 
-	 * The node identifier range is from 0 to 281474976710655 (2^48 - 1). If the
-	 * value passed by argument is out of range, the result of MOD 2^48 is used
-	 * instead.
-	 * 
-	 * The clock sequence range is from 0 to 16383 (2^14 - 1). If the value passed
-	 * by argument is out of range, the result of MOD 2^14 is used instead.
-	 * 
-	 * The null arguments are ignored. If all arguments are null, this method works
-	 * exactly as the method {@link AbstTimeBasedFactory#create()}.
+	 * Returns a time-ordered unique identifier (UUIDv6).
+	 * <p>
+	 * {@link Instant} accuracy is be limited to 1 millisecond on Linux with JDK 8.
+	 * On Windows, its accuracy may be limited to 15.625ms (64hz).
+	 * <p>
+	 * The clock sequence is a number between 0 and 16383 (2^14 - 1). If the value
+	 * passed as an argument is out of range, the result of MOD 2^14 will be used.
+	 * <p>
+	 * The node identifier is a number between 0 and 281474976710655 (2^48 - 1). If
+	 * the value passed as an argument is out of range, the result of MOD 2^48 will
+	 * be used.
+	 * <p>
+	 * Null arguments are ignored. If all arguments are null, this method works just
+	 * like method {@link UuidCreator#getTimeOrdered()}.
 	 * 
 	 * @param instant  an alternate instant
-	 * @param clockseq an alternate clock sequence (0 to 16,383)
-	 * @param nodeid   an alternate node identifier (0 to 2^48-1)
-	 * @return a version 6 UUID
+	 * @param clockseq an alternate clock sequence between 0 and 2^14-1
+	 * @param nodeid   an alternate node identifier between 0 and 2^48-1
+	 * @return a UUIDv6
+	 * @see TimeOrderedFactory
+	 * @see <a href=
+	 *      "https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-04.html">New
+	 *      UUID Formats</a>
 	 */
 	public static UUID getTimeOrdered(Instant instant, Integer clockseq, Long nodeid) {
 		TimeOrderedFactory.Builder builder = TimeOrderedFactory.builder();
@@ -376,836 +369,634 @@ public final class UuidCreator {
 	}
 
 	/**
-	 * Returns a Unix Epoch time-based UUID.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 7
-	 * - Random part: always randomized
-	 * </pre>
+	 * Returns a time-ordered unique identifier that uses Unix Epoch (UUIDv7).
+	 * <p>
+	 * The identifier has 3 parts: time, counter and random.
+	 * <p>
+	 * The counter bits are incremented by 1 when the time repeats.
+	 * <p>
+	 * The random bits are generated with each method invocation.
 	 * 
-	 * @return a version 7 UUID
+	 * @return a UUIDv7
+	 * @since 5.0.0
+	 * @see TimeOrderedEpochFactory
+	 * @see <a href=
+	 *      "https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-04.html">New
+	 *      UUID Formats</a>
 	 */
 	public static UUID getTimeOrderedEpoch() {
 		return TimeOrderedEpochHolder.INSTANCE.create();
 	}
 
 	/**
-	 * Returns a Unix Epoch time-based UUID in increments of 1.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 7
-	 * - Random part: incremented by 1
-	 * </pre>
+	 * Returns a time-ordered unique identifier that uses Unix Epoch (UUIDv7).
+	 * <p>
+	 * The identifier has 2 parts: time and monotonic random.
+	 * <p>
+	 * The monotonic random bits are incremented by 1 when the time repeats.
 	 * 
-	 * @return a version 7 UUID
+	 * @return a UUIDv7
+	 * @since 5.0.0
+	 * @see TimeOrderedEpochFactory
+	 * @see <a href=
+	 *      "https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-04.html">New
+	 *      UUID Formats</a>
 	 */
 	public static UUID getTimeOrderedEpochPlus1() {
 		return TimeOrderedEpochPlus1Holder.INSTANCE.create();
 	}
 
 	/**
-	 * Returns a Unix Epoch time-based UUID in increments of N.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 7
-	 * - Random part: incremented by N, where 1 <= N <= 2^32-1
-	 * </pre>
+	 * Returns a time-ordered unique identifier that uses Unix Epoch (UUIDv7).
+	 * <p>
+	 * The identifier has 2 parts: time and monotonic random.
+	 * <p>
+	 * The monotonic random bits are incremented by a random number between 1 and
+	 * 2^32 when the time repeats.
 	 * 
-	 * @return a version 7 UUID
+	 * @return a UUIDv7
+	 * @since 5.0.0
+	 * @see TimeOrderedEpochFactory
+	 * @see <a href=
+	 *      "https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-04.html">New
+	 *      UUID Formats</a>
 	 */
 	public static UUID getTimeOrderedEpochPlusN() {
 		return TimeOrderedEpochPlusNHolder.INSTANCE.create();
 	}
 
 	/**
-	 * Returns a name-based UUID (MD5).
+	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
+	 * <p>
+	 * The name string is encoded into a sequence of bytes using UTF-8.
 	 * 
-	 * <pre>
-	 * Details: 
-	 * - Version number: 3 
-	 * - Hash Algorithm: MD5 
-	 * - Name Space: NO
-	 * </pre>
-	 * 
-	 * The name string is encoded into a sequence of bytes using the UTF-8
-	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
-	 * use {@link #getNameBasedMd5(byte[])} instead.
-	 * 
-	 * See: UTF-8, a transformation format of ISO 10646
-	 * https://tools.ietf.org/html/rfc3629
-	 * 
-	 * @param name a name string
-	 * @return a version 3 UUID
+	 * @param name a string
+	 * @return a UUIDv3
+	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(String name) {
 		return NameBasedMd5Holder.INSTANCE.create(name);
 	}
 
 	/**
-	 * Returns a name-based UUID (MD5).
-	 * 
-	 * <pre>
-	 * Details: 
-	 * - Version number: 3 
-	 * - Hash Algorithm: MD5 
-	 * - Name Space: NO
-	 * </pre>
+	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
 	 * 
 	 * @param name a byte array
-	 * @return a version 3 UUID
+	 * @return a UUIDv3
+	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(byte[] name) {
 		return NameBasedMd5Holder.INSTANCE.create(name);
 	}
 
 	/**
-	 * Returns a name-based UUID (MD5).
-	 * 
-	 * <pre>
-	 * Details: 
-	 * - Version number: 3 
-	 * - Hash Algorithm: MD5 
-	 * - Name Space: NO
-	 * </pre>
+	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
 	 * 
 	 * @param name a UUID
-	 * @return a version 3 UUID
+	 * @return a UUIDv3
+	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(UUID name) {
 		return NameBasedMd5Holder.INSTANCE.create(name);
 	}
 
 	/**
-	 * Returns a name-based UUID (MD5).
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 3 
-	 * - Hash Algorithm: MD5 
-	 * - Name Space: YES (custom)
-	 * </pre>
-	 * 
-	 * The name string is encoded into a sequence of bytes using the UTF-8
-	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
-	 * use {@link #getNameBasedMd5(UUID, byte[])} instead.
-	 * 
-	 * See: UTF-8, a transformation format of ISO 10646
-	 * https://tools.ietf.org/html/rfc3629
+	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
+	 * <p>
+	 * The name string is encoded into a sequence of bytes using UTF-8.
 	 * 
 	 * @param namespace a custom name space UUID
-	 * @param name      a name string
-	 * @return a version 3 UUID
+	 * @param name      a string
+	 * @return a UUIDv3
+	 * @see UuidNamespace
+	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(UUID namespace, String name) {
 		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
-	 * Returns a name-based UUID (MD5).
-	 * 
-	 * <pre>
-	 * Details: 
-	 * - Version number: 3 
-	 * - Hash Algorithm: MD5 
-	 * - Name Space: YES (custom)
-	 * </pre>
+	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
 	 * 
 	 * @param namespace a custom name space UUID
 	 * @param name      a byte array
-	 * @return a version 3 UUID
+	 * @return a UUIDv3
+	 * @see UuidNamespace
+	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(UUID namespace, byte[] name) {
 		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
-	 * Returns a name-based UUID (MD5).
-	 * 
-	 * <pre>
-	 * Details: 
-	 * - Version number: 3 
-	 * - Hash Algorithm: MD5 
-	 * - Name Space: YES (custom)
-	 * </pre>
+	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
 	 * 
 	 * @param namespace a custom name space UUID
 	 * @param name      a UUID
-	 * @return a version 3 UUID
+	 * @return a UUIDv3
+	 * @see UuidNamespace
+	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(UUID namespace, UUID name) {
 		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
-	 * Returns a name-based UUID (MD5).
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 3 
-	 * - Hash Algorithm: MD5 
-	 * - Name Space: YES (custom)
-	 * </pre>
-	 * 
-	 * The name string is encoded into a sequence of bytes using the UTF-8
-	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
-	 * use {@link #getNameBasedMd5(String, byte[])} instead.
-	 * 
-	 * See: UTF-8, a transformation format of ISO 10646
-	 * https://tools.ietf.org/html/rfc3629
+	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
+	 * <p>
+	 * The name string is encoded into a sequence of bytes using UTF-8.
 	 * 
 	 * @param namespace a custom name space UUID in string format
-	 * @param name      a name string
-	 * @return a version 3 UUID
-	 * @throws InvalidUuidException if the namespace is invalid
+	 * @param name      a string
+	 * @return a UUIDv3
+	 * @throws InvalidUuidException if namespace is invalid
+	 * @see UuidNamespace
+	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(String namespace, String name) {
 		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
-	 * Returns a name-based UUID (MD5).
-	 * 
-	 * <pre>
-	 * Details: 
-	 * - Version number: 3 
-	 * - Hash Algorithm: MD5 
-	 * - Name Space: YES (custom)
-	 * </pre>
+	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
 	 * 
 	 * @param namespace a custom name space UUID in string format
 	 * @param name      a byte array
-	 * @return a version 3 UUID
-	 * @throws InvalidUuidException if the namespace is invalid
+	 * @return a UUIDv3
+	 * @throws InvalidUuidException if namespace is invalid
+	 * @see UuidNamespace
+	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(String namespace, byte[] name) {
 		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
-	 * Returns a name-based UUID (MD5).
-	 * 
-	 * <pre>
-	 * Details: 
-	 * - Version number: 3 
-	 * - Hash Algorithm: MD5 
-	 * - Name Space: YES (custom)
-	 * </pre>
+	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
 	 * 
 	 * @param namespace a custom name space UUID in string format
 	 * @param name      a UUID
-	 * @return a version 3 UUID
-	 * @throws InvalidUuidException if the namespace is invalid
+	 * @return a UUIDv3
+	 * @throws InvalidUuidException if namespace is invalid
+	 * @see UuidNamespace
+	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(String namespace, UUID name) {
 		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
-	 * Returns a name-based UUID (MD5).
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 3 
-	 * - Hash Algorithm: MD5 
-	 * - Name Space: YES (predefined)
-	 * </pre>
-	 * 
-	 * The name string is encoded into a sequence of bytes using the UTF-8
-	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
-	 * use {@link #getNameBasedMd5(UuidNamespace, byte[])} instead.
-	 * 
-	 * <pre>
+	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
+	 * <p>
+	 * The name string is encoded into a sequence of bytes using UTF-8.
+	 * <p>
 	 * Name spaces predefined by RFC-4122 (Appendix C):
-	 * 
-	 * - NAMESPACE_DNS: Name string is a fully-qualified domain name;
-	 * - NAMESPACE_URL: Name string is a URL;
-	 * - NAMESPACE_ISO_OID: Name string is an ISO OID;
-	 * - NAMESPACE_X500_DN: Name string is an X.500 DN (in DER or a text format).
-	 * </pre>
-	 * 
-	 * See: {@link UuidNamespace}.
-	 * 
-	 * See: UTF-8, a transformation format of ISO 10646
-	 * https://tools.ietf.org/html/rfc3629
+	 * <ul>
+	 * <li>NAMESPACE_DNS: Name string is a fully-qualified domain name;
+	 * <li>NAMESPACE_URL: Name string is a URL;
+	 * <li>NAMESPACE_OID: Name string is an ISO OID;
+	 * <li>NAMESPACE_X500: Name string is an X.500 DN (in DER or text format).
+	 * </ul>
 	 * 
 	 * @param namespace a predefined name space enumeration
-	 * @param name      a name string
-	 * @return a version 3 UUID
+	 * @param name      a string
+	 * @return a UUIDv3
+	 * @see UuidNamespace
+	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(UuidNamespace namespace, String name) {
 		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
-	 * Returns a name-based UUID (MD5).
-	 * 
-	 * <pre>
-	 * Details: 
-	 * - Version number: 3 
-	 * - Hash Algorithm: MD5 
-	 * - Name Space: YES (predefined)
-	 * </pre>
-	 * 
-	 * <pre>
+	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
+	 * <p>
 	 * Name spaces predefined by RFC-4122 (Appendix C):
-	 * 
-	 * - NAMESPACE_DNS: Name string is a fully-qualified domain name;
-	 * - NAMESPACE_URL: Name string is a URL;
-	 * - NAMESPACE_ISO_OID: Name string is an ISO OID;
-	 * - NAMESPACE_X500_DN: Name string is an X.500 DN (in DER or a text format).
-	 * </pre>
-	 * 
-	 * See: {@link UuidNamespace}.
+	 * <ul>
+	 * <li>NAMESPACE_DNS: Name string is a fully-qualified domain name;
+	 * <li>NAMESPACE_URL: Name string is a URL;
+	 * <li>NAMESPACE_OID: Name string is an ISO OID;
+	 * <li>NAMESPACE_X500: Name string is an X.500 DN (in DER or text format).
+	 * </ul>
 	 * 
 	 * @param namespace a predefined name space enumeration
 	 * @param name      a byte array
-	 * @return a version 3 UUID
+	 * @return a UUIDv3
+	 * @see UuidNamespace
+	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(UuidNamespace namespace, byte[] name) {
 		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
-	 * Returns a name-based UUID (MD5).
-	 * 
-	 * <pre>
-	 * Details: 
-	 * - Version number: 3 
-	 * - Hash Algorithm: MD5 
-	 * - Name Space: YES (predefined)
-	 * </pre>
-	 * 
-	 * <pre>
+	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
+	 * <p>
 	 * Name spaces predefined by RFC-4122 (Appendix C):
-	 * 
-	 * - NAMESPACE_DNS: Name string is a fully-qualified domain name;
-	 * - NAMESPACE_URL: Name string is a URL;
-	 * - NAMESPACE_ISO_OID: Name string is an ISO OID;
-	 * - NAMESPACE_X500_DN: Name string is an X.500 DN (in DER or a text format).
-	 * </pre>
-	 * 
-	 * See: {@link UuidNamespace}.
+	 * <ul>
+	 * <li>NAMESPACE_DNS: Name string is a fully-qualified domain name;
+	 * <li>NAMESPACE_URL: Name string is a URL;
+	 * <li>NAMESPACE_OID: Name string is an ISO OID;
+	 * <li>NAMESPACE_X500: Name string is an X.500 DN (in DER or text format).
+	 * </ul>
 	 * 
 	 * @param namespace a predefined name space enumeration
 	 * @param name      a UUID
-	 * @return a version 3 UUID
+	 * @return a UUIDv3
+	 * @see UuidNamespace
+	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(UuidNamespace namespace, UUID name) {
 		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
-	 * Returns a name-based UUID (SHA1).
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 5 
-	 * - Hash Algorithm: SHA1 
-	 * - Name Space: NO
-	 * </pre>
-	 *
-	 * The name string is encoded into a sequence of bytes using the UTF-8
-	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
-	 * use {@link #getNameBasedSha1(byte[])} instead.
+	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
+	 * <p>
+	 * The name string is encoded into a sequence of bytes using UTF-8.
 	 * 
-	 * See: UTF-8, a transformation format of ISO 10646
-	 * https://tools.ietf.org/html/rfc3629
-	 * 
-	 * @param name a name string
-	 * @return a version 5 UUID
+	 * @param name a string
+	 * @return a UUIDv5
+	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(String name) {
 		return NameBasedSha1Holder.INSTANCE.create(name);
 	}
 
 	/**
-	 * Returns a name-based UUID (SHA1).
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 5 
-	 * - Hash Algorithm: SHA1 
-	 * - Name Space: NO
-	 * </pre>
+	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
 	 * 
 	 * @param name a byte array
-	 * @return a version 5 UUID
+	 * @return a UUIDv5
+	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(byte[] name) {
 		return NameBasedSha1Holder.INSTANCE.create(name);
 	}
 
 	/**
-	 * Returns a name-based UUID (SHA1).
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 5 
-	 * - Hash Algorithm: SHA1 
-	 * - Name Space: NO
-	 * </pre>
+	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
 	 * 
 	 * @param name a UUID
-	 * @return a version 5 UUID
+	 * @return a UUIDv5
+	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(UUID name) {
 		return NameBasedSha1Holder.INSTANCE.create(name);
 	}
 
 	/**
-	 * Returns a name-based UUID (SHA1).
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 5 
-	 * - Hash Algorithm: SHA1 
-	 * - Name Space: YES (custom)
-	 * </pre>
-	 * 
-	 * The name string is encoded into a sequence of bytes using the UTF-8
-	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
-	 * use {@link #getNameBasedSha1(UUID, byte[])} instead.
-	 * 
-	 * See: UTF-8, a transformation format of ISO 10646
-	 * https://tools.ietf.org/html/rfc3629
+	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
+	 * <p>
+	 * The name string is encoded into a sequence of bytes using UTF-8.
 	 * 
 	 * @param namespace a custom name space UUID
-	 * @param name      a name string
-	 * @return a version 5 UUID
+	 * @param name      a string
+	 * @return a UUIDv5
+	 * @see UuidNamespace
+	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(UUID namespace, String name) {
 		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
-	 * Returns a name-based UUID (SHA1).
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 5 
-	 * - Hash Algorithm: SHA1 
-	 * - Name Space: YES (custom)
-	 * </pre>
+	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
 	 * 
 	 * @param namespace a custom name space UUID
 	 * @param name      a byte array
-	 * @return a version 5 UUID
+	 * @return a UUIDv5
+	 * @see UuidNamespace
+	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(UUID namespace, byte[] name) {
 		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
-	 * Returns a name-based UUID (SHA1).
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 5 
-	 * - Hash Algorithm: SHA1 
-	 * - Name Space: YES (custom)
-	 * </pre>
+	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
 	 * 
 	 * @param namespace a custom name space UUID
 	 * @param name      a UUID
-	 * @return a version 5 UUID
+	 * @return a UUIDv5
+	 * @see UuidNamespace
+	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(UUID namespace, UUID name) {
 		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
-	 * Returns a name-based UUID (SHA1).
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 5 
-	 * - Hash Algorithm: SHA1 
-	 * - Name Space: YES (custom)
-	 * </pre>
-	 * 
-	 * The name string is encoded into a sequence of bytes using the UTF-8
-	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
-	 * use {@link #getNameBasedSha1(String, byte[])} instead.
-	 * 
-	 * See: UTF-8, a transformation format of ISO 10646
-	 * https://tools.ietf.org/html/rfc3629
+	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
+	 * <p>
+	 * The name string is encoded into a sequence of bytes using UTF-8.
 	 * 
 	 * @param namespace a custom name space UUID in string format
-	 * @param name      a name string
-	 * @return a version 5 UUID
-	 * @throws InvalidUuidException if the namespace is invalid
+	 * @param name      a string
+	 * @return a UUIDv5
+	 * @throws InvalidUuidException if namespace is invalid
+	 * @see UuidNamespace
+	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(String namespace, String name) {
 		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
-	 * Returns a name-based UUID (SHA1).
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 5 
-	 * - Hash Algorithm: SHA1 
-	 * - Name Space: YES (custom)
-	 * </pre>
+	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
 	 * 
 	 * @param namespace a custom name space UUID in string format
 	 * @param name      a byte array
-	 * @return a version 5 UUID
-	 * @throws InvalidUuidException if the namespace is invalid
+	 * @return a UUIDv5
+	 * @throws InvalidUuidException if namespace is invalid
+	 * @see UuidNamespace
+	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(String namespace, byte[] name) {
 		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
-	 * Returns a name-based UUID (SHA1).
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 5 
-	 * - Hash Algorithm: SHA1 
-	 * - Name Space: YES (custom)
-	 * </pre>
+	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
 	 * 
 	 * @param namespace a custom name space UUID in string format
 	 * @param name      a UUID
-	 * @return a version 5 UUID
-	 * @throws InvalidUuidException if the namespace is invalid
+	 * @return a UUIDv5
+	 * @throws InvalidUuidException if namespace is invalid
+	 * @see UuidNamespace
+	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(String namespace, UUID name) {
 		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
-	 * Returns a name-based UUID (SHA1).
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 5 
-	 * - Hash Algorithm: SHA1 
-	 * - Name Space: YES (predefined)
-	 * </pre>
-	 * 
-	 * The name string is encoded into a sequence of bytes using the UTF-8
-	 * {@linkplain java.nio.charset.Charset charset}. If you want another charset,
-	 * use {@link #getNameBasedSha1(UuidNamespace, byte[])} instead.
-	 * 
-	 * <pre>
+	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
+	 * <p>
+	 * The name string is encoded into a sequence of bytes using UTF-8.
+	 * <p>
 	 * Name spaces predefined by RFC-4122 (Appendix C):
-	 * 
-	 * - NAMESPACE_DNS: Name string is a fully-qualified domain name;
-	 * - NAMESPACE_URL: Name string is a URL;
-	 * - NAMESPACE_ISO_OID: Name string is an ISO OID;
-	 * - NAMESPACE_X500_DN: Name string is an X.500 DN (in DER or a text format).
-	 * </pre>
-	 * 
-	 * See: {@link UuidNamespace}.
-	 * 
-	 * See: UTF-8, a transformation format of ISO 10646
-	 * https://tools.ietf.org/html/rfc3629
+	 * <ul>
+	 * <li>NAMESPACE_DNS: Name string is a fully-qualified domain name;
+	 * <li>NAMESPACE_URL: Name string is a URL;
+	 * <li>NAMESPACE_OID: Name string is an ISO OID;
+	 * <li>NAMESPACE_X500: Name string is an X.500 DN (in DER or text format).
+	 * </ul>
 	 * 
 	 * @param namespace a predefined name space enumeration
-	 * @param name      a name string
-	 * @return a version 5 UUID
+	 * @param name      a string
+	 * @return a UUIDv5
+	 * @see UuidNamespace
+	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(UuidNamespace namespace, String name) {
 		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
-	 * Returns a name-based UUID (SHA1).
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 5 
-	 * - Hash Algorithm: SHA1 
-	 * - Name Space: YES (predefined)
-	 * </pre>
-	 * 
-	 * <pre>
+	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
+	 * <p>
 	 * Name spaces predefined by RFC-4122 (Appendix C):
-	 * 
-	 * - NAMESPACE_DNS: Name string is a fully-qualified domain name;
-	 * - NAMESPACE_URL: Name string is a URL;
-	 * - NAMESPACE_ISO_OID: Name string is an ISO OID;
-	 * - NAMESPACE_X500_DN: Name string is an X.500 DN (in DER or a text format).
-	 * </pre>
-	 * 
-	 * See: {@link UuidNamespace}.
+	 * <ul>
+	 * <li>NAMESPACE_DNS: Name string is a fully-qualified domain name;
+	 * <li>NAMESPACE_URL: Name string is a URL;
+	 * <li>NAMESPACE_OID: Name string is an ISO OID;
+	 * <li>NAMESPACE_X500: Name string is an X.500 DN (in DER or text format).
+	 * </ul>
 	 * 
 	 * @param namespace a predefined name space enumeration
 	 * @param name      a byte array
-	 * @return a version 5 UUID
+	 * @return a UUIDv5
+	 * @see UuidNamespace
+	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(UuidNamespace namespace, byte[] name) {
 		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
-	 * Returns a name-based UUID (SHA1).
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 5 
-	 * - Hash Algorithm: SHA1 
-	 * - Name Space: YES (predefined)
-	 * </pre>
-	 * 
-	 * <pre>
+	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
+	 * <p>
 	 * Name spaces predefined by RFC-4122 (Appendix C):
-	 * 
-	 * - NAMESPACE_DNS: Name string is a fully-qualified domain name;
-	 * - NAMESPACE_URL: Name string is a URL;
-	 * - NAMESPACE_ISO_OID: Name string is an ISO OID;
-	 * - NAMESPACE_X500_DN: Name string is an X.500 DN (in DER or a text format).
-	 * </pre>
-	 * 
-	 * See: {@link UuidNamespace}.
+	 * <ul>
+	 * <li>NAMESPACE_DNS: Name string is a fully-qualified domain name;
+	 * <li>NAMESPACE_URL: Name string is a URL;
+	 * <li>NAMESPACE_OID: Name string is an ISO OID;
+	 * <li>NAMESPACE_X500: Name string is an X.500 DN (in DER or text format).
+	 * </ul>
 	 * 
 	 * @param namespace a predefined name space enumeration
 	 * @param name      a UUID
-	 * @return a version 5 UUID
+	 * @return a UUIDv5
+	 * @see UuidNamespace
+	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(UuidNamespace namespace, UUID name) {
 		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
 	}
 
 	/**
-	 * Returns a DCE Security UUID.
-	 *
-	 * See: {@link UuidLocalDomain}.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 2 
-	 * - Node identifier: random
-	 * </pre>
+	 * Returns a DCE Security unique identifier (UUIDv2).
 	 * 
 	 * @param localDomain     a custom local domain byte
 	 * @param localIdentifier a local identifier
-	 * @return a version 2 UUID
+	 * @return a UUIDv2
+	 * @see UuidLocalDomain
+	 * @see DceSecurityFactory
 	 */
 	public static UUID getDceSecurity(byte localDomain, int localIdentifier) {
 		return DceSecurityHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
-	 * Returns a DCE Security UUID with hardware address as node identifier.
-	 *
-	 * See: {@link UuidLocalDomain}.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 2 
-	 * - Node identifier: MAC
-	 * </pre>
+	 * Returns a DCE Security unique identifier (UUIDv2).
 	 * 
 	 * @param localDomain     a custom local domain byte
 	 * @param localIdentifier a local identifier
-	 * @return a version 2 UUID
+	 * @return a UUIDv2
+	 * @see UuidLocalDomain
+	 * @see DceSecurityFactory
 	 */
 	public static UUID getDceSecurityWithMac(byte localDomain, int localIdentifier) {
 		return DceSecurityWithMacHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
-	 * Returns a DCE Security UUID with system data hash as node identifier.
-	 *
-	 * See: {@link UuidLocalDomain}.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 2 
-	 * - Node identifier: system data hash
-	 * </pre>
+	 * Returns a DCE Security unique identifier (UUIDv2).
 	 * 
 	 * @param localDomain     a custom local domain byte
 	 * @param localIdentifier a local identifier
-	 * @return a version 2 UUID
+	 * @return a UUIDv2
+	 * @see UuidLocalDomain
+	 * @see DceSecurityFactory
 	 */
 	public static UUID getDceSecurityWithHash(byte localDomain, int localIdentifier) {
 		return DceSecurityWithHashHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
-	 * Returns a DCE Security UUID with random node identifier.
+	 * Returns a DCE Security unique identifier (UUIDv2).
 	 *
-	 * See: {@link UuidLocalDomain}.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 2 
-	 * - Node identifier: random (always changing)
-	 * </pre>
-	 * 
 	 * @param localDomain     a custom local domain byte
 	 * @param localIdentifier a local identifier
-	 * @return a version 2 UUID
+	 * @return a UUIDv2
+	 * @see UuidLocalDomain
+	 * @see DceSecurityFactory
 	 */
 	public static UUID getDceSecurityWithRandom(byte localDomain, int localIdentifier) {
 		return DceSecurityWithRandomHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
-	 * Returns a DCE Security UUID.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 2 
-	 * - Node identifier: random
-	 * </pre>
-	 * 
-	 * <pre>
-	 * Local domains predefined by DCE 1.1 Authentication and Security Services (Chapter 11):
-	 * 
-	 * - LOCAL_DOMAIN_PERSON: 0 (interpreted as POSIX UID domain);
-	 * - LOCAL_DOMAIN_GROUP: 1 (interpreted as POSIX GID domain);
-	 * - LOCAL_DOMAIN_ORG: 2.
-	 * </pre>
-	 * 
-	 * See: {@link UuidLocalDomain}.
+	 * Returns a DCE Security unique identifier (UUIDv2).
+	 * <p>
+	 * Local domains predefined by DCE 1.1 Authentication and Security Services
+	 * (Chapter 11):
+	 * <ul>
+	 * <li>LOCAL_DOMAIN_PERSON: 0 (interpreted as POSIX UID domain);
+	 * <li>LOCAL_DOMAIN_GROUP: 1 (interpreted as POSIX GID domain);
+	 * <li>LOCAL_DOMAIN_ORG: 2.
+	 * </ul>
 	 * 
 	 * @param localDomain     a predefined local domain enumeration
 	 * @param localIdentifier a local identifier
-	 * @return a version 2 UUID
+	 * @return a UUIDv2
+	 * @see UuidLocalDomain
+	 * @see DceSecurityFactory
 	 */
 	public static UUID getDceSecurity(UuidLocalDomain localDomain, int localIdentifier) {
 		return DceSecurityHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
-	 * Returns a DCE Security UUID with hardware address as node identifier.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 2 
-	 * - Node identifier: MAC
-	 * </pre>
-	 * 
-	 * <pre>
-	 * Local domains predefined by DCE 1.1 Authentication and Security Services (Chapter 11):
-	 * 
-	 * - LOCAL_DOMAIN_PERSON: 0 (interpreted as POSIX UID domain);
-	 * - LOCAL_DOMAIN_GROUP: 1 (interpreted as POSIX GID domain);
-	 * - LOCAL_DOMAIN_ORG: 2.
-	 * </pre>
-	 * 
-	 * See: {@link UuidLocalDomain}.
+	 * Returns a DCE Security unique identifier (UUIDv2).
+	 * <p>
+	 * Local domains predefined by DCE 1.1 Authentication and Security Services
+	 * (Chapter 11):
+	 * <ul>
+	 * <li>LOCAL_DOMAIN_PERSON: 0 (interpreted as POSIX UID domain);
+	 * <li>LOCAL_DOMAIN_GROUP: 1 (interpreted as POSIX GID domain);
+	 * <li>LOCAL_DOMAIN_ORG: 2.
+	 * </ul>
 	 * 
 	 * @param localDomain     a predefined local domain enumeration
 	 * @param localIdentifier a local identifier
-	 * @return a version 2 UUID
+	 * @return a UUIDv2
+	 * @see UuidLocalDomain
+	 * @see DceSecurityFactory
 	 */
 	public static UUID getDceSecurityWithMac(UuidLocalDomain localDomain, int localIdentifier) {
 		return DceSecurityWithMacHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
-	 * Returns a DCE Security UUID with system data hash as node identifier.
-	 *
-	 * See: {@link UuidLocalDomain}.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 2 
-	 * - Node identifier: system data hash
-	 * </pre>
+	 * Returns a DCE Security unique identifier (UUIDv2).
+	 * <p>
+	 * Local domains predefined by DCE 1.1 Authentication and Security Services
+	 * (Chapter 11):
+	 * <ul>
+	 * <li>LOCAL_DOMAIN_PERSON: 0 (interpreted as POSIX UID domain);
+	 * <li>LOCAL_DOMAIN_GROUP: 1 (interpreted as POSIX GID domain);
+	 * <li>LOCAL_DOMAIN_ORG: 2.
+	 * </ul>
 	 * 
 	 * @param localDomain     a predefined local domain enumeration
 	 * @param localIdentifier a local identifier
-	 * @return a version 2 UUID
+	 * @return a UUIDv2
+	 * @see UuidLocalDomain
+	 * @see DceSecurityFactory
 	 */
 	public static UUID getDceSecurityWithHash(UuidLocalDomain localDomain, int localIdentifier) {
 		return DceSecurityWithHashHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
-	 * Returns a DCE Security UUID with random node identifier.
-	 *
-	 * See: {@link UuidLocalDomain}.
-	 *
-	 * <pre>
-	 * Details: 
-	 * - Version number: 2 
-	 * - Node identifier: random (always changing)
-	 * </pre>
+	 * Returns a DCE Security unique identifier (UUIDv2).
+	 * <p>
+	 * Local domains predefined by DCE 1.1 Authentication and Security Services
+	 * (Chapter 11):
+	 * <ul>
+	 * <li>LOCAL_DOMAIN_PERSON: 0 (interpreted as POSIX UID domain);
+	 * <li>LOCAL_DOMAIN_GROUP: 1 (interpreted as POSIX GID domain);
+	 * <li>LOCAL_DOMAIN_ORG: 2.
+	 * </ul>
 	 * 
 	 * @param localDomain     a predefined local domain enumeration
 	 * @param localIdentifier a local identifier
-	 * @return a version 2 UUID
+	 * @return a UUIDv2
+	 * @see UuidLocalDomain
+	 * @see DceSecurityFactory
 	 */
 	public static UUID getDceSecurityWithRandom(UuidLocalDomain localDomain, int localIdentifier) {
 		return DceSecurityWithRandomHolder.INSTANCE.create(localDomain, localIdentifier);
 	}
 
 	/**
-	 * Returns a Prefix COMB.
-	 * 
+	 * Returns a Prefix COMB GUID.
+	 * <p>
 	 * The creation millisecond is a 6 bytes PREFIX is at the MOST significant bits.
 	 * 
-	 * Read: The Cost of GUIDs as Primary Keys
-	 * http://www.informit.com/articles/article.aspx?p=25862
-	 * 
 	 * @return a GUID
+	 * @see PrefixCombFactory
+	 * @see <a href="http://www.informit.com/articles/article.aspx?p=25862">The Cost
+	 *      of GUIDs as Primary Keys</a>
 	 */
 	public static UUID getPrefixComb() {
 		return PrefixCombHolder.INSTANCE.create();
 	}
 
 	/**
-	 * Returns a Suffix COMB.
+	 * Returns a Suffix COMB GUID.
 	 * 
 	 * The creation millisecond is a 6 bytes SUFFIX is at the LEAST significant
 	 * bits.
 	 * 
-	 * Read: The Cost of GUIDs as Primary Keys
-	 * http://www.informit.com/articles/article.aspx?p=25862
-	 * 
 	 * @return a GUID
+	 * @see SuffixCombFactory
+	 * @see <a href="http://www.informit.com/articles/article.aspx?p=25862">The Cost
+	 *      of GUIDs as Primary Keys</a>
 	 */
 	public static UUID getSuffixComb() {
 		return SuffixCombHolder.INSTANCE.create();
 	}
 
 	/**
-	 * Returns n Short Prefix COMB.
-	 * 
+	 * Returns n Short Prefix COMB GUID.
+	 * <p>
 	 * The creation minute is a 2 bytes PREFIX is at the MOST significant bits.
-	 * 
+	 * <p>
 	 * The prefix wraps around every ~45 days (2^16/60/24 = ~45).
 	 * 
-	 * Read: Sequential UUID Generators
-	 * https://www.2ndquadrant.com/en/blog/sequential-uuid-generators/
-	 * 
 	 * @return a GUID
+	 * @see ShortPrefixCombFactory
+	 * @see <a href=
+	 *      "https://www.2ndquadrant.com/en/blog/sequential-uuid-generators">Sequential
+	 *      UUID Generators</a>
 	 */
 	public static UUID getShortPrefixComb() {
 		return ShortPrefixCombHolder.INSTANCE.create();
 	}
 
 	/**
-	 * Returns a Short Suffix COMB.
-	 * 
+	 * Returns a Short Suffix COMB GUID.
+	 * <p>
 	 * The creation minute is a 2 bytes SUFFIX is at the LEAST significant bits.
-	 * 
+	 * <p>
 	 * The suffix wraps around every ~45 days (2^16/60/24 = ~45).
 	 * 
-	 * Read: Sequential UUID Generators
-	 * https://www.2ndquadrant.com/en/blog/sequential-uuid-generators/
-	 * 
 	 * @return a GUID
+	 * @see ShortSuffixCombFactory
+	 * @see <a href=
+	 *      "https://www.2ndquadrant.com/en/blog/sequential-uuid-generators">Sequential
+	 *      UUID Generators</a>
 	 */
 	public static UUID getShortSuffixComb() {
 		return ShortSuffixCombHolder.INSTANCE.create();
 	}
 
-	/*
-	 * Private classes for lazy holders
-	 */
+	// ***************************************
+	// Lazy holders
+	// ***************************************
 
 	private static class RandomBasedHolder {
 		static final RandomBasedFactory INSTANCE = new RandomBasedFactory();

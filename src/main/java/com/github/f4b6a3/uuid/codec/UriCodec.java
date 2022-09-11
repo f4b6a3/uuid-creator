@@ -31,16 +31,24 @@ import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
 /**
  * Codec for UUID URIs (specifically URNs).
- * 
- * The {@link UriCodec} encodes UUID to and from an opaque {@link java.net.URI}.
- * 
+ * <p>
+ * {@link UriCodec} encodes UUID to and from an opaque {@link java.net.URI}.
+ * <p>
  * The URN representation adds the prefix 'urn:uuid:' to a UUID canonical
  * representation.
  * 
  * See: https://github.com/f4b6a3/uuid-creator/issues/32
  * 
- * See also:
- * https://stackoverflow.com/questions/4913343/what-is-the-difference-between-uri-url-and-urn
+ * 
+ *  * @see InvalidUuidException
+ * @see <a href=
+ *      "https://github.com/f4b6a3/uuid-creator/issues/32">UUID URIs</a>
+ * @see <a href=
+ *      "https://github.com/f4b6a3/uuid-creator/issues/66">UriCodec.isUuidUrn(java.net.URI
+ *      uri)</a>
+ * @see <a href=
+ *      "https://stackoverflow.com/questions/4913343/what-is-the-difference-between-uri-url-and-urn">What
+ *      is the difference between URI, URL and URN?</a>
  */
 public class UriCodec implements UuidCodec<URI> {
 

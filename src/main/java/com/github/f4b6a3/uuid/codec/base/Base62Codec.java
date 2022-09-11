@@ -26,9 +26,9 @@ package com.github.f4b6a3.uuid.codec.base;
 
 /**
  * Codec for base-62.
- * 
+ * <p>
  * It is case SENSITIVE.
- * 
+ * <p>
  * It encodes using remainder operator (modulus).
  */
 public final class Base62Codec extends BaseNCodec {

@@ -38,29 +38,30 @@ import com.github.f4b6a3.uuid.util.immutable.LongArray;
 
 /**
  * Codec for UUID NCNames.
- * 
+ * <p>
  * A UUID NCName is a shorter string representation that conforms to the
  * constraints of various other identifiers such as NCName in XML documents.
- * 
+ * <p>
  * The {@link NcnameCodec} turns a UUID into a string that does not start with
- * digits (0-9). But due to the default base-64-url encoding, it may contain '-'
- * and '_'.
- * 
+ * digits (0-9). But due to the default base-64-url encoding, it is <b>case
+ * sensitive</b> and may contain '-' and '_'.
+ * <p>
  * The {@link Base32Codec} can be passed to the {@link NcnameCodec} constructor
  * to generate base-32 NCNames. Due to the base-32 alphabet, it is case
  * insensitive and it contains only letters (a-zA-Z) and digits (2-7). This
  * encoding substitution can be done to avoid the characters '-' and '_' of the
  * base-64-url encoding, but it makes the NCName case insensitive.
- * 
+ * <p>
  * The transformation scheme is outlined in this RFC:
  * https://tools.ietf.org/html/draft-taylor-uuid-ncname-00. The draft describes
  * schemes for base-64-url and base-32.
- * 
+ * <p>
  * {@link SlugCodec} and {@link NcnameCodec} are very similar. The difference
  * between the two is the bit shift they do with the original UUID to transform
  * it into a string.
  * 
- * See: https://github.com/f4b6a3/uuid-creator/issues/31
+ * @see <a href="https://github.com/f4b6a3/uuid-creator/issues/31">UUID
+ *      NCNames</a>
  */
 public final class NcnameCodec implements UuidCodec<String> {
 

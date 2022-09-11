@@ -30,8 +30,8 @@ import com.github.f4b6a3.uuid.codec.base.BaseN;
 
 /**
  * Function that encodes a UUID to a base-64 string.
- * 
- * See: https://tools.ietf.org/html/rfc4648
+ * <p>
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc4648">RFC-4648</a>
  */
 public final class Base64Encoder extends BaseNEncoder {
 

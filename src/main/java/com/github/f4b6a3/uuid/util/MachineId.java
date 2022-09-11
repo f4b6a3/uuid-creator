@@ -36,17 +36,14 @@ import static com.github.f4b6a3.uuid.util.internal.ByteUtil.toHexadecimal;
 import static com.github.f4b6a3.uuid.util.internal.ByteUtil.toNumber;
 
 /**
- * Utility class to generate machine ID.
- * 
+ * Utility for generating machine ID.
+ * <p>
  * It works in three steps:
- * 
- * 1. Create a string containing HOSTNAME, MAC and IP;
- * 
- * 2. Create a hash of the string using SHA-256 algorithm;
- * 
- * 3. Create the identifier using part of the resulting hash.
- * 
- * If the HOSTNAME, MAC or IP changes, the identifier will also change.
+ * <ol>
+ * <li>Create a string containing HOSTNAME, MAC and IP;
+ * <li>Create a hash of the string using SHA-256 algorithm;
+ * <li>Create the identifier using part of the resulting hash.
+ * </ol>
  */
 public final class MachineId {
 
@@ -61,7 +58,7 @@ public final class MachineId {
 
 	/**
 	 * Returns a number generated from the machine hash.
-	 * 
+	 * <p>
 	 * It uses the first 8 bytes of the machine hash.
 	 * 
 	 * @return a number
@@ -76,9 +73,9 @@ public final class MachineId {
 
 	/**
 	 * Returns a UUID generated from the machine hash.
-	 * 
+	 * <p>
 	 * It uses the first 16 bytes of the machine hash.
-	 * 
+	 * <p>
 	 * The UUID version is 4.
 	 * 
 	 * @return a UUID
@@ -95,7 +92,7 @@ public final class MachineId {
 
 	/**
 	 * Returns the machine hash in hexadecimal format.
-	 * 
+	 * <p>
 	 * The returning string has 64 chars.
 	 * 
 	 * @return a string
@@ -110,7 +107,7 @@ public final class MachineId {
 
 	/**
 	 * Returns the machine hash in a byte array.
-	 * 
+	 * <p>
 	 * The returning array has 32 bytes (256 bits).
 	 * 
 	 * @return a byte array
@@ -130,8 +127,8 @@ public final class MachineId {
 
 	/**
 	 * Returns a string containing host name, MAC and IP.
-	 * 
-	 * Output format: "hostname123 11-22-33-44-55-66 123.123.123.123"
+	 * <p>
+	 * Output format: "hostname 11-11-11-11-11-11 222.222.222.222"
 	 * 
 	 * @return a string
 	 */

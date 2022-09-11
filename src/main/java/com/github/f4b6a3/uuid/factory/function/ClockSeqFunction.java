@@ -29,61 +29,52 @@ import java.util.function.LongUnaryOperator;
 import com.github.f4b6a3.uuid.util.internal.RandomUtil;
 
 /**
- * It must return a number between 0 and 16383 (2^14-1).
- * 
- * It receives as argument the current 100-nanoseconds since 1970-01-01 (Unix
+ * Function that must return a number between 0 and 16383 (2^14-1).
+ * <p>
+ * It receives as argument a number of 100-nanoseconds since 1970-01-01 (Unix
  * epoch).
+ * <p>
+ * Example:
  * 
- * Use {@link ClockSeqFunction#toExpectedRange(long)} to set the output within
- * the range 0 to 16383 (2^14-1).
- * 
- * Examples:
- * 
- * <pre>
- * // A `ClockSeqFunction` that always returns a random number between 0 and 16383 (2^14-1).
- * ClockSeqFunction f = unix100Nanos -> ClockSeqFunction.getRandom();
- * </pre>
- * 
- * <pre>
- * // A `ClockSeqFunction` that always returns the same number between 0 and 16383 (2^14-1).
- * final long number = 1234;
- * ClockSeqFunction f = unix100Nanos -> ClockSeqFunction.toExpectedRange(number);
- * </pre>
+ * <pre>{@code
+ * // A function that returns new random clock sequences
+ * ClockSeqFunction f = t -> ClockSeqFunction.getRandom();
+ * }</pre>
  * 
  */
 @FunctionalInterface
 public interface ClockSeqFunction extends LongUnaryOperator {
 
 	/**
-	 * This method return a new random clock sequence.
+	 * Returns a new random clock sequence in the range 0 to 16383 (2^14-1).
 	 * 
-	 * @return a clock sequence in the range 0 to 16383 (2^14-1).
+	 * @return a number in the range 0 to 16383 (2^14-1)
 	 */
 	public static long getRandom() {
 		return toExpectedRange(RandomUtil.nextLong());
 	}
 
 	/**
-	 * This method clears the unnecessary leading bits so that the resulting number
-	 * is within the range 0 to 16383 (2^14-1).
-	 * 
+	 * Clears the leading bits so that the resulting number is within the range 0 to
+	 * 16383 (2^14-1).
+	 * <p>
 	 * The result is equivalent to {@code n % 2^14}.
 	 * 
-	 * @param clockseq the clock sequence
-	 * @return a clock sequence in the range 0 to 16383 (2^14-1).
+	 * @param clockseq a clock sequence
+	 * @return a number in the range 0 to 16383 (2^14-1).
 	 */
 	public static long toExpectedRange(final long clockseq) {
 		return clockseq & 0x0000000000003fffL;
 	}
 
 	/**
-	 * Class that manages the usage of clock sequence values from 0 to 16383.
-	 * 
-	 * It can be used to avoid that two time-based factories use the same clock
-	 * sequence at same time in a class loader.
-	 * 
-	 * It is a pool of 16384 values. The pool is implemented as an array of 2048
-	 * bytes (16384 bits). Each bit of this array corresponds to a pool value.
+	 * Nested class that manages a pool of 16384 clock sequence values.
+	 * <p>
+	 * The pool is implemented as an array of 2048 bytes (16384 bits). Each bit of
+	 * the array corresponds to a clock sequence value.
+	 * <p>
+	 * It is used to avoid that two time-based factories use the same clock sequence
+	 * at same time in a class loader.
 	 */
 	public static final class ClockSeqPool {
 
@@ -95,17 +86,17 @@ public interface ClockSeqFunction extends LongUnaryOperator {
 
 		/**
 		 * Take a value from the pool.
-		 * 
+		 * <p>
 		 * If the value to be taken is already in use, it is incremented until a free
 		 * value is found and returned.
-		 * 
+		 * <p>
 		 * In the case that all pool values are in use, the pool is cleared and the last
 		 * incremented value is returned.
-		 * 
+		 * <p>
 		 * It does nothing to negative arguments.
 		 * 
 		 * @param take value to be taken from the pool
-		 * @return the value to be borrowed if not used.
+		 * @return the value to be borrowed if not used
 		 */
 		public synchronized int take(final int take) {
 			int value = take;
@@ -123,9 +114,8 @@ public interface ClockSeqFunction extends LongUnaryOperator {
 		/**
 		 * Take a random value from the pool.
 		 * 
+		 * @return the random value to be borrowed if not used
 		 * @see {@link ClockSeqPool#take(int)}
-		 * 
-		 * @return the random value to be borrowed if not used.
 		 */
 		public synchronized int random() {
 			// Choose a random number between 0 and 16383
@@ -135,15 +125,15 @@ public interface ClockSeqFunction extends LongUnaryOperator {
 
 		/**
 		 * Set a bit from the byte array that represents the pool.
-		 * 
+		 * <p>
 		 * This operation corresponds to setting a value as used.
-		 * 
+		 * <p>
 		 * It returns false if the value is not free.
-		 * 
+		 * <p>
 		 * It does nothing to negative arguments.
 		 * 
 		 * @param value the value to be taken from the pool
-		 * @return true if success.
+		 * @return true if success
 		 */
 		private synchronized boolean setBit(int value) {
 
@@ -168,8 +158,8 @@ public interface ClockSeqFunction extends LongUnaryOperator {
 		/**
 		 * Check if a value is used out of the pool.
 		 * 
-		 * @param value a value to be checked in the pool.
-		 * @return true if the value is used.
+		 * @param value a value to be checked in the pool
+		 * @return true if the value is used
 		 */
 		public synchronized boolean isUsed(int value) {
 
@@ -185,17 +175,17 @@ public interface ClockSeqFunction extends LongUnaryOperator {
 		/**
 		 * Check if a value is free in the pool.
 		 * 
-		 * @param value a value to be checked in the pool.
-		 * @return true if the value is free.
+		 * @param value a value to be checked in the pool
+		 * @return true if the value is free
 		 */
 		public synchronized boolean isFree(int value) {
 			return !this.isUsed(value);
 		}
 
 		/**
-		 * Count the used values out of the pool.
+		 * Count the used values out of the pool
 		 * 
-		 * @return the count of used values.
+		 * @return the count of used values
 		 */
 		public synchronized int countUsed() {
 			int counter = 0;
@@ -210,7 +200,7 @@ public interface ClockSeqFunction extends LongUnaryOperator {
 		/**
 		 * Count the free values in the pool.
 		 * 
-		 * @return the count of free values.
+		 * @return the count of free values
 		 */
 		public synchronized int countFree() {
 			return POOL_SIZE - this.countUsed();
@@ -218,8 +208,8 @@ public interface ClockSeqFunction extends LongUnaryOperator {
 
 		/**
 		 * Clear all bits of the byte array that represents the pool.
-		 * 
-		 * This corresponds to marking all pool values as free.
+		 * <p>
+		 * This corresponds to marking all pool values as free
 		 */
 		public synchronized void clearPool() {
 			for (int i = 0; i < pool.length; i++) {

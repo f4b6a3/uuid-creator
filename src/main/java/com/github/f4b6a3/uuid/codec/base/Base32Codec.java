@@ -29,15 +29,15 @@ import com.github.f4b6a3.uuid.codec.base.function.Base32Encoder;
 
 /**
  * Codec for base-32 as defined in RFC-4648.
- * 
+ * <p>
  * It is case insensitive, so it decodes from lower and upper case, but encodes
  * to lower case only.
- * 
+ * <p>
  * This codec complies with RFC-4648, encoding a byte array sequentially. If you
  * need a codec that encodes integers using the remainder operator (modulus),
  * use the static factory {@link BaseNCodec#newInstance(BaseN)}.
  * 
- * See: https://tools.ietf.org/html/rfc4648
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc4648">RFC-4648</a>
  */
 public final class Base32Codec extends BaseNCodec {
 

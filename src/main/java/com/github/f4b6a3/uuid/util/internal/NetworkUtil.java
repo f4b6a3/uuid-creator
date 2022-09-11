@@ -31,7 +31,7 @@ import java.net.UnknownHostException;
 import java.util.Enumeration;
 
 /**
- * Utility that returns HOSTNAME, MAC and IP.
+ * Utility class that returns host name, MAC and IP.
  */
 public final class NetworkUtil {
 
@@ -44,17 +44,17 @@ public final class NetworkUtil {
 
 	/**
 	 * Returns the host name if found.
-	 * 
+	 * <p>
 	 * Sequence of HOSTNAME search:
+	 * <ol>
+	 * <li>Try to find the HOSTNAME variable on LINUX environment;
+	 * <li>Try to find the COMPUTERNAME variable on WINDOWS environment;
+	 * <li>Try to find the host name by calling
+	 * {@code InetAddress.getLocalHost().getHostName()} (the expensive way);
+	 * <li>If no host name is found, return {@code null}.
+	 * </ol>
 	 * 
-	 * 1. Try to find the HOSTNAME variable in LINUX environment;
-	 * 
-	 * 2. Try to find the COMPUTERNAME variable in WINDOWS environment;
-	 * 
-	 * 3. Try to find the host name by calling {code
-	 * InetAddress.getLocalHost().getHostName()} (the hard way);
-	 * 
-	 * @return a string
+	 * @return a string containing the host name
 	 */
 	public static synchronized String hostname() {
 
@@ -90,10 +90,10 @@ public final class NetworkUtil {
 
 	/**
 	 * Returns the MAC address if found.
-	 * 
+	 * <p>
 	 * Output format: "00-00-00-00-00-00" (in upper case)
 	 * 
-	 * @return a string
+	 * @return a string containing the MAC address
 	 */
 	public static synchronized String mac(NetworkInterface nic) {
 
@@ -121,10 +121,10 @@ public final class NetworkUtil {
 
 	/**
 	 * Returns the IP address if found.
-	 * 
+	 * <p>
 	 * Output format: "0.0.0.0" (if IPv4)
 	 * 
-	 * @return a string
+	 * @return a string containing the IP address
 	 */
 	public static synchronized String ip(NetworkInterface nic) {
 
@@ -150,10 +150,10 @@ public final class NetworkUtil {
 
 	/**
 	 * Returns a string containing host name, MAC and IP.
+	 * <p>
+	 * Output format: "hostname 11-11-11-11-11-11 222.222.222.222"
 	 * 
-	 * Output format: "hostname123 11-22-33-44-55-66 123.123.123.123"
-	 * 
-	 * @return a string
+	 * @return a string containing the host name, MAC and IP
 	 */
 	public static synchronized String getMachineString() {
 
@@ -168,20 +168,18 @@ public final class NetworkUtil {
 
 	/**
 	 * Returns a network interface.
-	 * 
+	 * <p>
 	 * It tries to return the network interface associated to the host name.
-	 * 
+	 * <p>
 	 * If that network interface is not found, it tries to return the first network
 	 * interface that satisfies these conditions:
-	 * 
-	 * - it is up and running;
-	 * 
-	 * - it is not loopback;
-	 * 
-	 * - it is not virtual;
-	 * 
-	 * - it has a hardware address.
-	 * 
+	 * <ul>
+	 * <li>it is up and running;
+	 * <li>it is not loopback;
+	 * <li>it is not virtual;
+	 * <li>it has a hardware address.
+	 * </ul>
+	 * <p>
 	 * If no acceptable network interface is found, it returns null.
 	 * 
 	 * @return a network interface.

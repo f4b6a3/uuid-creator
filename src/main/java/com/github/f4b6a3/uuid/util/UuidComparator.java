@@ -30,12 +30,12 @@ import java.util.function.ToIntBiFunction;
 
 /**
  * Comparator for UUIDs.
- * 
- * The default static method compares two time-based UUIDs by comparing the
- * timestamps first and then comparing the least significant bits as unsigned
- * 64-bit integers. If both UUIDs are not time-based then it compares them as
- * unsigned 128-bit integers.
- * 
+ * <p>
+ * The default static method compares two time-based UUIDs by comparing the time
+ * stamps first and then comparing the least significant bits as unsigned 64-bit
+ * integers. If both UUIDs are not time-based then it compares them as unsigned
+ * 128-bit integers.
+ * <p>
  * The opaque static method compares two UUIDs as unsigned 128-bit integers.
  * It's the same as lexicographic sorting of UUID canonical strings.
  */
@@ -51,31 +51,29 @@ public final class UuidComparator implements Comparator<UUID> {
 	}
 
 	/**
-	 * Creates a default implementation of {@code UuidComparator}.
+	 * Creates a default implementation of {@link UuidComparator}.
 	 * 
-	 * @see {@link UuidComparator#defaultCompare(UUID, UUID)}
+	 * @see UuidComparator#defaultCompare(UUID, UUID)
 	 */
 	public UuidComparator() {
 		this(UuidComparator::defaultCompare);
 	}
 
 	/**
-	 * Returns a default implementation of {@code UuidComparator}.
+	 * Returns a default implementation of {@link UuidComparator}.
 	 * 
-	 * @see {@link UuidComparator#defaultCompare(UUID, UUID)}
-	 * 
-	 * @return a {@code UuidComparator}
+	 * @return a {@link UuidComparator}
+	 * @see UuidComparator#defaultCompare(UUID, UUID)
 	 */
 	public static UuidComparator getDefaultInstance() {
 		return INSTANCE_DEFAULT;
 	}
 
 	/**
-	 * Returns an opaque implementation of {@code UuidComparator}.
+	 * Returns an opaque implementation of {@link UuidComparator}.
 	 * 
-	 * @see {@link UuidComparator#opaqueCompare(UUID, UUID)}
-	 * 
-	 * @return a opaque {@code UuidComparator}
+	 * @return a opaque {@link UuidComparator}
+	 * @see UuidComparator#opaqueCompare(UUID, UUID)
 	 */
 	public static UuidComparator getOpaqueInstance() {
 		return INSTANCE_OPAQUE;
@@ -83,26 +81,25 @@ public final class UuidComparator implements Comparator<UUID> {
 
 	/**
 	 * Compares two UUIDs.
-	 * 
-	 * The default static method compares two time-based UUIDs by comparing the
-	 * timestamps first and then comparing the least significant bits as unsigned
-	 * 64-bit integers. If both UUIDs are not time-based then it compares them as
-	 * unsigned 128-bit integers.
-	 * 
-	 * The first of two UUIDs is greater than the second if the timestamp is greater
-	 * for the first UUID. If the timestamps are equal, the first of two UUIDs is
-	 * greater than the second if the most significant byte in which they differ is
-	 * greater for the first UUID.
-	 * 
+	 * <p>
+	 * The default static method compares two time-based UUIDs by comparing the time
+	 * stamps first and then comparing the least significant bits as unsigned 64-bit
+	 * integers. If both UUIDs are not time-based then it compares them as unsigned
+	 * 128-bit integers.
+	 * <p>
+	 * The first of two UUIDs is greater than the second if the time stamp is
+	 * greater for the first UUID. If the time stamps are equal, the first of two
+	 * UUIDs is greater than the second if the most significant byte in which they
+	 * differ is greater for the first UUID.
+	 * <p>
 	 * It can be useful for these reasons:
-	 * 
-	 * 1. {@code UUID#compareTo(UUID)} doesn't work well for time-based UUIDs;
-	 * 
-	 * 2. {@code UUID#compareTo(UUID)} can lead to unexpected behavior due to signed
-	 * {@code long} comparison;
-	 * 
-	 * 3. {@code UUID#compareTo(UUID)} throws {@code NullPointerException} if a
+	 * <ol>
+	 * <li>{@link UUID#compareTo(UUID)} doesn't work well for time-based UUIDs;
+	 * <li>{@link UUID#compareTo(UUID)} can lead to unexpected behavior due to
+	 * signed {@code long} comparison;
+	 * <li>{@link UUID#compareTo(UUID)} throws {@link NullPointerException} if a
 	 * {@code null} UUID is given.
+	 * </ol>
 	 * 
 	 * @param uuid1 a {@code UUID}
 	 * @param uuid2 another {@code UUID}
@@ -127,26 +124,26 @@ public final class UuidComparator implements Comparator<UUID> {
 
 	/**
 	 * Compares two UUIDs.
-	 * 
+	 * <p>
 	 * The opaque static method compares two UUIDs as unsigned 128-bit integers.
 	 * It's the same as lexicographic sorting of UUID canonical strings.
-	 * 
+	 * <p>
 	 * The first of two UUIDs is greater than the second if the most significant
 	 * byte in which they differ is greater for the first UUID.
-	 * 
+	 * <p>
 	 * The opaque method is faster than the default method as it does not check the
 	 * UUID version.
-	 * 
+	 * <p>
 	 * It's referred to as "opaque" just because it works like a "blind byte-to-byte
 	 * comparison".
-	 * 
+	 * <p>
 	 * It can be useful for these reasons:
-	 * 
-	 * 1. {@code UUID#compareTo(UUID)} can lead to unexpected behavior due to signed
-	 * {@code long} comparison;
-	 * 
-	 * 2. {@code UUID#compareTo(UUID)} throws {@code NullPointerException} if a
+	 * <ol>
+	 * <li>{@link UUID#compareTo(UUID)} can lead to unexpected behavior due to
+	 * signed {@code long} comparison;
+	 * <li>{@link UUID#compareTo(UUID)} throws {@link NullPointerException} if a
 	 * {@code null} UUID is given.
+	 * </ol>
 	 * 
 	 * @param uuid1 a {@code UUID}
 	 * @param uuid2 another {@code UUID}
@@ -183,12 +180,11 @@ public final class UuidComparator implements Comparator<UUID> {
 	/**
 	 * Compares two UUIDs.
 	 * 
-	 * @see {@link UuidComparator#defaultCompare(UUID, UUID)}
-	 * 
 	 * @param uuid1 a {@code UUID}
 	 * @param uuid2 another {@code UUID}
 	 * @return -1, 0 or 1 as {@code u1} is less than, equal to, or greater than
 	 *         {@code u2}
+	 * @see UuidComparator#defaultCompare(UUID, UUID)
 	 */
 	@Override
 	public int compare(UUID uuid1, UUID uuid2) {

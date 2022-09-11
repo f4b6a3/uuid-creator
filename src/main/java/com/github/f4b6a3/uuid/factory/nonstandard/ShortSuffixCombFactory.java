@@ -35,17 +35,20 @@ import com.github.f4b6a3.uuid.factory.AbstCombFactory;
 import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
- * Factory that creates Suffix COMB GUIDs.
- * 
- * A Suffix COMB GUID is a UUID that combines a creation time with random bits.
- * 
+ * Concrete factory for creating Short Suffix COMB GUIDs.
+ * <p>
+ * A Short Suffix COMB GUID is a UUID that combines a creation time with random
+ * bits.
+ * <p>
  * The creation minute is a 2 bytes SUFFIX at the LEAST significant bits.
- * 
+ * <p>
  * The suffix wraps around every ~45 days (2^16/60/24 = ~45).
+ * <p>
+ * The created UUID is a UUIDv4 for compatibility with RFC-4122.
  * 
- * Read: Sequential UUID Generators
- * https://www.2ndquadrant.com/en/blog/sequential-uuid-generators/
- * 
+ * @see <a href=
+ *      "https://www.2ndquadrant.com/en/blog/sequential-uuid-generators/">Sequential
+ *      UUID Generators</a>
  */
 public final class ShortSuffixCombFactory extends AbstCombFactory {
 
@@ -117,13 +120,9 @@ public final class ShortSuffixCombFactory extends AbstCombFactory {
 	}
 
 	/**
-	 * Return a Suffix COMB GUID.
+	 * Returns a Short Suffix COMB GUID.
 	 * 
-	 * It combines a creation time with random bits.
-	 * 
-	 * The creation minute is a 2 bytes SUFFIX at the LEAST significant bits.
-	 * 
-	 * The suffix wraps around every ~45 days (2^16/60/24 = ~45).
+	 * @return a UUIDv4
 	 */
 	@Override
 	public synchronized UUID create() {

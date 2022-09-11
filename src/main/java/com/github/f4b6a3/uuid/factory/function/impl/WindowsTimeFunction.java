@@ -32,10 +32,17 @@ import com.github.f4b6a3.uuid.factory.function.TimeFunction;
 import com.github.f4b6a3.uuid.util.internal.RandomUtil;
 
 /**
+ * Function that returns a number of 100-nanoseconds since 1970-01-01 (Unix
+ * epoch).
+ * <p>
  * This function is for WINDOWS systems.
- * 
- * In WINDOWS, the typical system time granularity is 15.625ms due to a default
+ * <p>
+ * On WINDOWS, the typical system time granularity is 15.625ms due to a default
  * 64Hz timer frequency.
+ * <p>
+ * It can advance be up to 48ms ahead of system time.
+ * 
+ * @see TimeFunction
  */
 public final class WindowsTimeFunction implements TimeFunction {
 
@@ -60,12 +67,6 @@ public final class WindowsTimeFunction implements TimeFunction {
 		this.clock = clock;
 	}
 
-	/**
-	 * Returns the timestamp.
-	 * 
-	 * It can be up to 48ms ahead of system time due to time granularity and counter
-	 * shift.
-	 */
 	@Override
 	public long getAsLong() {
 

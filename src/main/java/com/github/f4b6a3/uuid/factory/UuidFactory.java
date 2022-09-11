@@ -29,7 +29,7 @@ import java.util.UUID;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 
 /**
- * Abstract class for {@link UUID} factories.
+ * Abstract factory that is base for all UUID factories.
  */
 public abstract class UuidFactory {
 
@@ -52,8 +52,8 @@ public abstract class UuidFactory {
 
 	/**
 	 * Creates a UUID from a pair of numbers.
-	 * 
-	 * It applies the version number to the resulting UUID.
+	 * <p>
+	 * It applies the version and variant numbers to the resulting UUID.
 	 * 
 	 * @param msb the most significant bits
 	 * @param lsb the least significant bits

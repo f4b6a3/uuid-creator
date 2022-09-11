@@ -31,6 +31,14 @@ import java.time.Clock;
 import com.github.f4b6a3.uuid.factory.function.TimeFunction;
 import com.github.f4b6a3.uuid.util.internal.RandomUtil;
 
+/**
+ * Function that returns a number of 100-nanoseconds since 1970-01-01 (Unix
+ * epoch).
+ * <p>
+ * It can advance up to 1ms ahead of system time.
+ * 
+ * @see TimeFunction
+ */
 public final class DefaultTimeFunction implements TimeFunction {
 
 	private final Clock clock;
@@ -50,11 +58,6 @@ public final class DefaultTimeFunction implements TimeFunction {
 		this.clock = clock;
 	}
 
-	/**
-	 * Returns the timestamp.
-	 * 
-	 * It can be up to 1ms ahead of system time due to counter shift.
-	 */
 	@Override
 	public long getAsLong() {
 

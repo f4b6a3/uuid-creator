@@ -30,11 +30,14 @@ import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
+import com.github.f4b6a3.uuid.factory.function.RandomFunction;
 import com.github.f4b6a3.uuid.factory.function.impl.DefaultRandomFunction;
 import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
- * Factory that creates random-based UUIDs.
+ * Abstract factory for creating random-based unique identifiers (UUIDv4).
+ * 
+ * @see RandomFunction
  */
 public abstract class AbstRandomBasedFactory extends UuidFactory implements NoArgsFactory {
 
@@ -47,6 +50,12 @@ public abstract class AbstRandomBasedFactory extends UuidFactory implements NoAr
 		this.random = builder.getRandom();
 	}
 
+	/**
+	 * Abstract builder for creating a random-based factory.
+	 *
+	 * @param <T> factory type
+	 * @param <B> builder type
+	 */
 	protected abstract static class Builder<T, B extends Builder<T, B>> {
 
 		protected IRandom random;

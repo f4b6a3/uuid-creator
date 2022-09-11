@@ -32,6 +32,15 @@ import java.net.SocketException;
 import com.github.f4b6a3.uuid.factory.function.NodeIdFunction;
 import com.github.f4b6a3.uuid.util.internal.NetworkUtil;
 
+/**
+ * Function that returns a MAC address.
+ * <p>
+ * The MAC address is obtained once during instantiation.
+ * <p>
+ * If no MAC address is found, it returns a random multicast node identifier.
+ * 
+ * @see NodeIdFunction
+ */
 public final class MacNodeIdFunction implements NodeIdFunction {
 
 	private final long nodeIdentifier;
@@ -46,6 +55,7 @@ public final class MacNodeIdFunction implements NodeIdFunction {
 	}
 
 	private long getHardwareAddress() {
+
 		try {
 			NetworkInterface nic = NetworkUtil.nic();
 			if (nic != null) {

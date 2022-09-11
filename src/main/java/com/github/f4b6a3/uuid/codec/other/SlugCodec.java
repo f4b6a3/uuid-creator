@@ -35,28 +35,28 @@ import com.github.f4b6a3.uuid.util.UuidValidator;
 
 /**
  * Codec for UUID Slugs.
- * 
+ * <p>
  * A UUID Slug is a shorter string representation that can be safely included in
  * URLs and file names.
- * 
+ * <p>
  * The {@link SlugCodec} turns a UUID into a string that does not start with
- * digits (0-9). Due to the default base-64-url alphabet, it is *case sensitive*
- * and may contain '-' and '_'.
- * 
+ * digits (0-9). Due to the default base-64-url alphabet, it is <b>case
+ * sensitive</b> and may contain '-' and '_'.
+ * <p>
  * The {@link Base32Codec} can be passed to the {@link SlugCodec} constructor to
  * generate base-32 slugs. Due to the base-32 alphabet, it is case insensitive
  * and it contains only letters (a-zA-Z) and digits (2-7). This encoding
  * substitution can be done to avoid the characters '-' and '_' of the
  * base-64-url encoding, but it makes the slug case insensitive.
- * 
+ * <p>
  * To turn a UUID into a slug, the version and variant nibbles are are moved to
  * the first position of the UUID byte array. The slugs generated of the same
  * UUID version show a constant letter in the first position of the base-64-url
  * string.
- * 
+ * <p>
  * This is how the UUID bits are rearranged:
  * 
- * <pre>
+ * <pre>{@code
  *   aaaaaaaa-bbbb-Vccc-Rddd-eeeeeeeeeeee
  *                 |    |            ^
  *   ,-------------'    |   encode   |
@@ -67,8 +67,9 @@ import com.github.f4b6a3.uuid.util.UuidValidator;
  *
  *   V: version nibble or character
  *   R: variant nibble or character
- * </pre>
+ * }</pre>
  * 
+ * <p>
  * This table shows the slug prefixes for each UUID version:
  * 
  * <pre>
@@ -81,21 +82,23 @@ import com.github.f4b6a3.uuid.util.UuidValidator;
  *    6       a     aMKkEoaymw0FSQNJRDL7Gw
  * </pre>
  * 
+ * <p>
  * If you don't like the change in the bytes layout before the encoding to
  * base-64-url, use the {@link Base64UrlCodec} instead of {@link SlugCodec} to
  * generate slugs.
- * 
+ * <p>
  * {@link SlugCodec} and {@link NcnameCodec} are very similar. The difference
  * between the two is the bit shift they do with the original UUID to transform
  * it into a string.
- * 
+ * <p>
  * In the case someone is interested in implementing this type of slug in
  * another language, the change in the bytes layout don't have to be done with
  * bit shifting. Since a base-16 character corresponds to a nibble, the layout
  * change could be easily done by moving characters instead of by shifting bits.
- * See <code>SlugCodecTest#moveCharacters()</code>.
+ * See {@code SlugCodecTest#moveCharacters()}.
  * 
- * See: https://github.com/f4b6a3/uuid-creator/issues/30
+ * @see <a href="https://github.com/f4b6a3/uuid-creator/issues/30">UUID
+ *      Slugs</a>
  */
 public final class SlugCodec implements UuidCodec<String> {
 

@@ -25,25 +25,43 @@
 package com.github.f4b6a3.uuid.enums;
 
 /**
- * Local domains used to create DCE Security UUIDs.
+ * Local domains defined by DCE 1.1 specification, used to create DCE Security
+ * unique identifiers (UUIDv2).
+ * <p>
+ * List of local domains:
+ * <ul>
+ * <li>{@link LOCAL_DOMAIN_PERSON}: 0
+ * <li>{@link LOCAL_DOMAIN_GROUP}: 1
+ * <li>{@link LOCAL_DOMAIN_ORG}: 2
+ * </ul>
+ * <p>
+ * On POSIX systems, local-domain numbers 0 and 1 are for user identifiers
+ * (UIDs) and group identifiers (GIDs) respectively, and other local-domain
+ * numbers are site-defined.
+ * <p>
+ * On non-POSIX systems, all local domain numbers are site-defined.
  * 
- * <pre>
- * Local domains predefined by DCE 1.1 Authentication and Security Services (Chapter 11):
- * 
- * - LOCAL_DOMAIN_PERSON: 0 (interpreted as POSIX UID domain);
- * - LOCAL_DOMAIN_GROUP: 1 (interpreted as POSIX GID domain);
- * - LOCAL_DOMAIN_ORG: 2.
- * </pre>
- * 
- * Source:
- * 
- * DCE 1.1: Authentication and Security Services (Chapter 11 - domain names):
- * https://pubs.opengroup.org/onlinepubs/9696989899/chap11.htm#tagcjh_14_05_01_01
+ * @see <a href=
+ *      "https://pubs.opengroup.org/onlinepubs/9696989899/chap11.htm#tagcjh_14_05_01_01">DCE
+ *      Domain names</a>
+ * @see <a href="https://en.wikipedia.org/wiki/User_identifier">User
+ *      identifier</a>
+ * @see <a href="https://en.wikipedia.org/wiki/Group_identifier">Group
+ *      identifier</a>
  */
 public enum UuidLocalDomain {
 
-	LOCAL_DOMAIN_PERSON((byte) 0), // POSIX UID domain
-	LOCAL_DOMAIN_GROUP((byte) 1), // POSIX GID domain
+	/**
+	 * The principal domain, interpreted as POSIX UID domain on POSIX systems.
+	 */
+	LOCAL_DOMAIN_PERSON((byte) 0),
+	/**
+	 * The group domain, interpreted as POSIX GID domain on POSIX systems.
+	 */
+	LOCAL_DOMAIN_GROUP((byte) 1),
+	/**
+	 * The organization domain, site-defined.
+	 */
 	LOCAL_DOMAIN_ORG((byte) 2);
 
 	private final byte value;

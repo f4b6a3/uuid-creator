@@ -26,6 +26,9 @@ package com.github.f4b6a3.uuid.exception;
 
 import java.util.Arrays;
 
+/**
+ * Runtime exception to be used when an invalid UUID is received as argument.
+ */
 public final class InvalidUuidException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
@@ -38,6 +41,12 @@ public final class InvalidUuidException extends RuntimeException {
 		super(message, cause);
 	}
 
+	/**
+	 * Factory method for creating a runtime exception.
+	 * 
+	 * @param obj an object that can, for example, a string of a char array.
+	 * @return a runtime exception
+	 */
 	public static InvalidUuidException newInstance(Object obj) {
 
 		String string;

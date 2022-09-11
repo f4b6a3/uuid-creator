@@ -27,29 +27,28 @@ package com.github.f4b6a3.uuid.factory.function;
 import java.time.Instant;
 import java.util.function.LongSupplier;
 
-import com.github.f4b6a3.uuid.factory.AbstTimeBasedFactory;
 import com.github.f4b6a3.uuid.util.UuidTime;
 
 /**
- * It must return a number of 100-nanoseconds since 1970-01-01 (Unix epoch).
- * 
- * The {@link AbstTimeBasedFactory} will convert the output time to Gregorian
- * epoch (1582-10-15) for you.
- * 
+ * Function that must return a number of 100-nanoseconds since 1970-01-01 (Unix
+ * epoch).
+ * <p>
  * Example:
  * 
- * <pre>
- * // A `TimeFunction` that returns the `Instant.now()` as a number of 100-nanoseconds
- * TimeFunction f = () -> TimeFunction.toUnixTimestamp(Instant.now()); // for JDK 9+
- * </pre>
+ * <pre>{@code
+ * // A function that returns `Instant.now()` as a number of 100ns
+ * TimeFunction f = () -> TimeFunction.toUnixTimestamp(Instant.now());
+ * }</pre>
  * 
+ * <p>
  * In JDK 8, {@link Instant#now()} has millisecond precision, in spite of
- * {@link Instant} has nanoseconds resolution. In JDK 9+,{@link Instant#now()}
+ * {@link Instant} has nanoseconds resolution. In JDK 9+, {@link Instant#now()}
  * has microsecond precision.
  * 
- * Read: https://stackoverflow.com/questions/1712205
- * 
- * Read also: https://bugs.openjdk.java.net/browse/JDK-8068730
+ * @see <a href="https://stackoverflow.com/questions/1712205">Current time in
+ *      microseconds in java</a>
+ * @see <a href="https://bugs.openjdk.java.net/browse/JDK-8068730">Increase the
+ *      precision of the implementation of java.time.Clock.systemUTC()</a>
  */
 @FunctionalInterface
 public interface TimeFunction extends LongSupplier {
@@ -66,13 +65,13 @@ public interface TimeFunction extends LongSupplier {
 	}
 
 	/**
-	 * This method clears the unnecessary leading bits so that the resulting number
-	 * is in the range 0 to 2^60-1.
-	 * 
+	 * Clears the leading bits so that the resulting number is in the range 0 to
+	 * 2^60-1.
+	 * <p>
 	 * The result is equivalent to {@code n % 2^60}.
 	 * 
-	 * @param timestamp the node identifier
-	 * @return a timestamp in the range 0 to 2^60-1.
+	 * @param timestamp a number of 100-nanoseconds since 1970-01-01 (Unix epoch)
+	 * @return a number in the range 0 to 2^60-1.
 	 */
 	public static long toExpectedRange(final long timestamp) {
 		return timestamp & 0x0_fffffffffffffffL;

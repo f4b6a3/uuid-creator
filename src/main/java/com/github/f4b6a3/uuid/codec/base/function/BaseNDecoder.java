@@ -32,10 +32,8 @@ import com.github.f4b6a3.uuid.util.immutable.LongArray;
 
 /**
  * Abstract function to be extended by all decoder functions of this package.
- * 
+ * <p>
  * If the base-n is case insensitive, it decodes in lower case and upper case.
- * 
- * See: https://tools.ietf.org/html/rfc4648
  */
 public abstract class BaseNDecoder implements Function<String, UUID> {
 

@@ -31,13 +31,8 @@ import com.github.f4b6a3.uuid.util.UuidValidator;
 
 /**
  * Codec for UUID binary encoding as defined in the RFC-4122.
- * 
+ * <p>
  * The UUID is encoded as 16 octets (bytes).
- * 
- * Read: https://tools.ietf.org/html/rfc4122
- * 
- * Read also:
- * https://en.wikipedia.org/wiki/Universally_unique_identifier#Encoding
  */
 public class BinaryCodec implements UuidCodec<byte[]> {
 

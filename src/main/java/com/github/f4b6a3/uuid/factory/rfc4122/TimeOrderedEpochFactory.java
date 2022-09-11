@@ -32,44 +32,46 @@ import java.util.function.LongSupplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstCombFactory;
+import com.github.f4b6a3.uuid.factory.nonstandard.PrefixCombFactory;
 import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
- * Factory that creates Unix Epoch Time-based UUIDs.
+ * Concrete factory for creating Unix epoch time-ordered unique identifiers
+ * (UUIDv7).
+ * <p>
+ * UUIDv7 is a new UUID version proposed by Peabody and Davis. It is similar to
+ * Prefix COMB GUID and ULID.
+ * <p>
+ * This factory creates 3 types:
+ * <p>
+ * <ul>
+ * <li><b>Type 1 (default)</b>: this type is divided in 3 components, namely
+ * time, counter and random. The counter component is incremented by 1 when the
+ * time repeats. The random component is always randomized.
+ * <li><b>Type 2 (plus 1)</b>: this type is divided in 2 components, namely time
+ * and monotonic random. The monotonic random component is incremented by 1 when
+ * the time repeats. This type of UUID is like a Monotonic ULID. It can be much
+ * faster than the other types.
+ * <li><b>Type 3 (plus n)</b>: this type is also divided in 2 components, namely
+ * time and monotonic random. The monotonic random component is incremented by a
+ * random positive integer between 1 and MAX when the time repeats. If the value
+ * of MAX is not specified, MAX is 2^32. This type of UUID is also like a
+ * Monotonic ULID.
+ * </ul>
+ * <p>
+ * <b>Warning:</b> this can change in the future.
  * 
- * A Unix Epoch Time-based UUID is a proposed UUID version that is similar to a
- * Prefix COMB GUID.
- * 
- * This library implements 3 types:
- * 
- * * Default:
- * 
- * The UUID is divided in 3 components: time, counter and random. The counter
- * component is incremented by 1 when the time repeats. The random part is
- * always randomized.
- * 
- * * Plus 1:
- * 
- * The UUID is divided in 2 components: time and monotonic random. The monotonic
- * random component is incremented by 1 when the time repeats. This type of UUID
- * is like a Monotonic ULID. It can be much faster than the other types.
- * 
- * * Plus N:
- * 
- * The UUID is divided in 2 components: time and monotonic random. The monotonic
- * random component is incremented by a random positive integer between 1 and
- * MAX when the time repeats. If the value of MAX is not specified, MAX is 2^32.
- * This type of UUID is also like a Monotonic ULID.
- * 
- * RFC-4122 version: 7 (proposed).
- * 
- * IETF Draft:
- * https://tools.ietf.org/html/draft-peabody-dispatch-new-uuid-format
- * 
+ * @since 5.0.0
+ * @see PrefixCombFactory
+ * @see <a href="https://github.com/ulid/spec">ULID Specification</a>
+ * @see <a href=
+ *      "https://tools.ietf.org/html/draft-peabody-dispatch-new-uuid-format">New
+ *      UUID formats</a>
+ * @see <a href="https://datatracker.ietf.org/wg/uuidrev/documents/">Revise
+ *      Universally Unique Identifier Definitions (uuidrev)</a>
  */
 public final class TimeOrderedEpochFactory extends AbstCombFactory {
 
-	private long lastTime;
 	private UUID lastUuid;
 
 	private final int incrementType;
@@ -120,8 +122,16 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		super(UuidVersion.VERSION_TIME_ORDERED_EPOCH, builder);
 		this.incrementType = builder.getIncrementType();
 		this.incrementSupplier = builder.getIncrementSupplier();
+
+		// initialize internal state
+		this.lastUuid = make(0L, random.nextLong(), random.nextLong());
 	}
 
+	/**
+	 * Concrete builder for creating a Unix epoch time-ordered factory.
+	 *
+	 * @see AbstCombFactory.Builder
+	 */
 	public static class Builder extends AbstCombFactory.Builder<TimeOrderedEpochFactory, Builder> {
 
 		private Integer incrementType;
@@ -203,25 +213,32 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		}
 	}
 
+	/**
+	 * Returns a builder of Unix epoch time-ordered factory.
+	 * 
+	 * @return a builder
+	 */
 	public static Builder builder() {
 		return new Builder();
 	}
 
+	/**
+	 * Returns a time-ordered unique identifier (UUIDv7).
+	 * 
+	 * @return a UUIDv7
+	 */
 	@Override
 	public synchronized UUID create() {
 
-		// get the current time
-		long time = clock.millis();
+		final long time = clock.millis();
+		final long lastTime = lastUuid.getMostSignificantBits() >>> 16;
 
 		// Check if the current time is the same as the previous time or has moved
 		// backwards after a small system clock adjustment or after a leap second.
 		// Drift tolerance = (previous_time - 10s) < current_time <= previous_time
-		if ((time > this.lastTime - CLOCK_DRIFT_TOLERANCE) && (time <= this.lastTime)) {
+		if ((time > lastTime - CLOCK_DRIFT_TOLERANCE) && (time <= lastTime)) {
 			this.lastUuid = increment(this.lastUuid);
 		} else {
-
-			this.lastTime = time;
-
 			if (this.random instanceof ByteRandom) {
 				final byte[] bytes = this.random.nextBytes(10);
 				final long long1 = ByteUtil.toNumber(bytes, 0, 2);

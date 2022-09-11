@@ -30,10 +30,10 @@ import com.github.f4b6a3.uuid.codec.base.BaseN;
 
 /**
  * Function that encodes a UUID to a base-32 string.
- * 
+ * <p>
  * It encodes in lower case only.
  * 
- * See: https://tools.ietf.org/html/rfc4648
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc4648">RFC-4648</a>
  */
 public final class Base32Encoder extends BaseNEncoder {
 

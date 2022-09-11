@@ -28,6 +28,14 @@ import com.github.f4b6a3.uuid.factory.function.NodeIdFunction;
 import com.github.f4b6a3.uuid.util.MachineId;
 import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
+/**
+ * Function that returns a hash of host name, MAC and IP.
+ * <p>
+ * The hash is calculated once during instantiation.
+ * 
+ * @see NodeIdFunction
+ * @see MachineId
+ */
 public final class HashNodeIdFunction implements NodeIdFunction {
 
 	private final long nodeIdentifier;

@@ -26,14 +26,14 @@ package com.github.f4b6a3.uuid.codec.base;
 
 /**
  * Codec for base-58.
- * 
+ * <p>
  * It is case SENSITIVE.
- * 
+ * <p>
  * It encodes using remainder operator (modulus).
- * 
+ * <p>
  * The alphabet for this codec is the same used in Bitcoin (BTC).
  * 
- * Read: https://tools.ietf.org/html/draft-msporny-base58-03
+ * @see <a href="https://tools.ietf.org/html/draft-msporny-base58-03">The Base58 Encoding Scheme</a>
  */
 public final class Base58BtcCodec extends BaseNCodec {
 

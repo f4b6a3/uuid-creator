@@ -28,13 +28,18 @@ import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstTimeBasedFactory;
 
 /**
- * Factory that creates ordered gregorian time-based UUIDs.
+ * Concrete factory for creating time-ordered unique identifiers (UUIDv6).
+ * <p>
+ * UUIDv6 is a new UUID version proposed by Peabody and Davis.
+ * <p>
+ * <b>Warning:</b> this can change in the future.
  * 
- * RFC-4122 version: 6.
- * 
- * IETF Draft:
- * https://tools.ietf.org/html/draft-peabody-dispatch-new-uuid-format
- * 
+ * @see AbstTimeBasedFactory
+ * @see <a href=
+ *      "https://tools.ietf.org/html/draft-peabody-dispatch-new-uuid-format">New
+ *      UUID formats</a>
+ * @see <a href="https://datatracker.ietf.org/wg/uuidrev/documents/">Revise
+ *      Universally Unique Identifier Definitions (uuidrev)</a>
  */
 public final class TimeOrderedFactory extends AbstTimeBasedFactory {
 
@@ -46,22 +51,12 @@ public final class TimeOrderedFactory extends AbstTimeBasedFactory {
 		super(UuidVersion.VERSION_TIME_ORDERED, builder);
 	}
 
-	public static Builder builder() {
-		return new Builder();
-	}
-
-	public static class Builder extends AbstTimeBasedFactory.Builder<TimeOrderedFactory, Builder> {
-		@Override
-		public TimeOrderedFactory build() {
-			return new TimeOrderedFactory(this);
-		}
-	}
-
 	/**
-	 * Returns the timestamp bits of the UUID version 6, keeping its byte order
-	 * unchanged.
+	 * Returns the most significant bits of the UUID.
+	 * <p>
+	 * It implements the algorithm for generating UUIDv6.
 	 * 
-	 * @param timestamp a timestamp
+	 * @param timestamp the number of 100-nanoseconds since 1970-01-01 (Unix epoch)
 	 * @return the MSB
 	 */
 	@Override
@@ -69,5 +64,26 @@ public final class TimeOrderedFactory extends AbstTimeBasedFactory {
 		return ((timestamp & 0x0ffffffffffff000L) << 4) //
 				| (timestamp & 0x0000000000000fffL) //
 				| 0x0000000000006000L; // apply version 6
+	}
+
+	/**
+	 * Returns a builder of random-ordered factory.
+	 * 
+	 * @return a builder
+	 */
+	public static Builder builder() {
+		return new Builder();
+	}
+
+	/**
+	 * Concrete builder for creating a time-ordered factory.
+	 * 
+	 * @see AbstTimeBasedFactory.Builder
+	 */
+	public static class Builder extends AbstTimeBasedFactory.Builder<TimeOrderedFactory, Builder> {
+		@Override
+		public TimeOrderedFactory build() {
+			return new TimeOrderedFactory(this);
+		}
 	}
 }
