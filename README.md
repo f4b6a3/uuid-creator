@@ -73,25 +73,25 @@ Create a [Time-ordered](https://github.com/f4b6a3/uuid-creator/wiki/1.6.-Time-or
 UUID uuid = UuidCreator.getTimeOrdered();
 ```
 
-Create a [Time-ordered with Unix Epoch](https://github.com/f4b6a3/uuid-creator/wiki/1.7.-Time-ordered-epoch) unique identifier (UUIDv7)
+Create a [Time-ordered with Unix Epoch](https://github.com/f4b6a3/uuid-creator/wiki/1.7.-Time-ordered-epoch) unique identifier (UUIDv7):
 
 ```java
 UUID uuid = UuidCreator.getTimeOrderedEpoch();
 ```
 
-Create a [Name-based with MD5](https://github.com/f4b6a3/uuid-creator/wiki/1.3.-Name-based-with-MD5) unique identifier (UUIDv3)
+Create a [Name-based with MD5](https://github.com/f4b6a3/uuid-creator/wiki/1.3.-Name-based-with-MD5) unique identifier (UUIDv3):
 
 ```java
 UUID uuid = UuidCreator.getNameBasedMd5(UuidNamespace.NAMESPACE_URL, "https://github.com/");
 ```
 
-Create a [Name-based with SHA-1](https://github.com/f4b6a3/uuid-creator/wiki/1.5.-Name-based-with-SHA-1) unique identifier (UUIDv5)
+Create a [Name-based with SHA-1](https://github.com/f4b6a3/uuid-creator/wiki/1.5.-Name-based-with-SHA-1) unique identifier (UUIDv5):
 
 ```java
 UUID uuid = UuidCreator.getNameBasedSha1(UuidNamespace.NAMESPACE_URL, "https://github.com/");
 ```
 
-Create a [DCE Security](https://github.com/f4b6a3/uuid-creator/wiki/1.2.-DCE-Security) unique identifier (UUIDv2)
+Create a [DCE Security](https://github.com/f4b6a3/uuid-creator/wiki/1.2.-DCE-Security) unique identifier (UUIDv2):
 
 ```java
 UUID uuid = UuidCreator.getDceSecurity(UuidLocalDomain.LOCAL_DOMAIN_PERSON, 1234);
