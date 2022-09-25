@@ -97,25 +97,25 @@ Create a [DCE Security](https://github.com/f4b6a3/uuid-creator/wiki/1.2.-DCE-Sec
 UUID uuid = UuidCreator.getDceSecurity(UuidLocalDomain.LOCAL_DOMAIN_PERSON, 1234);
 ```
 
-Create a [Prefix COMB GUID](https://github.com/f4b6a3/uuid-creator/wiki/2.1.-Prefix-COMB):
+Create a [Prefix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.0.-COMB-GUID#prefix-comb):
 
 ```java
 UUID uuid = UuidCreator.getPrefixComb();
 ```
 
-Create a [Suffix COMB GUID](https://github.com/f4b6a3/uuid-creator/wiki/2.2.-Suffix-COMB):
+Create a [Suffix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.0.-COMB-GUID#suffix-comb):
 
 ```java
 UUID uuid = UuidCreator.getSuffixComb();
 ```
 
-Create a [Short Prefix COMB GUID](https://github.com/f4b6a3/uuid-creator/wiki/2.3.-Short-Prefix-COMB):
+Create a [Short Prefix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.0.-COMB-GUID#short-prefix-comb):
 
 ```java
 UUID uuid = UuidCreator.getShortPrefixComb();
 ```
 
-Create a [Short Suffix COMB GUID](https://github.com/f4b6a3/uuid-creator/wiki/2.4.-Short-Suffix-COMB):
+Create a [Short Suffix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.0.-COMB-GUID#short-suffix-comb):
 
 ```java
 UUID uuid = UuidCreator.getShortSuffixComb();
