@@ -55,46 +55,46 @@ How to Use
 
 All UUID types can be created from the facade [`UuidCreator`](https://github.com/f4b6a3/uuid-creator/blob/master/src/main/java/com/github/f4b6a3/uuid/UuidCreator.java).
 
-Create a [Random-based](https://github.com/f4b6a3/uuid-creator/wiki/1.4.-Random-based) unique identifier (UUIDv4):
-
-```java
-UUID uuid = UuidCreator.getRandomBased();
-```
-
-Create a [Time-based](https://github.com/f4b6a3/uuid-creator/wiki/1.1.-Time-based) unique identifier (UUIDv1):
+Create a [UUIDv1](https://github.com/f4b6a3/uuid-creator/wiki/1.1.-Time-based):
 
 ```java
 UUID uuid = UuidCreator.getTimeBased();
 ```
 
-Create a [Time-ordered](https://github.com/f4b6a3/uuid-creator/wiki/1.6.-Time-ordered) unique identifier (UUIDv6):
+Create a [UUIDv2](https://github.com/f4b6a3/uuid-creator/wiki/1.2.-DCE-Security):
 
 ```java
-UUID uuid = UuidCreator.getTimeOrdered();
+UUID uuid = UuidCreator.getDceSecurity(UuidLocalDomain.LOCAL_DOMAIN_PERSON, 1234);
 ```
 
-Create a [Time-ordered with Unix Epoch](https://github.com/f4b6a3/uuid-creator/wiki/1.7.-Time-ordered-epoch) unique identifier (UUIDv7):
-
-```java
-UUID uuid = UuidCreator.getTimeOrderedEpoch();
-```
-
-Create a [Name-based with MD5](https://github.com/f4b6a3/uuid-creator/wiki/1.3.-Name-based-with-MD5) unique identifier (UUIDv3):
+Create a [UUIDv3](https://github.com/f4b6a3/uuid-creator/wiki/1.3.-Name-based-with-MD5):
 
 ```java
 UUID uuid = UuidCreator.getNameBasedMd5(UuidNamespace.NAMESPACE_URL, "https://github.com/");
 ```
 
-Create a [Name-based with SHA-1](https://github.com/f4b6a3/uuid-creator/wiki/1.5.-Name-based-with-SHA-1) unique identifier (UUIDv5):
+Create a [UUIDv4](https://github.com/f4b6a3/uuid-creator/wiki/1.4.-Random-based):
+
+```java
+UUID uuid = UuidCreator.getRandomBased();
+```
+
+Create a [UUIDv5](https://github.com/f4b6a3/uuid-creator/wiki/1.5.-Name-based-with-SHA-1):
 
 ```java
 UUID uuid = UuidCreator.getNameBasedSha1(UuidNamespace.NAMESPACE_URL, "https://github.com/");
 ```
 
-Create a [DCE Security](https://github.com/f4b6a3/uuid-creator/wiki/1.2.-DCE-Security) unique identifier (UUIDv2):
+Create a [UUIDv6](https://github.com/f4b6a3/uuid-creator/wiki/1.6.-Time-ordered):
 
 ```java
-UUID uuid = UuidCreator.getDceSecurity(UuidLocalDomain.LOCAL_DOMAIN_PERSON, 1234);
+UUID uuid = UuidCreator.getTimeOrdered();
+```
+
+Create a [UUIDv7](https://github.com/f4b6a3/uuid-creator/wiki/1.7.-Time-ordered-epoch):
+
+```java
+UUID uuid = UuidCreator.getTimeOrderedEpoch();
 ```
 
 Create a [Prefix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.0.-COMB-GUID#prefix-comb):
