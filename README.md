@@ -55,67 +55,67 @@ How to Use
 
 All UUID types can be created from the facade [`UuidCreator`](https://github.com/f4b6a3/uuid-creator/blob/master/src/main/java/com/github/f4b6a3/uuid/UuidCreator.java).
 
-Create a [UUIDv1](https://github.com/f4b6a3/uuid-creator/wiki/1.1.-Time-based):
+Create a [UUIDv1](https://github.com/f4b6a3/uuid-creator/wiki/1.1.-UUIDv1):
 
 ```java
 UUID uuid = UuidCreator.getTimeBased();
 ```
 
-Create a [UUIDv2](https://github.com/f4b6a3/uuid-creator/wiki/1.2.-DCE-Security):
+Create a [UUIDv2](https://github.com/f4b6a3/uuid-creator/wiki/1.2.-UUIDv2):
 
 ```java
 UUID uuid = UuidCreator.getDceSecurity(UuidLocalDomain.LOCAL_DOMAIN_PERSON, 1234);
 ```
 
-Create a [UUIDv3](https://github.com/f4b6a3/uuid-creator/wiki/1.3.-Name-based-with-MD5):
+Create a [UUIDv3](https://github.com/f4b6a3/uuid-creator/wiki/1.3.-UUIDv3):
 
 ```java
 UUID uuid = UuidCreator.getNameBasedMd5(UuidNamespace.NAMESPACE_URL, "https://github.com/");
 ```
 
-Create a [UUIDv4](https://github.com/f4b6a3/uuid-creator/wiki/1.4.-Random-based):
+Create a [UUIDv4](https://github.com/f4b6a3/uuid-creator/wiki/1.4.-UUIDv4):
 
 ```java
 UUID uuid = UuidCreator.getRandomBased();
 ```
 
-Create a [UUIDv5](https://github.com/f4b6a3/uuid-creator/wiki/1.5.-Name-based-with-SHA-1):
+Create a [UUIDv5](https://github.com/f4b6a3/uuid-creator/wiki/1.5.-UUIDv5):
 
 ```java
 UUID uuid = UuidCreator.getNameBasedSha1(UuidNamespace.NAMESPACE_URL, "https://github.com/");
 ```
 
-Create a [UUIDv6](https://github.com/f4b6a3/uuid-creator/wiki/1.6.-Time-ordered):
+Create a [UUIDv6](https://github.com/f4b6a3/uuid-creator/wiki/1.6.-UUIDv6):
 
 ```java
 UUID uuid = UuidCreator.getTimeOrdered();
 ```
 
-Create a [UUIDv7](https://github.com/f4b6a3/uuid-creator/wiki/1.7.-Time-ordered-epoch):
+Create a [UUIDv7](https://github.com/f4b6a3/uuid-creator/wiki/1.7.-UUIDv7):
 
 ```java
 UUID uuid = UuidCreator.getTimeOrderedEpoch();
 ```
 
-Create a [Prefix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.0.-COMB-GUID#prefix-comb):
+Create a [Prefix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.0.-COMB#prefix-comb):
 
 ```java
 UUID uuid = UuidCreator.getPrefixComb();
 ```
 
-Create a [Suffix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.0.-COMB-GUID#suffix-comb):
+Create a [Suffix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.0.-COMB#suffix-comb):
 
 ```java
 UUID uuid = UuidCreator.getSuffixComb();
 ```
 
-Create a [Short Prefix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.0.-COMB-GUID#short-prefix-comb):
+Create a [Short Prefix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.0.-COMB#short-prefix-comb):
 
 ```java
 UUID uuid = UuidCreator.getShortPrefixComb();
 ```
 
-Create a [Short Suffix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.0.-COMB-GUID#short-suffix-comb):
+Create a [Short Suffix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.0.-COMB#short-suffix-comb):
 
 ```java
 UUID uuid = UuidCreator.getShortSuffixComb();
