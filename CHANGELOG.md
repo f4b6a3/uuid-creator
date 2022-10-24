@@ -8,7 +8,8 @@ Nothing unreleased.
 
 ## [5.2.0] - 2022-10-23
 
-Add a fast method to generate random-based identifiers. #74
+- **Fix MAX UUID** (it was wrong since v5.0.0). #75
+- Add a fast method to generate random-based identifiers. #74
 
 ## [5.1.2] - 2022-09-11
 
@@ -24,9 +25,11 @@ Add support for `RandomGenerator` in Java 17. #70
 
 ## [5.0.0] - 2022-07-02
 
+Please go to v5.2.0 due to incorrect MAX UUID.
+
 This version contains has breaking changes.
 
-- Added Max UUID. #67
+- Added Max UUID (**wrong!**, fixed in v5.2.0). #67
 - Added implementations for UUID v7. #67
 - Added minimum support for UUID v8. #67
 - Added `UriCodec.isUuidUri()`. #66
