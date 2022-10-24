@@ -23,7 +23,7 @@ import com.github.f4b6a3.uuid.UuidCreator;
 //import com.github.f4b6a3.uuid.codec.base.Base64UrlCodec;
 
 @Fork(1)
-@Threads(4)
+@Threads(1)
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5, time = 1)
@@ -75,47 +75,52 @@ public class Throughput {
 	}
 
 	@Benchmark
-	public UUID uuid_creator_04_prefix_comb() {
+	public UUID uuid_creator_04_random_based_fast() {
+		return UuidCreator.getRandomBasedFast();
+	}
+
+	@Benchmark
+	public UUID uuid_creator_05_prefix_comb() {
 		return UuidCreator.getPrefixComb();
 	}
 
 	@Benchmark
-	public UUID uuid_creator_05_short_prefix_comb() {
+	public UUID uuid_creator_06_short_prefix_comb() {
 		return UuidCreator.getShortPrefixComb();
 	}
 
 	@Benchmark
-	public UUID uuid_creator_06_name_based_md5() {
+	public UUID uuid_creator_07_name_based_md5() {
 		return UuidCreator.getNameBasedMd5(bytes);
 	}
 
 	@Benchmark
-	public UUID uuid_creator_07_name_based_sha1() {
+	public UUID uuid_creator_08_name_based_sha1() {
 		return UuidCreator.getNameBasedSha1(bytes);
 	}
 
 	@Benchmark
-	public UUID uuid_creator_08_time_based() {
+	public UUID uuid_creator_09_time_based() {
 		return UuidCreator.getTimeBased();
 	}
 
 	@Benchmark
-	public UUID uuid_creator_09_time_ordered() {
+	public UUID uuid_creator_10_time_ordered() {
 		return UuidCreator.getTimeOrdered();
 	}
 
 	@Benchmark
-	public UUID uuid_creator_10_time_ordered_epoch() {
+	public UUID uuid_creator_11_time_ordered_epoch() {
 		return UuidCreator.getTimeOrderedEpoch();
 	}
 
 	@Benchmark
-	public UUID uuid_creator_11_time_ordered_epoch_plus1() {
+	public UUID uuid_creator_12_time_ordered_epoch_plus1() {
 		return UuidCreator.getTimeOrderedEpochPlus1();
 	}
 
 	@Benchmark
-	public UUID uuid_creator_12_time_ordered_epoch_plusn() {
+	public UUID uuid_creator_13_time_ordered_epoch_plusn() {
 		return UuidCreator.getTimeOrderedEpochPlusN();
 	}
 

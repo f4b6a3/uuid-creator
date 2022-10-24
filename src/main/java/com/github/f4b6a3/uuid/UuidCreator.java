@@ -25,6 +25,7 @@
 package com.github.f4b6a3.uuid;
 
 import java.time.Instant;
+import java.util.SplittableRandom;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.codec.BinaryCodec;
@@ -170,6 +171,24 @@ public final class UuidCreator {
 	}
 
 	/**
+	 * Returns a fast random-based unique identifier (UUIDv4).
+	 * <p>
+	 * It employs {@link SplittableRandom} which works very well, although not
+	 * cryptographically strong.
+	 * <p>
+	 * Security-sensitive applications that require a cryptographically secure
+	 * pseudo-random generator should use {@link UuidCreator#getRandomBased()}.
+	 * 
+	 * @return a UUIDv4
+	 * @see RandomBasedFactory
+	 * @see SplittableRandom
+	 * @since 5.2.0
+	 */
+	public static UUID getRandomBasedFast() {
+		return RandomBasedFastHolder.INSTANCE.create();
+	}
+
+	/**
 	 * Returns a time-based unique identifier (UUIDv1).
 	 * <p>
 	 * The default node identifier is a random number that is generated once at
@@ -215,8 +234,8 @@ public final class UuidCreator {
 	/**
 	 * Returns a time-based unique identifier (UUIDv1).
 	 * <p>
-	 * The node identifier is a random number that is generated with each
-	 * method invocation.
+	 * The node identifier is a random number that is generated with each method
+	 * invocation.
 	 * 
 	 * @return a UUIDv1
 	 * @see TimeBasedFactory
@@ -316,8 +335,8 @@ public final class UuidCreator {
 	/**
 	 * Returns a time-ordered unique identifier (UUIDv6).
 	 * <p>
-	 * The node identifier is a random number that is generated with each
-	 * method invocation.
+	 * The node identifier is a random number that is generated with each method
+	 * invocation.
 	 * 
 	 * @return a UUIDv6
 	 * @see TimeOrderedFactory
@@ -1002,20 +1021,24 @@ public final class UuidCreator {
 		static final RandomBasedFactory INSTANCE = new RandomBasedFactory();
 	}
 
+	private static class RandomBasedFastHolder {
+		static final RandomBasedFactory INSTANCE = RandomBasedFactory.builder().withFastRandom().build();
+	}
+
 	private static class TimeBasedHolder {
 		static final TimeBasedFactory INSTANCE = new TimeBasedFactory();
 	}
 
 	private static class TimeBasedWithMacHolder {
-		static final TimeBasedFactory INSTANCE = new TimeBasedFactory.Builder().withMacNodeId().build();
+		static final TimeBasedFactory INSTANCE = TimeBasedFactory.builder().withMacNodeId().build();
 	}
 
 	private static class TimeBasedWithHashHolder {
-		static final TimeBasedFactory INSTANCE = new TimeBasedFactory.Builder().withHashNodeId().build();
+		static final TimeBasedFactory INSTANCE = TimeBasedFactory.builder().withHashNodeId().build();
 	}
 
 	private static class TimeBasedWithRandomHolder {
-		static final TimeBasedFactory INSTANCE = new TimeBasedFactory.Builder().withRandomNodeId().build();
+		static final TimeBasedFactory INSTANCE = TimeBasedFactory.builder().withRandomNodeId().build();
 	}
 
 	private static class TimeOrderedHolder {
@@ -1023,15 +1046,15 @@ public final class UuidCreator {
 	}
 
 	private static class TimeOrderedWithMacHolder {
-		static final TimeOrderedFactory INSTANCE = new TimeOrderedFactory.Builder().withMacNodeId().build();
+		static final TimeOrderedFactory INSTANCE = TimeOrderedFactory.builder().withMacNodeId().build();
 	}
 
 	private static class TimeOrderedWithHashHolder {
-		static final TimeOrderedFactory INSTANCE = new TimeOrderedFactory.Builder().withHashNodeId().build();
+		static final TimeOrderedFactory INSTANCE = TimeOrderedFactory.builder().withHashNodeId().build();
 	}
 
 	private static class TimeOrderedWithRandomHolder {
-		static final TimeOrderedFactory INSTANCE = new TimeOrderedFactory.Builder().withRandomNodeId().build();
+		static final TimeOrderedFactory INSTANCE = TimeOrderedFactory.builder().withRandomNodeId().build();
 	}
 
 	private static class TimeOrderedEpochHolder {
@@ -1059,15 +1082,15 @@ public final class UuidCreator {
 	}
 
 	private static class DceSecurityWithMacHolder {
-		static final DceSecurityFactory INSTANCE = new DceSecurityFactory.Builder().withMacNodeId().build();
+		static final DceSecurityFactory INSTANCE = DceSecurityFactory.builder().withMacNodeId().build();
 	}
 
 	private static class DceSecurityWithHashHolder {
-		static final DceSecurityFactory INSTANCE = new DceSecurityFactory.Builder().withHashNodeId().build();
+		static final DceSecurityFactory INSTANCE = DceSecurityFactory.builder().withHashNodeId().build();
 	}
 
 	private static class DceSecurityWithRandomHolder {
-		static final DceSecurityFactory INSTANCE = new DceSecurityFactory.Builder().withRandomNodeId().build();
+		static final DceSecurityFactory INSTANCE = DceSecurityFactory.builder().withRandomNodeId().build();
 	}
 
 	private static class SuffixCombHolder {

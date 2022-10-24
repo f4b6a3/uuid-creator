@@ -26,6 +26,7 @@ package com.github.f4b6a3.uuid.factory;
 
 import java.security.SecureRandom;
 import java.util.Random;
+import java.util.SplittableRandom;
 import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
 
@@ -76,6 +77,13 @@ public abstract class AbstRandomBasedFactory extends UuidFactory implements NoAr
 					this.random = new LongRandom(random);
 				}
 			}
+			return (B) this;
+		}
+		
+		@SuppressWarnings("unchecked")
+		public B withFastRandom() {
+			final SplittableRandom entropy = new SplittableRandom();
+			this.random = new LongRandom(() -> entropy.nextLong());
 			return (B) this;
 		}
 
