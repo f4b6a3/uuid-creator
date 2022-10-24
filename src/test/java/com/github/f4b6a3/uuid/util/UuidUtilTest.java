@@ -39,9 +39,19 @@ public class UuidUtilTest {
 	}
 
 	@Test
+	public void testGetNil() {
+		assertTrue(isNil(UuidCreator.getNil()));
+	}
+
+	@Test
 	public void testIsMax() {
 		UUID uuid = new UUID(-1L, -1L);
 		assertTrue(isMax(uuid));
+	}
+
+	@Test
+	public void testGetMax() {
+		assertTrue(isMax(UuidCreator.getMax()));
 	}
 
 	@Test

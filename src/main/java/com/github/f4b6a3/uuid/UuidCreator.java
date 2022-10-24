@@ -63,7 +63,7 @@ public final class UuidCreator {
 	public static final UuidLocalDomain LOCAL_DOMAIN_ORG = UuidLocalDomain.LOCAL_DOMAIN_ORG;
 
 	private static final UUID UUID_NIL = new UUID(0x0000000000000000L, 0x0000000000000000L);
-	private static final UUID UUID_MAX = new UUID(0x1111111111111111L, 0x1111111111111111L);
+	private static final UUID UUID_MAX = new UUID(0xffffffffffffffffL, 0xffffffffffffffffL);
 
 	private UuidCreator() {
 	}
