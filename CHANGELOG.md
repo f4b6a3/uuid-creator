@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [5.2.1] - 2023-04-29
+
+Fix the initial state of `TimeOrderedEpochFactory`. #76
+
 ## [5.2.0] - 2022-10-23
 
 - **Fix MAX UUID** (it was wrong since v5.0.0). #75
@@ -353,7 +357,8 @@ Remove `Fingerprint` // too complex
 -   Removed UuidSettings.getNodeIdentifierDeprecated // remove deprecated
 -   Renamed UuidSettings to UuidCreatorSettings
 
-[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.2.0...HEAD
+[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.2.1...HEAD
+[5.2.1]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.2.0...uuid-creator-5.2.1
 [5.2.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.1.2...uuid-creator-5.2.0
 [5.1.2]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.1.1...uuid-creator-5.1.2
 [5.1.1]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.1.0...uuid-creator-5.1.1

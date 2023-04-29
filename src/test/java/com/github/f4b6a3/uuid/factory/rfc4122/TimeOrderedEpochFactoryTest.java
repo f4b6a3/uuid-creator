@@ -16,9 +16,11 @@ import static org.junit.Assert.assertTrue;
 import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.SplittableRandom;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.IntFunction;
@@ -384,6 +386,75 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 
 		// Check if the quantity of unique UUIDs is correct
 		assertEquals(DUPLICATE_UUID_MSG, TestThread.hashSet.size(), (DEFAULT_LOOP_MAX * THREAD_TOTAL));
+	}
+
+	@Test
+	public void testWithFixedClock() {
+
+		Instant apocalypse = Instant.parse("+10889-08-02T05:31:50.655Z");
+
+		UUID minMinusOne = TimeOrderedEpochFactory.builder() //
+				.withClock(clock(Instant.ofEpochMilli(Long.MIN_VALUE - 1))) //
+				.withRandomFunction(() -> 0).build().create();
+		assertEquals(apocalypse, UuidUtil.getInstant(minMinusOne));
+
+		UUID min = TimeOrderedEpochFactory.builder() //
+				.withClock(clock(Instant.ofEpochMilli(Long.MIN_VALUE))) //
+				.withRandomFunction(() -> 0).build().create();
+		assertEquals(Instant.EPOCH, UuidUtil.getInstant(min));
+
+		UUID minPlusOne = TimeOrderedEpochFactory.builder() //
+				.withClock(clock(Instant.ofEpochMilli(Long.MIN_VALUE + 1))) //
+				.withRandomFunction(() -> 0).build().create();
+		assertEquals(Instant.EPOCH.plusMillis(1), UuidUtil.getInstant(minPlusOne));
+
+		UUID epochMinusOne = TimeOrderedEpochFactory.builder() //
+				.withClock(clock(Instant.EPOCH.minusMillis(1))) //
+				.withRandomFunction(() -> 0).build().create();
+		assertEquals(apocalypse, UuidUtil.getInstant(epochMinusOne));
+
+		UUID epoch = TimeOrderedEpochFactory.builder() //
+				.withClock(clock(Instant.EPOCH)) //
+				.withRandomFunction(() -> 0).build().create();
+		assertEquals(Instant.EPOCH, UuidUtil.getInstant(epoch));
+
+		UUID epochPlusOne = TimeOrderedEpochFactory.builder() //
+				.withClock(clock(Instant.EPOCH.plusMillis(1))) //
+				.withRandomFunction(() -> 0).build().create();
+		assertEquals(Instant.EPOCH.plusMillis(1), UuidUtil.getInstant(epochPlusOne));
+
+		UUID maxMinusOne = TimeOrderedEpochFactory.builder() //
+				.withClock(clock(Instant.ofEpochMilli(Long.MAX_VALUE - 1))) //
+				.withRandomFunction(() -> 0).build().create();
+		assertEquals(apocalypse.minusMillis(1), UuidUtil.getInstant(maxMinusOne));
+
+		UUID max = TimeOrderedEpochFactory.builder() //
+				.withClock(clock(Instant.ofEpochMilli(Long.MAX_VALUE))) //
+				.withRandomFunction(() -> 0).build().create();
+		assertEquals(apocalypse, UuidUtil.getInstant(max));
+
+		UUID maxPlusOne = TimeOrderedEpochFactory.builder() //
+				.withClock(clock(Instant.ofEpochMilli(Long.MAX_VALUE + 1))) //
+				.withRandomFunction(() -> 0).build().create();
+		assertEquals(Instant.EPOCH, UuidUtil.getInstant(maxPlusOne));
+
+		TreeSet<UUID> uuids = new TreeSet<>();
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			UUID uuid = TimeOrderedEpochFactory.builder() //
+					.withClock(clock(Instant.EPOCH.minusMillis(i))) //
+					.withRandomFunction(() -> 0).build().create();
+			uuids.add(uuid);
+			if (i == 0) {
+				assertEquals(Instant.EPOCH, UuidUtil.getInstant(uuid));
+			} else {
+				assertEquals(apocalypse.minusMillis(i - 1), UuidUtil.getInstant(uuid));
+			}
+		}
+		assertEquals(DEFAULT_LOOP_MAX, uuids.size());
+	}
+
+	private Clock clock(Instant instant) {
+		return Clock.fixed(instant, ZoneId.of("UTC"));
 	}
 
 	@Override

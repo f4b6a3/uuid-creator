@@ -124,7 +124,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		this.incrementSupplier = builder.getIncrementSupplier();
 
 		// initialize internal state
-		this.lastUuid = make(0L, random.nextLong(), random.nextLong());
+		this.lastUuid = make(clock.millis(), random.nextLong(), random.nextLong());
 	}
 
 	/**
