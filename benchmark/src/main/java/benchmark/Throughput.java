@@ -16,6 +16,7 @@ import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 
 import com.github.f4b6a3.uuid.UuidCreator;
+import com.github.f4b6a3.uuid.alt.GUID;
 //import com.github.f4b6a3.uuid.codec.base.Base16Codec;
 //import com.github.f4b6a3.uuid.codec.base.Base32Codec;
 //import com.github.f4b6a3.uuid.codec.base.Base58BtcCodec;
@@ -23,7 +24,7 @@ import com.github.f4b6a3.uuid.UuidCreator;
 //import com.github.f4b6a3.uuid.codec.base.Base64UrlCodec;
 
 @Fork(1)
-@Threads(1)
+@Threads(4)
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5, time = 1)
@@ -122,6 +123,43 @@ public class Throughput {
 	@Benchmark
 	public UUID uuid_creator_13_time_ordered_epoch_plusn() {
 		return UuidCreator.getTimeOrderedEpochPlusN();
+	}
+
+	/*********** GUID ***********/
+
+	@Benchmark
+	public GUID GUID_v1() {
+		return GUID.v1();
+	}
+
+	@Benchmark
+	public GUID GUID_v3() {
+		return GUID.v3(null, string);
+	}
+
+	@Benchmark
+	public GUID GUID_v4() {
+		return GUID.v4();
+	}
+
+	@Benchmark
+	public GUID GUID_v5() {
+		return GUID.v5(null, string);
+	}
+
+	@Benchmark
+	public GUID GUID_v6() {
+		return GUID.v6();
+	}
+
+	@Benchmark
+	public GUID GUID_v7() {
+		return GUID.v7();
+	}
+
+	@Benchmark
+	public GUID GUID_v8() {
+		return GUID.v8(null, string);
 	}
 
 	/*********** UUID Codecs ************/

@@ -28,7 +28,7 @@ The jar file can be downloaded directly from [maven.org](https://repo1.maven.org
 
 Read the [Wiki pages](https://github.com/f4b6a3/uuid-creator/wiki) and the [Javadocs](https://javadoc.io/doc/com.github.f4b6a3/uuid-creator).
 
-Maven dependency
+Dependency
 ------------------------------------------------------
 
 Add these lines to your `pom.xml`:
@@ -38,7 +38,7 @@ Add these lines to your `pom.xml`:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>5.2.1</version>
+  <version>5.3.0</version>
 </dependency>
 ```
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -50,7 +50,7 @@ Module and bundle names are the same as the root package name.
 *   JPMS module name: `com.github.f4b6a3.uuid`
 *   OSGi symbolic name: `com.github.f4b6a3.uuid`
 
-How to Use
+Usage
 ------------------------------------------------------
 
 All UUID types can be created from the facade [`UuidCreator`](https://github.com/f4b6a3/uuid-creator/blob/master/src/main/java/com/github/f4b6a3/uuid/UuidCreator.java).
@@ -119,6 +119,36 @@ Create a [Short Suffix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.0.-CO
 
 ```java
 UUID uuid = UuidCreator.getShortSuffixComb();
+```
+
+Alternative
+------------------------------------------------------
+
+The [`GUID`](https://github.com/f4b6a3/uuid-creator/blob/master/src/main/java/com/github/f4b6a3/uuid/alt/GUID.java) class is an alternative to the JDK's built-in `UUID`.
+
+```java
+GUID guid = GUID.v1();
+```
+```java
+GUID guid = GUID.v2(GUID.LOCAL_DOMAIN_PERSON, 1234);
+```
+```java
+GUID guid = GUID.v3(GUID.NAMESPACE_DNS, "www.example.com");
+```
+```java
+GUID guid = GUID.v4();
+```
+```java
+GUID guid = GUID.v5(GUID.NAMESPACE_DNS, "www.example.com");
+```
+```java
+GUID guid = GUID.v6();
+```
+```java
+GUID guid = GUID.v7();
+```
+```java
+GUID guid = GUID.v8(GUID.NAMESPACE_DNS, "www.example.com");
 ```
 
 Other identifier generators

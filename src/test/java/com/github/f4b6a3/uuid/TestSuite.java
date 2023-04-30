@@ -32,6 +32,7 @@ import com.github.f4b6a3.uuid.factory.rfc4122.RandomBasedFactoryTest;
 import com.github.f4b6a3.uuid.factory.rfc4122.TimeBasedFactoryTest;
 import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedEpochFactoryTest;
 import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedFactoryTest;
+import com.github.f4b6a3.uuid.alt.GUIDTest;
 import com.github.f4b6a3.uuid.codec.BinaryCodecTest;
 import com.github.f4b6a3.uuid.codec.StringCodecTest;
 import com.github.f4b6a3.uuid.codec.UriCodecTest;
@@ -63,6 +64,7 @@ import com.github.f4b6a3.uuid.util.UuidValidatorTest;
 	DefaultTimeFunctionTest.class,
 	DotNetGuid1CodecTest.class,
 	DotNetGuid4CodecTest.class,
+	GUIDTest.class,
 	NameBasedMd5FactoryTest.class,
 	NameBasedSha1FactoryTest.class,
 	NcnameCodecTest.class,

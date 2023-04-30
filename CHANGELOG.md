@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-Add a MIN and MAX methods #77
+Nothing unreleased.
+
+## [5.3.0] - 2023-04-30
+
+- Add an alternative to the JDK's built-in UUID #78
+- Add a MIN and MAX methods #77
 
 ## [5.2.1] - 2023-04-29
 
@@ -357,7 +362,8 @@ Remove `Fingerprint` // too complex
 -   Removed UuidSettings.getNodeIdentifierDeprecated // remove deprecated
 -   Renamed UuidSettings to UuidCreatorSettings
 
-[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.2.1...HEAD
+[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.0...HEAD
+[5.3.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.2.1...uuid-creator-5.3.0
 [5.2.1]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.2.0...uuid-creator-5.2.1
 [5.2.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.1.2...uuid-creator-5.2.0
 [5.1.2]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.1.1...uuid-creator-5.1.2
