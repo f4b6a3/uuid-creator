@@ -25,8 +25,8 @@
 package com.github.f4b6a3.uuid;
 
 import java.time.Instant;
-import java.util.SplittableRandom;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.github.f4b6a3.uuid.codec.BinaryCodec;
 import com.github.f4b6a3.uuid.codec.StringCodec;
@@ -173,15 +173,15 @@ public final class UuidCreator {
 	/**
 	 * Returns a fast random-based unique identifier (UUIDv4).
 	 * <p>
-	 * It employs {@link SplittableRandom} which works very well, although not
-	 * cryptographically strong.
+	 * It employs {@link ThreadLocalRandom} which works very well, although not
+	 * cryptographically strong. It can be useful, for example, for logging.
 	 * <p>
 	 * Security-sensitive applications that require a cryptographically secure
 	 * pseudo-random generator should use {@link UuidCreator#getRandomBased()}.
 	 * 
 	 * @return a UUIDv4
 	 * @see RandomBasedFactory
-	 * @see SplittableRandom
+	 * @see ThreadLocalRandom
 	 * @since 5.2.0
 	 */
 	public static UUID getRandomBasedFast() {
@@ -278,6 +278,54 @@ public final class UuidCreator {
 			builder.withNodeId(nodeid);
 		}
 		return builder.build().create();
+	}
+
+	/**
+	 * Returns the minimum UUIDv1 for a given instant.
+	 * <p>
+	 * The 60 bits of the timestamp are filled with the bits of the given instant
+	 * and the other 62 bits are all set to ZERO.
+	 * <p>
+	 * For example, the minimum UUIDv1 for 2022-02-22 22:22:22.222 is
+	 * `{@code e7a1c2e0-942d-11ec-8000-000000000000}`, where
+	 * `{@code e7a1c2e0-942d-_1ec}` is the timestamp in hexadecimal.
+	 * <p>
+	 * It can be useful to find all records before or after a specific timestamp in
+	 * a table without a `{@code created_at}` field.
+	 * 
+	 * @param instant a given instant
+	 * @return a UUIDv1
+	 */
+	public static UUID getTimeBasedMin(Instant instant) {
+		if (instant == null) {
+			throw new IllegalArgumentException("Null instant");
+		}
+		TimeBasedFactory.Builder builder = TimeBasedFactory.builder();
+		return builder.withInstant(instant).withClockSeq(0x0000L).withNodeId(0x000000000000L).build().create();
+	}
+
+	/**
+	 * Returns the maximum UUIDv1 for a given instant.
+	 * <p>
+	 * The 60 bits of the timestamp are filled with the bits of the given instant
+	 * and the other 62 bits are all set to ONE.
+	 * <p>
+	 * For example, the maximum UUIDv1 for 2022-02-22 22:22:22.222 is
+	 * `{@code e7a1c2e0-942d-11ec-bfff-ffffffffffff}`, where
+	 * `{@code e7a1c2e0-942d-_1ec}` is the timestamp in hexadecimal.
+	 * <p>
+	 * It can be useful to find all records before or after a specific timestamp in
+	 * a table without a `{@code created_at}` field.
+	 * 
+	 * @param instant a given instant
+	 * @return a UUIDv1
+	 */
+	public static UUID getTimeBasedMax(Instant instant) {
+		if (instant == null) {
+			throw new IllegalArgumentException("Null instant");
+		}
+		TimeBasedFactory.Builder builder = TimeBasedFactory.builder();
+		return builder.withInstant(instant).withClockSeq(0xffffL).withNodeId(0xffffffffffffL).build().create();
 	}
 
 	/**
@@ -388,6 +436,54 @@ public final class UuidCreator {
 	}
 
 	/**
+	 * Returns the minimum UUIDv6 for a given instant.
+	 * <p>
+	 * The 60 bits of the timestamp are filled with the bits of the given instant
+	 * and the other 62 bits are all set to ZERO.
+	 * <p>
+	 * For example, the minimum UUIDv6 for 2022-02-22 22:22:22.222 is
+	 * `{@code 1ec942de-7a1c-62e0-8000-000000000000}`, where
+	 * `{@code 1ec942de-7a1c-_2e0}` is the timestamp in hexadecimal.
+	 * <p>
+	 * It can be useful to find all records before or after a specific timestamp in
+	 * a table without a `{@code created_at}` field.
+	 * 
+	 * @param instant a given instant
+	 * @return a UUIDv6
+	 */
+	public static UUID getTimeOrderedMin(Instant instant) {
+		if (instant == null) {
+			throw new IllegalArgumentException("Null instant");
+		}
+		TimeOrderedFactory.Builder builder = TimeOrderedFactory.builder();
+		return builder.withInstant(instant).withClockSeq(0x0000L).withNodeId(0x000000000000L).build().create();
+	}
+
+	/**
+	 * Returns the maximum UUIDv6 for a given instant.
+	 * <p>
+	 * The 60 bits of the timestamp are filled with the bits of the given instant
+	 * and the other 62 bits are all set to ONE.
+	 * <p>
+	 * For example, the maximum UUIDv6 for 2022-02-22 22:22:22.222 is
+	 * `{@code 1ec942de-7a1c-62e0-bfff-ffffffffffff}`, where
+	 * `{@code 1ec942de-7a1c-_2e0}` is the timestamp in hexadecimal.
+	 * <p>
+	 * It can be useful to find all records before or after a specific timestamp in
+	 * a table without a `{@code created_at}` field.
+	 * 
+	 * @param instant a given instant
+	 * @return a UUIDv6
+	 */
+	public static UUID getTimeOrderedMax(Instant instant) {
+		if (instant == null) {
+			throw new IllegalArgumentException("Null instant");
+		}
+		TimeOrderedFactory.Builder builder = TimeOrderedFactory.builder();
+		return builder.withInstant(instant).withClockSeq(0xffffL).withNodeId(0xffffffffffffL).build().create();
+	}
+
+	/**
 	 * Returns a time-ordered unique identifier that uses Unix Epoch (UUIDv7).
 	 * <p>
 	 * The identifier has 3 parts: time, counter and random.
@@ -442,6 +538,54 @@ public final class UuidCreator {
 	 */
 	public static UUID getTimeOrderedEpochPlusN() {
 		return TimeOrderedEpochPlusNHolder.INSTANCE.create();
+	}
+
+	/**
+	 * Returns the minimum UUIDv7 for a given instant.
+	 * <p>
+	 * The 48 bits of the time component are filled with the bits of the given
+	 * instant and the other 74 bits are all set to ZERO.
+	 * <p>
+	 * For example, the minimum UUIDv7 for 2022-02-22 22:22:22.222 is
+	 * `{@code 017f2387-460e-7000-8000-000000000000}`, where
+	 * `{@code 017f2387-460e}` is the timestamp in hexadecimal.
+	 * <p>
+	 * It can be useful to find all records before or after a specific timestamp in
+	 * a table without a `{@code created_at}` field.
+	 * 
+	 * @param instant a given instant
+	 * @return a UUIDv7
+	 */
+	public static UUID getTimeOrderedEpochMin(Instant instant) {
+		if (instant == null) {
+			throw new IllegalArgumentException("Null instant");
+		}
+		final long time = instant.toEpochMilli();
+		return new UUID((time << 16) | 0x7000L, 0x8000000000000000L);
+	}
+
+	/**
+	 * Returns the maximum UUIDv7 for a given instant.
+	 * <p>
+	 * The 48 bits of the time component are filled with the bits of the given
+	 * instant and the other 74 bits are all set to ONE.
+	 * <p>
+	 * For example, the maximum UUIDv7 for 2022-02-22 22:22:22.222 is
+	 * `{@code 017f2387-460e-7fff-bfff-ffffffffffff}`, where
+	 * `{@code 017f2387-460e}` is the timestamp in hexadecimal.
+	 * <p>
+	 * It can be useful to find all records before or after a specific timestamp in
+	 * a table without a `{@code created_at}` field.
+	 * 
+	 * @param instant a given instant
+	 * @return a UUIDv7
+	 */
+	public static UUID getTimeOrderedEpochMax(Instant instant) {
+		if (instant == null) {
+			throw new IllegalArgumentException("Null instant");
+		}
+		final long time = instant.toEpochMilli();
+		return new UUID((time << 16) | 0x7fffL, 0xbfffffffffffffffL);
 	}
 
 	/**
@@ -965,6 +1109,54 @@ public final class UuidCreator {
 	}
 
 	/**
+	 * Returns the minimum Prefix COMB GUID for a given instant.
+	 * <p>
+	 * The 48 bits of the time component are filled with the bits of the given
+	 * instant and the other 74 bits are all set to ZERO.
+	 * <p>
+	 * For example, the minimum GUID for 2022-02-22 22:22:22.222 is
+	 * `{@code 017f2387-460e-4000-8000-000000000000}`, where
+	 * `{@code 017f2387-460e}` is the timestamp in hexadecimal.
+	 * <p>
+	 * It can be useful to find all records before or after a specific timestamp in
+	 * a table without a `{@code created_at}` field.
+	 * 
+	 * @param instant a given instant
+	 * @return a GUID
+	 */
+	public static UUID getPrefixCombMin(Instant instant) {
+		if (instant == null) {
+			throw new IllegalArgumentException("Null instant");
+		}
+		final long time = instant.toEpochMilli();
+		return new UUID((time << 16) | 0x4000L, 0x8000000000000000L);
+	}
+
+	/**
+	 * Returns the maximum Prefix COMB GUID for a given instant.
+	 * <p>
+	 * The 48 bits of the time component are filled with the bits of the given
+	 * instant and the other 74 bits are all set to ONE.
+	 * <p>
+	 * For example, the maximum GUID for 2022-02-22 22:22:22.222 is
+	 * `{@code 017f2387-460e-4fff-bfff-ffffffffffff}`, where
+	 * `{@code 017f2387-460e}` is the timestamp in hexadecimal.
+	 * <p>
+	 * It can be useful to find all records before or after a specific timestamp in
+	 * a table without a `{@code created_at}` field.
+	 * 
+	 * @param instant a given instant
+	 * @return a GUID
+	 */
+	public static UUID getPrefixCombMax(Instant instant) {
+		if (instant == null) {
+			throw new IllegalArgumentException("Null instant");
+		}
+		final long time = instant.toEpochMilli();
+		return new UUID((time << 16) | 0x4fffL, 0xbfffffffffffffffL);
+	}
+
+	/**
 	 * Returns a Suffix COMB GUID.
 	 * 
 	 * The creation millisecond is a 6 bytes SUFFIX is at the LEAST significant
@@ -977,6 +1169,54 @@ public final class UuidCreator {
 	 */
 	public static UUID getSuffixComb() {
 		return SuffixCombHolder.INSTANCE.create();
+	}
+
+	/**
+	 * Returns the minimum Suffix COMB GUID for a given instant.
+	 * <p>
+	 * The 48 bits of the time component are filled with the bits of the given
+	 * instant and the other 74 bits are all set to ZERO.
+	 * <p>
+	 * For example, the minimum GUID for 2022-02-22 22:22:22.222 is
+	 * `{@code 00000000-0000-4000-8000-017f2387460e}`, where
+	 * `{@code 017f2387460e}` is the timestamp in hexadecimal.
+	 * <p>
+	 * It can be useful to find all records before or after a specific timestamp in
+	 * a table without a `{@code created_at}` field.
+	 * 
+	 * @param instant a given instant
+	 * @return a GUID
+	 */
+	public static UUID getSuffixCombMin(Instant instant) {
+		if (instant == null) {
+			throw new IllegalArgumentException("Null instant");
+		}
+		final long time = instant.toEpochMilli();
+		return new UUID(0x0000000000004000L, 0x8000000000000000L | (time & 0x0000ffffffffffffL));
+	}
+
+	/**
+	 * Returns the maximum Suffix COMB GUID for a given instant.
+	 * <p>
+	 * The 48 bits of the time component are filled with the bits of the given
+	 * instant and the other 74 bits are all set to ONE.
+	 * <p>
+	 * For example, the maximum GUID for 2022-02-22 22:22:22.222 is
+	 * `{@code ffffffff-ffff-4fff-bfff-017f2387460e}`, where
+	 * `{@code 017f2387460e}` is the timestamp in hexadecimal.
+	 * <p>
+	 * It can be useful to find all records before or after a specific timestamp in
+	 * a table without a `{@code created_at}` field.
+	 * 
+	 * @param instant a given instant
+	 * @return a GUID
+	 */
+	public static UUID getSuffixCombMax(Instant instant) {
+		if (instant == null) {
+			throw new IllegalArgumentException("Null instant");
+		}
+		final long time = instant.toEpochMilli();
+		return new UUID(0xffffffffffff4fffL, 0xbfff000000000000L | (time & 0x0000ffffffffffffL));
 	}
 
 	/**

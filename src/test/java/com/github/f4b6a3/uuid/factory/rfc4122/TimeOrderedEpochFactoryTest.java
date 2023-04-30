@@ -453,6 +453,37 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 		assertEquals(DEFAULT_LOOP_MAX, uuids.size());
 	}
 
+	@Test
+	public void testMinAndMax() {
+
+		long time = 0;
+		Random random = new Random();
+		final long mask = 0x0000ffffffffffffL;
+
+		for (int i = 0; i < 100; i++) {
+
+			time = random.nextLong() & mask;
+
+			{
+				// Test MIN
+				Instant instant = Instant.ofEpochMilli(time);
+				UUID uuid = UuidCreator.getTimeOrderedEpochMin(instant);
+				assertEquals(time, uuid.getMostSignificantBits() >>> 16);
+				assertEquals(0x0000000000007000L, uuid.getMostSignificantBits() & 0xffffL);
+				assertEquals(0x8000000000000000L, uuid.getLeastSignificantBits());
+			}
+
+			{
+				// Test MAX
+				Instant instant = Instant.ofEpochMilli(time);
+				UUID uuid = UuidCreator.getTimeOrderedEpochMax(instant);
+				assertEquals(time, uuid.getMostSignificantBits() >>> 16);
+				assertEquals(0x0000000000007fffL, uuid.getMostSignificantBits() & 0xffffL);
+				assertEquals(0xbfffffffffffffffL, uuid.getLeastSignificantBits());
+			}
+		}
+	}
+
 	private Clock clock(Instant instant) {
 		return Clock.fixed(instant, ZoneId.of("UTC"));
 	}

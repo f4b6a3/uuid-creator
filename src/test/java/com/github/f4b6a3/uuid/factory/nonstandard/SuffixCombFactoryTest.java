@@ -141,6 +141,37 @@ public class SuffixCombFactoryTest extends UuidFactoryTest {
 		assertEquals(DUPLICATE_UUID_MSG, TestThread.hashSet.size(), (DEFAULT_LOOP_MAX * THREAD_TOTAL));
 	}
 
+	@Test
+	public void testMinAndMax() {
+
+		long time = 0;
+		Random random = new Random();
+		final long mask = 0x0000ffffffffffffL;
+
+		for (int i = 0; i < 100; i++) {
+
+			time = random.nextLong() & mask;
+
+			{
+				// Test MIN
+				Instant instant = Instant.ofEpochMilli(time);
+				UUID uuid = UuidCreator.getSuffixCombMin(instant);
+				assertEquals(time, extractSuffix(uuid));
+				assertEquals(0x0000000000004000L, uuid.getMostSignificantBits());
+				assertEquals(0x8000L, uuid.getLeastSignificantBits() >>> 48);
+			}
+
+			{
+				// Test MAX
+				Instant instant = Instant.ofEpochMilli(time);
+				UUID uuid = UuidCreator.getSuffixCombMax(instant);
+				assertEquals(time, extractSuffix(uuid));
+				assertEquals(0xffffffffffff4fffL, uuid.getMostSignificantBits());
+				assertEquals(0xbfffL, uuid.getLeastSignificantBits() >>> 48);
+			}
+		}
+	}
+
 	@Override
 	protected void checkOrdering(UUID[] list) {
 		UUID[] other = Arrays.copyOf(list, list.length);

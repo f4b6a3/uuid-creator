@@ -14,6 +14,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -66,22 +68,12 @@ public class TimeOrderedFactoryTest extends UuidFactoryTest {
 	}
 
 	@Test
-	public void testGetTimeOrderedTimestampBitsAreTimeOrdered() {
-
-		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-
+	public void testGetTimeOrderedWithInstant() {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = UuidCreator.getTimeOrdered();
-		}
-
-		long oldTimestemp = 0;
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			long newTimestamp = UuidUtil.getTimestamp(list[i]);
-
-			if (i > 0) {
-				assertTrue(newTimestamp >= oldTimestemp);
-			}
-			oldTimestemp = newTimestamp;
+			Instant instant1 = Instant.now().truncatedTo(ChronoUnit.MICROS);
+			UUID uuid = TimeOrderedFactory.builder().withInstant(instant1).build().create();
+			Instant instant2 = UuidUtil.getInstant(uuid);
+			assertEquals(instant1, instant2);
 		}
 	}
 
@@ -98,29 +90,6 @@ public class TimeOrderedFactoryTest extends UuidFactoryTest {
 			long timestamp2 = UuidTime.toGregTimestamp(instant2);
 
 			assertEquals(timestamp1, timestamp2);
-		}
-	}
-
-	@Test
-	public void testGetTimeOrderedCheckOrder() {
-
-		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		TimeOrderedFactory factory = new TimeOrderedFactory();
-
-		// Create list of UUIDs
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			list[i] = factory.create();
-		}
-
-		// Check if the MSBs are ordered
-		long old = 0;
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			long msb = list[i].getMostSignificantBits();
-
-			if (i > 0) {
-				assertTrue(msb > old);
-			}
-			old = msb;
 		}
 	}
 
@@ -189,6 +158,78 @@ public class TimeOrderedFactoryTest extends UuidFactoryTest {
 			assertEquals("The timestamp is incorrect.", instant, UuidUtil.getInstant(uuid));
 			assertEquals("The node identifier is incorrect", nodeid, UuidUtil.getNodeIdentifier(uuid));
 			assertEquals("The clock sequence is incorrect", clockseq, UuidUtil.getClockSequence(uuid));
+		}
+	}
+
+	@Test
+	public void testGetTimeOrderedTimestampBitsAreTimeOrdered() {
+
+		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			list[i] = UuidCreator.getTimeOrdered();
+		}
+
+		long oldTimestemp = 0;
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			long newTimestamp = UuidUtil.getTimestamp(list[i]);
+
+			if (i > 0) {
+				assertTrue(newTimestamp >= oldTimestemp);
+			}
+			oldTimestemp = newTimestamp;
+		}
+	}
+
+	@Test
+	public void testGetTimeOrderedCheckOrder() {
+
+		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+		TimeOrderedFactory factory = new TimeOrderedFactory();
+
+		// Create list of UUIDs
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			list[i] = factory.create();
+		}
+
+		// Check if the MSBs are ordered
+		long old = 0;
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			long msb = list[i].getMostSignificantBits();
+
+			if (i > 0) {
+				assertTrue(msb > old);
+			}
+			old = msb;
+		}
+	}
+
+	@Test
+	public void testMinAndMax() {
+
+		long time = 0;
+		Random random = new Random();
+		final long mask = 0x0fffffffffffffffL;
+
+		for (int i = 0; i < 100; i++) {
+
+			time = (random.nextLong() & mask);
+
+			{
+				// Test MIN
+				Instant instant = UuidTime.fromGregTimestamp(time);
+				UUID uuid = UuidCreator.getTimeOrderedMin(instant);
+				assertEquals(time, UuidUtil.getTimestamp(uuid));
+				assertEquals(0x8000000000000000L, uuid.getLeastSignificantBits());
+			}
+
+			{
+				// Test MAX
+				Instant instant = UuidTime.fromGregTimestamp(time);
+				UUID uuid = UuidCreator.getTimeOrderedMax(instant);
+				assertEquals(time, UuidUtil.getTimestamp(uuid));
+				assertEquals(0xbfffffffffffffffL, uuid.getLeastSignificantBits());
+			}
 		}
 	}
 

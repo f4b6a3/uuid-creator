@@ -36,7 +36,7 @@ import com.github.f4b6a3.uuid.util.internal.RandomUtil;
  * The current implementation uses a pool {@link SecureRandom}.
  * <p>
  * The pool size is equal to the number of processors available, up to a maximum
- * of 16.
+ * of 32.
  * <p>
  * The PRNG algorithm can be specified by system property or environment
  * variable. See {@link RandomUtil#newSecureRandom()}.
@@ -71,8 +71,8 @@ public final class DefaultRandomFunction implements RandomFunction {
 
 	private static int processors() {
 
-		final int min = 1;
-		final int max = 16;
+		final int min = 4;
+		final int max = 32;
 
 		// get the number of processors from the runtime
 		final int processors = Runtime.getRuntime().availableProcessors();

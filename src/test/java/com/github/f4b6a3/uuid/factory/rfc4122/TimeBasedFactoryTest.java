@@ -15,6 +15,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -68,9 +70,8 @@ public class TimeBasedFactoryTest extends UuidFactoryTest {
 
 	@Test
 	public void testGetTimeBasedWithInstant() {
-
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			Instant instant1 = Instant.now();
+			Instant instant1 = Instant.now().truncatedTo(ChronoUnit.MICROS);
 			UUID uuid = TimeBasedFactory.builder().withInstant(instant1).build().create();
 			Instant instant2 = UuidUtil.getInstant(uuid);
 			assertEquals(instant1, instant2);
@@ -158,6 +159,35 @@ public class TimeBasedFactoryTest extends UuidFactoryTest {
 			assertEquals("The timestamp is incorrect.", instant, UuidUtil.getInstant(uuid));
 			assertEquals("The node identifier is incorrect", nodeid, UuidUtil.getNodeIdentifier(uuid));
 			assertEquals("The clock sequence is incorrect", clockseq, UuidUtil.getClockSequence(uuid));
+		}
+	}
+
+	@Test
+	public void testMinAndMax() {
+
+		long time = 0;
+		Random random = new Random();
+		final long mask = 0x0fffffffffffffffL;
+
+		for (int i = 0; i < 100; i++) {
+
+			time = (random.nextLong() & mask);
+
+			{
+				// Test MIN
+				Instant instant = UuidTime.fromGregTimestamp(time);
+				UUID uuid = UuidCreator.getTimeBasedMin(instant);
+				assertEquals(time, uuid.timestamp());
+				assertEquals(0x8000000000000000L, uuid.getLeastSignificantBits());
+			}
+
+			{
+				// Test MAX
+				Instant instant = UuidTime.fromGregTimestamp(time);
+				UUID uuid = UuidCreator.getTimeBasedMax(instant);
+				assertEquals(time, uuid.timestamp());
+				assertEquals(0xbfffffffffffffffL, uuid.getLeastSignificantBits());
+			}
 		}
 	}
 
