@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
  * It also serves as a self-contained generator, independent of the rest of the
  * library. This can result in fewer classes being loaded.
  * <p>
- * This generator was designed to be an alternative to {@link UuidCreator} with
+ * This generator was designed to be an alternative to {@code UuidCreator} with
  * three primary objectives in mind: clean interface, simple implementation, and
  * high performance. It was inspired by popular libraries for Javascript and
  * Python.
@@ -158,7 +158,6 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * Creates a new GUID.
 	 * 
 	 * @param bytes an array of 16 bytes
-	 * @return a GUID
 	 * @throws IllegalArgumentException if bytes are null or its length is not 16
 	 */
 	public GUID(byte[] bytes) {
@@ -175,7 +174,6 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * Creates a new GUID.
 	 * 
 	 * @param string a canonical string
-	 * @return a GUID
 	 * @throws IllegalArgumentException if the input string is invalid
 	 */
 	public GUID(String string) {
