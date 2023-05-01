@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [5.3.1] - 2023-05-01
+
+- Remove the GUID.get() method, synonymous with GUID.toUUID() #80
+- Hide MSB and LSB methods used only for tests #79
+
 ## [5.3.0] - 2023-04-30
 
 - Add an alternative to the JDK's built-in UUID #78
@@ -362,7 +367,8 @@ Remove `Fingerprint` // too complex
 -   Removed UuidSettings.getNodeIdentifierDeprecated // remove deprecated
 -   Renamed UuidSettings to UuidCreatorSettings
 
-[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.0...HEAD
+[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.1...HEAD
+[5.3.1]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.0...uuid-creator-5.3.1
 [5.3.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.2.1...uuid-creator-5.3.0
 [5.2.1]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.2.0...uuid-creator-5.2.1
 [5.2.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.1.2...uuid-creator-5.2.0

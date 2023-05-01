@@ -51,7 +51,8 @@ import java.util.regex.Pattern;
  * class. This naming choice was made so that when you see the word GUID in the
  * source code, you can be sure it's not the JDK's built-in UUID.
  * <p>
- * Instances of this class are <b>immutable</b>.
+ * Instances of this class are <b>immutable</b> and static methods of this class
+ * are <b>thread safe</b>.
  */
 public final class GUID implements Serializable, Comparable<GUID> {
 
@@ -183,27 +184,6 @@ public final class GUID implements Serializable, Comparable<GUID> {
 		UUID uuid = UUID.fromString(string);
 		this.msb = uuid.getMostSignificantBits();
 		this.lsb = uuid.getLeastSignificantBits();
-	}
-
-	/**
-	 * Converts the GUID into a JDK's UUID.
-	 * <p>
-	 * It is a synonym for {@link GUID#toUUID()}.
-	 * <p>
-	 * It simply copies all 128 bits into a new JDK's UUID.
-	 * <p>
-	 * You can think of the GUID as a JDK's UUID wrapper.
-	 * <p>
-	 * Usage:
-	 * 
-	 * <pre>{@code
-	 * UUID uuid = GUID.v4().get();
-	 * }</pre>
-	 * 
-	 * @return a JDK's UUID.
-	 */
-	public UUID get() {
-		return toUUID();
 	}
 
 	/**
@@ -363,6 +343,16 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	}
 
 	/**
+	 * Checks if the GUID string is valid.
+	 * 
+	 * @param guid a GUID string
+	 * @return true if valid, false if invalid
+	 */
+	public static boolean valid(String guid) {
+		return guid != null && PATTERN.matcher(guid).matches();
+	}
+
+	/**
 	 * Converts the GUID into a byte array.
 	 * 
 	 * @return an byte array.
@@ -376,7 +366,28 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 */
 	@Override
 	public String toString() {
-		return get().toString();
+		return toUUID().toString();
+	}
+
+	/**
+	 * Converts the GUID into a JDK's UUID.
+	 * <p>
+	 * It simply copies all 128 bits into a new JDK's UUID.
+	 * <p>
+	 * You can think of the GUID class as a JDK's UUID wrapper. This method unwraps
+	 * a JDK's UUID instance so that you can store it in the built-in format or
+	 * access its classic interface.
+	 * <p>
+	 * Usage:
+	 * 
+	 * <pre>{@code
+	 * UUID uuid = GUID.v4().toUUID();
+	 * }</pre>
+	 * 
+	 * @return a JDK's UUID.
+	 */
+	public UUID toUUID() {
+		return new UUID(this.msb, this.lsb);
 	}
 
 	/**
@@ -385,7 +396,7 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @return a version number
 	 */
 	public int version() {
-		return get().version();
+		return toUUID().version();
 	}
 
 	/**
@@ -419,13 +430,27 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * <p>
 	 * The first of two GUIDs is greater than the second if the most significant
 	 * byte in which they differ is greater for the first GUID.
+	 * <p>
+	 * If the second GUID is {@code null}, then it is treated as a {@link GUID#NIL}
+	 * GUID, which has all its bits set to ZERO, instead of throwing a
+	 * {@link NullPointerException}.
+	 * <p>
+	 * This method differs from JDK's {@link UUID#compareTo(UUID)} as this method
+	 * compares two GUIDs as <b>unsigned</b> 128-bit integers.
+	 * <p>
+	 * It can be useful because JDK's {@link UUID#compareTo(UUID)} can lead to
+	 * unexpected behavior due to its <b>signed</b> 64-bit comparison.
+	 * Another reason is that JDK's {@link UUID#compareTo(UUID)} throws
+	 * {@link NullPointerException} if it receives a {@code null} UUID.
 	 * 
-	 * @param that a GUID to be compared with
+	 * @param other a second GUID to be compared with
 	 * @return -1, 0 or 1 as {@code this} is less than, equal to, or greater than
 	 *         {@code that}
 	 */
 	@Override
-	public int compareTo(GUID that) {
+	public int compareTo(GUID other) {
+
+		GUID that = other != null ? other : GUID.NIL;
 
 		// used to compare as UNSIGNED longs
 		final long min = 0x8000000000000000L;
@@ -447,37 +472,6 @@ public final class GUID implements Serializable, Comparable<GUID> {
 			return -1;
 
 		return 0;
-	}
-
-	/**
-	 * Checks if the GUID string is valid.
-	 * 
-	 * @param guid a GUID string
-	 * @return true if valid, false if invalid
-	 */
-	public static boolean valid(String guid) {
-		return guid != null && PATTERN.matcher(guid).matches();
-	}
-
-	/**
-	 * Converts the GUID into a JDK's UUID.
-	 * <p>
-	 * It is a synonym for {@link GUID#get()}.
-	 * <p>
-	 * It simply copies all 128 bits into a new JDK's UUID.
-	 * <p>
-	 * You can think of the GUID as a JDK's UUID wrapper.
-	 * <p>
-	 * Usage:
-	 * 
-	 * <pre>{@code
-	 * UUID uuid = GUID.v4().toUUID();
-	 * }</pre>
-	 * 
-	 * @return a JDK's UUID.
-	 */
-	public UUID toUUID() {
-		return new UUID(this.msb, this.lsb);
 	}
 
 	private static long gregorian() {

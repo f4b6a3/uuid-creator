@@ -12,10 +12,8 @@ import java.util.UUID;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.codec.other.TimeOrderedCodec;
-import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.UuidTime;
 import com.github.f4b6a3.uuid.util.UuidUtil;
-import com.github.f4b6a3.uuid.util.UuidValidator;
 
 public class GUIDTest {
 
@@ -103,16 +101,16 @@ public class GUIDTest {
 		GUID prev = GUID.v1();
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			long t0 = System.currentTimeMillis();
-			GUID uuid = GUID.v1();
-			long t1 = UuidTime.toUnixTimestamp(uuid.get().timestamp()) / 10_000L;
+			GUID guid = GUID.v1();
+			long t1 = UuidTime.toUnixTimestamp(guid.toUUID().timestamp()) / 10_000L;
 			long t2 = System.currentTimeMillis();
-			assertNotNull(uuid);
-			assertNotEquals(prev, uuid);
-			assertNotEquals(GUID.NIL, uuid);
-			assertNotEquals(GUID.MAX, uuid);
-			assertEquals(1, uuid.version());
+			assertNotNull(guid);
+			assertNotEquals(prev, guid);
+			assertNotEquals(GUID.NIL, guid);
+			assertNotEquals(GUID.MAX, guid);
+			assertEquals(1, guid.version());
 			assertTrue(t0 <= t1 && t1 <= t2);
-			prev = uuid;
+			prev = guid;
 		}
 	}
 
@@ -122,17 +120,17 @@ public class GUIDTest {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			byte ld = (byte) i;
 			int li = (int) i * 31;
-			GUID uuid = GUID.v2(ld, li);
-			byte localDomain = UuidUtil.getLocalDomain(uuid.get());
-			int localIdentifier = UuidUtil.getLocalIdentifier(uuid.get());
-			assertNotNull(uuid);
-			assertNotEquals(prev, uuid);
-			assertNotEquals(GUID.NIL, uuid);
-			assertNotEquals(GUID.MAX, uuid);
-			assertEquals(2, uuid.version());
+			GUID guid = GUID.v2(ld, li);
+			byte localDomain = UuidUtil.getLocalDomain(guid.toUUID());
+			int localIdentifier = UuidUtil.getLocalIdentifier(guid.toUUID());
+			assertNotNull(guid);
+			assertNotEquals(prev, guid);
+			assertNotEquals(GUID.NIL, guid);
+			assertNotEquals(GUID.MAX, guid);
+			assertEquals(2, guid.version());
 			assertEquals(ld, localDomain);
 			assertEquals(li, localIdentifier);
-			prev = uuid;
+			prev = guid;
 		}
 	}
 
@@ -142,12 +140,12 @@ public class GUIDTest {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			GUID namespace = new GUID(UUID.randomUUID());
 			String name = UUID.randomUUID().toString();
-			GUID uuid = GUID.v3(namespace, name);
-			assertNotNull(uuid);
-			assertNotEquals(prev, uuid);
-			assertEquals(3, uuid.version());
-			assertNotEquals(GUID.NIL, uuid);
-			assertNotEquals(GUID.MAX, uuid);
+			GUID guid = GUID.v3(namespace, name);
+			assertNotNull(guid);
+			assertNotEquals(prev, guid);
+			assertEquals(3, guid.version());
+			assertNotEquals(GUID.NIL, guid);
+			assertNotEquals(GUID.MAX, guid);
 			assertNotEquals(GUID.v3(null, name), GUID.v3(namespace, name));
 			assertNotEquals(GUID.v3(GUID.NIL, name), GUID.v3(namespace, name));
 			assertNotEquals(GUID.v3(namespace, name), GUID.v5(namespace, name)); // v5
@@ -155,8 +153,8 @@ public class GUIDTest {
 			assertEquals(GUID.v3(null, name), GUID.v3(null, name));
 			assertEquals(GUID.v3(GUID.NIL, name), GUID.v3(GUID.NIL, name));
 			assertEquals(GUID.v3(namespace, name), GUID.v3(namespace, name));
-			assertEquals(UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8)), GUID.v3(null, name).get());
-			prev = uuid;
+			assertEquals(UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8)), GUID.v3(null, name).toUUID());
+			prev = guid;
 		}
 		{
 			// Example of a UUIDv3 Value
@@ -170,13 +168,13 @@ public class GUIDTest {
 	public void testV4() {
 		GUID prev = GUID.v4();
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			GUID uuid = GUID.v4();
-			assertNotNull(uuid);
-			assertNotEquals(prev, uuid);
-			assertNotEquals(GUID.NIL, uuid);
-			assertNotEquals(GUID.MAX, uuid);
-			assertEquals(4, uuid.version());
-			prev = uuid;
+			GUID guid = GUID.v4();
+			assertNotNull(guid);
+			assertNotEquals(prev, guid);
+			assertNotEquals(GUID.NIL, guid);
+			assertNotEquals(GUID.MAX, guid);
+			assertEquals(4, guid.version());
+			prev = guid;
 		}
 	}
 
@@ -186,12 +184,12 @@ public class GUIDTest {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			GUID namespace = new GUID(UUID.randomUUID());
 			String name = UUID.randomUUID().toString();
-			GUID uuid = GUID.v5(namespace, name);
-			assertNotNull(uuid);
-			assertNotEquals(prev, uuid);
-			assertEquals(5, uuid.version());
-			assertNotEquals(GUID.NIL, uuid);
-			assertNotEquals(GUID.MAX, uuid);
+			GUID guid = GUID.v5(namespace, name);
+			assertNotNull(guid);
+			assertNotEquals(prev, guid);
+			assertEquals(5, guid.version());
+			assertNotEquals(GUID.NIL, guid);
+			assertNotEquals(GUID.MAX, guid);
 			assertNotEquals(GUID.v5(null, name), GUID.v5(namespace, name));
 			assertNotEquals(GUID.v5(GUID.NIL, name), GUID.v5(namespace, name));
 			assertNotEquals(GUID.v5(namespace, name), GUID.v3(namespace, name)); // v3
@@ -199,7 +197,7 @@ public class GUIDTest {
 			assertEquals(GUID.v5(null, name), GUID.v5(null, name));
 			assertEquals(GUID.v5(GUID.NIL, name), GUID.v5(GUID.NIL, name));
 			assertEquals(GUID.v5(namespace, name), GUID.v5(namespace, name));
-			prev = uuid;
+			prev = guid;
 		}
 		{
 			// Example of a UUIDv5 Value
@@ -214,17 +212,17 @@ public class GUIDTest {
 		GUID prev = GUID.v6();
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			long t0 = System.currentTimeMillis();
-			GUID uuid = GUID.v6();
-			GUID temp = new GUID(TimeOrderedCodec.INSTANCE.decode(uuid.get()));
-			long t1 = UuidTime.toUnixTimestamp(temp.get().timestamp()) / 10_000L;
+			GUID guid = GUID.v6();
+			GUID temp = new GUID(TimeOrderedCodec.INSTANCE.decode(guid.toUUID()));
+			long t1 = UuidTime.toUnixTimestamp(temp.toUUID().timestamp()) / 10_000L;
 			long t2 = System.currentTimeMillis();
-			assertNotNull(uuid);
-			assertNotEquals(prev, uuid);
-			assertNotEquals(GUID.NIL, uuid);
-			assertNotEquals(GUID.MAX, uuid);
-			assertEquals(6, uuid.version());
+			assertNotNull(guid);
+			assertNotEquals(prev, guid);
+			assertNotEquals(GUID.NIL, guid);
+			assertNotEquals(GUID.MAX, guid);
+			assertEquals(6, guid.version());
 			assertTrue(t0 <= t1 && t1 <= t2);
-			prev = uuid;
+			prev = guid;
 		}
 	}
 
@@ -233,16 +231,16 @@ public class GUIDTest {
 		GUID prev = GUID.v7();
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			long t0 = System.currentTimeMillis();
-			GUID uuid = GUID.v7();
-			long t1 = uuid.getMostSignificantBits() >>> 16;
+			GUID guid = GUID.v7();
+			long t1 = guid.getMostSignificantBits() >>> 16;
 			long t2 = System.currentTimeMillis();
-			assertNotNull(uuid);
-			assertNotEquals(prev, uuid);
-			assertNotEquals(GUID.NIL, uuid);
-			assertNotEquals(GUID.MAX, uuid);
-			assertEquals(7, uuid.version());
+			assertNotNull(guid);
+			assertNotEquals(prev, guid);
+			assertNotEquals(GUID.NIL, guid);
+			assertNotEquals(GUID.MAX, guid);
+			assertEquals(7, guid.version());
 			assertTrue(t0 <= t1 && t1 <= t2);
-			prev = uuid;
+			prev = guid;
 		}
 	}
 
@@ -252,12 +250,12 @@ public class GUIDTest {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			GUID namespace = new GUID(UUID.randomUUID());
 			String name = UUID.randomUUID().toString();
-			GUID uuid = GUID.v8(namespace, name);
-			assertNotNull(uuid);
-			assertNotEquals(prev, uuid);
-			assertEquals(8, uuid.version());
-			assertNotEquals(GUID.NIL, uuid);
-			assertNotEquals(GUID.MAX, uuid);
+			GUID guid = GUID.v8(namespace, name);
+			assertNotNull(guid);
+			assertNotEquals(prev, guid);
+			assertEquals(8, guid.version());
+			assertNotEquals(GUID.NIL, guid);
+			assertNotEquals(GUID.MAX, guid);
 			assertNotEquals(GUID.v8(null, name), GUID.v8(namespace, name));
 			assertNotEquals(GUID.v8(GUID.NIL, name), GUID.v8(namespace, name));
 			assertNotEquals(GUID.v8(namespace, name), GUID.v3(namespace, name)); // v3
@@ -265,7 +263,7 @@ public class GUIDTest {
 			assertEquals(GUID.v8(null, name), GUID.v8(null, name));
 			assertEquals(GUID.v8(GUID.NIL, name), GUID.v8(GUID.NIL, name));
 			assertEquals(GUID.v8(namespace, name), GUID.v8(namespace, name));
-			prev = uuid;
+			prev = guid;
 		}
 		{
 			// Example of a UUIDv8 Value
@@ -281,7 +279,7 @@ public class GUIDTest {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			final long msb = random.nextLong();
 			final long lsb = random.nextLong();
-			UUID uuid = (new GUID(msb, lsb)).get();
+			UUID uuid = (new GUID(msb, lsb)).toUUID();
 			assertEquals(msb, uuid.getMostSignificantBits());
 			assertEquals(lsb, uuid.getLeastSignificantBits());
 		}
@@ -440,48 +438,40 @@ public class GUIDTest {
 	@Test
 	public void testValid() {
 
-		String uuid = null; // Null
-		assertFalse("Null UUID string should be invalid.", GUID.valid(uuid));
+		String guid = null; // Null
+		assertFalse("Null GUID string should be invalid.", GUID.valid(guid));
 
-		uuid = ""; // length: 0
-		assertFalse("UUID with empty string should be invalid.", GUID.valid(uuid));
+		guid = ""; // length: 0
+		assertFalse("GUID with empty string should be invalid.", GUID.valid(guid));
 
-		uuid = "01234567-89ab-4def-abcd-ef0123456789"; // String length = 36
-		assertTrue("UUID with length equals to 36 should be valid.", GUID.valid(uuid));
+		guid = "01234567-89ab-4def-abcd-ef0123456789"; // String length = 36
+		assertTrue("GUID with length equals to 36 should be valid.", GUID.valid(guid));
 
-		uuid = "01234567-89ab-4def-abcdef01-23456789"; // String length = 36 with hyphen in wrong position
-		assertFalse("UUID with length equals to 36 with hyphen in wrong position should be invalid.", GUID.valid(uuid));
+		guid = "01234567-89ab-4def-abcdef01-23456789"; // String length = 36 with hyphen in wrong position
+		assertFalse("GUID with length equals to 36 with hyphen in wrong position should be invalid.", GUID.valid(guid));
 
-		uuid = "01234567-89ab-4def-abcd-ef01-3456789"; // String length = 36 with an extra hyphen
-		assertFalse("UUID with length equals to 36 with an extra hyphen should be invalid.", GUID.valid(uuid));
+		guid = "01234567-89ab-4def-abcd-ef01-3456789"; // String length = 36 with an extra hyphen
+		assertFalse("GUID with length equals to 36 with an extra hyphen should be invalid.", GUID.valid(guid));
 
-		uuid = "01234567-89ab-4def-abcddef0123456789"; // String length = 36 with a missing hyphen
-		assertFalse("UUID with length equals to 36 with a missing hyphen should be invalid.", GUID.valid(uuid));
+		guid = "01234567-89ab-4def-abcddef0123456789"; // String length = 36 with a missing hyphen
+		assertFalse("GUID with length equals to 36 with a missing hyphen should be invalid.", GUID.valid(guid));
 
-		uuid = "0123456789ab4defabcdef0123456789"; // Missing hyphens
-		assertFalse("UUID without hyphen should be invalid.", GUID.valid(uuid));
+		guid = "0123456789ab4defabcdef0123456789"; // Missing hyphens
+		assertFalse("GUID without hyphen should be invalid.", GUID.valid(guid));
 
-		uuid = "01234567-89ab-4def-abcd-ef0123456789"; // All lower case
-		assertTrue("UUID in lower case should be valid.", GUID.valid(uuid));
+		guid = "01234567-89ab-4def-abcd-ef0123456789"; // All lower case
+		assertTrue("GUID in lower case should be valid.", GUID.valid(guid));
 
-		uuid = "01234567-89AB-4DEF-ABCD-EF0123456789"; // All upper case
-		assertTrue("UUID in upper case should valid.", GUID.valid(uuid));
+		guid = "01234567-89AB-4DEF-ABCD-EF0123456789"; // All upper case
+		assertTrue("GUID in upper case should valid.", GUID.valid(guid));
 
-		uuid = "01234567-89ab-4DEF-abcd-EF0123456789"; // Mixed case
-		assertTrue("UUID in upper and lower case should valid.", GUID.valid(uuid));
+		guid = "01234567-89ab-4DEF-abcd-EF0123456789"; // Mixed case
+		assertTrue("GUID in upper and lower case should valid.", GUID.valid(guid));
 
-		uuid = "01234567-89ab-4def-abcd-SOPQRSTUVXYZ"; // String with non hexadecimal chars
-		assertFalse("UUID string with non hexadecimal chars should be invalid.", GUID.valid(uuid));
+		guid = "01234567-89ab-4def-abcd-SOPQRSTUVXYZ"; // String with non hexadecimal chars
+		assertFalse("GUID string with non hexadecimal chars should be invalid.", GUID.valid(guid));
 
-		uuid = "01234567-89ab-4def-!@#$-ef0123456789"; // String with non alphanumeric chars
-		assertFalse("UUID string non alphanumeric chars should be invalid.", GUID.valid(uuid));
-
-		try {
-			uuid = null;
-			UuidValidator.validate(uuid);
-			fail();
-		} catch (InvalidUuidException e) {
-			// Success
-		}
+		guid = "01234567-89ab-4def-!@#$-ef0123456789"; // String with non alphanumeric chars
+		assertFalse("GUID string non alphanumeric chars should be invalid.", GUID.valid(guid));
 	}
 }
