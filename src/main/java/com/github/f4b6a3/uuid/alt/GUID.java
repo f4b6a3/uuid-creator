@@ -242,10 +242,8 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 */
 	public static GUID v2(byte localDomain, int localIdentifier) {
 		GUID uuid = v1();
-		final long hi = uuid.getMostSignificantBits();
-		final long lo = uuid.getLeastSignificantBits();
-		final long msb = (hi & MASK_32) | ((localIdentifier & MASK_32) << 32);
-		final long lsb = (lo & 0x3f00_ffff_ffff_ffffL) | ((localDomain & MASK_08) << 48);
+		final long msb = (uuid.msb & MASK_32) | ((localIdentifier & MASK_32) << 32);
+		final long lsb = (uuid.lsb & 0x3f00_ffff_ffff_ffffL) | ((localDomain & MASK_08) << 48);
 		return version(msb, lsb, 2);
 	}
 
@@ -382,24 +380,6 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	}
 
 	/**
-	 * Returns the most significant 64 bits as a number.
-	 * 
-	 * @return a number
-	 */
-	public long getMostSignificantBits() {
-		return this.msb;
-	}
-
-	/**
-	 * Returns the least significant 64 bits as a number.
-	 * 
-	 * @return a number
-	 */
-	public long getLeastSignificantBits() {
-		return this.lsb;
-	}
-
-	/**
 	 * Returns the version number of this GUID.
 	 * 
 	 * @return a version number
@@ -516,20 +496,20 @@ public final class GUID implements Serializable, Comparable<GUID> {
 		try {
 			hasher = MessageDigest.getInstance(algorithm);
 		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(String.format("%s not supported", algorithm));
+			throw new IllegalArgumentException(String.format("%s not supported", algorithm));
 		}
 
 		if (hashspace != null) {
 			ByteBuffer ns = ByteBuffer.allocate(16);
-			ns.putLong(hashspace.getMostSignificantBits());
-			ns.putLong(hashspace.getLeastSignificantBits());
+			ns.putLong(hashspace.msb);
+			ns.putLong(hashspace.lsb);
 			hasher.update(ns.array());
 		}
 
 		if (namespace != null) {
 			ByteBuffer ns = ByteBuffer.allocate(16);
-			ns.putLong(namespace.getMostSignificantBits());
-			ns.putLong(namespace.getLeastSignificantBits());
+			ns.putLong(namespace.msb);
+			ns.putLong(namespace.lsb);
 			hasher.update(ns.array());
 		}
 
@@ -550,5 +530,13 @@ public final class GUID implements Serializable, Comparable<GUID> {
 		final long lsb = (lo & 0x3fff_ffff_ffff_ffffL) | 0x8000_0000_0000_0000L; // RFC-4122 variant
 
 		return new GUID(msb, lsb);
+	}
+
+	long getMostSignificantBits() {
+		return this.msb;
+	}
+
+	long getLeastSignificantBits() {
+		return this.lsb;
 	}
 }
