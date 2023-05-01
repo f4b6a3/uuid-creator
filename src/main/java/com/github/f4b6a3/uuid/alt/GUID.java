@@ -30,9 +30,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.regex.Pattern;
 
 /**
  * A class that represents and generates GUIDs/UUIDs.
@@ -117,8 +117,6 @@ public final class GUID implements Serializable, Comparable<GUID> {
 
 	private static final long MULTICAST = 0x0000_0100_0000_0000L;
 	private static final GUID HASHSPACE_SHA2_256 = new GUID(0x3fb32780953c4464L, 0x9cfde85dbbe9843dL);
-	private static final String REGEX = "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$";
-	private static final Pattern PATTERN = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
 
 	/**
 	 * Creates a new GUID.
@@ -126,8 +124,12 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * Useful to make copies of GUIDs.
 	 * 
 	 * @param guid a GUID
+	 * @throws IllegalArgumentException if the input is null
 	 */
 	public GUID(GUID guid) {
+		if (guid == null) {
+			throw new IllegalArgumentException("Null GUID");
+		}
 		this.msb = guid.msb;
 		this.lsb = guid.lsb;
 	}
@@ -138,8 +140,12 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * Useful to make copies of JDK's UUIDs.
 	 * 
 	 * @param uuid a JDK's UUID
+	 * @throws IllegalArgumentException if the input is null
 	 */
 	public GUID(UUID uuid) {
+		if (uuid == null) {
+			throw new IllegalArgumentException("Null UUID");
+		}
 		this.msb = uuid.getMostSignificantBits();
 		this.lsb = uuid.getLeastSignificantBits();
 	}
@@ -178,12 +184,7 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @throws IllegalArgumentException if the input string is invalid
 	 */
 	public GUID(String string) {
-		if (!valid(string)) {
-			throw new IllegalArgumentException("Invalid GUID string: " + string);
-		}
-		UUID uuid = UUID.fromString(string);
-		this.msb = uuid.getMostSignificantBits();
-		this.lsb = uuid.getLeastSignificantBits();
+		this(Parser.parse(string));
 	}
 
 	/**
@@ -345,11 +346,11 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	/**
 	 * Checks if the GUID string is valid.
 	 * 
-	 * @param guid a GUID string
+	 * @param string a GUID string
 	 * @return true if valid, false if invalid
 	 */
-	public static boolean valid(String guid) {
-		return guid != null && PATTERN.matcher(guid).matches();
+	public static boolean valid(String string) {
+		return Parser.valid(string);
 	}
 
 	/**
@@ -439,8 +440,8 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * compares two GUIDs as <b>unsigned</b> 128-bit integers.
 	 * <p>
 	 * It can be useful because JDK's {@link UUID#compareTo(UUID)} can lead to
-	 * unexpected behavior due to its <b>signed</b> 64-bit comparison.
-	 * Another reason is that JDK's {@link UUID#compareTo(UUID)} throws
+	 * unexpected behavior due to its <b>signed</b> 64-bit comparison. Another
+	 * reason is that JDK's {@link UUID#compareTo(UUID)} throws
 	 * {@link NullPointerException} if it receives a {@code null} UUID.
 	 * 
 	 * @param other a second GUID to be compared with
@@ -532,5 +533,115 @@ public final class GUID implements Serializable, Comparable<GUID> {
 
 	long getLeastSignificantBits() {
 		return this.lsb;
+	}
+
+	static final class Parser {
+
+		private static final byte[] VALUES = new byte[256];
+		static {
+			Arrays.fill(VALUES, (byte) -1);
+			VALUES['0'] = 0;
+			VALUES['1'] = 1;
+			VALUES['2'] = 2;
+			VALUES['3'] = 3;
+			VALUES['4'] = 4;
+			VALUES['5'] = 5;
+			VALUES['6'] = 6;
+			VALUES['7'] = 7;
+			VALUES['8'] = 8;
+			VALUES['9'] = 9;
+			VALUES['A'] = 10;
+			VALUES['B'] = 11;
+			VALUES['C'] = 12;
+			VALUES['D'] = 13;
+			VALUES['E'] = 14;
+			VALUES['F'] = 15;
+			VALUES['a'] = 10;
+			VALUES['b'] = 11;
+			VALUES['c'] = 12;
+			VALUES['d'] = 13;
+			VALUES['e'] = 14;
+			VALUES['f'] = 15;
+		}
+
+		static GUID parse(final String string) {
+
+			if (!valid(string)) {
+				throw new IllegalArgumentException("Invalid GUID string: " + string);
+			}
+
+			long msb = 0;
+			long lsb = 0;
+
+			// UUID string WITH hyphen
+			msb |= (long) VALUES[string.charAt(0x00)] << 60;
+			msb |= (long) VALUES[string.charAt(0x01)] << 56;
+			msb |= (long) VALUES[string.charAt(0x02)] << 52;
+			msb |= (long) VALUES[string.charAt(0x03)] << 48;
+			msb |= (long) VALUES[string.charAt(0x04)] << 44;
+			msb |= (long) VALUES[string.charAt(0x05)] << 40;
+			msb |= (long) VALUES[string.charAt(0x06)] << 36;
+			msb |= (long) VALUES[string.charAt(0x07)] << 32;
+			// input[8] = '-'
+			msb |= (long) VALUES[string.charAt(0x09)] << 28;
+			msb |= (long) VALUES[string.charAt(0x0a)] << 24;
+			msb |= (long) VALUES[string.charAt(0x0b)] << 20;
+			msb |= (long) VALUES[string.charAt(0x0c)] << 16;
+			// input[13] = '-'
+			msb |= (long) VALUES[string.charAt(0x0e)] << 12;
+			msb |= (long) VALUES[string.charAt(0x0f)] << 8;
+			msb |= (long) VALUES[string.charAt(0x10)] << 4;
+			msb |= (long) VALUES[string.charAt(0x11)];
+			// input[18] = '-'
+			lsb |= (long) VALUES[string.charAt(0x13)] << 60;
+			lsb |= (long) VALUES[string.charAt(0x14)] << 56;
+			lsb |= (long) VALUES[string.charAt(0x15)] << 52;
+			lsb |= (long) VALUES[string.charAt(0x16)] << 48;
+			// input[23] = '-'
+			lsb |= (long) VALUES[string.charAt(0x18)] << 44;
+			lsb |= (long) VALUES[string.charAt(0x19)] << 40;
+			lsb |= (long) VALUES[string.charAt(0x1a)] << 36;
+			lsb |= (long) VALUES[string.charAt(0x1b)] << 32;
+			lsb |= (long) VALUES[string.charAt(0x1c)] << 28;
+			lsb |= (long) VALUES[string.charAt(0x1d)] << 24;
+			lsb |= (long) VALUES[string.charAt(0x1e)] << 20;
+			lsb |= (long) VALUES[string.charAt(0x1f)] << 16;
+			lsb |= (long) VALUES[string.charAt(0x20)] << 12;
+			lsb |= (long) VALUES[string.charAt(0x21)] << 8;
+			lsb |= (long) VALUES[string.charAt(0x22)] << 4;
+			lsb |= (long) VALUES[string.charAt(0x23)];
+
+			return new GUID(msb, lsb);
+		}
+
+		static boolean valid(final String string) {
+
+			if (string == null || string.length() != GUID_CHARS) {
+				return false; // null or wrong characters count!
+			}
+
+			int dashes = 0;
+
+			for (int i = 0; i < GUID_CHARS; i++) {
+				char chr = string.charAt(i);
+				int val = (int) VALUES[chr];
+				if (val >= 0) {
+					continue; // passed
+				}
+				if (i == 8 || i == 13 || i == 18 || i == 23) {
+					if (chr == '-') {
+						dashes++;
+						continue; // passed
+					}
+				}
+				return false; // oops! invalid character!
+			}
+
+			if (dashes != 4) {
+				return false; // wrong dashes count!
+			}
+
+			return true; // it seems to be OK
+		}
 	}
 }
