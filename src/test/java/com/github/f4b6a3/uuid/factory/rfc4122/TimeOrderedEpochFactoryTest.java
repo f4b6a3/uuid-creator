@@ -495,7 +495,7 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 			time = random.nextLong() & mask;
 
 			Instant instant = Instant.ofEpochMilli(time);
-			UUID uuid = UuidCreator.getTimeOrderedEpochRandom(instant);
+			UUID uuid = UuidCreator.getTimeOrderedEpoch(instant);
 			assertEquals(time, uuid.getMostSignificantBits() >>> 16);
 			assertEquals(0x0000000000007000L, uuid.getMostSignificantBits() & 0x7000L);
 			assertEquals(0x8000000000000000L, uuid.getLeastSignificantBits() & 0x8000000000000000L);

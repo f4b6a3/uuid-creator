@@ -24,6 +24,7 @@
 
 package com.github.f4b6a3.uuid;
 
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -486,7 +487,7 @@ public final class UuidCreator {
 	/**
 	 * Returns a time-ordered unique identifier that uses Unix Epoch (UUIDv7).
 	 * <p>
-	 * The identifier has 3 parts: time, counter and random.
+	 * This method produces identifiers with 3 parts: time, counter and random.
 	 * <p>
 	 * The counter bits are incremented by 1 when the time repeats.
 	 * <p>
@@ -506,7 +507,7 @@ public final class UuidCreator {
 	/**
 	 * Returns a time-ordered unique identifier that uses Unix Epoch (UUIDv7).
 	 * <p>
-	 * The identifier has 2 parts: time and monotonic random.
+	 * This method produces identifiers with 2 parts: time and monotonic random.
 	 * <p>
 	 * The monotonic random bits are incremented by 1 when the time repeats.
 	 * 
@@ -524,7 +525,7 @@ public final class UuidCreator {
 	/**
 	 * Returns a time-ordered unique identifier that uses Unix Epoch (UUIDv7).
 	 * <p>
-	 * The identifier has 2 parts: time and monotonic random.
+	 * This method produces identifiers with 2 parts: time and monotonic random.
 	 * <p>
 	 * The monotonic random bits are incremented by a random number between 1 and
 	 * 2^32 when the time repeats.
@@ -547,8 +548,8 @@ public final class UuidCreator {
 	 * instant and the other 74 bits are all set to ZERO.
 	 * <p>
 	 * For example, the minimum UUIDv7 for 2022-02-22 22:22:22.222 is
-	 * `{@code 017f2387-460e-7000-8000-000000000000}`, where
-	 * `{@code 017f2387-460e}` is the timestamp in hexadecimal.
+	 * `{@code 017f2387-460e-7000-8000-000000000000}`, where `{@code 017f2387-460e}`
+	 * is the timestamp in hexadecimal.
 	 * <p>
 	 * It can be useful to find all records before or after a specific timestamp in
 	 * a table without a `{@code created_at}` field.
@@ -571,8 +572,8 @@ public final class UuidCreator {
 	 * instant and the other 74 bits are all set to ONE.
 	 * <p>
 	 * For example, the maximum UUIDv7 for 2022-02-22 22:22:22.222 is
-	 * `{@code 017f2387-460e-7fff-bfff-ffffffffffff}`, where
-	 * `{@code 017f2387-460e}` is the timestamp in hexadecimal.
+	 * `{@code 017f2387-460e-7fff-bfff-ffffffffffff}`, where `{@code 017f2387-460e}`
+	 * is the timestamp in hexadecimal.
 	 * <p>
 	 * It can be useful to find all records before or after a specific timestamp in
 	 * a table without a `{@code created_at}` field.
@@ -589,15 +590,17 @@ public final class UuidCreator {
 	}
 
 	/**
-	 * Returns a time-ordered unique identifier that uses Unix Epoch (UUIDv7)
-	 * for a given instant.
+	 * Returns a time-ordered unique identifier that uses Unix Epoch (UUIDv7) for a
+	 * given instant.
+	 * <p>
+	 * This method produces identifiers with 2 parts: time and secure random.
 	 * <p>
 	 * The 48 bits of the time component are filled with the bits of the given
 	 * instant and the other 74 bits are random.
 	 * <p>
 	 * For example, the maximum UUIDv7 for 2022-02-22 22:22:22.222 is
-	 * `{@code 017f2387-460e-7012-b345-6789abcdef01}`, where
-	 * `{@code 017f2387-460e}` is the timestamp in hexadecimal.
+	 * `{@code 017f2387-460e-7012-b345-6789abcdef01}`, where `{@code 017f2387-460e}`
+	 * is the timestamp in hexadecimal.
 	 * <p>
 	 * The random bits are generated with each method invocation.
 	 *
@@ -605,13 +608,13 @@ public final class UuidCreator {
 	 * @return a UUIDv7
 	 * @since 5.3.3
 	 */
-	public static UUID getTimeOrderedEpochRandom(Instant instant) {
+	public static UUID getTimeOrderedEpoch(Instant instant) {
 		if (instant == null) {
 			throw new IllegalArgumentException("Null instant");
 		}
 		final long time = instant.toEpochMilli();
-		ThreadLocalRandom random = ThreadLocalRandom.current();
-		final long msb = (time << 16) | (random.nextLong() & 0xffL) | 0x7000L;
+		SecureRandom random = new SecureRandom();
+		final long msb = (time << 16) | (random.nextLong() & 0x0fffL) | 0x7000L;
 		final long lsb = (random.nextLong() & 0x3fffffffffffffffL) | 0x8000000000000000L;
 		return new UUID(msb, lsb);
 	}
@@ -1143,8 +1146,8 @@ public final class UuidCreator {
 	 * instant and the other 74 bits are all set to ZERO.
 	 * <p>
 	 * For example, the minimum GUID for 2022-02-22 22:22:22.222 is
-	 * `{@code 017f2387-460e-4000-8000-000000000000}`, where
-	 * `{@code 017f2387-460e}` is the timestamp in hexadecimal.
+	 * `{@code 017f2387-460e-4000-8000-000000000000}`, where `{@code 017f2387-460e}`
+	 * is the timestamp in hexadecimal.
 	 * <p>
 	 * It can be useful to find all records before or after a specific timestamp in
 	 * a table without a `{@code created_at}` field.
@@ -1167,8 +1170,8 @@ public final class UuidCreator {
 	 * instant and the other 74 bits are all set to ONE.
 	 * <p>
 	 * For example, the maximum GUID for 2022-02-22 22:22:22.222 is
-	 * `{@code 017f2387-460e-4fff-bfff-ffffffffffff}`, where
-	 * `{@code 017f2387-460e}` is the timestamp in hexadecimal.
+	 * `{@code 017f2387-460e-4fff-bfff-ffffffffffff}`, where `{@code 017f2387-460e}`
+	 * is the timestamp in hexadecimal.
 	 * <p>
 	 * It can be useful to find all records before or after a specific timestamp in
 	 * a table without a `{@code created_at}` field.
@@ -1206,8 +1209,8 @@ public final class UuidCreator {
 	 * instant and the other 74 bits are all set to ZERO.
 	 * <p>
 	 * For example, the minimum GUID for 2022-02-22 22:22:22.222 is
-	 * `{@code 00000000-0000-4000-8000-017f2387460e}`, where
-	 * `{@code 017f2387460e}` is the timestamp in hexadecimal.
+	 * `{@code 00000000-0000-4000-8000-017f2387460e}`, where `{@code 017f2387460e}`
+	 * is the timestamp in hexadecimal.
 	 * <p>
 	 * It can be useful to find all records before or after a specific timestamp in
 	 * a table without a `{@code created_at}` field.
@@ -1230,8 +1233,8 @@ public final class UuidCreator {
 	 * instant and the other 74 bits are all set to ONE.
 	 * <p>
 	 * For example, the maximum GUID for 2022-02-22 22:22:22.222 is
-	 * `{@code ffffffff-ffff-4fff-bfff-017f2387460e}`, where
-	 * `{@code 017f2387460e}` is the timestamp in hexadecimal.
+	 * `{@code ffffffff-ffff-4fff-bfff-017f2387460e}`, where `{@code 017f2387460e}`
+	 * is the timestamp in hexadecimal.
 	 * <p>
 	 * It can be useful to find all records before or after a specific timestamp in
 	 * a table without a `{@code created_at}` field.

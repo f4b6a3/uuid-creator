@@ -1,7 +1,7 @@
 
 # Credits
 
-I would like to recognize some of the people who contributed to this open source project.
+The people who contributed to this open source project.
 
 *   [lbruun](https://github.com/lbruun)
 *   [Chris Curtin](https://github.com/ChrisCurtin)
@@ -17,3 +17,4 @@ I would like to recognize some of the people who contributed to this open source
 *   [Damir Murat](https://github.com/dmurat)
 *   [Adam Gent](https://github.com/agentgt)
 *   [BaoHo](https://github.com/tri-bao)
+*   [Nicola](https://github.com/nicolarosada)

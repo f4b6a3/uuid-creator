@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [5.3.3] - 2023-09-03
+
+Add a getTimeOrderedEpoch with instant parameter (by Nicola) #82
+
 ## [5.3.2] - 2023-05-01
 
 Add a faster parser for GUID #81
@@ -371,7 +375,8 @@ Remove `Fingerprint` // too complex
 -   Removed UuidSettings.getNodeIdentifierDeprecated // remove deprecated
 -   Renamed UuidSettings to UuidCreatorSettings
 
-[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.2...HEAD
+[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.3...HEAD
+[5.3.3]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.2...uuid-creator-5.3.3
 [5.3.2]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.1...uuid-creator-5.3.2
 [5.3.1]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.0...uuid-creator-5.3.1
 [5.3.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.2.1...uuid-creator-5.3.0
