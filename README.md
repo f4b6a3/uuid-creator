@@ -5,22 +5,15 @@ UUID Creator
 
 This is a Java library for generating [Universally Unique Identifiers](https://en.wikipedia.org/wiki/Universally_unique_identifier).
 
-UUIDs:
+List of implemented UUID types:
 
 *   __UUID Version 1__: the time-based version with gregorian epoch specified in RFC-4122;
 *   __UUID Version 2__: the DCE Security version with embedded POSIX UIDs specified in DCE 1.1;
 *   __UUID Version 3__: the name-based version that uses MD5 hashing specified in RFC-4122;
 *   __UUID Version 4__: the randomly or pseudo-randomly generated version specified in RFC-4122;
 *   __UUID Version 5__: the name-based version that uses SHA-1 hashing specified in RFC-4122;
-*   __UUID Version 6__: the time-ordered version with gregorian epoch proposed as [new UUID format](https://github.com/uuid6/uuid6-ietf-draft);
-*   __UUID Version 7__: the time-ordered version with Unix epoch proposed as [new UUID format](https://github.com/uuid6/uuid6-ietf-draft).
-
-COMB GUIDs:
-
-*   __Prefix COMB GUID__: a combination of random bytes with a prefix (millisecond);
-*   __Suffix COMB GUID__: a combination of random bytes with a suffix (millisecond);
-*   __Short Prefix COMB GUID__: a combination of random bytes with a small prefix (minute);
-*   __Short Suffix COMB GUID__: a combination of random bytes with a small suffix (minute).
+*   __UUID Version 6__: the time-ordered version with gregorian epoch proposed as [new UUID format](https://datatracker.ietf.org/doc/draft-ietf-uuidrev-rfc4122bis/);
+*   __UUID Version 7__: the time-ordered version with Unix epoch proposed as [new UUID format](https://datatracker.ietf.org/doc/draft-ietf-uuidrev-rfc4122bis/).
 
 This project contains a [micro benchmark](https://github.com/f4b6a3/uuid-creator/tree/master/benchmark) and a good amount of [unit tests](https://github.com/f4b6a3/uuid-creator/tree/master/src/test/java/com/github/f4b6a3/uuid).
 
@@ -31,16 +24,22 @@ Read the [Wiki pages](https://github.com/f4b6a3/uuid-creator/wiki) and the [Java
 Dependency
 ------------------------------------------------------
 
-Add these lines to your `pom.xml`:
+Maven:
 
 ```xml
-<!-- https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator -->
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
   <version>5.3.3</version>
 </dependency>
 ```
+
+Gradle:
+
+```
+implementation 'com.github.f4b6a3:uuid-creator:5.3.3'
+```
+
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
 
 ### Modularity
@@ -53,7 +52,7 @@ Module and bundle names are the same as the root package name.
 Usage
 ------------------------------------------------------
 
-All UUID types can be created from the facade [`UuidCreator`](https://github.com/f4b6a3/uuid-creator/blob/master/src/main/java/com/github/f4b6a3/uuid/UuidCreator.java).
+All UUID types can be created from the facade [`UuidCreator`](https://javadoc.io/doc/com.github.f4b6a3/uuid-creator/latest/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html).
 
 Create a [UUIDv1](https://github.com/f4b6a3/uuid-creator/wiki/1.1.-UUIDv1):
 
@@ -97,34 +96,10 @@ Create a [UUIDv7](https://github.com/f4b6a3/uuid-creator/wiki/1.7.-UUIDv7):
 UUID uuid = UuidCreator.getTimeOrderedEpoch();
 ```
 
-Create a [Prefix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.0.-COMB#prefix-comb):
-
-```java
-UUID uuid = UuidCreator.getPrefixComb();
-```
-
-Create a [Suffix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.0.-COMB#suffix-comb):
-
-```java
-UUID uuid = UuidCreator.getSuffixComb();
-```
-
-Create a [Short Prefix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.0.-COMB#short-prefix-comb):
-
-```java
-UUID uuid = UuidCreator.getShortPrefixComb();
-```
-
-Create a [Short Suffix COMB](https://github.com/f4b6a3/uuid-creator/wiki/2.0.-COMB#short-suffix-comb):
-
-```java
-UUID uuid = UuidCreator.getShortSuffixComb();
-```
-
 Alternative
 ------------------------------------------------------
 
-The [`GUID`](https://github.com/f4b6a3/uuid-creator/blob/master/src/main/java/com/github/f4b6a3/uuid/alt/GUID.java) class is an alternative to the JDK's built-in `UUID`.
+The [`GUID`](https://javadoc.io/doc/com.github.f4b6a3/uuid-creator/latest/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/alt/GUID.html) class is an alternative to the JDK's built-in `UUID`.
 
 ```java
 GUID guid = GUID.v1();
@@ -146,9 +121,6 @@ GUID guid = GUID.v6();
 ```
 ```java
 GUID guid = GUID.v7();
-```
-```java
-GUID guid = GUID.v8(GUID.NAMESPACE_DNS, "www.example.com");
 ```
 
 Other identifier generators
