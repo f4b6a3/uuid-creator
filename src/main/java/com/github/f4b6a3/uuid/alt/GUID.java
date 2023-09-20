@@ -334,11 +334,21 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * <pre>{@code
 	 * GUID guid = GUID.v8(Uuid.NAMESPACE_DNS, "www.example.com");
 	 * }</pre>
-	 * 
+	 * <p>
+	 * @deprecated This method is no longer acceptable due to recent sudden changes in the UUIDv8 discussions. It may be removed as the new RFC is published.
+	 * <p>
+	 * See the latest discussion on UUIDv8:
+	 * <ul>
+	 * <li> https://github.com/ietf-wg-uuidrev/rfc4122bis/issues/143
+	 * <li> https://github.com/ietf-wg-uuidrev/rfc4122bis/issues/144
+	 * <li> https://github.com/ietf-wg-uuidrev/rfc4122bis/issues/147
+	 * </ul>
+  	 * 
 	 * @param namespace a GUID
 	 * @param name      a string
 	 * @return a GUID
 	 */
+	@Deprecated
 	public static GUID v8(GUID namespace, String name) {
 		return hash(8, "SHA-256", HASHSPACE_SHA2_256, namespace, name);
 	}
