@@ -114,10 +114,13 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 
 	/**
 	 * Returns a name-based UUID.
+	 * <p>
+	 * @deprecated This method will be removed when the new RFC is published.
 	 * 
 	 * @param name a UUID
 	 * @return a name-based UUID
 	 */
+	@Deprecated
 	public UUID create(final UUID name) {
 		return create(this.namespace, bytes(name));
 	}
@@ -151,11 +154,14 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 
 	/**
 	 * Returns a name-based UUID.
+	 * <p>
+	 * @deprecated This method will be removed when the new RFC is published.
 	 * 
 	 * @param namespace a name space UUID
 	 * @param name      a UUID
 	 * @return a name-based UUID
 	 */
+	@Deprecated
 	public UUID create(final UUID namespace, final UUID name) {
 		final byte[] ns = namespace == null ? null : bytes(namespace);
 		final byte[] n = bytes(name);
@@ -195,6 +201,8 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 
 	/**
 	 * Returns a name-based UUID.
+	 * <p>
+	 * @deprecated This method will be removed when the new RFC is published.
 	 * 
 	 * @param namespace a name space string
 	 * @param name      a UUID
@@ -202,6 +210,7 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	 * @throws InvalidUuidException if the name space is invalid
 	 * @see InvalidUuidException
 	 */
+	@Deprecated
 	public UUID create(final String namespace, final UUID name) {
 		final byte[] ns = namespace == null ? null : bytes(namespace);
 		final byte[] n = bytes(name);
@@ -239,12 +248,15 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 
 	/**
 	 * Returns a name-based UUID.
+	 * <p>
+	 * @deprecated This method will be removed when the new RFC is published.
 	 * 
 	 * @param namespace a name space enumeration
 	 * @param name      a UUID
 	 * @return a name-based UUID
 	 * @see UuidNamespace
 	 */
+	@Deprecated
 	public UUID create(final UuidNamespace namespace, final UUID name) {
 		final byte[] ns = namespace == null ? null : bytes(namespace);
 		final byte[] n = bytes(name);
