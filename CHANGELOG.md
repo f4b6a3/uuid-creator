@@ -6,6 +6,16 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [5.3.4] - 2023-09-23
+
+`GUID.v8()` has been **deprecated** due to recent sudden changes in the UUIDv8 discussions. It will be removed when the new RFC is finally published.
+
+See the latest discussions about UUIDv8:
+
+* https://github.com/ietf-wg-uuidrev/rfc4122bis/issues/143
+* https://github.com/ietf-wg-uuidrev/rfc4122bis/issues/144
+* https://github.com/ietf-wg-uuidrev/rfc4122bis/issues/147
+
 ## [5.3.3] - 2023-09-03
 
 Add a getTimeOrderedEpoch with instant parameter (by Nicola) #82
@@ -375,7 +385,8 @@ Remove `Fingerprint` // too complex
 -   Removed UuidSettings.getNodeIdentifierDeprecated // remove deprecated
 -   Renamed UuidSettings to UuidCreatorSettings
 
-[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.3...HEAD
+[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.4...HEAD
+[5.3.4]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.3...uuid-creator-5.3.4
 [5.3.3]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.2...uuid-creator-5.3.3
 [5.3.2]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.1...uuid-creator-5.3.2
 [5.3.1]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.0...uuid-creator-5.3.1

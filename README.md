@@ -30,7 +30,7 @@ Maven:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>5.3.3</version>
+  <version>5.3.4</version>
 </dependency>
 ```
 
