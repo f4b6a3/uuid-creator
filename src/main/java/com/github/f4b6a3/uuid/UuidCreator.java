@@ -540,7 +540,37 @@ public final class UuidCreator {
 	public static UUID getTimeOrderedEpochPlusN() {
 		return TimeOrderedEpochPlusNHolder.INSTANCE.create();
 	}
-
+	
+	/**
+	 * Returns a time-ordered unique identifier that uses Unix Epoch (UUIDv7) for a
+	 * given instant.
+	 * <p>
+	 * This method produces identifiers with 2 parts: time and secure random.
+	 * <p>
+	 * The 48 bits of the time component are filled with the bits of the given
+	 * instant and the other 74 bits are random.
+	 * <p>
+	 * For example, the maximum UUIDv7 for 2022-02-22 22:22:22.222 is
+	 * `{@code 017f2387-460e-7012-b345-6789abcdef01}`, where `{@code 017f2387-460e}`
+	 * is the timestamp in hexadecimal.
+	 * <p>
+	 * The random bits are generated with each method invocation.
+	 *
+	 * @param instant a given instant
+	 * @return a UUIDv7
+	 * @since 5.3.3
+	 */
+	public static UUID getTimeOrderedEpoch(Instant instant) {
+		if (instant == null) {
+			throw new IllegalArgumentException("Null instant");
+		}
+		final long time = instant.toEpochMilli();
+		SecureRandom random = new SecureRandom();
+		final long msb = (time << 16) | (random.nextLong() & 0x0fffL) | 0x7000L;
+		final long lsb = (random.nextLong() & 0x3fffffffffffffffL) | 0x8000000000000000L;
+		return new UUID(msb, lsb);
+	}
+	
 	/**
 	 * Returns the minimum UUIDv7 for a given instant.
 	 * <p>
@@ -588,37 +618,7 @@ public final class UuidCreator {
 		final long time = instant.toEpochMilli();
 		return new UUID((time << 16) | 0x7fffL, 0xbfffffffffffffffL);
 	}
-
-	/**
-	 * Returns a time-ordered unique identifier that uses Unix Epoch (UUIDv7) for a
-	 * given instant.
-	 * <p>
-	 * This method produces identifiers with 2 parts: time and secure random.
-	 * <p>
-	 * The 48 bits of the time component are filled with the bits of the given
-	 * instant and the other 74 bits are random.
-	 * <p>
-	 * For example, the maximum UUIDv7 for 2022-02-22 22:22:22.222 is
-	 * `{@code 017f2387-460e-7012-b345-6789abcdef01}`, where `{@code 017f2387-460e}`
-	 * is the timestamp in hexadecimal.
-	 * <p>
-	 * The random bits are generated with each method invocation.
-	 *
-	 * @param instant a given instant
-	 * @return a UUIDv7
-	 * @since 5.3.3
-	 */
-	public static UUID getTimeOrderedEpoch(Instant instant) {
-		if (instant == null) {
-			throw new IllegalArgumentException("Null instant");
-		}
-		final long time = instant.toEpochMilli();
-		SecureRandom random = new SecureRandom();
-		final long msb = (time << 16) | (random.nextLong() & 0x0fffL) | 0x7000L;
-		final long lsb = (random.nextLong() & 0x3fffffffffffffffL) | 0x8000000000000000L;
-		return new UUID(msb, lsb);
-	}
-
+	
 	/**
 	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
 	 * <p>

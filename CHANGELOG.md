@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [5.3.5] - 2023-09-24
+
+Deprecates name-based methods with a UUID name parameter.
+
 ## [5.3.4] - 2023-09-23
 
 `GUID.v8()` has been **deprecated** due to recent sudden changes in the UUIDv8 discussions. It will be removed when the new RFC is finally published.
@@ -385,7 +389,8 @@ Remove `Fingerprint` // too complex
 -   Removed UuidSettings.getNodeIdentifierDeprecated // remove deprecated
 -   Renamed UuidSettings to UuidCreatorSettings
 
-[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.4...HEAD
+[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.5...HEAD
+[5.3.5]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.4...uuid-creator-5.3.5
 [5.3.4]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.3...uuid-creator-5.3.4
 [5.3.3]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.2...uuid-creator-5.3.3
 [5.3.2]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.1...uuid-creator-5.3.2
