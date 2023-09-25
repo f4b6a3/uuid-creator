@@ -150,232 +150,226 @@ public class NcnameCodecTest {
 	@Test
 	public void testDecodeInvalidUuidException() {
 
-		{
-			NcnameCodec codec = new NcnameCodec();
-			try {
-				// 00000000-0000-0000-0000-000000000000
-				String string = "AAAAAAAAAAAAAAAAAAAAAA";
-				codec.decode(string);
-				// success
-			} catch (InvalidUuidException e) {
-				fail("Should not throw exception");
-			}
+		NcnameCodec codec = null;
 
-			try {
-				// ca6be4c8-cbaf-11ea-b2ab-00045a86c8a1
-				String string = "BymvkyMuvHqKrAARahsihL";
-				codec.decode(string);
-				// success
-			} catch (InvalidUuidException e) {
-				fail("Should not throw exception");
-			}
-
-			try {
-				// 000003e8-cbb9-21ea-b201-00045a86c8a1
-				String string = "CAAAD6Mu5HqIBAARahsihL";
-				codec.decode(string);
-				// success
-			} catch (InvalidUuidException e) {
-				fail("Should not throw exception");
-			}
-
-			try {
-				// 3d813cbb-47fb-32ba-91df-831e1593ac29
-				String string = "DPYE8u0f7K6Hfgx4Vk6wpJ";
-				codec.decode(string);
-				// success
-			} catch (InvalidUuidException e) {
-				fail("Should not throw exception");
-			}
-
-			try {
-				// 01867b2c-a0dd-459c-98d7-89e545538d6c
-				String string = "EAYZ7LKDdWcjXieVFU41sJ";
-				codec.decode(string);
-				// success
-			} catch (InvalidUuidException e) {
-				fail("Should not throw exception");
-			}
-
-			try {
-				// 21f7f8de-8051-5b89-8680-0195ef798b6a
-				String string = "FIff43oBRuJaAAZXveYtqI";
-				codec.decode(string);
-				// success
-			} catch (InvalidUuidException e) {
-				fail("Should not throw exception");
-			}
+		codec = new NcnameCodec();
+		try {
+			// 00000000-0000-0000-0000-000000000000
+			String string = "AAAAAAAAAAAAAAAAAAAAAA";
+			codec.decode(string);
+			// success
+		} catch (InvalidUuidException e) {
+			fail("Should not throw exception");
 		}
 
-		{
-			NcnameCodec codec = new NcnameCodec(new Base32Codec());
-			try {
-				// 00000000-0000-0000-0000-000000000000
-				String string = "aaaaaaaaaaaaaaaaaaaaaaaaaa";
-				codec.decode(string);
-				// success
-			} catch (InvalidUuidException e) {
-				fail("Should not throw exception");
-			}
-
-			try {
-				// ca6be4c8-cbaf-11ea-b2ab-00045a86c8a1
-				String string = "bzjv6jsglv4pkfkyaarninsfbl";
-				codec.decode(string);
-				// success
-			} catch (InvalidUuidException e) {
-				fail("Should not throw exception");
-			}
-
-			try {
-				// 000003e8-cbb9-21ea-b201-00045a86c8a1
-				String string = "caaaah2glxepkeaiaarninsfbl";
-				codec.decode(string);
-				// success
-			} catch (InvalidUuidException e) {
-				fail("Should not throw exception");
-			}
-
-			try {
-				// 3d813cbb-47fb-32ba-91df-831e1593ac29
-				String string = "dhwatzo2h7mv2dx4ddykzhlbjj";
-				codec.decode(string);
-				// success
-			} catch (InvalidUuidException e) {
-				fail("Should not throw exception");
-			}
-
-			try {
-				// 01867b2c-a0dd-459c-98d7-89e545538d6c
-				String string = "eagdhwlfa3vm4rv4j4vcvhdlmj";
-				codec.decode(string);
-				// success
-			} catch (InvalidUuidException e) {
-				fail("Should not throw exception");
-			}
-
-			try {
-				// 21f7f8de-8051-5b89-8680-0195ef798b6a
-				String string = "feh37rxuakg4jnaabsxxxtc3ki";
-				codec.decode(string);
-				// success
-			} catch (InvalidUuidException e) {
-				fail("Should not throw exception");
-			}
+		try {
+			// ca6be4c8-cbaf-11ea-b2ab-00045a86c8a1
+			String string = "BymvkyMuvHqKrAARahsihL";
+			codec.decode(string);
+			// success
+		} catch (InvalidUuidException e) {
+			fail("Should not throw exception");
 		}
 
-		{
-			NcnameCodec codec = new NcnameCodec();
-			try {
-				// null object
-				String string = null;
-				codec.decode(string);
-				fail("Should throw exception");
-			} catch (InvalidUuidException e) {
-				// success
-			}
-
-			try {
-				// empty string
-				String string = "";
-				codec.decode(string);
-				fail("Should throw exception");
-			} catch (InvalidUuidException e) {
-				// success
-			}
-
-			try {
-				// size > 22
-				String string = "AAAAAAAAAAAAAAAAAAAAAAa";
-				codec.decode(string);
-				fail("Should throw exception");
-			} catch (InvalidUuidException e) {
-				// success
-			}
-
-			try {
-				// size < 22
-				String string = "AAAAAAAAAAAAAAAAAAAAA";
-				codec.decode(string);
-				fail("Should throw exception");
-			} catch (InvalidUuidException e) {
-				// success
-			}
-
-			try {
-				// invalid first char (bookend)
-				String string = "qAAAAAAAAAAAAAAAAAAAAA";
-				codec.decode(string);
-				fail("Should throw exception");
-			} catch (InvalidUuidException e) {
-				// success
-			}
-
-			try {
-				// invalid last char (bookend)
-				String string = "AAAAAAAAAAAAAAAAAAAAAq";
-				codec.decode(string);
-				fail("Should throw exception");
-			} catch (InvalidUuidException e) {
-				// success
-			}
+		try {
+			// 000003e8-cbb9-21ea-b201-00045a86c8a1
+			String string = "CAAAD6Mu5HqIBAARahsihL";
+			codec.decode(string);
+			// success
+		} catch (InvalidUuidException e) {
+			fail("Should not throw exception");
 		}
 
-		{
-			NcnameCodec codec = new NcnameCodec(new Base32Codec());
-			try {
-				// null object
-				String string = null;
-				codec.decode(string);
-				fail("Should throw exception");
-			} catch (InvalidUuidException e) {
-				// success
-			}
+		try {
+			// 3d813cbb-47fb-32ba-91df-831e1593ac29
+			String string = "DPYE8u0f7K6Hfgx4Vk6wpJ";
+			codec.decode(string);
+			// success
+		} catch (InvalidUuidException e) {
+			fail("Should not throw exception");
+		}
 
-			try {
-				// empty string
-				String string = "";
-				codec.decode(string);
-				fail("Should throw exception");
-			} catch (InvalidUuidException e) {
-				// success
-			}
+		try {
+			// 01867b2c-a0dd-459c-98d7-89e545538d6c
+			String string = "EAYZ7LKDdWcjXieVFU41sJ";
+			codec.decode(string);
+			// success
+		} catch (InvalidUuidException e) {
+			fail("Should not throw exception");
+		}
 
-			try {
-				// size > 26
-				String string = "aaaaaaaaaaaaaaaaaaaaaaaaaaA";
-				codec.decode(string);
-				fail("Should throw exception");
-			} catch (InvalidUuidException e) {
-				// success
-			}
+		try {
+			// 21f7f8de-8051-5b89-8680-0195ef798b6a
+			String string = "FIff43oBRuJaAAZXveYtqI";
+			codec.decode(string);
+			// success
+		} catch (InvalidUuidException e) {
+			fail("Should not throw exception");
+		}
 
-			try {
-				// size < 26
-				String string = "aaaaaaaaaaaaaaaaaaaaaaaaa";
-				codec.decode(string);
-				fail("Should throw exception");
-			} catch (InvalidUuidException e) {
-				// success
-			}
+		codec = new NcnameCodec(new Base32Codec());
+		try {
+			// 00000000-0000-0000-0000-000000000000
+			String string = "aaaaaaaaaaaaaaaaaaaaaaaaaa";
+			codec.decode(string);
+			// success
+		} catch (InvalidUuidException e) {
+			fail("Should not throw exception");
+		}
 
-			try {
-				// invalid first char (bookend)
-				String string = "Qaaaaaaaaaaaaaaaaaaaaaaaaa";
-				codec.decode(string);
-				fail("Should throw exception");
-			} catch (InvalidUuidException e) {
-				// success
-			}
+		try {
+			// ca6be4c8-cbaf-11ea-b2ab-00045a86c8a1
+			String string = "bzjv6jsglv4pkfkyaarninsfbl";
+			codec.decode(string);
+			// success
+		} catch (InvalidUuidException e) {
+			fail("Should not throw exception");
+		}
 
-			try {
-				// invalid last char (bookend)
-				String string = "aaaaaaaaaaaaaaaaaaaaaaaaaQ";
-				codec.decode(string);
-				fail("Should throw exception");
-			} catch (InvalidUuidException e) {
-				// success
-			}
+		try {
+			// 000003e8-cbb9-21ea-b201-00045a86c8a1
+			String string = "caaaah2glxepkeaiaarninsfbl";
+			codec.decode(string);
+			// success
+		} catch (InvalidUuidException e) {
+			fail("Should not throw exception");
+		}
+
+		try {
+			// 3d813cbb-47fb-32ba-91df-831e1593ac29
+			String string = "dhwatzo2h7mv2dx4ddykzhlbjj";
+			codec.decode(string);
+			// success
+		} catch (InvalidUuidException e) {
+			fail("Should not throw exception");
+		}
+
+		try {
+			// 01867b2c-a0dd-459c-98d7-89e545538d6c
+			String string = "eagdhwlfa3vm4rv4j4vcvhdlmj";
+			codec.decode(string);
+			// success
+		} catch (InvalidUuidException e) {
+			fail("Should not throw exception");
+		}
+
+		try {
+			// 21f7f8de-8051-5b89-8680-0195ef798b6a
+			String string = "feh37rxuakg4jnaabsxxxtc3ki";
+			codec.decode(string);
+			// success
+		} catch (InvalidUuidException e) {
+			fail("Should not throw exception");
+		}
+
+		codec = new NcnameCodec();
+		try {
+			// null object
+			String string = null;
+			codec.decode(string);
+			fail("Should throw exception");
+		} catch (InvalidUuidException e) {
+			// success
+		}
+
+		try {
+			// empty string
+			String string = "";
+			codec.decode(string);
+			fail("Should throw exception");
+		} catch (InvalidUuidException e) {
+			// success
+		}
+
+		try {
+			// size > 22
+			String string = "AAAAAAAAAAAAAAAAAAAAAAa";
+			codec.decode(string);
+			fail("Should throw exception");
+		} catch (InvalidUuidException e) {
+			// success
+		}
+
+		try {
+			// size < 22
+			String string = "AAAAAAAAAAAAAAAAAAAAA";
+			codec.decode(string);
+			fail("Should throw exception");
+		} catch (InvalidUuidException e) {
+			// success
+		}
+
+		try {
+			// invalid first char (bookend)
+			String string = "qAAAAAAAAAAAAAAAAAAAAA";
+			codec.decode(string);
+			fail("Should throw exception");
+		} catch (InvalidUuidException e) {
+			// success
+		}
+
+		try {
+			// invalid last char (bookend)
+			String string = "AAAAAAAAAAAAAAAAAAAAAq";
+			codec.decode(string);
+			fail("Should throw exception");
+		} catch (InvalidUuidException e) {
+			// success
+		}
+
+		codec = new NcnameCodec(new Base32Codec());
+		try {
+			// null object
+			String string = null;
+			codec.decode(string);
+			fail("Should throw exception");
+		} catch (InvalidUuidException e) {
+			// success
+		}
+
+		try {
+			// empty string
+			String string = "";
+			codec.decode(string);
+			fail("Should throw exception");
+		} catch (InvalidUuidException e) {
+			// success
+		}
+
+		try {
+			// size > 26
+			String string = "aaaaaaaaaaaaaaaaaaaaaaaaaaA";
+			codec.decode(string);
+			fail("Should throw exception");
+		} catch (InvalidUuidException e) {
+			// success
+		}
+
+		try {
+			// size < 26
+			String string = "aaaaaaaaaaaaaaaaaaaaaaaaa";
+			codec.decode(string);
+			fail("Should throw exception");
+		} catch (InvalidUuidException e) {
+			// success
+		}
+
+		try {
+			// invalid first char (bookend)
+			String string = "Qaaaaaaaaaaaaaaaaaaaaaaaaa";
+			codec.decode(string);
+			fail("Should throw exception");
+		} catch (InvalidUuidException e) {
+			// success
+		}
+
+		try {
+			// invalid last char (bookend)
+			String string = "aaaaaaaaaaaaaaaaaaaaaaaaaQ";
+			codec.decode(string);
+			fail("Should throw exception");
+		} catch (InvalidUuidException e) {
+			// success
 		}
 	}
 }
