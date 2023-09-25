@@ -1,14 +1,4 @@
-# For most projects, this workflow file will not need changing; you simply need
-# to commit it to your repository.
-#
-# You may wish to alter this file to override the set of languages analyzed,
-# or to provide custom queries or build logic.
-#
-# ******** NOTE ********
-# We have attempted to detect the languages in your repository. Please check
-# the `language` matrix defined below to confirm you have the correct set of
-# supported CodeQL languages.
-#
+
 name: "CodeQL"
 
 on:
@@ -20,7 +10,7 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: 'ubuntu-latest'
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 360
     permissions:
       actions: read
@@ -30,8 +20,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        os: ['ubuntu-22.04']
         language: [ 'java' ]
-        java_version: ['8']
+        java_version: ['11']
     
     steps:
     - name: Checkout repository
