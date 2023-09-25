@@ -17,11 +17,6 @@ import org.openjdk.jmh.annotations.Warmup;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.alt.GUID;
-//import com.github.f4b6a3.uuid.codec.base.Base16Codec;
-//import com.github.f4b6a3.uuid.codec.base.Base32Codec;
-//import com.github.f4b6a3.uuid.codec.base.Base58BtcCodec;
-//import com.github.f4b6a3.uuid.codec.base.Base62Codec;
-//import com.github.f4b6a3.uuid.codec.base.Base64UrlCodec;
 
 @Fork(1)
 @Threads(4)
@@ -34,189 +29,112 @@ public class Throughput {
 
 	String string = "01234567-89ab-cdef-0123-456789abcdef";
 	UUID uuid = UUID.fromString(string);
+	GUID guid = new GUID(uuid);
 	private byte[] bytes = "http:www.github.com".getBytes();
 
 	/*********** JDK UUID ***********/
 
 	@Benchmark
-	public String jdk_uuid_01_to_string() {
+	public String jdkUUIDToString() {
 		return uuid.toString();
 	}
 
 	@Benchmark
-	public UUID jdk_uuid_02_from_string() {
+	public UUID jdkUUIDFromString() {
 		return UUID.fromString(string);
 	}
 
 	@Benchmark
-	public UUID jdk_uuid_03_random_based() {
+	public UUID jdkUUIDv4() {
 		return UUID.randomUUID();
 	}
 
 	@Benchmark
-	public UUID jdk_uuid_04_name_based_md5() {
+	public UUID jdkUUIDv3() {
 		return UUID.nameUUIDFromBytes(bytes);
 	}
 
 	/*********** UUID Creator ***********/
 
 	@Benchmark
-	public String uuid_creator_01_to_string() {
+	public String uuidCreatorToString() {
 		return UuidCreator.toString(uuid);
 	}
 
 	@Benchmark
-	public UUID uuid_creator_02_from_string() {
+	public UUID uuidCreatorFromString() {
 		return UuidCreator.fromString(string);
 	}
 
 	@Benchmark
-	public UUID uuid_creator_03_random_based() {
-		return UuidCreator.getRandomBased();
-	}
-
-	@Benchmark
-	public UUID uuid_creator_04_random_based_fast() {
-		return UuidCreator.getRandomBasedFast();
-	}
-
-	@Benchmark
-	public UUID uuid_creator_05_prefix_comb() {
-		return UuidCreator.getPrefixComb();
-	}
-
-	@Benchmark
-	public UUID uuid_creator_06_short_prefix_comb() {
-		return UuidCreator.getShortPrefixComb();
-	}
-
-	@Benchmark
-	public UUID uuid_creator_07_name_based_md5() {
-		return UuidCreator.getNameBasedMd5(bytes);
-	}
-
-	@Benchmark
-	public UUID uuid_creator_08_name_based_sha1() {
-		return UuidCreator.getNameBasedSha1(bytes);
-	}
-
-	@Benchmark
-	public UUID uuid_creator_09_time_based() {
+	public UUID uuidCreatorV1() {
 		return UuidCreator.getTimeBased();
 	}
 
 	@Benchmark
-	public UUID uuid_creator_10_time_ordered() {
+	public UUID uuidCreatorV3() {
+		return UuidCreator.getNameBasedMd5(bytes);
+	}
+
+	@Benchmark
+	public UUID uuidCreatorV4() {
+		return UuidCreator.getRandomBased();
+	}
+
+	@Benchmark
+	public UUID uuidCreatorV5() {
+		return UuidCreator.getNameBasedSha1(bytes);
+	}
+
+	@Benchmark
+	public UUID uuidCreatorV6() {
 		return UuidCreator.getTimeOrdered();
 	}
 
 	@Benchmark
-	public UUID uuid_creator_11_time_ordered_epoch() {
+	public UUID uuidCreatorV7() {
 		return UuidCreator.getTimeOrderedEpoch();
-	}
-
-	@Benchmark
-	public UUID uuid_creator_12_time_ordered_epoch_plus1() {
-		return UuidCreator.getTimeOrderedEpochPlus1();
-	}
-
-	@Benchmark
-	public UUID uuid_creator_13_time_ordered_epoch_plusn() {
-		return UuidCreator.getTimeOrderedEpochPlusN();
 	}
 
 	/*********** GUID ***********/
 
 	@Benchmark
-	public GUID GUID_v1() {
+	public String altGUIDToString() {
+		return guid.toString();
+	}
+
+	@Benchmark
+	public GUID altGUIDFromString() {
+		return new GUID(string);
+	}
+	
+	@Benchmark
+	public GUID altGUIDv1() {
 		return GUID.v1();
 	}
 
 	@Benchmark
-	public GUID GUID_v3() {
+	public GUID altGUIDv3() {
 		return GUID.v3(null, string);
 	}
 
 	@Benchmark
-	public GUID GUID_v4() {
+	public GUID altGUIDv4() {
 		return GUID.v4();
 	}
 
 	@Benchmark
-	public GUID GUID_v5() {
+	public GUID altGUIDv5() {
 		return GUID.v5(null, string);
 	}
 
 	@Benchmark
-	public GUID GUID_v6() {
+	public GUID altGUIDv6() {
 		return GUID.v6();
 	}
 
 	@Benchmark
-	public GUID GUID_v7() {
+	public GUID altGUIDv7() {
 		return GUID.v7();
 	}
-
-	@Benchmark
-	public GUID GUID_v8() {
-		return GUID.v8(null, string);
-	}
-
-	/*********** UUID Codecs ************/
-
-//	String base16 = Base16Codec.INSTANCE.encode(uuid);
-//	String base32 = Base32Codec.INSTANCE.encode(uuid);
-//	String base58 = Base58BtcCodec.INSTANCE.encode(uuid);
-//	String base62 = Base62Codec.INSTANCE.encode(uuid);
-//	String base64 = Base64UrlCodec.INSTANCE.encode(uuid);
-//
-//	@Benchmark
-//	public UUID uuid_codec_base_16_decode() {
-//		return Base16Codec.INSTANCE.decode(base16);
-//	}
-//
-//	@Benchmark
-//	public UUID uuid_codec_base_32_decode() {
-//		return Base32Codec.INSTANCE.decode(base32);
-//	}
-//
-//	@Benchmark
-//	public UUID uuid_codec_base_58_decode() {
-//		return Base58BtcCodec.INSTANCE.decode(base58);
-//	}
-//
-//	@Benchmark
-//	public UUID uuid_codec_base_62_decode() {
-//		return Base62Codec.INSTANCE.decode(base62);
-//	}
-//
-//	@Benchmark
-//	public UUID uuid_codec_base_64_decode() {
-//		return Base64UrlCodec.INSTANCE.decode(base64);
-//	}
-//
-//	@Benchmark
-//	public String uuid_codec_base_16_encode() {
-//		return Base16Codec.INSTANCE.encode(uuid);
-//	}
-//
-//	@Benchmark
-//	public String uuid_codec_base_32_encode() {
-//		return Base32Codec.INSTANCE.encode(uuid);
-//	}
-//
-//	@Benchmark
-//	public String uuid_codec_base_58_encode() {
-//		return Base58BtcCodec.INSTANCE.encode(uuid);
-//	}
-//
-//	@Benchmark
-//	public String uuid_codec_base_62_encode() {
-//		return Base62Codec.INSTANCE.encode(uuid);
-//	}
-//
-//	@Benchmark
-//	public String uuid_codec_base_64_encode() {
-//		return Base64UrlCodec.INSTANCE.encode(uuid);
-//	}
 }

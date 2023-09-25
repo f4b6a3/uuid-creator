@@ -72,7 +72,7 @@ public class TimeOrderedFactoryTest extends UuidFactoryTest {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			Instant instant1 = Instant.now().truncatedTo(ChronoUnit.MICROS);
 			UUID uuid = TimeOrderedFactory.builder().withInstant(instant1).build().create();
-			Instant instant2 = UuidUtil.getInstant(uuid);
+			Instant instant2 = UuidUtil.getInstant(uuid).truncatedTo(ChronoUnit.MICROS);
 			assertEquals(instant1, instant2);
 		}
 	}

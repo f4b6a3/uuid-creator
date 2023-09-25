@@ -146,85 +146,81 @@ public class StringCodecTest {
 
 		StringCodec codec = new StringCodec();
 
-		{
-			try {
-				String string = new UUID(0L, 0L).toString();
-				codec.decode(string);
-				// success
-			} catch (InvalidUuidException e) {
-				fail("Should not throw exception");
-			}
-
-			try {
-				String string = UUID.randomUUID().toString();
-				codec.decode(string);
-				// success
-			} catch (InvalidUuidException e) {
-				fail("Should not throw exception");
-			}
-
-			try {
-				String string = URN_PREFIX + UUID.randomUUID().toString();
-				codec.decode(string);
-				// success
-			} catch (InvalidUuidException e) {
-				fail("Should not throw exception");
-			}
-
-			try {
-				String string = "{" + UUID.randomUUID().toString() + "}";
-				codec.decode(string);
-				// success
-			} catch (InvalidUuidException e) {
-				fail("Should not throw exception");
-			}
+		try {
+			String string = new UUID(0L, 0L).toString();
+			codec.decode(string);
+			// success
+		} catch (InvalidUuidException e) {
+			fail("Should not throw exception");
 		}
 
-		{
-			try {
-				// null object
-				String string = null;
-				codec.decode(string);
-				fail("Should throw exception");
-			} catch (InvalidUuidException e) {
-				// success
-			}
+		try {
+			String string = UUID.randomUUID().toString();
+			codec.decode(string);
+			// success
+		} catch (InvalidUuidException e) {
+			fail("Should not throw exception");
+		}
 
-			try {
-				// empty string
-				String string = "";
-				codec.decode(string);
-				fail("Should throw exception");
-			} catch (InvalidUuidException e) {
-				// success
-			}
+		try {
+			String string = URN_PREFIX + UUID.randomUUID().toString();
+			codec.decode(string);
+			// success
+		} catch (InvalidUuidException e) {
+			fail("Should not throw exception");
+		}
 
-			try {
-				// invalid string
-				String string = "INVALID";
-				codec.decode(string);
-				fail("Should throw exception");
-			} catch (InvalidUuidException e) {
-				// success
-			}
+		try {
+			String string = "{" + UUID.randomUUID().toString() + "}";
+			codec.decode(string);
+			// success
+		} catch (InvalidUuidException e) {
+			fail("Should not throw exception");
+		}
 
-			try {
-				// size > 36
-				String string = UUID.randomUUID().toString() + "x";
-				codec.decode(string);
-				fail("Should throw exception");
-			} catch (InvalidUuidException e) {
-				// success
-			}
+		try {
+			// null object
+			String string = null;
+			codec.decode(string);
+			fail("Should throw exception");
+		} catch (InvalidUuidException e) {
+			// success
+		}
 
-			try {
-				// size < 36
-				String string = UUID.randomUUID().toString().substring(0, 35);
-				codec.decode(string);
-				fail("Should throw exception");
-			} catch (InvalidUuidException e) {
-				// success
-			}
+		try {
+			// empty string
+			String string = "";
+			codec.decode(string);
+			fail("Should throw exception");
+		} catch (InvalidUuidException e) {
+			// success
+		}
+
+		try {
+			// invalid string
+			String string = "INVALID";
+			codec.decode(string);
+			fail("Should throw exception");
+		} catch (InvalidUuidException e) {
+			// success
+		}
+
+		try {
+			// size > 36
+			String string = UUID.randomUUID().toString() + "x";
+			codec.decode(string);
+			fail("Should throw exception");
+		} catch (InvalidUuidException e) {
+			// success
+		}
+
+		try {
+			// size < 36
+			String string = UUID.randomUUID().toString().substring(0, 35);
+			codec.decode(string);
+			fail("Should throw exception");
+		} catch (InvalidUuidException e) {
+			// success
 		}
 	}
 
