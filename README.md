@@ -123,6 +123,13 @@ GUID guid = GUID.v6();
 GUID guid = GUID.v7();
 ```
 
+Deprecation
+------------------------------------------------------
+
+The methods which use a UUID as a "name" parameter such as [`UuidCreator.getNameBasedMd5(UUID name)`](https://github.com/f4b6a3/uuid-creator/blob/79e049eeeb43a7cd288f4c73f0d0daa6c339c7d6/src/main/java/com/github/f4b6a3/uuid/UuidCreator.java#L656) are **deprecated**. They will be removed when the new RFC is published. For more details, please read https://github.com/f4b6a3/uuid-creator/issues/91.
+
+The [`v8()`](https://github.com/f4b6a3/uuid-creator/blob/master/src/main/java/com/github/f4b6a3/uuid/alt/GUID.java#L355) method of the alternative [`GUID`](https://github.com/f4b6a3/uuid-creator/blob/master/src/main/java/com/github/f4b6a3/uuid/alt/GUID.java) class is also **deprecated** due to sudden changes in the latest RFC [draft](https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-12.html).
+
 Other identifier generators
 ------------------------------------------------------
 
