@@ -29,18 +29,8 @@ import com.github.f4b6a3.uuid.alt.GUID;
 public class Throughput {
 
 	@Benchmark
-	public UUID uuidCreatorV7() {
-		return UuidCreator.getTimeOrderedEpoch();
-	}
-
-	@Benchmark
 	public UUID uuidCreatorV7plus1() {
 		return UuidCreator.getTimeOrderedEpochPlus1();
-	}
-
-	@Benchmark
-	public UUID uuidCreatorV7plusN() {
-		return UuidCreator.getTimeOrderedEpochPlusN();
 	}
 
 //  JDK 8 (synchronized)
