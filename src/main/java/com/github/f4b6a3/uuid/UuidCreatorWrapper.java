@@ -9,8 +9,6 @@ import java.util.concurrent.locks.ReentrantLock;
  * See: https://github.com/f4b6a3/uuid-creator/issues/92
  */
 public class UuidCreatorWrapper {
-
-	public static final UuidCreatorWrapper INSTANCE = new UuidCreatorWrapper();
 	private static ReentrantLock lock = new ReentrantLock();
 
 	public static UUID getUUID() {
