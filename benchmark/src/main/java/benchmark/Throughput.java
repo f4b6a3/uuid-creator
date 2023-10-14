@@ -16,6 +16,7 @@ import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 
 import com.github.f4b6a3.uuid.UuidCreator;
+import com.github.f4b6a3.uuid.UuidCreatorWrapper;
 import com.github.f4b6a3.uuid.alt.GUID;
 
 @Fork(1)
@@ -27,114 +28,52 @@ import com.github.f4b6a3.uuid.alt.GUID;
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class Throughput {
 
-	String string = "01234567-89ab-cdef-0123-456789abcdef";
-	UUID uuid = UUID.fromString(string);
-	GUID guid = new GUID(uuid);
-	private byte[] bytes = "http:www.github.com".getBytes();
-
-	/*********** JDK UUID ***********/
-
-	@Benchmark
-	public String jdkUUIDToString() {
-		return uuid.toString();
-	}
-
-	@Benchmark
-	public UUID jdkUUIDFromString() {
-		return UUID.fromString(string);
-	}
-
-	@Benchmark
-	public UUID jdkUUIDv4() {
-		return UUID.randomUUID();
-	}
-
-	@Benchmark
-	public UUID jdkUUIDv3() {
-		return UUID.nameUUIDFromBytes(bytes);
-	}
-
-	/*********** UUID Creator ***********/
-
-	@Benchmark
-	public String uuidCreatorToString() {
-		return UuidCreator.toString(uuid);
-	}
-
-	@Benchmark
-	public UUID uuidCreatorFromString() {
-		return UuidCreator.fromString(string);
-	}
-
-	@Benchmark
-	public UUID uuidCreatorV1() {
-		return UuidCreator.getTimeBased();
-	}
-
-	@Benchmark
-	public UUID uuidCreatorV3() {
-		return UuidCreator.getNameBasedMd5(bytes);
-	}
-
-	@Benchmark
-	public UUID uuidCreatorV4() {
-		return UuidCreator.getRandomBased();
-	}
-
-	@Benchmark
-	public UUID uuidCreatorV5() {
-		return UuidCreator.getNameBasedSha1(bytes);
-	}
-
-	@Benchmark
-	public UUID uuidCreatorV6() {
-		return UuidCreator.getTimeOrdered();
-	}
-
 	@Benchmark
 	public UUID uuidCreatorV7() {
 		return UuidCreator.getTimeOrderedEpoch();
 	}
 
-	/*********** GUID ***********/
-
 	@Benchmark
-	public String altGUIDToString() {
-		return guid.toString();
+	public UUID uuidCreatorV7plus1() {
+		return UuidCreator.getTimeOrderedEpochPlus1();
 	}
 
 	@Benchmark
-	public GUID altGUIDFromString() {
-		return new GUID(string);
-	}
-	
-	@Benchmark
-	public GUID altGUIDv1() {
-		return GUID.v1();
+	public UUID uuidCreatorV7plusN() {
+		return UuidCreator.getTimeOrderedEpochPlusN();
 	}
 
-	@Benchmark
-	public GUID altGUIDv3() {
-		return GUID.v3(null, string);
-	}
+//  JDK 8 (synchronized)
+//	Benchmark                       Mode  Cnt      Score     Error   Units
+//	Throughput.uuidCreatorV7plus1  thrpt    5  10968,052 ± 439,404  ops/ms
+
+//  JDK 8 (ReentrantLock)
+//	Benchmark                       Mode  Cnt     Score      Error   Units
+//	Throughput.uuidCreatorV7plus1  thrpt    5  8478,789 ± 1724,910  ops/ms
+
+//  JDK 11 (synchronized)
+//	Benchmark                       Mode  Cnt      Score     Error   Units
+//	Throughput.uuidCreatorV7plus1  thrpt    5  11208,180 ± 585,846  ops/ms
+
+//  JDK 11 (ReentrantLock)
+//	Benchmark                       Mode  Cnt      Score      Error   Units
+//	Throughput.uuidCreatorV7plus1  thrpt    5  10734,693 ± 1148,196  ops/ms
+
+//  JDK 17 (synchronized)
+//	Benchmark                       Mode  Cnt      Score      Error   Units
+//	Throughput.uuidCreatorV7plus1  thrpt    5  11822,357 ± 2584,825  ops/ms
+
+//  JDK 17 (ReentrantLock)
+//	Benchmark                       Mode  Cnt      Score      Error   Units
+//	Throughput.uuidCreatorV7plus1  thrpt    5  11722,471 ± 1398,280  ops/ms
 
 	@Benchmark
-	public GUID altGUIDv4() {
-		return GUID.v4();
+	public UUID uuidCreatorWrapper() {
+		return UuidCreatorWrapper.getUUID();
 	}
 
-	@Benchmark
-	public GUID altGUIDv5() {
-		return GUID.v5(null, string);
-	}
+//  JDK 17 (synchronized + ReentrantLock Wrapper)
+//	Benchmark                       Mode  Cnt     Score     Error   Units
+//	Throughput.uuidCreatorWrapper  thrpt    5  9730,139 ± 722,465  ops/ms
 
-	@Benchmark
-	public GUID altGUIDv6() {
-		return GUID.v6();
-	}
-
-	@Benchmark
-	public GUID altGUIDv7() {
-		return GUID.v7();
-	}
 }

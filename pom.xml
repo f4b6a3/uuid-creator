@@ -24,7 +24,7 @@
 	</developers>
 
 	<properties>
-		<jdk.version>8</jdk.version>
+		<jdk.version>17</jdk.version>
 		<package.name>com.github.f4b6a3.uuid</package.name>
 		<maven.compiler.source>${jdk.version}</maven.compiler.source>
 		<maven.compiler.target>${jdk.version}</maven.compiler.target>

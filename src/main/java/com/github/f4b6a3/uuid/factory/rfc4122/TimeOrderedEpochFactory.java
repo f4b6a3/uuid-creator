@@ -27,6 +27,7 @@ package com.github.f4b6a3.uuid.factory.rfc4122;
 import java.time.Clock;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
 
@@ -85,6 +86,25 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	// adjusted by NTP after a small clock drift or when the
 	// system clock jumps back by 1 second due to leap second.
 	protected static final int CLOCK_DRIFT_TOLERANCE = 10_000;
+	
+	
+	
+	
+	
+	
+	
+	// Test `ReentrantLock` vs `synchronized`
+	// See: https://github.com/f4b6a3/uuid-creator/issues/92
+	private ReentrantLock lock = new ReentrantLock();
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	public TimeOrderedEpochFactory() {
 		this(builder());
@@ -228,7 +248,11 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	 * @return a UUIDv7
 	 */
 	@Override
-	public synchronized UUID create() {
+	public UUID create() {
+		
+		lock.lock();
+		
+		try {
 
 		final long time = clock.millis();
 		final long lastTime = lastUuid.getMostSignificantBits() >>> 16;
@@ -252,9 +276,13 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		}
 
 		return copy(this.lastUuid);
+		
+		} finally {
+			lock.unlock();
+		}
 	}
 
-	private synchronized UUID increment(UUID uuid) {
+	private UUID increment(UUID uuid) {
 
 		// Used to check if an overflow occurred.
 		final long overflow = 0x0000000000000000L;
@@ -294,7 +322,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		return toUuid((time << 16) | (long1 & 0x000000000000ffffL), long2);
 	}
 
-	private synchronized UUID copy(UUID uuid) {
+	private UUID copy(UUID uuid) {
 		return toUuid(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits());
 	}
 }
