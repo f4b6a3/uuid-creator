@@ -22,7 +22,7 @@ jobs:
       matrix:
         os: ['ubuntu-22.04']
         language: [ 'java' ]
-        java_version: ['11']
+        java_version: ['17']
     
     steps:
     - name: Checkout repository
