@@ -1,7 +1,5 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
 
-name: Java CI with Maven
+name: Benchmark with JMH
 
 on:
   push:
@@ -16,7 +14,7 @@ jobs:
     strategy:
       matrix:
         java_version: ['8', '21']
-        os: ['ubuntu-22.04', 'windows-2022', 'macos-12']
+        os: ['ubuntu-22.04']
         
     steps:
     - name: Checkout on ${{ matrix.os }}
@@ -27,5 +25,5 @@ jobs:
         java-version: ${{ matrix.java_version }}
         distribution: 'temurin'
         cache: maven
-    - name: Build with Maven
-      run: mvn -B -q -ff -ntp package --file pom.xml
+    - name: Run Benchmark
+      run: benchmark/run.sh

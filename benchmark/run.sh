@@ -9,7 +9,7 @@ SCRIPT_DIR=$(dirname "$0")
 cd "${SCRIPT_DIR}/.."
 
 # compile the parent project
-mvn clean install -DskipTests
+mvn --batch-mode --quiet --fail-fast clean install -DskipTests
 
 # create a copy with the expected name
 cp "${PWD}/target/${ARTIFACT_ID}"-*-SNAPSHOT.jar "${PWD}/target/${ARTIFACT_ID}"-0.0.1-BENCHMARK.jar
@@ -18,8 +18,8 @@ cp "${PWD}/target/${ARTIFACT_ID}"-*-SNAPSHOT.jar "${PWD}/target/${ARTIFACT_ID}"-
 cd benchmark
 
 # compile the benchmark project
-mvn validate
-mvn clean install
+mvn --batch-mode --quiet --fail-fast validate
+mvn --batch-mode --quiet --fail-fast clean install
 
 # run the benchmark
 java -jar target/benchmarks.jar
