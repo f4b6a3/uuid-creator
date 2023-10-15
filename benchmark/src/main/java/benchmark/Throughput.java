@@ -57,10 +57,10 @@ public class Throughput {
 //	Benchmark                       Mode  Cnt      Score      Error   Units
 //	Throughput.uuidCreatorV7plus1  thrpt    5  11722,471 ± 1398,280  ops/ms
 
-	@Benchmark
-	public UUID uuidCreatorWrapper() {
-		return UuidCreatorWrapper.getUUID();
-	}
+//	@Benchmark
+//	public UUID uuidCreatorWrapper() {
+//		return UuidCreatorWrapper.getUUID();
+//	}
 
 //  JDK 17 (synchronized + ReentrantLock Wrapper)
 //	Benchmark                       Mode  Cnt     Score     Error   Units

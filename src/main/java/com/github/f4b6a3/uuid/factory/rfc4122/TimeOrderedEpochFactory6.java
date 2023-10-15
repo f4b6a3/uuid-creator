@@ -30,7 +30,6 @@ import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
-import java.util.function.Supplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstCombFactory;
@@ -72,14 +71,13 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  * @see <a href="https://datatracker.ietf.org/wg/uuidrev/documents/">Revise
  *      Universally Unique Identifier Definitions (uuidrev)</a>
  */
-public final class TimeOrderedEpochFactory extends AbstCombFactory {
+public final class TimeOrderedEpochFactory6 extends AbstCombFactory {
 
 	private long msb = 0; // most significant bits
 	private long lsb = 0; // least significant bits
 
 	private final int incrementType;
 	private final LongSupplier incrementSupplier;
-	private final Supplier<UUID> incrementFunction;
 
 	private static final int INCREMENT_TYPE_DEFAULT = 0; // add 2^48 to `rand_b`
 	private static final int INCREMENT_TYPE_PLUS_1 = 1; // add 1 to `rand_b`
@@ -93,60 +91,53 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	// Test `ReentrantLock` vs `synchronized`
 	// See: https://github.com/f4b6a3/uuid-creator/issues/92
 	private ReentrantLock lock = new ReentrantLock();
-
+	
 	// Used to check if an overflow occurred.
 	private static final long overflow = 0x0000000000000000L;
 
 	// Used to propagate increments through bits.
 	private static final long versionMask = 0x000000000000f000L;
 	private static final long variantMask = 0xc000000000000000L;
-	private static final long msblowrMask = 0x000000000000ffffL;
 
-	public TimeOrderedEpochFactory() {
+	public TimeOrderedEpochFactory6() {
 		this(builder());
 	}
 
-	public TimeOrderedEpochFactory(Clock clock) {
+	public TimeOrderedEpochFactory6(Clock clock) {
 		this(builder().withClock(clock));
 	}
 
-	public TimeOrderedEpochFactory(Random random) {
+	public TimeOrderedEpochFactory6(Random random) {
 		this(builder().withRandom(random));
 	}
 
-	public TimeOrderedEpochFactory(Random random, Clock clock) {
+	public TimeOrderedEpochFactory6(Random random, Clock clock) {
 		this(builder().withRandom(random).withClock(clock));
 	}
 
-	public TimeOrderedEpochFactory(LongSupplier randomFunction) {
+	public TimeOrderedEpochFactory6(LongSupplier randomFunction) {
 		this(builder().withRandomFunction(randomFunction));
 	}
 
-	public TimeOrderedEpochFactory(IntFunction<byte[]> randomFunction) {
+	public TimeOrderedEpochFactory6(IntFunction<byte[]> randomFunction) {
 		this(builder().withRandomFunction(randomFunction));
 	}
 
-	public TimeOrderedEpochFactory(LongSupplier randomFunction, Clock clock) {
+	public TimeOrderedEpochFactory6(LongSupplier randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
 
-	public TimeOrderedEpochFactory(IntFunction<byte[]> randomFunction, Clock clock) {
+	public TimeOrderedEpochFactory6(IntFunction<byte[]> randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
 
-	private TimeOrderedEpochFactory(Builder builder) {
+	private TimeOrderedEpochFactory6(Builder builder) {
 		super(UuidVersion.VERSION_TIME_ORDERED_EPOCH, builder);
 		this.incrementType = builder.getIncrementType();
 		this.incrementSupplier = builder.getIncrementSupplier();
-		
-		if (INCREMENT_TYPE_DEFAULT == this.incrementType) {
-			this.incrementFunction = () -> this.incrementDefault();
-		} else {
-			this.incrementFunction = () -> this.increment();
-		}
-		
+
 		// initialize state
-		reset(clock.millis());
+		reset(clock.millis(), this.random.nextBytes(10));
 	}
 
 	/**
@@ -154,7 +145,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	 *
 	 * @see AbstCombFactory.Builder
 	 */
-	public static class Builder extends AbstCombFactory.Builder<TimeOrderedEpochFactory, Builder> {
+	public static class Builder extends AbstCombFactory.Builder<TimeOrderedEpochFactory6, Builder> {
 
 		private Integer incrementType;
 		private Long incrementMax;
@@ -230,8 +221,8 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		}
 
 		@Override
-		public TimeOrderedEpochFactory build() {
-			return new TimeOrderedEpochFactory(this);
+		public TimeOrderedEpochFactory6 build() {
+			return new TimeOrderedEpochFactory6(this);
 		}
 	}
 
@@ -251,20 +242,22 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	 */
 	@Override
 	public UUID create() {
+
 		lock.lock();
+
 		try {
 			final long time = this.clock.millis();
 			if (repeated(time)) {
-				return this.incrementFunction.get();
+				return increment();
 			} else {
-				return reset(time);
+				return reset(time, this.random.nextBytes(10));
 			}
 		} finally {
 			lock.unlock();
 		}
 	}
 
-	public boolean repeated(final long time) {
+	public boolean repeated(long time) {
 		long lastTime = this.msb >>> 16;
 		// Check if the current time is the same as the previous time or has moved
 		// backwards after a small system clock adjustment or after a leap second.
@@ -277,44 +270,47 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		this.msb = (this.msb | versionMask);
 		this.lsb = (this.lsb | variantMask) + incrementSupplier.getAsLong();
 
-		// If the 62 bits of the monotonic random overflow,
-		if (lsb == overflow) {
-			msb += 1; // increment the MSB.
-		}
+		if (INCREMENT_TYPE_DEFAULT == this.incrementType) {
 
-		return toUuid(msb, lsb);
-	}
+			// Used to clear the random component bits.
+			final long clearMask = 0xffff000000000000L;
 
-	public UUID incrementDefault() {
+			// If the counter's 14 bits overflow,
+			if ((lsb & clearMask) == overflow) {
+				msb += 1; // increment the MSB.
+			}
 
-		this.msb = (this.msb | versionMask);
-		this.lsb = (this.lsb | variantMask) + incrementSupplier.getAsLong();
+			// And finally, randomize the lower 48 bits of the LSB.
+			lsb &= clearMask; // Clear the random before randomize.
+			lsb |= ByteUtil.toNumber(this.random.nextBytes(6));
 
-		// Used to clear the random component bits.
-		final long clearMask = 0xffff000000000000L;
-
-		// If the counter's 14 bits overflow,
-		if ((lsb & clearMask) == overflow) {
-			msb += 1; // increment the MSB.
-		}
-
-		// And finally, randomize the lower 48 bits of the LSB.
-		lsb &= clearMask; // Clear the random before randomize.
-		lsb |= ByteUtil.toNumber(this.random.nextBytes(6));
-
-		return toUuid(msb, lsb);
-	}
-
-	public UUID reset(final long time) {
-
-		if (this.random instanceof ByteRandom) {
-			final byte[] bytes = this.random.nextBytes(10);
-			this.msb = (time << 16) | (ByteUtil.toNumber(bytes, 0, 2) & msblowrMask);
-			this.lsb = ByteUtil.toNumber(bytes, 2, 10);
 		} else {
-			this.msb = (time << 16) | (this.random.nextLong() & msblowrMask);
-			this.lsb = this.random.nextLong();
+			// If the 62 bits of the monotonic random overflow,
+			if (lsb == overflow) {
+				msb += 1; // increment the MSB.
+			}
 		}
+
+		return toUuid(msb, lsb);
+	}
+	
+	public UUID reset(final long time, final byte[] random) {
+
+		this.msb = 0;
+		this.lsb = 0;
+
+		this.msb |= time << 16;
+		this.msb |= (long) (random[0x0] & 0xff) << 8;
+		this.msb |= (long) (random[0x1] & 0xff);
+
+		this.lsb |= (long) (random[0x2] & 0xff) << 56;
+		this.lsb |= (long) (random[0x3] & 0xff) << 48;
+		this.lsb |= (long) (random[0x4] & 0xff) << 40;
+		this.lsb |= (long) (random[0x5] & 0xff) << 32;
+		this.lsb |= (long) (random[0x6] & 0xff) << 24;
+		this.lsb |= (long) (random[0x7] & 0xff) << 16;
+		this.lsb |= (long) (random[0x8] & 0xff) << 8;
+		this.lsb |= (long) (random[0x9] & 0xff);
 
 		return toUuid(msb, lsb);
 	}
