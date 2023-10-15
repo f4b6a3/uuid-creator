@@ -1,0 +1,29 @@
+
+name: Benchmark with JMH
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        java_version: ['8', '21']
+        os: ['ubuntu-22.04']
+        
+    steps:
+    - name: Checkout on ${{ matrix.os }}
+      uses: actions/checkout@v3
+    - name: Set up JDK ${{ matrix.java_version }}
+      uses: actions/setup-java@v3
+      with:
+        java-version: ${{ matrix.java_version }}
+        distribution: 'temurin'
+        cache: maven
+    - name: Run Benchmark
+      run: benchmark/run.sh
