@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        java_version: ['8', '21']
+        java_version: ['8', '17']
         os: ['ubuntu-22.04']
         
     steps:
