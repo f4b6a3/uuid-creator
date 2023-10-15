@@ -1,5 +1,5 @@
 
-name: Code Scan with Spotbugs
+name: Code Scan with Spotbugs and PMD
 
 on:
   push:
@@ -26,9 +26,14 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn -B -q -ff compile spotbugs:spotbugs
+      run: mvn -B -q -ff compile spotbugs:spotbugs pmd:pmd
     -   name: Upload Spotbugs SARIF file
         uses: github/codeql-action/upload-sarif@v2
         with:
             sarif_file: target/spotbugsSarif.json
             category: Spotbugs
+    -   name: Upload PMD SARIF file
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+            sarif_file: target/pmd.sarif.json
+            category: PMD
