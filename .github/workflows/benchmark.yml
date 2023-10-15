@@ -13,8 +13,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        java_version: ['8', '21']
-        os: ['ubuntu-22.04', 'windows-2022', 'macos-12']
+        java_version: ['8', '17', '21']
+        os: ['ubuntu-22.04', 'macos-12']
         
     steps:
     - name: Checkout on ${{ matrix.os }}
