@@ -23,8 +23,10 @@ import com.github.f4b6a3.uuid.alt.GUID;
 @Threads(4)
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)
-@Warmup(iterations = 5, time = 1)
-@Measurement(iterations = 5, time = 3)
+//@Warmup(iterations = 5, time = 1)
+//@Measurement(iterations = 5, time = 3)
+@Warmup(iterations = 5, time = 6)
+@Measurement(iterations = 5, time = 12)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class Throughput {
 
