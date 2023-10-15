@@ -1,0 +1,34 @@
+
+name: Code Scan with Spotbugs
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        java_version: ['8']
+        os: ['ubuntu-22.04']
+        
+    steps:
+    - name: Checkout on ${{ matrix.os }}
+      uses: actions/checkout@v3
+    - name: Set up JDK ${{ matrix.java_version }}
+      uses: actions/setup-java@v3
+      with:
+        java-version: ${{ matrix.java_version }}
+        distribution: 'temurin'
+        cache: maven
+    - name: Build with Maven
+      run: mvn -B -q -ff compile spotbugs:spotbugs
+    -   name: Upload Spotbugs SARIF file
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+            sarif_file: target/spotbugsSarif.json
+            category: Spotbugs
