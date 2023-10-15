@@ -149,6 +149,15 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>4.7.3.6</version>
+				<configuration>
+					<sarifOutput>true</sarifOutput>
+					<htmlOutput>true</htmlOutput>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
