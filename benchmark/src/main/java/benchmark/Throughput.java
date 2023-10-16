@@ -28,9 +28,19 @@ import com.github.f4b6a3.uuid.alt.GUID;
 @Measurement(iterations = 5, time = 12)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class Throughput {
-
+	
 	@Benchmark
-	public UUID uuidCreatorV7plus1() {
+	public UUID getTimeOrderedEpochPlus1() {
 		return UuidCreator.getTimeOrderedEpochPlus1();
+	}
+	
+	@Benchmark
+	public UUID getTimeOrderedEpochPlusN() {
+		return UuidCreator.getTimeOrderedEpochPlusN();
+	}
+	
+	@Benchmark
+	public UUID getTimeOrderedEpoch() {
+		return UuidCreator.getTimeOrderedEpoch();
 	}
 }
