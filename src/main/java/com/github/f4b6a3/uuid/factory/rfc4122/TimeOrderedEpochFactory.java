@@ -75,31 +75,29 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 
 	private State state;
 
-	private final LongSupplier plusNSupplier;
-	private final LongConsumer increFunction;
+	private final LongSupplier plusNFunction;
 	private final LongConsumer resetFunction;
+	private final LongConsumer incrementFunction;
 
 	private static final int INCREMENT_TYPE_DEFAULT = 0; // add 2^48 to `rand_b`
 	private static final int INCREMENT_TYPE_PLUS_1 = 1; // add 1 to `rand_b`
 	private static final int INCREMENT_TYPE_PLUS_N = 2; // add n to `rand_b`, where 1 <= n <= 2^32-1
 
+	private static final long INCREMENT_MAX_DEFAULT = 0xffffffffL; // 2^32-1
+
 	// Used to preserve monotonicity when the system clock is
 	// adjusted by NTP after a small clock drift or when the
 	// system clock jumps back by 1 second due to leap second.
-	protected static final int CLOCK_DRIFT_TOLERANCE = 10_000;
+	protected static final long CLOCK_DRIFT_TOLERANCE = 10_000;
 
-	// Test `ReentrantLock` vs `synchronized`
-	// See: https://github.com/f4b6a3/uuid-creator/issues/92
-	private ReentrantLock lock = new ReentrantLock();
-
-	// Used to check if an overflow occurred.
 	private static final long overflow = 0x0000000000000000L;
 
-	// Used to propagate increments through bits.
-	private static final long versionMask = 0x000000000000f000L;
-	private static final long variantMask = 0xc000000000000000L;
-	private static final long msblowrMask = 0x000000000000ffffL;
-	private static final long clearerMask = 0xffff000000000000L;
+	private static final long versionBits = 0x000000000000f000L;
+	private static final long variantBits = 0xc000000000000000L;
+	private static final long lower16Bits = 0x000000000000ffffL;
+	private static final long upper16Bits = 0xffff000000000000L;
+
+	private ReentrantLock lock = new ReentrantLock();
 
 	public TimeOrderedEpochFactory() {
 		this(builder());
@@ -138,18 +136,18 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 
 		switch (builder.getIncrementType()) {
 		case INCREMENT_TYPE_PLUS_1:
-			this.plusNSupplier = null;
-			this.increFunction = (final long unused) -> this._incrementPlus1();
+			this.plusNFunction = null; // unused
+			this.incrementFunction = (unused) -> this._incrementPlus1();
 			break;
 		case INCREMENT_TYPE_PLUS_N:
 			long incrementMax = builder.getIncrementMax();
-			this.plusNSupplier = _setupPlusNSupplier(incrementMax);
-			this.increFunction = (final long _void) -> this._incrementPlusN();
+			this.plusNFunction = _setupPlusNFunction(incrementMax);
+			this.incrementFunction = (unused) -> this._incrementPlusN();
 			break;
 		case INCREMENT_TYPE_DEFAULT:
 		default:
-			this.plusNSupplier = null;
-			this.increFunction = (final long _void) -> this._incrementDefault();
+			this.plusNFunction = null; // unused
+			this.incrementFunction = (unused) -> this._incrementDefault();
 		}
 
 		if (this.random instanceof ByteRandom) {
@@ -200,7 +198,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 
 		protected long getIncrementMax() {
 			if (this.incrementMax == null) {
-				this.incrementMax = 0xffffffffL;
+				this.incrementMax = INCREMENT_MAX_DEFAULT;
 			}
 			return this.incrementMax;
 		}
@@ -237,10 +235,10 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		try {
 			final long lastTime = state.msb >>> 16;
 			if ((time <= lastTime)) {
-				this.increFunction.accept(0);
+				this.incrementFunction.accept(0L);
 			} else {
 				if ((time > lastTime - CLOCK_DRIFT_TOLERANCE)) {
-					this.increFunction.accept(0);
+					this.incrementFunction.accept(0L);
 				} else {
 					this.resetFunction.accept(time);
 				}
@@ -260,44 +258,44 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	}
 
 	private void _incrementPlus1() {
-		state.lsb = (state.lsb | variantMask) + 1L;
+		state.lsb = (state.lsb | variantBits) + 1L;
 		if (state.lsb == overflow) {
-			state.msb = (state.msb | versionMask) + 1L;
+			state.msb = (state.msb | versionBits) + 1L;
 		}
 	}
 
 	private void _incrementPlusN() {
-		state.lsb = (state.lsb | variantMask) + plusNSupplier.getAsLong();
+		state.lsb = (state.lsb | variantBits) + plusNFunction.getAsLong();
 		if (state.lsb == overflow) {
-			state.msb = (state.msb | versionMask) + 1L;
+			state.msb = (state.msb | versionBits) + 1L;
 		}
 	}
 
 	private void _incrementDefault() {
 
-		state.lsb = (state.lsb | variantMask) + (1L << 48);
-		if ((state.lsb & clearerMask) == overflow) {
-			state.msb = (state.msb | versionMask) + 1L;
+		state.lsb = (state.lsb | variantBits) + (1L << 48);
+		if ((state.lsb & upper16Bits) == overflow) {
+			state.msb = (state.msb | versionBits) + 1L;
 		}
 
-		state.lsb &= clearerMask; // Clear the unnecessary bits
+		state.lsb &= upper16Bits; // Clear the unnecessary bits
 		// And finally, randomize the lower 48 bits of the LSB.
 		state.lsb |= ByteUtil.toNumber(this.random.nextBytes(6));
 	}
 
 	private void _resetByteRandom(final long time) {
 		final byte[] bytes = this.random.nextBytes(10);
-		state.msb = (time << 16) | (ByteUtil.toNumber(bytes, 0, 2) & msblowrMask);
+		state.msb = (time << 16) | (ByteUtil.toNumber(bytes, 0, 2) & lower16Bits);
 		state.lsb = ByteUtil.toNumber(bytes, 2, 10);
 	}
 
 	private void _resetLongRandom(final long time) {
-		state.msb = (time << 16) | (this.random.nextLong() & msblowrMask);
+		state.msb = (time << 16) | (this.random.nextLong() & lower16Bits);
 		state.lsb = this.random.nextLong();
 	}
 
-	private LongSupplier _setupPlusNSupplier(Long incrementMax) {
-		if (incrementMax == null) {
+	private LongSupplier _setupPlusNFunction(Long incrementMax) {
+		if (incrementMax == INCREMENT_MAX_DEFAULT) {
 			if (random instanceof ByteRandom) {
 				return () -> {
 					// add n to rand_b, where 1 <= n <= 2^32
