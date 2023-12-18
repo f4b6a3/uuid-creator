@@ -27,13 +27,12 @@ package com.github.f4b6a3.uuid.factory.rfc4122;
 import java.time.Clock;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstCombFactory;
+import com.github.f4b6a3.uuid.factory.nonstandard.PrefixCombFactory;
 import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
@@ -71,82 +70,61 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  * @see <a href="https://datatracker.ietf.org/wg/uuidrev/documents/">Revise
  *      Universally Unique Identifier Definitions (uuidrev)</a>
  */
-public final class TimeOrderedEpochFactory extends AbstCombFactory {
+public final class TimeOrderedEpochFactory0 extends AbstCombFactory {
 
-	private State state;
+	private UUID lastUuid;
 
-	private final Consumer<State> incrementFunction;
-	private final ReentrantLock lock = new ReentrantLock();
+	private final int incrementType;
+	private final LongSupplier incrementSupplier;
 
 	private static final int INCREMENT_TYPE_DEFAULT = 0; // add 2^48 to `rand_b`
 	private static final int INCREMENT_TYPE_PLUS_1 = 1; // add 1 to `rand_b`
 	private static final int INCREMENT_TYPE_PLUS_N = 2; // add n to `rand_b`, where 1 <= n <= 2^32-1
 
-	private static final long INCREMENT_MAX_DEFAULT = 0xffffffffL; // 2^32-1
-
 	// Used to preserve monotonicity when the system clock is
 	// adjusted by NTP after a small clock drift or when the
 	// system clock jumps back by 1 second due to leap second.
-	protected static final long CLOCK_DRIFT_TOLERANCE = 10_000;
+	protected static final int CLOCK_DRIFT_TOLERANCE = 10_000;
 
-	private static final long overflow = 0x0000000000000000L;
-
-	private static final long versionBits = 0x000000000000f000L;
-	private static final long variantBits = 0xc000000000000000L;
-	private static final long lower16Bits = 0x000000000000ffffL;
-	private static final long upper16Bits = 0xffff000000000000L;
-
-	public TimeOrderedEpochFactory() {
+	public TimeOrderedEpochFactory0() {
 		this(builder());
 	}
 
-	public TimeOrderedEpochFactory(Clock clock) {
+	public TimeOrderedEpochFactory0(Clock clock) {
 		this(builder().withClock(clock));
 	}
 
-	public TimeOrderedEpochFactory(Random random) {
+	public TimeOrderedEpochFactory0(Random random) {
 		this(builder().withRandom(random));
 	}
 
-	public TimeOrderedEpochFactory(Random random, Clock clock) {
+	public TimeOrderedEpochFactory0(Random random, Clock clock) {
 		this(builder().withRandom(random).withClock(clock));
 	}
 
-	public TimeOrderedEpochFactory(LongSupplier randomFunction) {
+	public TimeOrderedEpochFactory0(LongSupplier randomFunction) {
 		this(builder().withRandomFunction(randomFunction));
 	}
 
-	public TimeOrderedEpochFactory(IntFunction<byte[]> randomFunction) {
+	public TimeOrderedEpochFactory0(IntFunction<byte[]> randomFunction) {
 		this(builder().withRandomFunction(randomFunction));
 	}
 
-	public TimeOrderedEpochFactory(LongSupplier randomFunction, Clock clock) {
+	public TimeOrderedEpochFactory0(LongSupplier randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
 
-	public TimeOrderedEpochFactory(IntFunction<byte[]> randomFunction, Clock clock) {
+	public TimeOrderedEpochFactory0(IntFunction<byte[]> randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
 
-	private TimeOrderedEpochFactory(Builder builder) {
+	private TimeOrderedEpochFactory0(Builder builder) {
 		super(UuidVersion.VERSION_TIME_ORDERED_EPOCH, builder);
+		this.incrementType = builder.getIncrementType();
+		this.incrementSupplier = builder.getIncrementSupplier();
 
-		switch (builder.getIncrementType()) {
-		case INCREMENT_TYPE_PLUS_1:
-			this.incrementFunction = (state) -> this._incrementPlusN(state, () -> 1L);
-			break;
-		case INCREMENT_TYPE_PLUS_N:
-			LongSupplier plusNFunction = _customPlusNFunction(builder.getIncrementMax());
-			this.incrementFunction = (state) -> this._incrementPlusN(state, plusNFunction);
-			break;
-		case INCREMENT_TYPE_DEFAULT:
-		default:
-			this.incrementFunction = (state) -> this._incrementDefault(state);
-		}
-
-		// initialize the state
-		this.state = new State(); // then reset
-		this.state.reset(clock.millis(), random);
+		// initialize internal state
+		this.lastUuid = make(clock.millis(), random.nextLong(), random.nextLong());
 	}
 
 	/**
@@ -154,7 +132,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	 *
 	 * @see AbstCombFactory.Builder
 	 */
-	public static class Builder extends AbstCombFactory.Builder<TimeOrderedEpochFactory, Builder> {
+	public static class Builder extends AbstCombFactory.Builder<TimeOrderedEpochFactory0, Builder> {
 
 		private Integer incrementType;
 		private Long incrementMax;
@@ -184,16 +162,54 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 			return this.incrementType;
 		}
 
-		protected long getIncrementMax() {
-			if (this.incrementMax == null) {
-				this.incrementMax = INCREMENT_MAX_DEFAULT;
+		protected LongSupplier getIncrementSupplier() {
+			switch (getIncrementType()) {
+			case INCREMENT_TYPE_PLUS_1:
+				// add 1 to rand_b
+				return () -> 1L;
+			case INCREMENT_TYPE_PLUS_N:
+				if (incrementMax == null) {
+					if (random instanceof ByteRandom) {
+						return () -> {
+							// add n to rand_b, where 1 <= n <= 2^32
+							final byte[] bytes = this.random.nextBytes(4);
+							return ByteUtil.toNumber(bytes, 0, 4) + 1;
+						};
+					} else {
+						return () -> {
+							// add n to rand_b, where 1 <= n <= 2^32
+							return (this.random.nextLong() >>> 32) + 1;
+						};
+					}
+				} else {
+					final long positive = 0x7fffffffffffffffL;
+					if (random instanceof ByteRandom) {
+						// the minimum number of bits and bytes for incrementMax
+						final int bits = (int) Math.ceil(Math.log(incrementMax) / Math.log(2));
+						final int size = ((bits - 1) / Byte.SIZE) + 1;
+						return () -> {
+							// add n to rand_b, where 1 <= n <= incrementMax
+							final byte[] bytes = this.random.nextBytes(size);
+							final long random = ByteUtil.toNumber(bytes, 0, size);
+							return ((random & positive) % incrementMax) + 1;
+						};
+					} else {
+						return () -> {
+							// add n to rand_b, where 1 <= n <= incrementMax
+							return ((this.random.nextLong() & positive) % incrementMax) + 1;
+						};
+					}
+				}
+			case INCREMENT_TYPE_DEFAULT:
+			default:
+				// add 2^48 to rand_b
+				return () -> (1L << 48);
 			}
-			return this.incrementMax;
 		}
 
 		@Override
-		public TimeOrderedEpochFactory build() {
-			return new TimeOrderedEpochFactory(this);
+		public TimeOrderedEpochFactory0 build() {
+			return new TimeOrderedEpochFactory0(this);
 		}
 	}
 
@@ -212,101 +228,73 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	 * @return a UUIDv7
 	 */
 	@Override
-	public UUID create() {
-		lock.lock();
-		try {
+	public synchronized UUID create() {
 
-			final long time = clock.millis();
-			final long lastTime = state.time();
+		final long time = clock.millis();
+		final long lastTime = lastUuid.getMostSignificantBits() >>> 16;
 
-			// Check if the current time is the same as the previous time or has moved
-			// backwards after a small system clock adjustment or after a leap second.
-			// Drift tolerance = (previous_time - 10s) < current_time <= previous_time
-			if ((time > lastTime - CLOCK_DRIFT_TOLERANCE) && (time <= lastTime)) {
-				incrementFunction.accept(state);
-			} else {
-				state.reset(time, random);
-			}
-
-			return toUuid(state.msb, state.lsb);
-
-		} finally {
-			lock.unlock();
-		}
-	}
-
-	static final class State {
-
-		private long msb; // most significant bits
-		private long lsb; // least significant bits
-
-		private long time() {
-			return this.msb >>> 16;
-		}
-
-		void reset(final long time, final IRandom random) {
-			if (random instanceof ByteRandom) {
-				final byte[] bytes = random.nextBytes(10);
-				this.msb = (time << 16) | (ByteUtil.toNumber(bytes, 0, 2) & lower16Bits);
-				this.lsb = ByteUtil.toNumber(bytes, 2, 10);
-			} else {
-				this.msb = (time << 16) | (random.nextLong() & lower16Bits);
-				this.lsb = random.nextLong();
-			}
-		}
-	}
-
-	private void _incrementDefault(final State state) {
-
-		state.lsb = (state.lsb & upper16Bits);
-		state.lsb = (state.lsb | variantBits) + (1L << 48);
-		if (state.lsb == overflow) {
-			state.msb = (state.msb | versionBits) + 1L;
-		}
-
-		// And finally, randomize the lower 48 bits of the LSB.
-		state.lsb |= ByteUtil.toNumber(this.random.nextBytes(6));
-	}
-
-	private void _incrementPlusN(final State state, final LongSupplier plusNFunction) {
-		state.lsb = (state.lsb | variantBits) + plusNFunction.getAsLong();
-		if (state.lsb == overflow) {
-			state.msb = (state.msb | versionBits) + 1L;
-		}
-	}
-
-	private LongSupplier _customPlusNFunction(final Long incrementMax) {
-		if (incrementMax == INCREMENT_MAX_DEFAULT) {
-			if (random instanceof ByteRandom) {
-				return () -> {
-					// add n to rand_b, where 1 <= n <= 2^32
-					final byte[] bytes = this.random.nextBytes(4);
-					return ByteUtil.toNumber(bytes, 0, 4) + 1;
-				};
-			} else {
-				return () -> {
-					// add n to rand_b, where 1 <= n <= 2^32
-					return (this.random.nextLong() >>> 32) + 1;
-				};
-			}
+		// Check if the current time is the same as the previous time or has moved
+		// backwards after a small system clock adjustment or after a leap second.
+		// Drift tolerance = (previous_time - 10s) < current_time <= previous_time
+		if ((time > lastTime - CLOCK_DRIFT_TOLERANCE) && (time <= lastTime)) {
+			this.lastUuid = increment(this.lastUuid);
 		} else {
-			final long positive = 0x7fffffffffffffffL;
-			if (random instanceof ByteRandom) {
-				// the minimum number of bits and bytes for incrementMax
-				final int bits = (int) Math.ceil(Math.log(incrementMax) / Math.log(2));
-				final int size = ((bits - 1) / Byte.SIZE) + 1;
-				return () -> {
-					// add n to rand_b, where 1 <= n <= incrementMax
-					final byte[] bytes = this.random.nextBytes(size);
-					final long random = ByteUtil.toNumber(bytes, 0, size);
-					return ((random & positive) % incrementMax) + 1;
-				};
+			if (this.random instanceof ByteRandom) {
+				final byte[] bytes = this.random.nextBytes(10);
+				final long long1 = ByteUtil.toNumber(bytes, 0, 2);
+				final long long2 = ByteUtil.toNumber(bytes, 2, 10);
+				this.lastUuid = make(time, long1, long2);
 			} else {
-				return () -> {
-					// add n to rand_b, where 1 <= n <= incrementMax
-					return ((this.random.nextLong() & positive) % incrementMax) + 1;
-				};
+				final long long1 = this.random.nextLong();
+				final long long2 = this.random.nextLong();
+				this.lastUuid = make(time, long1, long2);
 			}
 		}
+
+		return copy(this.lastUuid);
+	}
+
+	private synchronized UUID increment(UUID uuid) {
+
+		// Used to check if an overflow occurred.
+		final long overflow = 0x0000000000000000L;
+
+		// Used to propagate increments through bits.
+		final long versionMask = 0x000000000000f000L;
+		final long variantMask = 0xc000000000000000L;
+
+		long msb = (uuid.getMostSignificantBits() | versionMask);
+		long lsb = (uuid.getLeastSignificantBits() | variantMask) + incrementSupplier.getAsLong();
+
+		if (INCREMENT_TYPE_DEFAULT == this.incrementType) {
+
+			// Used to clear the random component bits.
+			final long clearMask = 0xffff000000000000L;
+
+			// If the counter's 14 bits overflow,
+			if ((lsb & clearMask) == overflow) {
+				msb += 1; // increment the MSB.
+			}
+
+			// And finally, randomize the lower 48 bits of the LSB.
+			lsb &= clearMask; // Clear the random before randomize.
+			lsb |= ByteUtil.toNumber(this.random.nextBytes(6));
+
+		} else {
+			// If the 62 bits of the monotonic random overflow,
+			if (lsb == overflow) {
+				msb += 1; // increment the MSB.
+			}
+		}
+
+		return toUuid(msb, lsb);
+	}
+
+	private UUID make(final long time, final long long1, final long long2) {
+		return toUuid((time << 16) | (long1 & 0x000000000000ffffL), long2);
+	}
+
+	private synchronized UUID copy(UUID uuid) {
+		return toUuid(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits());
 	}
 }

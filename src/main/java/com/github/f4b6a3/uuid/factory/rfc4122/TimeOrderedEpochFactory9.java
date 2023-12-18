@@ -71,7 +71,7 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  * @see <a href="https://datatracker.ietf.org/wg/uuidrev/documents/">Revise
  *      Universally Unique Identifier Definitions (uuidrev)</a>
  */
-public final class TimeOrderedEpochFactory extends AbstCombFactory {
+public final class TimeOrderedEpochFactory9 extends AbstCombFactory {
 
 	private State state;
 
@@ -96,39 +96,39 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	private static final long lower16Bits = 0x000000000000ffffL;
 	private static final long upper16Bits = 0xffff000000000000L;
 
-	public TimeOrderedEpochFactory() {
+	public TimeOrderedEpochFactory9() {
 		this(builder());
 	}
 
-	public TimeOrderedEpochFactory(Clock clock) {
+	public TimeOrderedEpochFactory9(Clock clock) {
 		this(builder().withClock(clock));
 	}
 
-	public TimeOrderedEpochFactory(Random random) {
+	public TimeOrderedEpochFactory9(Random random) {
 		this(builder().withRandom(random));
 	}
 
-	public TimeOrderedEpochFactory(Random random, Clock clock) {
+	public TimeOrderedEpochFactory9(Random random, Clock clock) {
 		this(builder().withRandom(random).withClock(clock));
 	}
 
-	public TimeOrderedEpochFactory(LongSupplier randomFunction) {
+	public TimeOrderedEpochFactory9(LongSupplier randomFunction) {
 		this(builder().withRandomFunction(randomFunction));
 	}
 
-	public TimeOrderedEpochFactory(IntFunction<byte[]> randomFunction) {
+	public TimeOrderedEpochFactory9(IntFunction<byte[]> randomFunction) {
 		this(builder().withRandomFunction(randomFunction));
 	}
 
-	public TimeOrderedEpochFactory(LongSupplier randomFunction, Clock clock) {
+	public TimeOrderedEpochFactory9(LongSupplier randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
 
-	public TimeOrderedEpochFactory(IntFunction<byte[]> randomFunction, Clock clock) {
+	public TimeOrderedEpochFactory9(IntFunction<byte[]> randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
 
-	private TimeOrderedEpochFactory(Builder builder) {
+	private TimeOrderedEpochFactory9(Builder builder) {
 		super(UuidVersion.VERSION_TIME_ORDERED_EPOCH, builder);
 
 		switch (builder.getIncrementType()) {
@@ -145,8 +145,8 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		}
 
 		// initialize the state
-		this.state = new State(); // then reset
-		this.state.reset(clock.millis(), random);
+		state = new State(); // then reset
+		state.reset(clock.millis(), random);
 	}
 
 	/**
@@ -154,7 +154,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	 *
 	 * @see AbstCombFactory.Builder
 	 */
-	public static class Builder extends AbstCombFactory.Builder<TimeOrderedEpochFactory, Builder> {
+	public static class Builder extends AbstCombFactory.Builder<TimeOrderedEpochFactory9, Builder> {
 
 		private Integer incrementType;
 		private Long incrementMax;
@@ -192,8 +192,8 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		}
 
 		@Override
-		public TimeOrderedEpochFactory build() {
-			return new TimeOrderedEpochFactory(this);
+		public TimeOrderedEpochFactory9 build() {
+			return new TimeOrderedEpochFactory9(this);
 		}
 	}
 
@@ -213,19 +213,22 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	 */
 	@Override
 	public UUID create() {
+
+		final long time = clock.millis();
+
 		lock.lock();
 		try {
 
-			final long time = clock.millis();
 			final long lastTime = state.time();
 
-			// Check if the current time is the same as the previous time or has moved
-			// backwards after a small system clock adjustment or after a leap second.
-			// Drift tolerance = (previous_time - 10s) < current_time <= previous_time
-			if ((time > lastTime - CLOCK_DRIFT_TOLERANCE) && (time <= lastTime)) {
+			if ((time <= lastTime)) {
 				incrementFunction.accept(state);
 			} else {
-				state.reset(time, random);
+				if ((time > lastTime - CLOCK_DRIFT_TOLERANCE)) {
+					incrementFunction.accept(state);
+				} else {
+					state.reset(time, random);
+				}
 			}
 
 			return toUuid(state.msb, state.lsb);
@@ -258,12 +261,12 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 
 	private void _incrementDefault(final State state) {
 
-		state.lsb = (state.lsb & upper16Bits);
 		state.lsb = (state.lsb | variantBits) + (1L << 48);
-		if (state.lsb == overflow) {
+		if ((state.lsb & upper16Bits) == overflow) {
 			state.msb = (state.msb | versionBits) + 1L;
 		}
 
+		state.lsb &= upper16Bits; // Clear the unnecessary bits
 		// And finally, randomize the lower 48 bits of the LSB.
 		state.lsb |= ByteUtil.toNumber(this.random.nextBytes(6));
 	}
