@@ -149,6 +149,23 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>4.7.3.6</version>
+				<configuration>
+					<sarifOutput>true</sarifOutput>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<configuration>
+					<format>net.sourceforge.pmd.renderers.SarifRenderer</format>
+					<linkXRef>false</linkXRef>
+				</configuration>
+				<version>3.21.0</version>
+			</plugin>
 		</plugins>
 	</build>
 
