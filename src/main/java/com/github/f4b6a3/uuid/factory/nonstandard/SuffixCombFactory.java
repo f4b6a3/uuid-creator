@@ -106,7 +106,7 @@ public final class SuffixCombFactory extends AbstCombFactory {
 	@Override
 	public synchronized UUID create() {
 
-		final long time = clock.millis();
+		final long time = timeFunction.getAsLong();
 
 		if (this.random instanceof ByteRandom) {
 			final byte[] bytes = this.random.nextBytes(10);

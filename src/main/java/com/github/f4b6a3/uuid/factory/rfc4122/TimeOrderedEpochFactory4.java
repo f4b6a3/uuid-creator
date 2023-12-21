@@ -123,7 +123,7 @@ public final class TimeOrderedEpochFactory4 extends AbstCombFactory {
 //		this.incrementSupplier = builder.getIncrementSupplier();
 
 		// initialize internal state
-		this.lastUuid = make(clock.millis(), random.nextLong(), random.nextLong());
+		this.lastUuid = make(timeFunction.getAsLong(), random.nextLong(), random.nextLong());
 		this.state = new State(random, builder.getIncrementType(), builder.getIncrementSupplier());
 	}
 
@@ -229,7 +229,7 @@ public final class TimeOrderedEpochFactory4 extends AbstCombFactory {
 	 */
 	@Override
 	public UUID create() {
-		return this.state.next(clock.millis());
+		return this.state.next(timeFunction.getAsLong());
 	}
 
 	private UUID make(final long time, final long long1, final long long2) {

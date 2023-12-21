@@ -146,7 +146,7 @@ public final class TimeOrderedEpochFactory9 extends AbstCombFactory {
 
 		// initialize the state
 		state = new State(); // then reset
-		state.reset(clock.millis(), random);
+		state.reset(timeFunction.getAsLong(), random);
 	}
 
 	/**
@@ -214,7 +214,7 @@ public final class TimeOrderedEpochFactory9 extends AbstCombFactory {
 	@Override
 	public UUID create() {
 
-		final long time = clock.millis();
+		final long time = timeFunction.getAsLong();
 
 		lock.lock();
 		try {

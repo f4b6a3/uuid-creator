@@ -160,7 +160,7 @@ public final class TimeOrderedEpochFactory8 extends AbstCombFactory {
 
 		// initialize state
 		state = new State(); // with current time
-		this.resetFunction.accept(clock.millis());
+		this.resetFunction.accept(timeFunction.getAsLong());
 	}
 
 	/**
@@ -231,7 +231,7 @@ public final class TimeOrderedEpochFactory8 extends AbstCombFactory {
 		final long msb;
 		final long lsb;
 
-		final long time = this.clock.millis();
+		final long time = timeFunction.getAsLong();
 
 		lock.lock();
 		try {

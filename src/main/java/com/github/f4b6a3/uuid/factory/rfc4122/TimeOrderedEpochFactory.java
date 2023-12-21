@@ -28,9 +28,9 @@ import java.time.Clock;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
+import java.util.function.Supplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstCombFactory;
@@ -73,14 +73,11 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  */
 public final class TimeOrderedEpochFactory extends AbstCombFactory {
 
-	private State state;
-
-	private final Consumer<State> incrementFunction;
-	private final ReentrantLock lock = new ReentrantLock();
+	private final UuidFunction uuidFunction;
 
 	private static final int INCREMENT_TYPE_DEFAULT = 0; // add 2^48 to `rand_b`
-	private static final int INCREMENT_TYPE_PLUS_1 = 1; // add 1 to `rand_b`
-	private static final int INCREMENT_TYPE_PLUS_N = 2; // add n to `rand_b`, where 1 <= n <= 2^32-1
+	private static final int INCREMENT_TYPE_PLUS_1 = 1; // just add 1 to `rand_b`
+	private static final int INCREMENT_TYPE_PLUS_N = 2; // add a random n to `rand_b`, where 1 <= n <= 2^32
 
 	private static final long INCREMENT_MAX_DEFAULT = 0xffffffffL; // 2^32-1
 
@@ -88,8 +85,6 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	// adjusted by NTP after a small clock drift or when the
 	// system clock jumps back by 1 second due to leap second.
 	protected static final long CLOCK_DRIFT_TOLERANCE = 10_000;
-
-	private static final long overflow = 0x0000000000000000L;
 
 	private static final long versionBits = 0x000000000000f000L;
 	private static final long variantBits = 0xc000000000000000L;
@@ -133,20 +128,15 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 
 		switch (builder.getIncrementType()) {
 		case INCREMENT_TYPE_PLUS_1:
-			this.incrementFunction = (state) -> this._incrementPlusN(state, () -> 1L);
+			this.uuidFunction = new Plus1Function(random, timeFunction);
 			break;
 		case INCREMENT_TYPE_PLUS_N:
-			LongSupplier plusNFunction = _customPlusNFunction(builder.getIncrementMax());
-			this.incrementFunction = (state) -> this._incrementPlusN(state, plusNFunction);
+			this.uuidFunction = new PlusNFunction(random, timeFunction, builder.getIncrementMax());
 			break;
 		case INCREMENT_TYPE_DEFAULT:
 		default:
-			this.incrementFunction = (state) -> this._incrementDefault(state);
+			this.uuidFunction = new DefaultFunction(random, timeFunction);
 		}
-
-		// initialize the state
-		this.state = new State(); // then reset
-		this.state.reset(clock.millis(), random);
 	}
 
 	/**
@@ -213,41 +203,65 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	 */
 	@Override
 	public UUID create() {
-		lock.lock();
-		try {
-
-			final long time = clock.millis();
-			final long lastTime = state.time();
-
-			// Check if the current time is the same as the previous time or has moved
-			// backwards after a small system clock adjustment or after a leap second.
-			// Drift tolerance = (previous_time - 10s) < current_time <= previous_time
-			if ((time > lastTime - CLOCK_DRIFT_TOLERANCE) && (time <= lastTime)) {
-				incrementFunction.accept(state);
-			} else {
-				state.reset(time, random);
-			}
-
-			return toUuid(state.msb, state.lsb);
-
-		} finally {
-			lock.unlock();
-		}
+		UUID uuid = this.uuidFunction.get();
+		return toUuid(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits());
 	}
 
-	static final class State {
+	static abstract class UuidFunction implements Supplier<UUID> {
 
-		private long msb; // most significant bits
-		private long lsb; // least significant bits
+		protected long msb = 0L; // most significant bits
+		protected long lsb = 0L; // least significant bits
 
-		private long time() {
+		protected final IRandom random;
+		protected final LongSupplier timeFunction;
+		protected final ReentrantLock lock = new ReentrantLock();
+
+		protected static final long overflow = 0x0000000000000000L;
+
+		public UuidFunction(IRandom random, LongSupplier timeFunction) {
+
+			this.random = random;
+			this.timeFunction = timeFunction;
+
+			// instantiate the internal state
+			reset(this.timeFunction.getAsLong());
+		}
+
+		@Override
+		public UUID get() {
+			lock.lock();
+			try {
+
+				final long lastTime = this.time();
+				final long time = timeFunction.getAsLong();
+
+				// Check if the current time is the same as the previous time or has moved
+				// backwards after a small system clock adjustment or after a leap second.
+				// Drift tolerance = (previous_time - 10s) < current_time <= previous_time
+				if ((time > lastTime - CLOCK_DRIFT_TOLERANCE) && (time <= lastTime)) {
+					increment();
+				} else {
+					reset(time);
+				}
+
+				return new UUID(this.msb, this.lsb);
+
+			} finally {
+				lock.unlock();
+			}
+		}
+
+		// to be implemented
+		abstract void increment();
+
+		long time() {
 			return this.msb >>> 16;
 		}
 
-		void reset(final long time, final IRandom random) {
+		void reset(final long time) {
 			if (random instanceof ByteRandom) {
 				final byte[] bytes = random.nextBytes(10);
-				this.msb = (time << 16) | (ByteUtil.toNumber(bytes, 0, 2) & lower16Bits);
+				this.msb = (time << 16) | (ByteUtil.toNumber(bytes, 0, 2));
 				this.lsb = ByteUtil.toNumber(bytes, 2, 10);
 			} else {
 				this.msb = (time << 16) | (random.nextLong() & lower16Bits);
@@ -256,56 +270,106 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		}
 	}
 
-	private void _incrementDefault(final State state) {
+	static final class DefaultFunction extends UuidFunction {
 
-		state.lsb = (state.lsb & upper16Bits);
-		state.lsb = (state.lsb | variantBits) + (1L << 48);
-		if (state.lsb == overflow) {
-			state.msb = (state.msb | versionBits) + 1L;
+		public DefaultFunction(IRandom random, LongSupplier timeFunction) {
+			super(random, timeFunction);
 		}
 
-		// And finally, randomize the lower 48 bits of the LSB.
-		state.lsb |= ByteUtil.toNumber(this.random.nextBytes(6));
-	}
+		@Override
+		void increment() {
 
-	private void _incrementPlusN(final State state, final LongSupplier plusNFunction) {
-		state.lsb = (state.lsb | variantBits) + plusNFunction.getAsLong();
-		if (state.lsb == overflow) {
-			state.msb = (state.msb | versionBits) + 1L;
-		}
-	}
+			// add 2^48 to rand_b
+			this.lsb = (this.lsb & upper16Bits);
+			this.lsb = (this.lsb | variantBits) + (1L << 48);
 
-	private LongSupplier _customPlusNFunction(final Long incrementMax) {
-		if (incrementMax == INCREMENT_MAX_DEFAULT) {
-			if (random instanceof ByteRandom) {
-				return () -> {
-					// add n to rand_b, where 1 <= n <= 2^32
-					final byte[] bytes = this.random.nextBytes(4);
-					return ByteUtil.toNumber(bytes, 0, 4) + 1;
-				};
-			} else {
-				return () -> {
-					// add n to rand_b, where 1 <= n <= 2^32
-					return (this.random.nextLong() >>> 32) + 1;
-				};
+			if (this.lsb == overflow) {
+				// add 1 to rand_a if rand_b overflows
+				this.msb = (this.msb | versionBits) + 1L;
 			}
-		} else {
-			final long positive = 0x7fffffffffffffffL;
+
+			// then randomize the lower 48 bits
 			if (random instanceof ByteRandom) {
-				// the minimum number of bits and bytes for incrementMax
-				final int bits = (int) Math.ceil(Math.log(incrementMax) / Math.log(2));
-				final int size = ((bits - 1) / Byte.SIZE) + 1;
-				return () -> {
-					// add n to rand_b, where 1 <= n <= incrementMax
-					final byte[] bytes = this.random.nextBytes(size);
-					final long random = ByteUtil.toNumber(bytes, 0, size);
-					return ((random & positive) % incrementMax) + 1;
-				};
+				final byte[] bytes = random.nextBytes(6);
+				this.lsb |= ByteUtil.toNumber(bytes);
 			} else {
-				return () -> {
-					// add n to rand_b, where 1 <= n <= incrementMax
-					return ((this.random.nextLong() & positive) % incrementMax) + 1;
-				};
+				this.lsb |= this.random.nextLong() & (~upper16Bits);
+			}
+		}
+	}
+
+	static final class Plus1Function extends UuidFunction {
+
+		public Plus1Function(IRandom random, LongSupplier timeFunction) {
+			super(random, timeFunction);
+		}
+
+		@Override
+		void increment() {
+
+			// just add 1 to rand_b
+			this.lsb = (this.lsb | variantBits) + 1L;
+
+			if (this.lsb == overflow) {
+				// add 1 to rand_a if rand_b overflows
+				this.msb = (this.msb | versionBits) + 1L;
+			}
+		}
+	}
+
+	static final class PlusNFunction extends UuidFunction {
+
+		private final LongSupplier plusNFunction;
+
+		public PlusNFunction(IRandom random, LongSupplier timeFunction, Long incrementMax) {
+			super(random, timeFunction);
+			this.plusNFunction = _customPlusNFunction(random, incrementMax);
+		}
+
+		@Override
+		void increment() {
+
+			// add a random n to rand_b, where 1 <= n <= incrementMax
+			this.lsb = (this.lsb | variantBits) + plusNFunction.getAsLong();
+
+			if (this.lsb == overflow) {
+				// add 1 to rand_a if rand_b overflows
+				this.msb = (this.msb | versionBits) + 1L;
+			}
+		}
+
+		private LongSupplier _customPlusNFunction(IRandom random, Long incrementMax) {
+			if (incrementMax == INCREMENT_MAX_DEFAULT) {
+				if (random instanceof ByteRandom) {
+					return () -> {
+						// return n, where 1 <= n <= 2^32
+						final byte[] bytes = random.nextBytes(4);
+						return ByteUtil.toNumber(bytes, 0, 4) + 1;
+					};
+				} else {
+					return () -> {
+						// return n, where 1 <= n <= 2^32
+						return (random.nextLong() >>> 32) + 1;
+					};
+				}
+			} else {
+				final long positive = 0x7fffffffffffffffL;
+				if (random instanceof ByteRandom) {
+					// the minimum number of bits and bytes for incrementMax
+					final int bits = (int) Math.ceil(Math.log(incrementMax) / Math.log(2));
+					final int size = ((bits - 1) / Byte.SIZE) + 1;
+					return () -> {
+						// return n, where 1 <= n <= incrementMax
+						final byte[] bytes = random.nextBytes(size);
+						final long entropy = ByteUtil.toNumber(bytes, 0, size);
+						return ((entropy & positive) % incrementMax) + 1;
+					};
+				} else {
+					return () -> {
+						// return n, where 1 <= n <= incrementMax
+						return ((random.nextLong() & positive) % incrementMax) + 1;
+					};
+				}
 			}
 		}
 	}

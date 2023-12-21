@@ -124,7 +124,7 @@ public final class TimeOrderedEpochFactory0 extends AbstCombFactory {
 		this.incrementSupplier = builder.getIncrementSupplier();
 
 		// initialize internal state
-		this.lastUuid = make(clock.millis(), random.nextLong(), random.nextLong());
+		this.lastUuid = make(timeFunction.getAsLong(), random.nextLong(), random.nextLong());
 	}
 
 	/**
@@ -230,7 +230,7 @@ public final class TimeOrderedEpochFactory0 extends AbstCombFactory {
 	@Override
 	public synchronized UUID create() {
 
-		final long time = clock.millis();
+		final long time = timeFunction.getAsLong();
 		final long lastTime = lastUuid.getMostSignificantBits() >>> 16;
 
 		// Check if the current time is the same as the previous time or has moved

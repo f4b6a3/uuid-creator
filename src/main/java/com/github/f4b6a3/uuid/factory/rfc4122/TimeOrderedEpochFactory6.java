@@ -137,7 +137,7 @@ public final class TimeOrderedEpochFactory6 extends AbstCombFactory {
 		this.incrementSupplier = builder.getIncrementSupplier();
 
 		// initialize state
-		reset(clock.millis(), this.random.nextBytes(10));
+		reset(timeFunction.getAsLong(), this.random.nextBytes(10));
 	}
 
 	/**
@@ -246,7 +246,7 @@ public final class TimeOrderedEpochFactory6 extends AbstCombFactory {
 		lock.lock();
 
 		try {
-			final long time = this.clock.millis();
+			final long time = timeFunction.getAsLong();
 			if (repeated(time)) {
 				return increment();
 			} else {
