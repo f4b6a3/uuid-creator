@@ -37,7 +37,6 @@ import com.github.f4b6a3.uuid.enums.UuidVersion;
 public abstract class AbstCombFactory extends AbstRandomBasedFactory {
 
 	protected LongSupplier timeFunction;
-	protected static final Clock DEFAULT_CLOCK = Clock.systemUTC();
 
 	protected AbstCombFactory(UuidVersion version, Builder<?, ?> builder) {
 		super(version, builder);

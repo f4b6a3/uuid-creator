@@ -36,7 +36,6 @@ import com.github.f4b6a3.uuid.util.UuidValidator;
  * <p>
  * The URN representation adds the prefix 'urn:uuid:' to a UUID canonical
  * representation.
- * <p>
  * 
  * @see InvalidUuidException
  * @see <a href= "https://github.com/f4b6a3/uuid-creator/issues/32">UUID

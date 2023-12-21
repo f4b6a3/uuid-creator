@@ -34,6 +34,7 @@ import java.util.function.Supplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstCombFactory;
+import com.github.f4b6a3.uuid.factory.nonstandard.PrefixCombFactory;
 import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
@@ -44,7 +45,6 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  * Prefix COMB GUID and ULID.
  * <p>
  * This factory creates 3 types:
- * <p>
  * <ul>
  * <li><b>Type 1 (default)</b>: this type is divided in 3 components, namely
  * time, counter and random. The counter component is incremented by 1 when the

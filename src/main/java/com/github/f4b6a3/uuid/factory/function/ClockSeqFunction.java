@@ -115,7 +115,6 @@ public interface ClockSeqFunction extends LongUnaryOperator {
 		 * Take a random value from the pool.
 		 * 
 		 * @return the random value to be borrowed if not used
-		 * @see {@link ClockSeqPool#take(int)}
 		 */
 		public synchronized int random() {
 			// Choose a random number between 0 and 16383

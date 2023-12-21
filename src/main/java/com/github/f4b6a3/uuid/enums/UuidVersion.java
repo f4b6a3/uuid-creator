@@ -38,7 +38,7 @@ package com.github.f4b6a3.uuid.enums;
  * <li>{@link VERSION_TIME_ORDERED}: 6
  * <li>{@link VERSION_TIME_ORDERED_EPOCH}: 7
  * <li>{@link VERSION_CUSTOM}: 8
- * <ul>
+ * </ul>
  */
 public enum UuidVersion {
 
