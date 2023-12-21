@@ -127,7 +127,7 @@ public final class ShortPrefixCombFactory extends AbstCombFactory {
 	@Override
 	public synchronized UUID create() {
 
-		final long time = clock.millis() / interval;
+		final long time = timeFunction.getAsLong() / interval;
 
 		if (this.random instanceof ByteRandom) {
 			final byte[] bytes = this.random.nextBytes(14);
