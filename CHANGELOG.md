@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [5.3.7] - 2023-12-22
+
+Regular maintenance.
+
 ## [5.3.6] - 2023-12-21
 
 Refactor UUID version 7 factory. #98
@@ -393,7 +397,8 @@ Remove `Fingerprint` // too complex
 -   Removed UuidSettings.getNodeIdentifierDeprecated // remove deprecated
 -   Renamed UuidSettings to UuidCreatorSettings
 
-[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.6...HEAD
+[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.7...HEAD
+[5.3.7]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.6...uuid-creator-5.3.7
 [5.3.6]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.5...uuid-creator-5.3.6
 [5.3.5]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.4...uuid-creator-5.3.5
 [5.3.4]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.3...uuid-creator-5.3.4
