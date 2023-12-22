@@ -104,19 +104,22 @@ public final class SuffixCombFactory extends AbstCombFactory {
 	 * @return a UUIDv4
 	 */
 	@Override
-	public synchronized UUID create() {
-
-		final long time = timeFunction.getAsLong();
-
-		if (this.random instanceof ByteRandom) {
-			final byte[] bytes = this.random.nextBytes(10);
-			final long long1 = ByteUtil.toNumber(bytes, 0, 8);
-			final long long2 = ByteUtil.toNumber(bytes, 8, 10);
-			return make(time, long1, long2);
-		} else {
-			final long long1 = this.random.nextLong();
-			final long long2 = this.random.nextLong();
-			return make(time, long1, long2);
+	public UUID create() {
+		lock.lock();
+		try {
+			final long time = timeFunction.getAsLong();
+			if (this.random instanceof ByteRandom) {
+				final byte[] bytes = this.random.nextBytes(10);
+				final long long1 = ByteUtil.toNumber(bytes, 0, 8);
+				final long long2 = ByteUtil.toNumber(bytes, 8, 10);
+				return make(time, long1, long2);
+			} else {
+				final long long1 = this.random.nextLong();
+				final long long2 = this.random.nextLong();
+				return make(time, long1, long2);
+			}
+		} finally {
+			lock.unlock();
 		}
 	}
 

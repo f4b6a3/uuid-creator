@@ -96,16 +96,21 @@ public final class RandomBasedFactory extends AbstRandomBasedFactory {
 	 * @return a random-based UUID
 	 */
 	@Override
-	public synchronized UUID create() {
-		if (this.random instanceof ByteRandom) {
-			final byte[] bytes = this.random.nextBytes(16);
-			final long msb = ByteUtil.toNumber(bytes, 0, 8);
-			final long lsb = ByteUtil.toNumber(bytes, 8, 16);
-			return toUuid(msb, lsb);
-		} else {
-			final long msb = this.random.nextLong();
-			final long lsb = this.random.nextLong();
-			return toUuid(msb, lsb);
+	public UUID create() {
+		lock.lock();
+		try {
+			if (this.random instanceof ByteRandom) {
+				final byte[] bytes = this.random.nextBytes(16);
+				final long msb = ByteUtil.toNumber(bytes, 0, 8);
+				final long lsb = ByteUtil.toNumber(bytes, 8, 16);
+				return toUuid(msb, lsb);
+			} else {
+				final long msb = this.random.nextLong();
+				final long lsb = this.random.nextLong();
+				return toUuid(msb, lsb);
+			}
+		} finally {
+			lock.unlock();
 		}
 	}
 }

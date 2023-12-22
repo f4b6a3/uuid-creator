@@ -26,6 +26,7 @@ package com.github.f4b6a3.uuid.factory;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.function.ClockSeqFunction;
@@ -107,6 +108,8 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 	private static final String NODE_HASH = "hash";
 	private static final String NODE_RANDOM = "random";
 
+	protected final ReentrantLock lock = new ReentrantLock();
+
 	private static final long EPOCH_TIMESTAMP = TimeFunction.toUnixTimestamp(UuidTime.EPOCH_GREG);
 
 	/**
@@ -128,24 +131,30 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 	 * @return a time-based UUID
 	 */
 	@Override
-	public synchronized UUID create() {
+	public UUID create() {
+		lock.lock();
+		try {
 
-		// Get the time stamp
-		final long timestamp = TimeFunction.toExpectedRange(this.timeFunction.getAsLong() - EPOCH_TIMESTAMP);
+			// Get the time stamp
+			final long timestamp = TimeFunction.toExpectedRange(this.timeFunction.getAsLong() - EPOCH_TIMESTAMP);
 
-		// Get the node identifier
-		final long nodeIdentifier = NodeIdFunction.toExpectedRange(this.nodeidFunction.getAsLong());
+			// Get the node identifier
+			final long nodeIdentifier = NodeIdFunction.toExpectedRange(this.nodeidFunction.getAsLong());
 
-		// Get the clock sequence
-		final long clockSequence = ClockSeqFunction.toExpectedRange(this.clockseqFunction.applyAsLong(timestamp));
+			// Get the clock sequence
+			final long clockSequence = ClockSeqFunction.toExpectedRange(this.clockseqFunction.applyAsLong(timestamp));
 
-		// Format the most significant bits
-		final long msb = this.formatMostSignificantBits(timestamp);
+			// Format the most significant bits
+			final long msb = this.formatMostSignificantBits(timestamp);
 
-		// Format the least significant bits
-		final long lsb = this.formatLeastSignificantBits(nodeIdentifier, clockSequence);
+			// Format the least significant bits
+			final long lsb = this.formatLeastSignificantBits(nodeIdentifier, clockSequence);
 
-		return new UUID(msb, lsb);
+			return new UUID(msb, lsb);
+
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	/**

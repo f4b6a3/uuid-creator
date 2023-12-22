@@ -27,6 +27,7 @@ package com.github.f4b6a3.uuid.factory;
 import java.security.SecureRandom;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
 
@@ -45,6 +46,8 @@ public abstract class AbstRandomBasedFactory extends UuidFactory implements NoAr
 	protected final IRandom random;
 
 	protected static final int UUID_BYTES = 16;
+
+	protected final ReentrantLock lock = new ReentrantLock();
 
 	protected AbstRandomBasedFactory(UuidVersion version, Builder<?, ?> builder) {
 		super(version);
@@ -79,7 +82,7 @@ public abstract class AbstRandomBasedFactory extends UuidFactory implements NoAr
 			}
 			return (B) this;
 		}
-		
+
 		@SuppressWarnings("unchecked")
 		public B withFastRandom() {
 			this.random = new LongRandom(() -> ThreadLocalRandom.current().nextLong());
