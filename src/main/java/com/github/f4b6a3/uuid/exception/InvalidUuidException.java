@@ -33,10 +33,21 @@ public final class InvalidUuidException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Default constructor with a message.
+	 * 
+	 * @param message a message
+	 */
 	public InvalidUuidException(String message) {
 		super(message);
 	}
 
+	/**
+	 * Default constructor with a message and the cause.
+	 * 
+	 * @param message a message
+	 * @param cause   the cause
+	 */
 	public InvalidUuidException(String message, Throwable cause) {
 		super(message, cause);
 	}

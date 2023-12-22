@@ -43,6 +43,11 @@ public final class BaseNRemainderDecoder extends BaseNDecoder {
 
 	private static final long MASK = 0x00000000ffffffffL;
 
+	/**
+	 * Constructor with a base-n.
+	 * 
+	 * @param base a base-n
+	 */
 	public BaseNRemainderDecoder(BaseN base) {
 		super(base);
 		multiplier = base.getRadix();
@@ -76,6 +81,14 @@ public final class BaseNRemainderDecoder extends BaseNDecoder {
 	}
 
 	// multiply a long as unsigned 64 bit integer
+	/**
+	 * Multiply a long as unsigned 64 bit integer
+	 * 
+	 * @param x          a number to be multiplied
+	 * @param multiplier a multiplier
+	 * @param rem        the reminder
+	 * @return an array of longs
+	 */
 	protected static long[] multiply(final long x, final long multiplier, final long rem) {
 
 		long mul;

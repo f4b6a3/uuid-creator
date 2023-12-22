@@ -46,6 +46,9 @@ public final class DceSecurityFactory extends AbstTimeBasedFactory {
 
 	private final byte localDomain;
 
+	/**
+	 * Default constructor.
+	 */
 	public DceSecurityFactory() {
 		this(builder());
 	}
@@ -74,11 +77,23 @@ public final class DceSecurityFactory extends AbstTimeBasedFactory {
 
 		private byte localDomain;
 
+		/**
+		 * Set the local domain.
+		 * 
+		 * @param localDomain the local domain
+		 * @return the builder
+		 */
 		public Builder withLocalDomain(UuidLocalDomain localDomain) {
 			this.localDomain = localDomain.getValue();
 			return this;
 		}
 
+		/**
+		 * Set the local domain.
+		 * 
+		 * @param localDomain the local domain
+		 * @return the builder
+		 */
 		public Builder withLocalDomain(byte localDomain) {
 			this.localDomain = localDomain;
 			return this;
@@ -108,16 +123,16 @@ public final class DceSecurityFactory extends AbstTimeBasedFactory {
 	 * @param localIdentifier a local identifier
 	 * @return a DCE Security UUID
 	 */
-	public synchronized UUID create(byte localDomain, int localIdentifier) {
+	public UUID create(byte localDomain, int localIdentifier) {
 
 		// Create a UUIDv1
 		UUID uuid = super.create();
 
 		// Embed the local domain bits
-		long lsb = embedLocalDomain(uuid.getLeastSignificantBits(), localDomain, this.counter.incrementAndGet());
+		final long lsb = embedLocalDomain(uuid.getLeastSignificantBits(), localDomain, this.counter.incrementAndGet());
 
 		// Embed the local identifier bits
-		long msb = emgedLocalIdentifier(uuid.getMostSignificantBits(), localIdentifier);
+		final long msb = emgedLocalIdentifier(uuid.getMostSignificantBits(), localIdentifier);
 
 		return toUuid(msb, lsb);
 	}
@@ -129,7 +144,7 @@ public final class DceSecurityFactory extends AbstTimeBasedFactory {
 	 * @param localIdentifier a local identifier
 	 * @return a DCE Security UUID
 	 */
-	public synchronized UUID create(UuidLocalDomain localDomain, int localIdentifier) {
+	public UUID create(UuidLocalDomain localDomain, int localIdentifier) {
 		return create(localDomain.getValue(), localIdentifier);
 	}
 
@@ -145,7 +160,7 @@ public final class DceSecurityFactory extends AbstTimeBasedFactory {
 	 * @param localIdentifier a local identifier
 	 * @return a UUIDv2
 	 */
-	public synchronized UUID create(int localIdentifier) {
+	public UUID create(int localIdentifier) {
 		return create(this.localDomain, localIdentifier);
 	}
 
@@ -155,10 +170,10 @@ public final class DceSecurityFactory extends AbstTimeBasedFactory {
 	 * Overrides the method {@link AbstTimeBasedFactory#create()} to throw an
 	 * exception instead of returning a UUID.
 	 * 
-	 * @throws UnsupportedOperationException
+	 * @throws UnsupportedOperationException always
 	 */
 	@Override
-	public synchronized UUID create() {
+	public UUID create() {
 		throw new UnsupportedOperationException("Unsuported operation for DCE Security UUID factory");
 	}
 

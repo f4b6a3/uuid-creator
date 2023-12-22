@@ -34,6 +34,9 @@ import com.github.f4b6a3.uuid.factory.AbstTimeBasedFactory;
  */
 public final class TimeBasedFactory extends AbstTimeBasedFactory {
 
+	/**
+	 * Default constructor.
+	 */
 	public TimeBasedFactory() {
 		this(builder());
 	}

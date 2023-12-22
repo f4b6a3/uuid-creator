@@ -66,10 +66,21 @@ public enum UuidNamespace {
 		this.value = value;
 	}
 
+	/**
+	 * Get the UUID value
+	 * 
+	 * @return a UUID
+	 */
 	public UUID getValue() {
 		return this.value;
 	}
 
+	/**
+	 * Get the enum value.
+	 * 
+	 * @param value a UUID.
+	 * @return the enum
+	 */
 	public static UuidNamespace getNamespace(UUID value) {
 		for (UuidNamespace namespace : UuidNamespace.values()) {
 			if (namespace.getValue().equals(value)) {

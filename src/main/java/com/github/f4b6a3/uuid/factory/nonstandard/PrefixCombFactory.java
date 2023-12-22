@@ -48,34 +48,77 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  */
 public final class PrefixCombFactory extends AbstCombFactory {
 
+	/**
+	 * Default constructor.
+	 */
 	public PrefixCombFactory() {
 		this(builder());
 	}
 
+	/**
+	 * Constructor with a clock.
+	 * 
+	 * @param clock a clock
+	 */
 	public PrefixCombFactory(Clock clock) {
 		this(builder().withClock(clock));
 	}
 
+	/**
+	 * Constructor with a random.
+	 * 
+	 * @param random a random generator
+	 */
 	public PrefixCombFactory(Random random) {
 		this(builder().withRandom(random));
 	}
 
+	/**
+	 * Constructor with a random and a clock.
+	 * 
+	 * @param random a random
+	 * @param clock  a clock
+	 */
 	public PrefixCombFactory(Random random, Clock clock) {
 		this(builder().withRandom(random).withClock(clock));
 	}
 
+	/**
+	 * Constructor with a function which return random numbers.
+	 * 
+	 * @param randomFunction a function
+	 */
 	public PrefixCombFactory(LongSupplier randomFunction) {
 		this(builder().withRandomFunction(randomFunction));
 	}
 
+	/**
+	 * Constructor with a function which returns random arrays of bytes.
+	 * 
+	 * @param randomFunction a function
+	 */
 	public PrefixCombFactory(IntFunction<byte[]> randomFunction) {
 		this(builder().withRandomFunction(randomFunction));
 	}
 
+	/**
+	 * Constructor with a function which a function which return random numbers and
+	 * a clock.
+	 * 
+	 * @param randomFunction a function
+	 * @param clock          a clock
+	 */
 	public PrefixCombFactory(LongSupplier randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
 
+	/**
+	 * Constructor with a function which a function which returns random arrays of
+	 * bytes and a clock.
+	 * 
+	 * @param randomFunction a function
+	 * @param clock          a clock
+	 */
 	public PrefixCombFactory(IntFunction<byte[]> randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
@@ -84,6 +127,9 @@ public final class PrefixCombFactory extends AbstCombFactory {
 		super(UuidVersion.VERSION_RANDOM_BASED, builder);
 	}
 
+	/**
+	 * Builder of factories.
+	 */
 	public static class Builder extends AbstCombFactory.Builder<PrefixCombFactory, Builder> {
 		@Override
 		public PrefixCombFactory build() {
@@ -91,6 +137,11 @@ public final class PrefixCombFactory extends AbstCombFactory {
 		}
 	}
 
+	/**
+	 * Returns a new builder.
+	 * 
+	 * @return a builder
+	 */
 	public static Builder builder() {
 		return new Builder();
 	}
@@ -101,19 +152,22 @@ public final class PrefixCombFactory extends AbstCombFactory {
 	 * @return a UUIDv4
 	 */
 	@Override
-	public synchronized UUID create() {
-
-		final long time = clock.millis();
-
-		if (this.random instanceof ByteRandom) {
-			final byte[] bytes = this.random.nextBytes(10);
-			final long long1 = ByteUtil.toNumber(bytes, 0, 2);
-			final long long2 = ByteUtil.toNumber(bytes, 2, 10);
-			return make(time, long1, long2);
-		} else {
-			final long long1 = this.random.nextLong();
-			final long long2 = this.random.nextLong();
-			return make(time, long1, long2);
+	public UUID create() {
+		lock.lock();
+		try {
+			final long time = timeFunction.getAsLong();
+			if (this.random instanceof ByteRandom) {
+				final byte[] bytes = this.random.nextBytes(10);
+				final long long1 = ByteUtil.toNumber(bytes, 0, 2);
+				final long long2 = ByteUtil.toNumber(bytes, 2, 10);
+				return make(time, long1, long2);
+			} else {
+				final long long1 = this.random.nextLong();
+				final long long2 = this.random.nextLong();
+				return make(time, long1, long2);
+			}
+		} finally {
+			lock.unlock();
 		}
 	}
 

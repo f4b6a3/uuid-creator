@@ -41,10 +41,22 @@ public final class BaseN {
 	private final CharArray alphabet;
 	private final LongArray map;
 
+	/**
+	 * The minimum radix: 2.
+	 */
 	protected static final int RADIX_MIN = 2;
+	/**
+	 * The maximum radix: 64.
+	 */
 	protected static final int RADIX_MAX = 64;
 
+	/**
+	 * The default alphabet for case-insensitive base-n.
+	 */
 	protected static final String ALPHABET_36 = "0123456789abcdefghijklmnopqrstuvwxyz";
+	/**
+	 * The default alphabet for case-sensitive base-n.
+	 */
 	protected static final String ALPHABET_64 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
 
 	private static final int BIT_LENGTH = 128;

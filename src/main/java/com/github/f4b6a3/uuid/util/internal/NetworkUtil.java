@@ -93,6 +93,7 @@ public final class NetworkUtil {
 	 * <p>
 	 * Output format: "00-00-00-00-00-00" (in upper case)
 	 * 
+	 * @param nic a network interface
 	 * @return a string containing the MAC address
 	 */
 	public static synchronized String mac(NetworkInterface nic) {
@@ -124,6 +125,7 @@ public final class NetworkUtil {
 	 * <p>
 	 * Output format: "0.0.0.0" (if IPv4)
 	 * 
+	 * @param nic a network interface
 	 * @return a string containing the IP address
 	 */
 	public static synchronized String ip(NetworkInterface nic) {
@@ -223,13 +225,13 @@ public final class NetworkUtil {
 	/**
 	 * Checks if the network interface is acceptable.
 	 * 
-	 * @param ni a network interface
+	 * @param nic a network interface
 	 * @return true if acceptable
 	 */
-	private static synchronized boolean acceptable(NetworkInterface ni) {
+	private static synchronized boolean acceptable(NetworkInterface nic) {
 		try {
-			if (ni != null && ni.isUp() && !ni.isLoopback() && !ni.isVirtual()) {
-				byte[] mac = ni.getHardwareAddress();
+			if (nic != null && nic.isUp() && !nic.isLoopback() && !nic.isVirtual()) {
+				byte[] mac = nic.getHardwareAddress();
 				if (mac != null && mac.length == 6) {
 					return true;
 				}

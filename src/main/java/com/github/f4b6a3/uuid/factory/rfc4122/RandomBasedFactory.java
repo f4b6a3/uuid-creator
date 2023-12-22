@@ -38,18 +38,36 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  */
 public final class RandomBasedFactory extends AbstRandomBasedFactory {
 
+	/**
+	 * Default constructor.
+	 */
 	public RandomBasedFactory() {
 		this(builder());
 	}
 
+	/**
+	 * Constructor with a {@link Random} instance.
+	 * 
+	 * @param random a {@link Random} instance
+	 */
 	public RandomBasedFactory(Random random) {
 		this(builder().withRandom(random));
 	}
 
+	/**
+	 * Constructor with a function which returns random number.
+	 * 
+	 * @param randomSupplier a function
+	 */
 	public RandomBasedFactory(LongSupplier randomSupplier) {
 		this(builder().withRandomFunction(randomSupplier));
 	}
 
+	/**
+	 * Constructor with a function which returns a byte array.
+	 * 
+	 * @param randomFunction a function
+	 */
 	public RandomBasedFactory(IntFunction<byte[]> randomFunction) {
 		this(builder().withRandomFunction(randomFunction));
 	}
@@ -96,16 +114,21 @@ public final class RandomBasedFactory extends AbstRandomBasedFactory {
 	 * @return a random-based UUID
 	 */
 	@Override
-	public synchronized UUID create() {
-		if (this.random instanceof ByteRandom) {
-			final byte[] bytes = this.random.nextBytes(16);
-			final long msb = ByteUtil.toNumber(bytes, 0, 8);
-			final long lsb = ByteUtil.toNumber(bytes, 8, 16);
-			return toUuid(msb, lsb);
-		} else {
-			final long msb = this.random.nextLong();
-			final long lsb = this.random.nextLong();
-			return toUuid(msb, lsb);
+	public UUID create() {
+		lock.lock();
+		try {
+			if (this.random instanceof ByteRandom) {
+				final byte[] bytes = this.random.nextBytes(16);
+				final long msb = ByteUtil.toNumber(bytes, 0, 8);
+				final long lsb = ByteUtil.toNumber(bytes, 8, 16);
+				return toUuid(msb, lsb);
+			} else {
+				final long msb = this.random.nextLong();
+				final long lsb = this.random.nextLong();
+				return toUuid(msb, lsb);
+			}
+		} finally {
+			lock.unlock();
 		}
 	}
 }

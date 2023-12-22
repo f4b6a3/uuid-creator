@@ -43,9 +43,14 @@ public final class Base32Codec extends BaseNCodec {
 
 	private static final BaseN BASE_N = new BaseN("a-z2-7");
 
-	// a shared immutable instance
+	/**
+	 * A shared immutable instance.
+	 */
 	public static final Base32Codec INSTANCE = new Base32Codec();
 
+	/**
+	 * Default constructor.
+	 */
 	public Base32Codec() {
 		super(BASE_N, new Base32Encoder(BASE_N), new Base32Decoder(BASE_N));
 	}

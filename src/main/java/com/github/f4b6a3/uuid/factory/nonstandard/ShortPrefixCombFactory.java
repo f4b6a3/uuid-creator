@@ -52,38 +52,87 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  */
 public final class ShortPrefixCombFactory extends AbstCombFactory {
 
-	// interval in milliseconds
+	/**
+	 * Interval in milliseconds.
+	 */
 	protected final int interval;
+
+	/**
+	 * Default interval of 60 seconds in milliseconds.
+	 */
 	protected static final int DEFAULT_INTERVAL = 60_000;
 
+	/**
+	 * Default constructor.
+	 */
 	public ShortPrefixCombFactory() {
 		this(builder());
 	}
 
+	/**
+	 * Constructor with a clock.
+	 * 
+	 * @param clock a clock
+	 */
 	public ShortPrefixCombFactory(Clock clock) {
 		this(builder().withClock(clock));
 	}
 
+	/**
+	 * Constructor with a random.
+	 * 
+	 * @param random a random generator
+	 */
 	public ShortPrefixCombFactory(Random random) {
 		this(builder().withRandom(random));
 	}
 
+	/**
+	 * Constructor with a random and a clock.
+	 * 
+	 * @param random a random
+	 * @param clock  a clock
+	 */
 	public ShortPrefixCombFactory(Random random, Clock clock) {
 		this(builder().withRandom(random).withClock(clock));
 	}
 
+	/**
+	 * Constructor with a function which return random numbers.
+	 * 
+	 * @param randomFunction a function
+	 */
 	public ShortPrefixCombFactory(LongSupplier randomFunction) {
 		this(builder().withRandomFunction(randomFunction));
 	}
 
+	/**
+	 * Constructor with a function which returns random arrays of bytes.
+	 * 
+	 * @param randomFunction a function
+	 */
 	public ShortPrefixCombFactory(IntFunction<byte[]> randomFunction) {
 		this(builder().withRandomFunction(randomFunction));
 	}
 
+	/**
+	 * Constructor with a function which a function which return random numbers and
+	 * a clock.
+	 * 
+	 * @param randomFunction a function
+	 * @param clock          a clock
+	 */
 	public ShortPrefixCombFactory(LongSupplier randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
 
+	/**
+	 * Constructor with a function which a function which returns random arrays of
+	 * bytes and a clock.
+	 * 
+	 * @param randomFunction a function
+	 * @param clock          a clock
+	 */
 	public ShortPrefixCombFactory(IntFunction<byte[]> randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
@@ -93,10 +142,18 @@ public final class ShortPrefixCombFactory extends AbstCombFactory {
 		this.interval = builder.getInterval();
 	}
 
+	/**
+	 * A builder of factories.
+	 */
 	public static class Builder extends AbstCombFactory.Builder<ShortPrefixCombFactory, Builder> {
 
 		private Integer interval;
 
+		/**
+		 * Get the interval in milliseconds.
+		 * 
+		 * @return the interval in milliseconds.
+		 */
 		protected int getInterval() {
 			if (this.interval == null) {
 				this.interval = DEFAULT_INTERVAL;
@@ -104,6 +161,12 @@ public final class ShortPrefixCombFactory extends AbstCombFactory {
 			return this.interval;
 		}
 
+		/**
+		 * Set the interval in milliseconds.
+		 * 
+		 * @param interval the interval in milliseconds
+		 * @return the builder
+		 */
 		public Builder withInterval(int interval) {
 			this.interval = interval;
 			return this;
@@ -115,6 +178,11 @@ public final class ShortPrefixCombFactory extends AbstCombFactory {
 		}
 	}
 
+	/**
+	 * Returns a new builder.
+	 * 
+	 * @return a builder
+	 */
 	public static Builder builder() {
 		return new Builder();
 	}
@@ -125,20 +193,22 @@ public final class ShortPrefixCombFactory extends AbstCombFactory {
 	 * @return a UUIDv4
 	 */
 	@Override
-	public synchronized UUID create() {
-
-		final long time = clock.millis() / interval;
-
-		if (this.random instanceof ByteRandom) {
-			final byte[] bytes = this.random.nextBytes(14);
-			final long long1 = ByteUtil.toNumber(bytes, 0, 6);
-			final long long2 = ByteUtil.toNumber(bytes, 6, 14);
-			return make(time, long1, long2);
-
-		} else {
-			final long long1 = this.random.nextLong();
-			final long long2 = this.random.nextLong();
-			return make(time, long1, long2);
+	public UUID create() {
+		lock.lock();
+		try {
+			final long time = timeFunction.getAsLong() / interval;
+			if (this.random instanceof ByteRandom) {
+				final byte[] bytes = this.random.nextBytes(14);
+				final long long1 = ByteUtil.toNumber(bytes, 0, 6);
+				final long long2 = ByteUtil.toNumber(bytes, 6, 14);
+				return make(time, long1, long2);
+			} else {
+				final long long1 = this.random.nextLong();
+				final long long2 = this.random.nextLong();
+				return make(time, long1, long2);
+			}
+		} finally {
+			lock.unlock();
 		}
 	}
 

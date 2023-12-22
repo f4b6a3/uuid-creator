@@ -58,8 +58,14 @@ public final class GUID implements Serializable, Comparable<GUID> {
 
 	private static final long serialVersionUID = -6082258105369032877L;
 
-	private final long msb; // most significant bits
-	private final long lsb; // least significant bits
+	/**
+	 * The most significant bits.
+	 */
+	private final long msb;
+	/**
+	 * The least significant bits.
+	 */
+	private final long lsb;
 
 	/**
 	 * A special GUID that has all 128 bits set to ZERO.
@@ -334,7 +340,6 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * <pre>{@code
 	 * GUID guid = GUID.v8(Uuid.NAMESPACE_DNS, "www.example.com");
 	 * }</pre>
-	 * <p>
 	 * 
 	 * @deprecated This method is no longer supported due to recent sudden changes
 	 *             in the UUIDv8 discussions. It will be removed when the new RFC is

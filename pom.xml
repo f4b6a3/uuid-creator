@@ -3,7 +3,7 @@
 
 	<groupId>com.github.f4b6a3</groupId>
 	<artifactId>uuid-creator</artifactId>
-	<version>5.3.6-SNAPSHOT</version>
+	<version>5.3.7-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>uuid-creator</name>
@@ -128,7 +128,7 @@
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
 				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.8</version>
+				<version>1.6.13</version>
 				<extensions>true</extensions>
 				<configuration>
 					<serverId>ossrh</serverId>
@@ -148,6 +148,23 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>4.7.3.6</version>
+				<configuration>
+					<sarifOutput>true</sarifOutput>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<configuration>
+					<format>net.sourceforge.pmd.renderers.SarifRenderer</format>
+					<linkXRef>false</linkXRef>
+				</configuration>
+				<version>3.21.0</version>
 			</plugin>
 		</plugins>
 	</build>

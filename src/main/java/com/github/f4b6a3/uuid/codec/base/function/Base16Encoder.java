@@ -39,6 +39,11 @@ public final class Base16Encoder extends BaseNEncoder {
 
 	private static final int CHAR_LENGTH = 32;
 
+	/**
+	 * Constructor with a base-n.
+	 * 
+	 * @param base a base-n
+	 */
 	public Base16Encoder(BaseN base) {
 		super(base);
 	}

@@ -38,18 +38,36 @@ import com.github.f4b6a3.uuid.factory.AbstNameBasedFactory;
  */
 public final class NameBasedSha1Factory extends AbstNameBasedFactory {
 
+	/**
+	 * Default constructor.
+	 */
 	public NameBasedSha1Factory() {
 		this((byte[]) null);
 	}
 
+	/**
+	 * Constructor with a namespace.
+	 * 
+	 * @param namespace a namespace
+	 */
 	public NameBasedSha1Factory(UUID namespace) {
 		this(bytes(namespace));
 	}
 
+	/**
+	 * Constructor with a namespace.
+	 * 
+	 * @param namespace a namespace
+	 */
 	public NameBasedSha1Factory(String namespace) {
 		this(bytes(namespace));
 	}
 
+	/**
+	 * Constructor with a namespace.
+	 * 
+	 * @param namespace a namespace
+	 */
 	public NameBasedSha1Factory(UuidNamespace namespace) {
 		this(bytes(namespace));
 	}

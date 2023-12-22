@@ -42,9 +42,14 @@ public final class Base16Codec extends BaseNCodec {
 
 	private static final BaseN BASE_N = new BaseN("0-9a-f");
 
-	// a shared immutable instance
+	/**
+	 * A shared immutable instance.
+	 */
 	public static final Base16Codec INSTANCE = new Base16Codec();
 
+	/**
+	 * Default constructor.
+	 */
 	public Base16Codec() {
 		super(BASE_N, new Base16Encoder(BASE_N), new Base16Decoder(BASE_N));
 	}

@@ -38,18 +38,36 @@ import com.github.f4b6a3.uuid.factory.AbstNameBasedFactory;
  */
 public final class NameBasedMd5Factory extends AbstNameBasedFactory {
 
+	/**
+	 * Default constructor.
+	 */
 	public NameBasedMd5Factory() {
 		this((byte[]) null);
 	}
 
+	/**
+	 * Constructor with a namespace.
+	 * 
+	 * @param namespace a namespace
+	 */
 	public NameBasedMd5Factory(UUID namespace) {
 		this(bytes(namespace));
 	}
 
+	/**
+	 * Constructor with a namespace.
+	 * 
+	 * @param namespace a namespace
+	 */
 	public NameBasedMd5Factory(String namespace) {
 		this(bytes(namespace));
 	}
 
+	/**
+	 * Constructor with a namespace.
+	 * 
+	 * @param namespace a namespace
+	 */
 	public NameBasedMd5Factory(UuidNamespace namespace) {
 		this(bytes(namespace));
 	}

@@ -25,6 +25,7 @@
 package com.github.f4b6a3.uuid.factory;
 
 import java.time.Clock;
+import java.util.function.LongSupplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 
@@ -35,12 +36,20 @@ import com.github.f4b6a3.uuid.enums.UuidVersion;
  */
 public abstract class AbstCombFactory extends AbstRandomBasedFactory {
 
-	protected Clock clock;
-	protected static final Clock DEFAULT_CLOCK = Clock.systemUTC();
+	/**
+	 * The time function.
+	 */
+	protected LongSupplier timeFunction;
 
+	/**
+	 * Constructor whith a version number and a builder.
+	 * 
+	 * @param version a version number
+	 * @param builder a builder
+	 */
 	protected AbstCombFactory(UuidVersion version, Builder<?, ?> builder) {
 		super(version, builder);
-		this.clock = builder.getClock();
+		this.timeFunction = builder.getTimeFunction();
 	}
 
 	/**
@@ -52,18 +61,46 @@ public abstract class AbstCombFactory extends AbstRandomBasedFactory {
 	 */
 	public abstract static class Builder<T, B extends Builder<T, B>> extends AbstRandomBasedFactory.Builder<T, B> {
 
-		protected Clock clock;
+		/**
+		 * The time function.
+		 */
+		protected LongSupplier timeFunction;
 
-		protected Clock getClock() {
-			if (this.clock == null) {
-				this.clock = DEFAULT_CLOCK;
+		/**
+		 * Get the time function.
+		 * 
+		 * @return the builder
+		 */
+		protected LongSupplier getTimeFunction() {
+			if (this.timeFunction == null) {
+				this.timeFunction = () -> System.currentTimeMillis();
 			}
-			return this.clock;
+			return this.timeFunction;
 		}
 
+		/**
+		 * Set the clock.
+		 * 
+		 * @param clock a clock
+		 * @return the builder
+		 */
 		@SuppressWarnings("unchecked")
 		public B withClock(Clock clock) {
-			this.clock = clock;
+			if (clock != null) {
+				this.timeFunction = () -> clock.millis();
+			}
+			return (B) this;
+		}
+
+		/**
+		 * Set the time function.
+		 * 
+		 * @param timeFunction a function
+		 * @return the builder
+		 */
+		@SuppressWarnings("unchecked")
+		public B withTimeFunction(LongSupplier timeFunction) {
+			this.timeFunction = timeFunction;
 			return (B) this;
 		}
 	}

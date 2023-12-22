@@ -39,9 +39,14 @@ public final class Base58BtcCodec extends BaseNCodec {
 
 	private static final BaseN BASE_N = new BaseN("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz");
 
-	// a shared immutable instance
+	/**
+	 * A shared immutable instance.
+	 */
 	public static final Base58BtcCodec INSTANCE = new Base58BtcCodec();
 
+	/**
+	 * Default constructor.
+	 */
 	public Base58BtcCodec() {
 		super(BASE_N);
 	}

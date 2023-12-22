@@ -33,9 +33,21 @@ import com.github.f4b6a3.uuid.enums.UuidVersion;
  */
 public abstract class UuidFactory {
 
+	/**
+	 * Version number.
+	 */
 	protected final UuidVersion version;
+
+	/**
+	 * Version bit mask.
+	 */
 	protected final long versionMask;
 
+	/**
+	 * Constructor with a version number.
+	 * 
+	 * @param version a version number
+	 */
 	public UuidFactory(UuidVersion version) {
 		this.version = version;
 		this.versionMask = (long) version.getValue() << 12;

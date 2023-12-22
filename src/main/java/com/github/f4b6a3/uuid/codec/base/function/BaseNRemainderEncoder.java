@@ -40,14 +40,29 @@ public final class BaseNRemainderEncoder extends BaseNEncoder {
 
 	private final int length;
 	private final char padding;
+
+	/**
+	 * A custom divider for optimization.
+	 */
 	protected final CustomDivider divider;
 
 	private static final long MASK = 0x00000000ffffffffL;
 
+	/**
+	 * Constructor with a base-n.
+	 * 
+	 * @param base a base-n
+	 */
 	public BaseNRemainderEncoder(BaseN base) {
 		this(base, null);
 	}
 
+	/**
+	 * Constructor with a base-n and a custom divider.
+	 * 
+	 * @param base    a base-n
+	 * @param divider a custom divider
+	 */
 	public BaseNRemainderEncoder(BaseN base, CustomDivider divider) {
 		super(base);
 
@@ -94,7 +109,14 @@ public final class BaseNRemainderEncoder extends BaseNEncoder {
 		return new String(buffer);
 	}
 
-	// divide a long as unsigned 64 bit integer
+	/**
+	 * Divide a long as unsigned 64 bit integer
+	 * 
+	 * @param x       a number to be divided
+	 * @param divider a custom divider
+	 * @param rem     the reminder
+	 * @return an array of longs
+	 */
 	protected static long[] divide(final long x, CustomDivider divider, final long rem) {
 
 		long[] div;

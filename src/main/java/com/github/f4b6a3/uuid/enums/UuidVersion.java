@@ -38,7 +38,7 @@ package com.github.f4b6a3.uuid.enums;
  * <li>{@link VERSION_TIME_ORDERED}: 6
  * <li>{@link VERSION_TIME_ORDERED_EPOCH}: 7
  * <li>{@link VERSION_CUSTOM}: 8
- * <ul>
+ * </ul>
  */
 public enum UuidVersion {
 
@@ -85,10 +85,21 @@ public enum UuidVersion {
 		this.value = value;
 	}
 
+	/**
+	 * Get the number value.
+	 * 
+	 * @return a number
+	 */
 	public int getValue() {
 		return this.value;
 	}
 
+	/**
+	 * Get the enum value.
+	 * 
+	 * @param value a number.
+	 * @return the enum
+	 */
 	public static UuidVersion getVersion(int value) {
 		for (UuidVersion version : UuidVersion.values()) {
 			if (version.getValue() == value) {
