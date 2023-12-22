@@ -70,10 +70,21 @@ public enum UuidLocalDomain {
 		this.value = value;
 	}
 
+	/**
+	 * Get the byte value.
+	 * 
+	 * @return a byte
+	 */
 	public byte getValue() {
 		return this.value;
 	}
 
+	/**
+	 * Get the enum value.
+	 * 
+	 * @param value a byte.
+	 * @return the enum
+	 */
 	public static UuidLocalDomain getLocalDomain(byte value) {
 		for (UuidLocalDomain domain : UuidLocalDomain.values()) {
 			if (domain.getValue() == value) {

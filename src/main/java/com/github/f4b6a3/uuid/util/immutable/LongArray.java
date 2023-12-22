@@ -26,6 +26,9 @@ package com.github.f4b6a3.uuid.util.immutable;
 
 import java.util.Arrays;
 
+/**
+ * Immutable array of longs.
+ */
 public final class LongArray {
 
 	private final long[] array;
@@ -34,18 +37,40 @@ public final class LongArray {
 		array = Arrays.copyOf(a, a.length);
 	}
 
+	/**
+	 * Creates an instance of this class.
+	 * 
+	 * @param a an array of longs
+	 * @return a new instance
+	 */
 	public static LongArray from(long[] a) {
 		return new LongArray(a);
 	}
 
+	/**
+	 * Return the long at a position.
+	 * 
+	 * @param index the position
+	 * @return a long
+	 */
 	public long get(int index) {
 		return array[index];
 	}
 
+	/**
+	 * Returns the array length
+	 * 
+	 * @return the length
+	 */
 	public int length() {
 		return this.array.length;
 	}
 
+	/**
+	 * Returns copy of the array.
+	 * 
+	 * @return an array of longs
+	 */
 	public long[] array() {
 		return array.clone();
 	}

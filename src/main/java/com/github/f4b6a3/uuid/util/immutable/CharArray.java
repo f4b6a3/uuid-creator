@@ -26,6 +26,9 @@ package com.github.f4b6a3.uuid.util.immutable;
 
 import java.util.Arrays;
 
+/**
+ * Immutable array of chars.
+ */
 public final class CharArray {
 
 	private final char[] array;
@@ -34,18 +37,40 @@ public final class CharArray {
 		array = Arrays.copyOf(a, a.length);
 	}
 
+	/**
+	 * Creates an instance of this class.
+	 * 
+	 * @param a an array of chars.
+	 * @return a new instance
+	 */
 	public static CharArray from(char[] a) {
 		return new CharArray(a);
 	}
 
+	/**
+	 * Return the char at a position.
+	 * 
+	 * @param index the position
+	 * @return a char
+	 */
 	public char get(int index) {
 		return array[index];
 	}
 
+	/**
+	 * Returns the array length.
+	 * 
+	 * @return the length
+	 */
 	public int length() {
 		return this.array.length;
 	}
 
+	/**
+	 * Returns copy of the array.
+	 * 
+	 * @return an array of chars
+	 */
 	public char[] array() {
 		return array.clone();
 	}

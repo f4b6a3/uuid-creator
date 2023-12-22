@@ -85,10 +85,21 @@ public enum UuidVersion {
 		this.value = value;
 	}
 
+	/**
+	 * Get the number value.
+	 * 
+	 * @return a number
+	 */
 	public int getValue() {
 		return this.value;
 	}
 
+	/**
+	 * Get the enum value.
+	 * 
+	 * @param value a number.
+	 * @return the enum
+	 */
 	public static UuidVersion getVersion(int value) {
 		for (UuidVersion version : UuidVersion.values()) {
 			if (version.getValue() == value) {

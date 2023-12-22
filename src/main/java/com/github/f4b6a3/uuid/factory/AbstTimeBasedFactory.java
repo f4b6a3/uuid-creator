@@ -100,14 +100,26 @@ import com.github.f4b6a3.uuid.util.internal.SettingsUtil;
  */
 public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgsFactory {
 
+	/**
+	 * The time function.
+	 */
 	protected TimeFunction timeFunction;
+	/**
+	 * The node function.
+	 */
 	protected NodeIdFunction nodeidFunction;
+	/**
+	 * The clock sequence function.
+	 */
 	protected ClockSeqFunction clockseqFunction;
 
 	private static final String NODE_MAC = "mac";
 	private static final String NODE_HASH = "hash";
 	private static final String NODE_RANDOM = "random";
 
+	/**
+	 * The reentrant lock for synchronization.
+	 */
 	protected final ReentrantLock lock = new ReentrantLock();
 
 	private static final long EPOCH_TIMESTAMP = TimeFunction.toUnixTimestamp(UuidTime.EPOCH_GREG);
@@ -204,6 +216,8 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 	 * hexadecimal or decimal format, the generator will use the number represented.
 	 * 
 	 * 5. Else, a random number will be used by the generator.
+	 * 
+	 * @return a node function
 	 */
 	protected static NodeIdFunction selectNodeIdFunction() {
 
@@ -255,10 +269,24 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 	 */
 	public abstract static class Builder<T, B extends Builder<T, B>> {
 
+		/**
+		 * The time function.
+		 */
 		protected TimeFunction timeFunction;
+		/**
+		 * The node function.
+		 */
 		protected NodeIdFunction nodeidFunction;
+		/**
+		 * The clock sequence function.
+		 */
 		protected ClockSeqFunction clockseqFunction;
 
+		/**
+		 * Get the time function.
+		 * 
+		 * @return a function
+		 */
 		protected TimeFunction getTimeFunction() {
 			if (this.timeFunction == null) {
 				this.timeFunction = selectTimeFunction();
@@ -266,6 +294,11 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 			return this.timeFunction;
 		}
 
+		/**
+		 * Get the node function.
+		 * 
+		 * @return a function
+		 */
 		protected NodeIdFunction getNodeIdFunction() {
 			if (this.nodeidFunction == null) {
 				this.nodeidFunction = selectNodeIdFunction();
@@ -273,6 +306,11 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 			return this.nodeidFunction;
 		}
 
+		/**
+		 * Get the clock sequence function.
+		 * 
+		 * @return a function
+		 */
 		protected ClockSeqFunction getClockSeqFunction() {
 			if (this.clockseqFunction == null) {
 				this.clockseqFunction = new DefaultClockSeqFunction();
@@ -280,24 +318,48 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 			return this.clockseqFunction;
 		}
 
+		/**
+		 * Set the time function.
+		 * 
+		 * @param timeFunction a function
+		 * @return the builder
+		 */
 		@SuppressWarnings("unchecked")
 		public B withTimeFunction(TimeFunction timeFunction) {
 			this.timeFunction = timeFunction;
 			return (B) this;
 		}
 
+		/**
+		 * Set the node function
+		 * 
+		 * @param nodeidFunction a function
+		 * @return the builder
+		 */
 		@SuppressWarnings("unchecked")
 		public B withNodeIdFunction(NodeIdFunction nodeidFunction) {
 			this.nodeidFunction = nodeidFunction;
 			return (B) this;
 		}
 
+		/**
+		 * Set the clock sequence function
+		 * 
+		 * @param clockseqFunction a function
+		 * @return the builder
+		 */
 		@SuppressWarnings("unchecked")
 		public B withClockSeqFunction(ClockSeqFunction clockseqFunction) {
 			this.clockseqFunction = clockseqFunction;
 			return (B) this;
 		}
 
+		/**
+		 * Set the fixed instant.
+		 * 
+		 * @param instant an instant
+		 * @return the builder
+		 */
 		@SuppressWarnings("unchecked")
 		public B withInstant(Instant instant) {
 			final long timestamp = TimeFunction.toUnixTimestamp(instant);
@@ -305,6 +367,12 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 			return (B) this;
 		}
 
+		/**
+		 * Set the fixed clock sequence.
+		 * 
+		 * @param clockseq a clock sequence
+		 * @return the builder
+		 */
 		@SuppressWarnings("unchecked")
 		public B withClockSeq(long clockseq) {
 			final long clockSequence = ClockSeqFunction.toExpectedRange(clockseq);
@@ -312,6 +380,12 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 			return (B) this;
 		}
 
+		/**
+		 * Set a fixed clock sequence.
+		 * 
+		 * @param clockseq a clock sequence
+		 * @return the builder
+		 */
 		@SuppressWarnings("unchecked")
 		public B withClockSeq(byte[] clockseq) {
 			final long clockSequence = ClockSeqFunction.toExpectedRange(ByteUtil.toNumber(clockseq));
@@ -319,6 +393,12 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 			return (B) this;
 		}
 
+		/**
+		 * Set a fixed node.
+		 * 
+		 * @param nodeid a node
+		 * @return the builder
+		 */
 		@SuppressWarnings("unchecked")
 		public B withNodeId(long nodeid) {
 			final long nodeIdentifier = NodeIdFunction.toExpectedRange(nodeid);
@@ -326,6 +406,12 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 			return (B) this;
 		}
 
+		/**
+		 * Set a fixed node
+		 * 
+		 * @param nodeid a node
+		 * @return the builder
+		 */
 		@SuppressWarnings("unchecked")
 		public B withNodeId(byte[] nodeid) {
 			final long nodeIdentifier = NodeIdFunction.toExpectedRange(ByteUtil.toNumber(nodeid));
@@ -333,24 +419,44 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 			return (B) this;
 		}
 
+		/**
+		 * Set the node function to MAC strategy.
+		 * 
+		 * @return the builder
+		 */
 		@SuppressWarnings("unchecked")
 		public B withMacNodeId() {
 			this.nodeidFunction = new MacNodeIdFunction();
 			return (B) this;
 		}
 
+		/**
+		 * Set the node function to hash strategy.
+		 * 
+		 * @return the builder
+		 */
 		@SuppressWarnings("unchecked")
 		public B withHashNodeId() {
 			this.nodeidFunction = new HashNodeIdFunction();
 			return (B) this;
 		}
 
+		/**
+		 * Set the node function to random strategy.
+		 * 
+		 * @return the builder
+		 */
 		@SuppressWarnings("unchecked")
 		public B withRandomNodeId() {
 			this.nodeidFunction = new RandomNodeIdFunction();
 			return (B) this;
 		}
 
+		/**
+		 * Finish the factory building.
+		 * 
+		 * @return the built factory
+		 */
 		public abstract T build();
 	}
 }

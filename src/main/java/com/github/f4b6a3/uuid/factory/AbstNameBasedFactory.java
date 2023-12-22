@@ -49,10 +49,22 @@ import static com.github.f4b6a3.uuid.enums.UuidVersion.VERSION_NAME_BASED_SHA1;
  */
 public abstract class AbstNameBasedFactory extends UuidFactory {
 
+	/**
+	 * The namespace.
+	 */
 	protected byte[] namespace = null;
+	/**
+	 * The hash algorithm.
+	 */
 	protected final String algorithm; // MD5 or SHA-1
 
+	/**
+	 * The MD5 algorithm.
+	 */
 	protected static final String ALGORITHM_MD5 = "MD5";
+	/**
+	 * The SHA-1 algorithm.
+	 */
 	protected static final String ALGORITHM_SHA1 = "SHA-1";
 
 	/**
@@ -114,7 +126,7 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 
 	/**
 	 * Returns a name-based UUID.
-	 * <p>
+	 * 
 	 * @deprecated This method will be removed when the new RFC is published.
 	 * 
 	 * @param name a UUID
@@ -154,7 +166,7 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 
 	/**
 	 * Returns a name-based UUID.
-	 * <p>
+	 * 
 	 * @deprecated This method will be removed when the new RFC is published.
 	 * 
 	 * @param namespace a name space UUID
@@ -201,7 +213,7 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 
 	/**
 	 * Returns a name-based UUID.
-	 * <p>
+	 * 
 	 * @deprecated This method will be removed when the new RFC is published.
 	 * 
 	 * @param namespace a name space string
@@ -248,7 +260,7 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 
 	/**
 	 * Returns a name-based UUID.
-	 * <p>
+	 * 
 	 * @deprecated This method will be removed when the new RFC is published.
 	 * 
 	 * @param namespace a name space enumeration

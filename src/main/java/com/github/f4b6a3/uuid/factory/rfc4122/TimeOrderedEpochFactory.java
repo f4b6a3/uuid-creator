@@ -84,41 +84,84 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	// Used to preserve monotonicity when the system clock is
 	// adjusted by NTP after a small clock drift or when the
 	// system clock jumps back by 1 second due to leap second.
-	protected static final long CLOCK_DRIFT_TOLERANCE = 10_000;
+	private static final long CLOCK_DRIFT_TOLERANCE = 10_000;
 
 	private static final long versionBits = 0x000000000000f000L;
 	private static final long variantBits = 0xc000000000000000L;
 	private static final long lower16Bits = 0x000000000000ffffL;
 	private static final long upper16Bits = 0xffff000000000000L;
 
+	/**
+	 * Default constructor.
+	 */
 	public TimeOrderedEpochFactory() {
 		this(builder());
 	}
 
+	/**
+	 * Constructor with a clock.
+	 * 
+	 * @param clock a clock
+	 */
 	public TimeOrderedEpochFactory(Clock clock) {
 		this(builder().withClock(clock));
 	}
 
+	/**
+	 * Constructor with a random.
+	 * 
+	 * @param random a random
+	 */
 	public TimeOrderedEpochFactory(Random random) {
 		this(builder().withRandom(random));
 	}
 
+	/**
+	 * Constructor with a random and a clock.
+	 * 
+	 * @param random a random
+	 * @param clock  a clock
+	 */
 	public TimeOrderedEpochFactory(Random random, Clock clock) {
 		this(builder().withRandom(random).withClock(clock));
 	}
 
+	/**
+	 * Constructor with a function which return random numbers.
+	 * 
+	 * @param randomFunction a function
+	 */
 	public TimeOrderedEpochFactory(LongSupplier randomFunction) {
 		this(builder().withRandomFunction(randomFunction));
 	}
 
+	/**
+	 * Constructor with a function which returns random arrays of bytes.
+	 * 
+	 * @param randomFunction a function
+	 */
 	public TimeOrderedEpochFactory(IntFunction<byte[]> randomFunction) {
 		this(builder().withRandomFunction(randomFunction));
 	}
 
+	/**
+	 * Constructor with a function which a function which return random numbers and
+	 * a clock.
+	 * 
+	 * @param randomFunction a function
+	 * @param clock          a clock
+	 */
 	public TimeOrderedEpochFactory(LongSupplier randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
 
+	/**
+	 * Constructor with a function which a function which returns random arrays of
+	 * bytes and a clock.
+	 * 
+	 * @param randomFunction a function
+	 * @param clock          a clock
+	 */
 	public TimeOrderedEpochFactory(IntFunction<byte[]> randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
@@ -149,24 +192,45 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		private Integer incrementType;
 		private Long incrementMax;
 
+		/**
+		 * Set the increment type to PLUS 1.
+		 * 
+		 * @return the builder
+		 */
 		public Builder withIncrementPlus1() {
 			this.incrementType = INCREMENT_TYPE_PLUS_1;
 			this.incrementMax = null;
 			return this;
 		}
 
+		/**
+		 * Set the increment type to PLUS N.
+		 * 
+		 * @return the builder
+		 */
 		public Builder withIncrementPlusN() {
 			this.incrementType = INCREMENT_TYPE_PLUS_N;
 			this.incrementMax = null;
 			return this;
 		}
 
+		/**
+		 * Set the increment type to PLUS N and set the max increment.
+		 * 
+		 * @param incrementMax a number
+		 * @return the builder
+		 */
 		public Builder withIncrementPlusN(long incrementMax) {
 			this.incrementType = INCREMENT_TYPE_PLUS_N;
 			this.incrementMax = incrementMax;
 			return this;
 		}
 
+		/**
+		 * Set the increment type.
+		 * 
+		 * @return an number
+		 */
 		protected int getIncrementType() {
 			if (this.incrementType == null) {
 				this.incrementType = INCREMENT_TYPE_DEFAULT;
@@ -174,6 +238,11 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 			return this.incrementType;
 		}
 
+		/**
+		 * Get the max increment.
+		 * 
+		 * @return a number
+		 */
 		protected long getIncrementMax() {
 			if (this.incrementMax == null) {
 				this.incrementMax = INCREMENT_MAX_DEFAULT;
@@ -323,7 +392,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 
 		public PlusNFunction(IRandom random, LongSupplier timeFunction, Long incrementMax) {
 			super(random, timeFunction);
-			this.plusNFunction = _customPlusNFunction(random, incrementMax);
+			this.plusNFunction = customPlusNFunction(random, incrementMax);
 		}
 
 		@Override
@@ -338,7 +407,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 			}
 		}
 
-		private LongSupplier _customPlusNFunction(IRandom random, Long incrementMax) {
+		private LongSupplier customPlusNFunction(IRandom random, Long incrementMax) {
 			if (incrementMax == INCREMENT_MAX_DEFAULT) {
 				if (random instanceof ByteRandom) {
 					return () -> {

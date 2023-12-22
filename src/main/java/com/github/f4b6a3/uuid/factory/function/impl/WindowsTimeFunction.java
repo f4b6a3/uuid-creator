@@ -59,10 +59,18 @@ public final class WindowsTimeFunction implements TimeFunction {
 	// start the counter limit with a number between 160,000 and 319,999
 	private long counterMax = counter + TICKS_PER_GRANULARITY;
 
+	/**
+	 * Default constructor.
+	 */
 	public WindowsTimeFunction() {
 		this.clock = Clock.systemUTC();
 	}
 
+	/**
+	 * Constructor with a clock.
+	 * 
+	 * @param clock a clock
+	 */
 	public WindowsTimeFunction(Clock clock) {
 		this.clock = clock;
 	}

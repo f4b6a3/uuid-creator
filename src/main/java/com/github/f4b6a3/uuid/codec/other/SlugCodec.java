@@ -110,6 +110,9 @@ public final class SlugCodec implements UuidCodec<String> {
 	private final int length;
 	private final BaseNCodec codec;
 
+	/**
+	 * Default constructor.
+	 */
 	public SlugCodec() {
 		this(Base64UrlCodec.INSTANCE);
 	}

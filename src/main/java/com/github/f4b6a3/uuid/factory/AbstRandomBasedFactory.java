@@ -43,12 +43,27 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  */
 public abstract class AbstRandomBasedFactory extends UuidFactory implements NoArgsFactory {
 
+	/**
+	 * The random generator.
+	 */
 	protected final IRandom random;
 
+	/**
+	 * The number of bytes of a UUID.
+	 */
 	protected static final int UUID_BYTES = 16;
 
+	/**
+	 * The reentrant lock for synchronization.
+	 */
 	protected final ReentrantLock lock = new ReentrantLock();
 
+	/**
+	 * Constructor with a version number and a builder
+	 * 
+	 * @param version a version number
+	 * @param builder a builder
+	 */
 	protected AbstRandomBasedFactory(UuidVersion version, Builder<?, ?> builder) {
 		super(version);
 		this.random = builder.getRandom();
@@ -62,8 +77,16 @@ public abstract class AbstRandomBasedFactory extends UuidFactory implements NoAr
 	 */
 	protected abstract static class Builder<T, B extends Builder<T, B>> {
 
+		/**
+		 * A random generator.
+		 */
 		protected IRandom random;
 
+		/**
+		 * Get the random generator.
+		 * 
+		 * @return a random generator
+		 */
 		protected IRandom getRandom() {
 			if (this.random == null) {
 				this.random = new ByteRandom(new DefaultRandomFunction());
@@ -71,6 +94,12 @@ public abstract class AbstRandomBasedFactory extends UuidFactory implements NoAr
 			return this.random;
 		}
 
+		/**
+		 * Set the random generator.
+		 * 
+		 * @param random a random
+		 * @return the builder
+		 */
 		@SuppressWarnings("unchecked")
 		public B withRandom(Random random) {
 			if (random != null) {
@@ -83,46 +112,98 @@ public abstract class AbstRandomBasedFactory extends UuidFactory implements NoAr
 			return (B) this;
 		}
 
+		/**
+		 * Set the random generator with a fast algorithm.
+		 * 
+		 * @return the generator
+		 */
 		@SuppressWarnings("unchecked")
 		public B withFastRandom() {
 			this.random = new LongRandom(() -> ThreadLocalRandom.current().nextLong());
 			return (B) this;
 		}
 
+		/**
+		 * Set a random function which returns random numbers.
+		 * 
+		 * @param randomFunction a function
+		 * @return the builder
+		 */
 		@SuppressWarnings("unchecked")
 		public B withRandomFunction(LongSupplier randomFunction) {
 			this.random = new LongRandom(randomFunction);
 			return (B) this;
 		}
 
+		/**
+		 * Set a random function which returns random arrays of bytes.
+		 * 
+		 * @param randomFunction a function
+		 * @return the builder
+		 */
 		@SuppressWarnings("unchecked")
 		public B withRandomFunction(IntFunction<byte[]> randomFunction) {
 			this.random = new ByteRandom(randomFunction);
 			return (B) this;
 		}
 
+		/**
+		 * Finishes the factory building.
+		 * 
+		 * @return the build factory
+		 */
 		public abstract T build();
 	}
 
+	/**
+	 * Interface for random generator.
+	 */
 	protected static interface IRandom {
 
+		/**
+		 * Return a random number.
+		 * 
+		 * @return a number
+		 */
 		public long nextLong();
 
+		/**
+		 * Return a random array of bytes.
+		 * 
+		 * @param length the length
+		 * @return an array
+		 */
 		public byte[] nextBytes(int length);
 	}
 
+	/**
+	 * A long random generator.
+	 */
 	protected static final class LongRandom implements IRandom {
 
 		private final LongSupplier randomFunction;
 
+		/**
+		 * Default constructor.
+		 */
 		public LongRandom() {
 			this(newRandomFunction(null));
 		}
 
+		/**
+		 * Constructor with a random.
+		 * 
+		 * @param random a random
+		 */
 		public LongRandom(Random random) {
 			this(newRandomFunction(random));
 		}
 
+		/**
+		 * Constructor with a function which returns random numbers.
+		 * 
+		 * @param randomFunction a function
+		 */
 		public LongRandom(LongSupplier randomFunction) {
 			this.randomFunction = randomFunction != null ? randomFunction : newRandomFunction(null);
 		}
@@ -151,24 +232,46 @@ public abstract class AbstRandomBasedFactory extends UuidFactory implements NoAr
 			return bytes;
 		}
 
+		/**
+		 * Returns a new random function.
+		 * 
+		 * @param random a random
+		 * @return a function
+		 */
 		protected static LongSupplier newRandomFunction(Random random) {
 			final Random entropy = random != null ? random : new SecureRandom();
 			return entropy::nextLong;
 		}
 	}
 
+	/**
+	 * A byte random generator.
+	 */
 	protected static final class ByteRandom implements IRandom {
 
 		private final IntFunction<byte[]> randomFunction;
 
+		/**
+		 * Default constructor.
+		 */
 		public ByteRandom() {
 			this(newRandomFunction(null));
 		}
 
+		/**
+		 * Constructor with a random.
+		 * 
+		 * @param random a random
+		 */
 		public ByteRandom(Random random) {
 			this(newRandomFunction(random));
 		}
 
+		/**
+		 * Constructor with a function which returns random numbers.
+		 * 
+		 * @param randomFunction a function
+		 */
 		public ByteRandom(IntFunction<byte[]> randomFunction) {
 			this.randomFunction = randomFunction != null ? randomFunction : newRandomFunction(null);
 		}
@@ -184,6 +287,12 @@ public abstract class AbstRandomBasedFactory extends UuidFactory implements NoAr
 			return this.randomFunction.apply(length);
 		}
 
+		/**
+		 * Returns a new random function.
+		 * 
+		 * @param random a random
+		 * @return a function
+		 */
 		protected static IntFunction<byte[]> newRandomFunction(Random random) {
 			final Random entropy = random != null ? random : new SecureRandom();
 			return (final int length) -> {

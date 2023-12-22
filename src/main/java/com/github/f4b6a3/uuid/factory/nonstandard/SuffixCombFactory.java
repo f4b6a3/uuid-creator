@@ -51,34 +51,77 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  */
 public final class SuffixCombFactory extends AbstCombFactory {
 
+	/**
+	 * Default constructor.
+	 */
 	public SuffixCombFactory() {
 		this(builder());
 	}
 
+	/**
+	 * Constructor with a clock.
+	 * 
+	 * @param clock a clock
+	 */
 	public SuffixCombFactory(Clock clock) {
 		this(builder().withClock(clock));
 	}
 
+	/**
+	 * Constructor with a random.
+	 * 
+	 * @param random a random generator
+	 */
 	public SuffixCombFactory(Random random) {
 		this(builder().withRandom(random));
 	}
 
+	/**
+	 * Constructor with a random and a clock.
+	 * 
+	 * @param random a random
+	 * @param clock  a clock
+	 */
 	public SuffixCombFactory(Random random, Clock clock) {
 		this(builder().withRandom(random).withClock(clock));
 	}
 
+	/**
+	 * Constructor with a function which return random numbers.
+	 * 
+	 * @param randomFunction a function
+	 */
 	public SuffixCombFactory(LongSupplier randomFunction) {
 		this(builder().withRandomFunction(randomFunction));
 	}
 
+	/**
+	 * Constructor with a function which returns random arrays of bytes.
+	 * 
+	 * @param randomFunction a function
+	 */
 	public SuffixCombFactory(IntFunction<byte[]> randomFunction) {
 		this(builder().withRandomFunction(randomFunction));
 	}
 
+	/**
+	 * Constructor with a function which a function which return random numbers and
+	 * a clock.
+	 * 
+	 * @param randomFunction a function
+	 * @param clock          a clock
+	 */
 	public SuffixCombFactory(LongSupplier randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
 
+	/**
+	 * Constructor with a function which a function which returns random arrays of
+	 * bytes and a clock.
+	 * 
+	 * @param randomFunction a function
+	 * @param clock          a clock
+	 */
 	public SuffixCombFactory(IntFunction<byte[]> randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
@@ -87,6 +130,9 @@ public final class SuffixCombFactory extends AbstCombFactory {
 		super(UuidVersion.VERSION_RANDOM_BASED, builder);
 	}
 
+	/**
+	 * Builder of factories.
+	 */
 	public static class Builder extends AbstCombFactory.Builder<SuffixCombFactory, Builder> {
 		@Override
 		public SuffixCombFactory build() {
@@ -94,6 +140,11 @@ public final class SuffixCombFactory extends AbstCombFactory {
 		}
 	}
 
+	/**
+	 * Returns a new builder.
+	 * 
+	 * @return a builder
+	 */
 	public static Builder builder() {
 		return new Builder();
 	}

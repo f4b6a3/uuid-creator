@@ -50,10 +50,18 @@ public final class DefaultTimeFunction implements TimeFunction {
 	// start the counter limit with a number between 10,000 and 19,999
 	private long counterMax = counter + TICKS_PER_MILLI;
 
+	/**
+	 * Default constructor.
+	 */
 	public DefaultTimeFunction() {
 		this.clock = Clock.systemUTC();
 	}
 
+	/**
+	 * Default constructor with a {@link Clock} instance.
+	 * 
+	 * @param clock a clock
+	 */
 	public DefaultTimeFunction(Clock clock) {
 		this.clock = clock;
 	}

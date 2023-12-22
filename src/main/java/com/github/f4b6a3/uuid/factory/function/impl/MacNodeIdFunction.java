@@ -45,6 +45,9 @@ public final class MacNodeIdFunction implements NodeIdFunction {
 
 	private final long nodeIdentifier;
 
+	/**
+	 * Default constructor.
+	 */
 	public MacNodeIdFunction() {
 		this.nodeIdentifier = getHardwareAddress();
 	}

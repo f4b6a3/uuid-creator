@@ -40,6 +40,9 @@ public final class HashNodeIdFunction implements NodeIdFunction {
 
 	private final long nodeIdentifier;
 
+	/**
+	 * Default constructor.
+	 */
 	public HashNodeIdFunction() {
 		final byte[] hash = MachineId.getMachineHash();
 		final long number = ByteUtil.toNumber(hash, 0, 6);

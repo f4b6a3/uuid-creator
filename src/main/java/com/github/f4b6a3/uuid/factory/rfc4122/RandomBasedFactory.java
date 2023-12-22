@@ -38,18 +38,36 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  */
 public final class RandomBasedFactory extends AbstRandomBasedFactory {
 
+	/**
+	 * Default constructor.
+	 */
 	public RandomBasedFactory() {
 		this(builder());
 	}
 
+	/**
+	 * Constructor with a {@link Random} instance.
+	 * 
+	 * @param random a {@link Random} instance
+	 */
 	public RandomBasedFactory(Random random) {
 		this(builder().withRandom(random));
 	}
 
+	/**
+	 * Constructor with a function which returns random number.
+	 * 
+	 * @param randomSupplier a function
+	 */
 	public RandomBasedFactory(LongSupplier randomSupplier) {
 		this(builder().withRandomFunction(randomSupplier));
 	}
 
+	/**
+	 * Constructor with a function which returns a byte array.
+	 * 
+	 * @param randomFunction a function
+	 */
 	public RandomBasedFactory(IntFunction<byte[]> randomFunction) {
 		this(builder().withRandomFunction(randomFunction));
 	}

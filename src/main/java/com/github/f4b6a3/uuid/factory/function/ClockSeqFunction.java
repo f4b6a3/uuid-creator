@@ -81,7 +81,14 @@ public interface ClockSeqFunction extends LongUnaryOperator {
 		private final byte[] pool = new byte[2048];
 		private static final int POOL_SIZE = 16384; // 2^14 = 16384
 
+		/**
+		 * The minimum pool size, which is zero.
+		 */
 		public static final int POOL_MIN = 0x00000000;
+
+		/**
+		 * The maximum pool size, which is 16383 (2^14-1).
+		 */
 		public static final int POOL_MAX = 0x00003fff; // 2^14-1 = 16383
 
 		/**

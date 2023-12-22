@@ -37,6 +37,9 @@ public final class DefaultNodeIdFunction implements NodeIdFunction {
 
 	private final long nodeIdentifier;
 
+	/**
+	 * Default constructor.
+	 */
 	public DefaultNodeIdFunction() {
 		this.nodeIdentifier = NodeIdFunction.getMulticastRandom();
 	}

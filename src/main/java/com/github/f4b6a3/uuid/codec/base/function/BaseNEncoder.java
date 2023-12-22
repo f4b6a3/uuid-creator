@@ -37,7 +37,14 @@ import com.github.f4b6a3.uuid.util.immutable.CharArray;
  */
 public abstract class BaseNEncoder implements Function<UUID, String> {
 
+	/**
+	 * The base-n.
+	 */
 	protected final BaseN base;
+
+	/**
+	 * The base-n alphabet.
+	 */
 	protected final CharArray alphabet;
 
 	/**

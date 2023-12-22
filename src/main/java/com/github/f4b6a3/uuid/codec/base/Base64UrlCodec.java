@@ -45,9 +45,14 @@ public final class Base64UrlCodec extends BaseNCodec {
 
 	private static final BaseN BASE_N = new BaseN("A-Za-z0-9-_");
 
-	// a shared immutable instance
+	/**
+	 * A shared immutable instance.
+	 */
 	public static final Base64UrlCodec INSTANCE = new Base64UrlCodec();
 
+	/**
+	 * Default constructor.
+	 */
 	public Base64UrlCodec() {
 		super(BASE_N, new Base64Encoder(BASE_N), new Base64Decoder(BASE_N));
 	}

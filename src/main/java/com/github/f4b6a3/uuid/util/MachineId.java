@@ -27,6 +27,7 @@ package com.github.f4b6a3.uuid.util;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.util.internal.NetworkUtil;
@@ -122,7 +123,7 @@ public final class MachineId {
 			}
 
 		}
-		return hash;
+		return Arrays.copyOf(hash, hash.length);
 	}
 
 	/**

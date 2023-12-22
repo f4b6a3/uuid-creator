@@ -37,7 +37,14 @@ import com.github.f4b6a3.uuid.util.immutable.LongArray;
  */
 public abstract class BaseNDecoder implements Function<String, UUID> {
 
+	/**
+	 * The base-n.
+	 */
 	protected final BaseN base;
+
+	/**
+	 * The base-n map.
+	 */
 	protected final LongArray map;
 
 	/**

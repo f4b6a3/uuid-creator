@@ -124,10 +124,18 @@ public final class NcnameCodec implements UuidCodec<String> {
 		VERSION_MAP = LongArray.from(mapping);
 	}
 
+	/**
+	 * Default constructor.
+	 */
 	public NcnameCodec() {
 		this(Base64UrlCodec.INSTANCE);
 	}
 
+	/**
+	 * Constructor with a base-n codec.
+	 * 
+	 * @param codec a base-n codec
+	 */
 	public NcnameCodec(BaseNCodec codec) {
 
 		if (!(codec instanceof Base64UrlCodec || codec instanceof Base32Codec)) {

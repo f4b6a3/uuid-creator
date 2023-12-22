@@ -54,13 +54,34 @@ import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedEpochFactory;
  */
 public final class UuidCreator {
 
+	/**
+	 * Name space to be used when the name string is a fully-qualified domain name.
+	 */
 	public static final UuidNamespace NAMESPACE_DNS = UuidNamespace.NAMESPACE_DNS;
+	/**
+	 * Name space to be used when the name string is a URL.
+	 */
 	public static final UuidNamespace NAMESPACE_URL = UuidNamespace.NAMESPACE_URL;
+	/**
+	 * Name space to be used when the name string is an ISO OID.
+	 */
 	public static final UuidNamespace NAMESPACE_OID = UuidNamespace.NAMESPACE_OID;
+	/**
+	 * Name space to be used when the name string is an X.500 DN (DER or text).
+	 */
 	public static final UuidNamespace NAMESPACE_X500 = UuidNamespace.NAMESPACE_X500;
 
+	/**
+	 * The principal domain, interpreted as POSIX UID domain on POSIX systems.
+	 */
 	public static final UuidLocalDomain LOCAL_DOMAIN_PERSON = UuidLocalDomain.LOCAL_DOMAIN_PERSON;
+	/**
+	 * The group domain, interpreted as POSIX GID domain on POSIX systems.
+	 */
 	public static final UuidLocalDomain LOCAL_DOMAIN_GROUP = UuidLocalDomain.LOCAL_DOMAIN_GROUP;
+	/**
+	 * The organization domain, site-defined.
+	 */
 	public static final UuidLocalDomain LOCAL_DOMAIN_ORG = UuidLocalDomain.LOCAL_DOMAIN_ORG;
 
 	private static final UUID UUID_NIL = new UUID(0x0000000000000000L, 0x0000000000000000L);
@@ -540,7 +561,7 @@ public final class UuidCreator {
 	public static UUID getTimeOrderedEpochPlusN() {
 		return TimeOrderedEpochPlusNHolder.INSTANCE.create();
 	}
-	
+
 	/**
 	 * Returns a time-ordered unique identifier that uses Unix Epoch (UUIDv7) for a
 	 * given instant.
@@ -570,7 +591,7 @@ public final class UuidCreator {
 		final long lsb = (random.nextLong() & 0x3fffffffffffffffL) | 0x8000000000000000L;
 		return new UUID(msb, lsb);
 	}
-	
+
 	/**
 	 * Returns the minimum UUIDv7 for a given instant.
 	 * <p>
@@ -618,7 +639,7 @@ public final class UuidCreator {
 		final long time = instant.toEpochMilli();
 		return new UUID((time << 16) | 0x7fffL, 0xbfffffffffffffffL);
 	}
-	
+
 	/**
 	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
 	 * <p>
@@ -645,7 +666,7 @@ public final class UuidCreator {
 
 	/**
 	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
-	 * <p>
+	 * 
 	 * @deprecated This method will be removed when the new RFC is published.
 	 * 
 	 * @param name a UUID
@@ -687,7 +708,7 @@ public final class UuidCreator {
 
 	/**
 	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
-	 * <p>
+	 * 
 	 * @deprecated This method will be removed when the new RFC is published.
 	 * 
 	 * @param namespace a custom name space UUID
@@ -733,7 +754,7 @@ public final class UuidCreator {
 
 	/**
 	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
-	 * <p>
+	 * 
 	 * @deprecated This method will be removed when the new RFC is published.
 	 * 
 	 * @param namespace a custom name space UUID in string format
@@ -794,16 +815,17 @@ public final class UuidCreator {
 
 	/**
 	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
-	 * <p>
+	 * 
 	 * @deprecated This method will be removed when the new RFC is published.
-	 * <p>
-	 * Name spaces predefined by RFC-4122 (Appendix C):
-	 * <ul>
-	 * <li>NAMESPACE_DNS: Name string is a fully-qualified domain name;
-	 * <li>NAMESPACE_URL: Name string is a URL;
-	 * <li>NAMESPACE_OID: Name string is an ISO OID;
-	 * <li>NAMESPACE_X500: Name string is an X.500 DN (in DER or text format).
-	 * </ul>
+	 *             <p>
+	 *             Name spaces predefined by RFC-4122 (Appendix C):
+	 *             <ul>
+	 *             <li>NAMESPACE_DNS: Name string is a fully-qualified domain name;
+	 *             <li>NAMESPACE_URL: Name string is a URL;
+	 *             <li>NAMESPACE_OID: Name string is an ISO OID;
+	 *             <li>NAMESPACE_X500: Name string is an X.500 DN (in DER or text
+	 *             format).
+	 *             </ul>
 	 * 
 	 * @param namespace a predefined name space enumeration
 	 * @param name      a UUID
@@ -842,7 +864,7 @@ public final class UuidCreator {
 
 	/**
 	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
-	 * <p>
+	 * 
 	 * @deprecated This method will be removed when the new RFC is published.
 	 * 
 	 * @param name a UUID
@@ -884,7 +906,7 @@ public final class UuidCreator {
 
 	/**
 	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
-	 * <p>
+	 * 
 	 * @deprecated This method will be removed when the new RFC is published.
 	 * 
 	 * @param namespace a custom name space UUID
@@ -930,7 +952,7 @@ public final class UuidCreator {
 
 	/**
 	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
-	 * <p>
+	 * 
 	 * @deprecated This method will be removed when the new RFC is published.
 	 * 
 	 * @param namespace a custom name space UUID in string format
@@ -991,16 +1013,17 @@ public final class UuidCreator {
 
 	/**
 	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
-	 * <p>
+	 * 
 	 * @deprecated This method will be removed when the new RFC is published.
-	 * <p>
-	 * Name spaces predefined by RFC-4122 (Appendix C):
-	 * <ul>
-	 * <li>NAMESPACE_DNS: Name string is a fully-qualified domain name;
-	 * <li>NAMESPACE_URL: Name string is a URL;
-	 * <li>NAMESPACE_OID: Name string is an ISO OID;
-	 * <li>NAMESPACE_X500: Name string is an X.500 DN (in DER or text format).
-	 * </ul>
+	 *             <p>
+	 *             Name spaces predefined by RFC-4122 (Appendix C):
+	 *             <ul>
+	 *             <li>NAMESPACE_DNS: Name string is a fully-qualified domain name;
+	 *             <li>NAMESPACE_URL: Name string is a URL;
+	 *             <li>NAMESPACE_OID: Name string is an ISO OID;
+	 *             <li>NAMESPACE_X500: Name string is an X.500 DN (in DER or text
+	 *             format).
+	 *             </ul>
 	 * 
 	 * @param namespace a predefined name space enumeration
 	 * @param name      a UUID

@@ -43,14 +43,32 @@ package com.github.f4b6a3.uuid.util.internal;
  */
 public final class SettingsUtil {
 
+	/**
+	 * The property name prefix.
+	 */
 	protected static final String PROPERTY_PREFIX = "uuidcreator";
 
+	/**
+	 * The property name for the node number.
+	 */
 	public static final String PROPERTY_NODE = "node";
+
+	/**
+	 * The property name for the secure random algorithm.
+	 */
 	public static final String PROPERTY_SECURERANDOM = "securerandom";
 
+	/**
+	 * Default constructor.
+	 */
 	protected SettingsUtil() {
 	}
 
+	/**
+	 * Get the node identifier.
+	 * 
+	 * @return a number
+	 */
 	public static Long getNodeIdentifier() {
 		String value = getProperty(PROPERTY_NODE);
 		if (value == null) {
@@ -63,19 +81,40 @@ public final class SettingsUtil {
 		}
 	}
 
-	public static void setNodeIdentifier(Long nodeid) {
-		String value = Long.toString(nodeid);
+	/**
+	 * Set the node identifier
+	 * 
+	 * @param node a number
+	 */
+	public static void setNodeIdentifier(Long node) {
+		String value = Long.toString(node);
 		setProperty(PROPERTY_NODE, value);
 	}
 
+	/**
+	 * Get the secure random algorithm.
+	 * 
+	 * @return a string
+	 */
 	public static String getSecureRandom() {
 		return getProperty(PROPERTY_SECURERANDOM);
 	}
 
-	public static void setSecureRandom(String random) {
-		setProperty(PROPERTY_SECURERANDOM, random);
+	/**
+	 * Set the secure random algorithm
+	 * 
+	 * @param algorithm a string
+	 */
+	public static void setSecureRandom(String algorithm) {
+		setProperty(PROPERTY_SECURERANDOM, algorithm);
 	}
 
+	/**
+	 * Get a property.
+	 * 
+	 * @param name the name
+	 * @return a string
+	 */
 	public static String getProperty(String name) {
 
 		String fullName = getPropertyName(name);
@@ -93,18 +132,41 @@ public final class SettingsUtil {
 		return null;
 	}
 
+	/**
+	 * Set a property.
+	 * 
+	 * @param key   the key
+	 * @param value the value
+	 */
 	public static void setProperty(String key, String value) {
 		System.setProperty(getPropertyName(key), value);
 	}
 
+	/**
+	 * Clear a property.
+	 * 
+	 * @param key the key
+	 */
 	public static void clearProperty(String key) {
 		System.clearProperty(getPropertyName(key));
 	}
 
+	/**
+	 * Get a property name.
+	 * 
+	 * @param key a key
+	 * @return a string
+	 */
 	protected static String getPropertyName(String key) {
 		return String.join(".", PROPERTY_PREFIX, key);
 	}
 
+	/**
+	 * Get an environment variable name.
+	 * 
+	 * @param key a key
+	 * @return a string
+	 */
 	protected static String getEnvinronmentName(String key) {
 		return String.join("_", PROPERTY_PREFIX, key).toUpperCase().replace(".", "_");
 	}

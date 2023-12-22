@@ -60,10 +60,21 @@ public enum UuidVariant {
 		this.value = value;
 	}
 
+	/**
+	 * Get the number value.
+	 * 
+	 * @return a number
+	 */
 	public int getValue() {
 		return this.value;
 	}
 
+	/**
+	 * Get the enum value.
+	 * 
+	 * @param value a number.
+	 * @return the enum
+	 */
 	public static UuidVariant getVariant(int value) {
 		for (UuidVariant variant : UuidVariant.values()) {
 			if (variant.getValue() == value) {

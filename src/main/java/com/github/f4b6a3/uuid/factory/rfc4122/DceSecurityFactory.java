@@ -46,6 +46,9 @@ public final class DceSecurityFactory extends AbstTimeBasedFactory {
 
 	private final byte localDomain;
 
+	/**
+	 * Default constructor.
+	 */
 	public DceSecurityFactory() {
 		this(builder());
 	}
@@ -74,11 +77,23 @@ public final class DceSecurityFactory extends AbstTimeBasedFactory {
 
 		private byte localDomain;
 
+		/**
+		 * Set the local domain.
+		 * 
+		 * @param localDomain the local domain
+		 * @return the builder
+		 */
 		public Builder withLocalDomain(UuidLocalDomain localDomain) {
 			this.localDomain = localDomain.getValue();
 			return this;
 		}
 
+		/**
+		 * Set the local domain.
+		 * 
+		 * @param localDomain the local domain
+		 * @return the builder
+		 */
 		public Builder withLocalDomain(byte localDomain) {
 			this.localDomain = localDomain;
 			return this;
@@ -155,7 +170,7 @@ public final class DceSecurityFactory extends AbstTimeBasedFactory {
 	 * Overrides the method {@link AbstTimeBasedFactory#create()} to throw an
 	 * exception instead of returning a UUID.
 	 * 
-	 * @throws UnsupportedOperationException
+	 * @throws UnsupportedOperationException always
 	 */
 	@Override
 	public UUID create() {

@@ -42,8 +42,14 @@ public final class DefaultClockSeqFunction implements ClockSeqFunction {
 	private AtomicInteger sequence;
 	private long lastTimestamp = -1;
 
+	/**
+	 * The pool of clock sequence numbers.
+	 */
 	protected static final ClockSeqPool POOL = new ClockSeqPool();
 
+	/**
+	 * Default constructor.
+	 */
 	public DefaultClockSeqFunction() {
 		final int initial = POOL.random();
 		this.sequence = new AtomicInteger(initial);
@@ -59,6 +65,11 @@ public final class DefaultClockSeqFunction implements ClockSeqFunction {
 		return this.next();
 	}
 
+	/**
+	 * Get the next random clock sequence number.
+	 * 
+	 * @return a number
+	 */
 	public int next() {
 		if (this.sequence.incrementAndGet() > POOL_MAX) {
 			this.sequence.set(POOL_MIN);

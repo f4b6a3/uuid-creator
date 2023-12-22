@@ -36,8 +36,17 @@ import com.github.f4b6a3.uuid.enums.UuidVersion;
  */
 public abstract class AbstCombFactory extends AbstRandomBasedFactory {
 
+	/**
+	 * The time function.
+	 */
 	protected LongSupplier timeFunction;
 
+	/**
+	 * Constructor whith a version number and a builder.
+	 * 
+	 * @param version a version number
+	 * @param builder a builder
+	 */
 	protected AbstCombFactory(UuidVersion version, Builder<?, ?> builder) {
 		super(version, builder);
 		this.timeFunction = builder.getTimeFunction();
@@ -52,8 +61,16 @@ public abstract class AbstCombFactory extends AbstRandomBasedFactory {
 	 */
 	public abstract static class Builder<T, B extends Builder<T, B>> extends AbstRandomBasedFactory.Builder<T, B> {
 
+		/**
+		 * The time function.
+		 */
 		protected LongSupplier timeFunction;
 
+		/**
+		 * Get the time function.
+		 * 
+		 * @return the builder
+		 */
 		protected LongSupplier getTimeFunction() {
 			if (this.timeFunction == null) {
 				this.timeFunction = () -> System.currentTimeMillis();
@@ -61,6 +78,12 @@ public abstract class AbstCombFactory extends AbstRandomBasedFactory {
 			return this.timeFunction;
 		}
 
+		/**
+		 * Set the clock.
+		 * 
+		 * @param clock a clock
+		 * @return the builder
+		 */
 		@SuppressWarnings("unchecked")
 		public B withClock(Clock clock) {
 			if (clock != null) {
@@ -69,6 +92,12 @@ public abstract class AbstCombFactory extends AbstRandomBasedFactory {
 			return (B) this;
 		}
 
+		/**
+		 * Set the time function.
+		 * 
+		 * @param timeFunction a function
+		 * @return the builder
+		 */
 		@SuppressWarnings("unchecked")
 		public B withTimeFunction(LongSupplier timeFunction) {
 			this.timeFunction = timeFunction;

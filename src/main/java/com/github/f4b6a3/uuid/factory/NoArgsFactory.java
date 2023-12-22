@@ -26,6 +26,14 @@ package com.github.f4b6a3.uuid.factory;
 
 import java.util.UUID;
 
+/**
+ * Interface for create methods without arguments.
+ */
 public interface NoArgsFactory {
+	/**
+	 * Returns a new UUID.
+	 * 
+	 * @return a UUID
+	 */
 	public UUID create();
 }

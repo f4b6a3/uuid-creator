@@ -37,6 +37,11 @@ public final class Base64Encoder extends BaseNEncoder {
 
 	private static final int CHAR_LENGTH = 22;
 
+	/**
+	 * Constructor with a base-n.
+	 * 
+	 * @param base a base-n
+	 */
 	public Base64Encoder(BaseN base) {
 		super(base);
 	}

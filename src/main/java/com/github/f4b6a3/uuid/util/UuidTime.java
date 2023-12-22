@@ -45,14 +45,35 @@ import java.time.Instant;
  */
 public final class UuidTime {
 
+	/**
+	 * The Unix epoch.
+	 */
 	public static final Instant EPOCH_UNIX = Instant.parse("1970-01-01T00:00:00.000Z"); // 0s
+	/**
+	 * The Gregorian epoch.
+	 */
 	public static final Instant EPOCH_GREG = Instant.parse("1582-10-15T00:00:00.000Z"); // -12219292800s
 
+	/**
+	 * The Unix epoch in seconds.
+	 */
 	public static final long EPOCH_UNIX_SECONDS = EPOCH_UNIX.getEpochSecond();
+	/**
+	 * The Gregorian epoch in seconds.
+	 */
 	public static final long EPOCH_GREG_SECONDS = EPOCH_GREG.getEpochSecond();
 
+	/**
+	 * Number nanos per clock tick.
+	 */
 	public static final long NANOS_PER_TICK = 100; // 1 tick = 100ns
+	/**
+	 * Number of clock ticks per millisecond.
+	 */
 	public static final long TICKS_PER_MILLI = 10_000; // 1ms = 10,000 ticks
+	/**
+	 * Number of clock ticks per second.
+	 */
 	public static final long TICKS_PER_SECOND = 10_000_000; // 1s = 10,000,000 ticks
 
 	private UuidTime() {

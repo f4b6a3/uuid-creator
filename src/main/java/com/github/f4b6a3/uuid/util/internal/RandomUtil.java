@@ -33,15 +33,28 @@ import java.security.SecureRandom;
  */
 public final class RandomUtil {
 
+	/**
+	 * A globally shared {@link SecureRandom} instance.
+	 */
 	protected static final SecureRandom SHARED_RANDOM = newSecureRandom();
 
 	private RandomUtil() {
 	}
 
+	/**
+	 * Returns a random 32-bit number.
+	 * 
+	 * @return a number
+	 */
 	public static int nextInt() {
 		return SHARED_RANDOM.nextInt();
 	}
 
+	/**
+	 * Returns a random 64-bit number.
+	 * 
+	 * @return a number
+	 */
 	public static long nextLong() {
 		return SHARED_RANDOM.nextLong();
 	}

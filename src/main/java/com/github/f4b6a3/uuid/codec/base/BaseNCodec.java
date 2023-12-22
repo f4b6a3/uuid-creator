@@ -41,9 +41,18 @@ import com.github.f4b6a3.uuid.util.UuidValidator;
  */
 public abstract class BaseNCodec implements UuidCodec<String> {
 
+	/**
+	 * The base-n.
+	 */
 	protected final BaseN base;
 
+	/**
+	 * An encoder function.
+	 */
 	protected final Function<UUID, String> encoder;
+	/**
+	 * A decoder function.
+	 */
 	protected final Function<String, UUID> decoder;
 
 	/**
@@ -63,7 +72,14 @@ public abstract class BaseNCodec implements UuidCodec<String> {
 	 */
 	@FunctionalInterface
 	public static interface CustomDivider {
-		// [x / divider, x % divider]
+		/**
+		 * Divide a number by x.
+		 * 
+		 * Returned pair of longs: [x / divider, x % divider]
+		 * 
+		 * @param x the divisor
+		 * @return a pair of longs
+		 */
 		public long[] divide(long x);
 	}
 
