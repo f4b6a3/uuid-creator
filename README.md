@@ -15,9 +15,20 @@ List of implemented UUID types:
 *   __UUID Version 6__: the time-ordered version with gregorian epoch proposed as [new UUID format](https://datatracker.ietf.org/doc/draft-ietf-uuidrev-rfc4122bis/);
 *   __UUID Version 7__: the time-ordered version with Unix epoch proposed as [new UUID format](https://datatracker.ietf.org/doc/draft-ietf-uuidrev-rfc4122bis/).
 
-This project contains a [micro benchmark](https://github.com/f4b6a3/uuid-creator/tree/master/benchmark) and a good amount of [unit tests](https://github.com/f4b6a3/uuid-creator/tree/master/src/test/java/com/github/f4b6a3/uuid).
+This library tries to address some of the JDK's UUID features or lack of features that we think could be fixed or added:
 
-The jar file can be downloaded directly from [maven.org](https://repo1.maven.org/maven2/com/github/f4b6a3/uuid-creator/).
+* It has no method to generate time-based UUIDs (UUIDv1);
+* It has no method to generate UUIDs based on SHA1 (UUIDv5);
+* It does not have a validation method, which makes some developers use `UUID.fromString()` for validation;
+* Some methods such as `timestamp()` are strongly related to the UUIDv1, although it is not possible to generate UUIDv1;
+* `UUID.randomUUID()` slows down when there is a [lack of "entropy"](https://medium.com/@RamLakshmanan/java-uuid-generation-performance-impact-cec888b7d9b8) in the operating system;
+* `UUID.nameUUIDFromBytes()` does not require a namespace parameter, and generates only UUID v3 (MD5-based UUID);
+* `UUID.compareTo()` behaves unexpectedly due to signed `long` comparison, sorting UUIDs in a non-alphabetical order;
+* `UUID.fromString()` allows non-canonical strings like `0-0-0-0-0` as valid UUID strings.
+
+There's a [micro benchmark](https://github.com/f4b6a3/uuid-creator/tree/master/benchmark) and a good amount of [unit tests](https://github.com/f4b6a3/uuid-creator/tree/master/src/test/java/com/github/f4b6a3/uuid).
+
+The `jar` file can be downloaded directly from [maven.org](https://repo1.maven.org/maven2/com/github/f4b6a3/uuid-creator/).
 
 Read the [Wiki pages](https://github.com/f4b6a3/uuid-creator/wiki) and the [Javadocs](https://javadoc.io/doc/com.github.f4b6a3/uuid-creator).
 
