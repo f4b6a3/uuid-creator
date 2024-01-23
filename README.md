@@ -15,7 +15,7 @@ List of implemented UUID types:
 *   __UUID Version 6__: the time-ordered version with gregorian epoch proposed as [new UUID format](https://datatracker.ietf.org/doc/draft-ietf-uuidrev-rfc4122bis/);
 *   __UUID Version 7__: the time-ordered version with Unix epoch proposed as [new UUID format](https://datatracker.ietf.org/doc/draft-ietf-uuidrev-rfc4122bis/).
 
-This library tries to address some of the JDK's UUID features or lack of features that we think could be fixed or added:
+This library tries to address some of the JDK's UUID features or lack of features that we think could be fixed:
 
 * It has no method to generate time-based UUIDs (UUIDv1);
 * It has no method to generate UUIDs based on SHA1 (UUIDv5);
