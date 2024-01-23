@@ -54,6 +54,8 @@ Usage
 
 All UUID types can be created from the facade [`UuidCreator`](https://javadoc.io/doc/com.github.f4b6a3/uuid-creator/latest/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html).
 
+The goal of this class is to make most of the library's functionality available in a single place so that you developers don't have to worry about the internals of the library. All you need is to decide which type of UUID you need for your application and call the respective generation method. If in doubt, read the documentation and check the source code.
+
 Create a [UUIDv1](https://github.com/f4b6a3/uuid-creator/wiki/1.1.-UUIDv1):
 
 ```java
@@ -96,10 +98,16 @@ Create a [UUIDv7](https://github.com/f4b6a3/uuid-creator/wiki/1.7.-UUIDv7):
 UUID uuid = UuidCreator.getTimeOrderedEpoch();
 ```
 
+The library can do a lot more than the examples above (much more than I should have done, but it's too late). So I sincerely hope most people are happy with this.
+
 Alternative
 ------------------------------------------------------
 
-The [`GUID`](https://javadoc.io/doc/com.github.f4b6a3/uuid-creator/latest/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/alt/GUID.html) class is an alternative to the JDK's built-in `UUID`.
+[`GUID`](https://javadoc.io/doc/com.github.f4b6a3/uuid-creator/latest/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/alt/GUID.html) is an alternative implementation to the classic JDK's UUID. It also serves as a standalone generator, independent from the rest of the library. This may result in fewer classes being loaded.
+
+This new API was also designed to be an alternative to [`UuidCreator`](https://javadoc.io/doc/com.github.f4b6a3/uuid-creator/latest/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html) with three goals in mind: clean interface, simple implementation, and high performance. It was inspired by popular libraries for [Javascript](https://www.npmjs.com/package/uuid) and [Python](https://docs.python.org/3/library/uuid.html).
+
+It also does not block during GUID generation due to the **non-cryptographic** random number generator used by its factory methods. However, it is not recommended when the security of “cryptographic quality” generators is considered necessary.
 
 ```java
 GUID guid = GUID.v1();
@@ -122,6 +130,16 @@ GUID guid = GUID.v6();
 ```java
 GUID guid = GUID.v7();
 ```
+
+### From GUID to UUID
+
+You can generate JDK's UUIDs using GUID's API. For example, you can generate a JDK's UUID version 7 with this statement:
+
+```java
+UUID uuid = GUID.v7().toUUID();
+```
+
+Note that you call `toUUID()` to copy the internal value of GUID to the new JDK's UUID.
 
 Deprecation
 ------------------------------------------------------
