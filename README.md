@@ -7,24 +7,26 @@ This is a Java library for generating [Universally Unique Identifiers](https://e
 
 List of implemented UUID types:
 
-*   __UUID Version 1__: the time-based version with gregorian epoch specified in RFC-4122;
-*   __UUID Version 2__: the DCE Security version with embedded POSIX UIDs specified in DCE 1.1;
-*   __UUID Version 3__: the name-based version that uses MD5 hashing specified in RFC-4122;
-*   __UUID Version 4__: the randomly or pseudo-randomly generated version specified in RFC-4122;
-*   __UUID Version 5__: the name-based version that uses SHA-1 hashing specified in RFC-4122;
-*   __UUID Version 6__: the time-ordered version with gregorian epoch proposed as [new UUID format](https://datatracker.ietf.org/doc/draft-ietf-uuidrev-rfc4122bis/);
-*   __UUID Version 7__: the time-ordered version with Unix epoch proposed as [new UUID format](https://datatracker.ietf.org/doc/draft-ietf-uuidrev-rfc4122bis/).
+*   __UUID Version 1__: the Gregorian time-based type specified in RFC-4122;
+*   __UUID Version 2__: the DCE Security type with embedded POSIX UIDs specified in DCE 1.1;
+*   __UUID Version 3__: the name-based type specified in RFC-4122 that uses MD5 hashing;
+*   __UUID Version 4__: the randomly or pseudo-randomly generated type specified in RFC-4122;
+*   __UUID Version 5__: the name-based type specified in RFC-4122 that uses SHA1 hashing;
+*   __UUID Version 6__: the reordered Gregorian time-based type specified as a [new UUID format](https://datatracker.ietf.org/doc/draft-ietf-uuidrev-rfc4122bis/);
+*   __UUID Version 7__: the Unix Epoch time-based type specified as a [new UUID format](https://datatracker.ietf.org/doc/draft-ietf-uuidrev-rfc4122bis/).
 
-This library tries to address some of the JDK's UUID features or lack of features that we think could be fixed:
+This library solves some of the JDK's UUID issues:
 
-* It has no method to generate time-based UUIDs (UUIDv1);
-* It has no method to generate UUIDs based on SHA1 (UUIDv5);
-* It does not have a validation method, which makes some developers use `UUID.fromString()` for validation;
-* Some methods such as `timestamp()` are strongly related to the UUIDv1, although it is not possible to generate UUIDv1;
-* `UUID.randomUUID()` slows down when there is a [lack of "entropy"](https://medium.com/@RamLakshmanan/java-uuid-generation-performance-impact-cec888b7d9b8) in the operating system;
-* `UUID.nameUUIDFromBytes()` does not require a namespace parameter, and generates only UUID v3 (MD5-based UUID);
-* `UUID.compareTo()` behaves unexpectedly due to signed `long` comparison, sorting UUIDs in a non-alphabetical order;
-* `UUID.fromString()` allows non-canonical strings like `0-0-0-0-0` as valid UUID strings.
+| Problem | Solution |
+|---------|----------|
+| `UUID` has no method to generate time-based UUIDs (UUIDv1). | Use [`UuidCreator.getTimeBased()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html#getTimeBased()) or [`GUID.v1()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/alt/GUID.html#v1()). |
+| `UUID` has no method to generate SHA1 UUIDs (UUIDv5). | Use [`UuidCreator.getNameBasedSha1()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html#getNameBasedSha1(java.util.UUID,java.lang.String)) or [`GUID.v5()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/alt/GUID.html#v5(com.github.f4b6a3.uuid.alt.GUID,java.lang.String)). |
+| `UUID` has no validation method, which makes developers use `UUID.fromString()` or regular expression for validation. | Use [`UuidValidator`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/util/UuidValidator.html) or [`GUID.valid()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/alt/GUID.html#valid(java.lang.String)). |
+| `UUID.nameUUIDFromBytes()`, which generates MD5 UUIDs (UUIDv3), does not have a namespace parameter as required by the standard. | Use [`UuidCreator.getNameBasedMd5()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html#getNameBasedMd5(java.util.UUID,java.lang.String)) or [`GUID.v3()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/alt/GUID.html#v3(com.github.f4b6a3.uuid.alt.GUID,java.lang.String)). |
+| Some methods such as `UUID.timestamp()` are strongly related to UUIDv1, even though it's impossible to generate UUIDv1. | Use [`UuidUtil`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/util/UuidUtil.html). |
+| `UUID.randomUUID()` can be slow due to [lack of entropy](https://medium.com/@RamLakshmanan/java-uuid-generation-performance-impact-cec888b7d9b8) in the operating system. | Use [`UuidCreator.getRandomBasedFast()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html#getRandomBasedFast()) or [`GUID.v4()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/alt/GUID.html#v4()). However, both are not cryptographically secure. |
+| `UUID.compareTo()` behaves unexpectedly due to signed `long` comparisons, causing non-alphabetical sorting. | Use [`UuidComparator`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/util/UuidComparator.html). |
+| `UUID.fromString()` allows non-canonical strings like `0-0-0-0-0` as valid UUID strings. | Use [`UuidCreator.fromString()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html#fromString(java.lang.String)) or [`new GUID()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/alt/GUID.html#%3Cinit%3E(java.lang.String)). |
 
 There's a [micro benchmark](https://github.com/f4b6a3/uuid-creator/tree/master/benchmark) and a good amount of [unit tests](https://github.com/f4b6a3/uuid-creator/tree/master/src/test/java/com/github/f4b6a3/uuid).
 
@@ -150,7 +152,7 @@ You can generate JDK's UUIDs using GUID's API. For example, you can generate a J
 UUID uuid = GUID.v7().toUUID();
 ```
 
-Note that you call `toUUID()` to copy the internal value of GUID to the new JDK's UUID.
+When you call `toUUID()` the internal value of GUID is copied to the new JDK's UUID.
 
 Deprecation
 ------------------------------------------------------
