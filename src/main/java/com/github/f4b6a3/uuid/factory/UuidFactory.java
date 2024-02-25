@@ -31,6 +31,7 @@ import java.util.UUID;
 
 import com.github.f4b6a3.uuid.codec.BinaryCodec;
 import com.github.f4b6a3.uuid.codec.StringCodec;
+import com.github.f4b6a3.uuid.enums.UuidLocalDomain;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
@@ -102,12 +103,22 @@ public abstract class UuidFactory {
 		/**
 		 * Name space byte array.
 		 */
-		private byte[] namespace;
+		private final byte[] namespace;
 
 		/**
 		 * Name byte array.
 		 */
-		private byte[] name;
+		private final byte[] name;
+
+		/**
+		 * Local domain byte.
+		 */
+		private final byte localDomain;
+
+		/**
+		 * Local identifier number.
+		 */
+		private final int localIdentifier;
 
 		/**
 		 * Constructor using a builder.
@@ -115,10 +126,11 @@ public abstract class UuidFactory {
 		 * @param builder a builder
 		 */
 		public Parameters(Builder builder) {
-			if (builder != null) {
-				this.namespace = builder.namespace;
-				this.name = builder.name;
-			}
+			Objects.requireNonNull(builder);
+			this.namespace = builder.namespace;
+			this.name = builder.name;
+			this.localDomain = builder.localDomain;
+			this.localIdentifier = builder.localIdentifier;
 		}
 
 		/**
@@ -137,6 +149,24 @@ public abstract class UuidFactory {
 		 */
 		public byte[] getName() {
 			return this.name;
+		}
+
+		/**
+		 * Get the local domain.
+		 * 
+		 * @return the local domain
+		 */
+		public byte getLocalDomain() {
+			return this.localDomain;
+		}
+
+		/**
+		 * Get the local identifier.
+		 * 
+		 * @return the local identifier
+		 */
+		public int getLocalIdentifier() {
+			return this.localIdentifier;
 		}
 
 		/**
@@ -162,6 +192,16 @@ public abstract class UuidFactory {
 			 * Name byte array.
 			 */
 			private byte[] name = null;
+
+			/**
+			 * Local domain byte.
+			 */
+			private byte localDomain;
+
+			/**
+			 * Local identifier number.
+			 */
+			private int localIdentifier;
 
 			private Builder() {
 			}
@@ -222,6 +262,39 @@ public abstract class UuidFactory {
 			 */
 			public Builder withName(String name) {
 				this.name = nameBytes(name);
+				return this;
+			}
+
+			/**
+			 * Use the local domain.
+			 * 
+			 * @param localDomain the local domain
+			 * @return the builder
+			 */
+			public Builder withLocalDomain(UuidLocalDomain localDomain) {
+				this.localDomain = localDomain.getValue();
+				return this;
+			}
+
+			/**
+			 * Use the local domain.
+			 * 
+			 * @param localDomain the local domain
+			 * @return the builder
+			 */
+			public Builder withLocalDomain(byte localDomain) {
+				this.localDomain = localDomain;
+				return this;
+			}
+
+			/**
+			 * Use the local identifier.
+			 * 
+			 * @param localIdentifier the local identifier
+			 * @return the builder
+			 */
+			public Builder withLocalIdentifier(int localIdentifier) {
+				this.localIdentifier = localIdentifier;
 				return this;
 			}
 
