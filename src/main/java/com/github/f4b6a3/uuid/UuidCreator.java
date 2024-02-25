@@ -501,7 +501,7 @@ public final class UuidCreator {
 		TimeOrderedFactory.Builder builder = TimeOrderedFactory.builder();
 		return builder.withInstant(instant).withClockSeq(0xffffL).withNodeId(0xffffffffffffL).build().create();
 	}
-	
+
 	/**
 	 * Returns a time-ordered unique identifier that uses Unix Epoch (UUIDv7).
 	 * <p>
@@ -520,6 +520,32 @@ public final class UuidCreator {
 	 */
 	public static UUID getTimeOrderedEpoch() {
 		return UUID7.create();
+	}
+
+	/**
+	 * Returns a fast time-ordered unique identifier that uses Unix Epoch (UUIDv7).
+	 * <p>
+	 * This method produces identifiers with 3 parts: time, counter and random.
+	 * <p>
+	 * The counter bits are incremented by 1 when the time repeats.
+	 * <p>
+	 * The random bits are generated with each method invocation.
+	 * 
+	 * It employs {@link ThreadLocalRandom} which works very well, although not
+	 * cryptographically strong. It can be useful, for example, for logging.
+	 * <p>
+	 * Security-sensitive applications that require a cryptographically secure
+	 * pseudo-random generator should use {@link UuidCreator#getTimeOrderedEpoch()}.
+	 * 
+	 * @return a UUIDv7
+	 * @since 6.0.0
+	 * @see TimeOrderedEpochFactory
+	 * @see <a href=
+	 *      "https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-04.html">New
+	 *      UUID Formats</a>
+	 */
+	public static UUID getTimeOrderedEpochFast() {
+		return UUID7_FAST.create();
 	}
 
 	/**
@@ -1199,6 +1225,7 @@ public final class UuidCreator {
 	private static final Proxy UUID6_HASH = new Proxy(Suppliers.UUID6_HASH);
 	private static final Proxy UUID6_RANDOM = new Proxy(Suppliers.UUID6_RANDOM);
 	private static final Proxy UUID7 = new Proxy(Suppliers.UUID7);
+	private static final Proxy UUID7_FAST = new Proxy(Suppliers.UUID7_FAST);
 	private static final Proxy UUID7_PLUS_1 = new Proxy(Suppliers.UUID7_PLUS_1);
 	private static final Proxy UUID7_PLUS_N = new Proxy(Suppliers.UUID7_PLUS_N);
 	private static final Proxy COMB_PREFIX = new Proxy(Suppliers.COMB_PREFIX);
@@ -1225,6 +1252,7 @@ public final class UuidCreator {
 		UUID6_HASH(() -> TimeOrderedFactory.builder().withHashNodeId().build()), //
 		UUID6_RANDOM(() -> TimeOrderedFactory.builder().withRandomNodeId().build()), //
 		UUID7(TimeOrderedEpochFactory::new), //
+		UUID7_FAST(() -> TimeOrderedEpochFactory.builder().withFastRandom().build()), //
 		UUID7_PLUS_1(() -> TimeOrderedEpochFactory.builder().withIncrementPlus1().build()), //
 		UUID7_PLUS_N(() -> TimeOrderedEpochFactory.builder().withIncrementPlusN().build()), //
 		COMB_PREFIX(PrefixCombFactory::new), //
