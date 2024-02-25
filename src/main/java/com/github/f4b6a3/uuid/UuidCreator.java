@@ -96,6 +96,38 @@ public final class UuidCreator {
 	}
 
 	/**
+	 * Returns a Nil UUID.
+	 * <p>
+	 * Nil UUID is a special UUID that has all 128 bits set to ZERO.
+	 * <p>
+	 * The canonical string of Nil UUID is
+	 * <code>00000000-0000-0000-0000-000000000000</code>.
+	 * 
+	 * @return a Nil UUID
+	 */
+	public static UUID getNil() {
+		return UUID_NIL;
+	}
+
+	/**
+	 * Returns a Max UUID.
+	 * <p>
+	 * Max UUID is a special UUID that has all 128 bits set to ONE.
+	 * <p>
+	 * The canonical string of Max UUID is
+	 * <code>FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF</code>.
+	 * 
+	 * @return a Max UUID
+	 * @since 5.0.0
+	 * @see <a href=
+	 *      "https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-04.html">New
+	 *      UUID Formats</a>
+	 */
+	public static UUID getMax() {
+		return UUID_MAX;
+	}
+
+	/**
 	 * Returns an array of bytes from a UUID.
 	 * 
 	 * @param uuid a UUID
@@ -153,38 +185,6 @@ public final class UuidCreator {
 	 */
 	public static UUID fromString(String uuid) {
 		return StringCodec.INSTANCE.decode(uuid);
-	}
-
-	/**
-	 * Returns a Nil UUID.
-	 * <p>
-	 * Nil UUID is a special UUID that has all 128 bits set to ZERO.
-	 * <p>
-	 * The canonical string of Nil UUID is
-	 * <code>00000000-0000-0000-0000-000000000000</code>.
-	 * 
-	 * @return a Nil UUID
-	 */
-	public static UUID getNil() {
-		return UUID_NIL;
-	}
-
-	/**
-	 * Returns a Max UUID.
-	 * <p>
-	 * Max UUID is a special UUID that has all 128 bits set to ONE.
-	 * <p>
-	 * The canonical string of Max UUID is
-	 * <code>FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF</code>.
-	 * 
-	 * @return a Max UUID
-	 * @since 5.0.0
-	 * @see <a href=
-	 *      "https://www.ietf.org/archive/id/draft-peabody-dispatch-new-uuid-format-04.html">New
-	 *      UUID Formats</a>
-	 */
-	public static UUID getMax() {
-		return UUID_MAX;
 	}
 
 	/**
@@ -530,7 +530,7 @@ public final class UuidCreator {
 	 * The counter bits are incremented by 1 when the time repeats.
 	 * <p>
 	 * The random bits are generated with each method invocation.
-	 * 
+	 * <p>
 	 * It employs {@link ThreadLocalRandom} which works very well, although not
 	 * cryptographically strong. It can be useful, for example, for logging.
 	 * <p>

@@ -53,7 +53,7 @@ public abstract class UuidFactory {
 
 	/**
 	 * Default Constructor.
-	 * 
+	 * <p>
 	 * The version used is {@link UuidVersion#VERSION_UNKNOWN}.
 	 */
 	public UuidFactory() {
@@ -134,7 +134,7 @@ public abstract class UuidFactory {
 		}
 
 		/**
-		 * Get the name space bytes
+		 * Get the name space bytes.
 		 * 
 		 * @return a byte array
 		 */
@@ -143,7 +143,7 @@ public abstract class UuidFactory {
 		}
 
 		/**
-		 * Get the name bytes
+		 * Get the name bytes.
 		 * 
 		 * @return a byte array
 		 */
