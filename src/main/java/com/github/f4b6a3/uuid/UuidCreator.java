@@ -26,14 +26,19 @@ package com.github.f4b6a3.uuid;
 
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 
 import com.github.f4b6a3.uuid.codec.BinaryCodec;
 import com.github.f4b6a3.uuid.codec.StringCodec;
 import com.github.f4b6a3.uuid.enums.UuidLocalDomain;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
+import com.github.f4b6a3.uuid.factory.UuidFactory;
+import com.github.f4b6a3.uuid.factory.UuidFactory.Parameters;
 import com.github.f4b6a3.uuid.factory.nonstandard.PrefixCombFactory;
 import com.github.f4b6a3.uuid.factory.nonstandard.ShortPrefixCombFactory;
 import com.github.f4b6a3.uuid.factory.nonstandard.ShortSuffixCombFactory;
@@ -189,7 +194,7 @@ public final class UuidCreator {
 	 * @see RandomBasedFactory
 	 */
 	public static UUID getRandomBased() {
-		return RandomBasedHolder.INSTANCE.create();
+		return UUID4.create();
 	}
 
 	/**
@@ -207,7 +212,7 @@ public final class UuidCreator {
 	 * @since 5.2.0
 	 */
 	public static UUID getRandomBasedFast() {
-		return RandomBasedFastHolder.INSTANCE.create();
+		return UUID4_FAST.create();
 	}
 
 	/**
@@ -223,7 +228,7 @@ public final class UuidCreator {
 	 * @see TimeBasedFactory
 	 */
 	public static UUID getTimeBased() {
-		return TimeBasedHolder.INSTANCE.create();
+		return UUID1.create();
 	}
 
 	/**
@@ -235,7 +240,7 @@ public final class UuidCreator {
 	 * @see TimeBasedFactory
 	 */
 	public static UUID getTimeBasedWithMac() {
-		return TimeBasedWithMacHolder.INSTANCE.create();
+		return UUID1_MAC.create();
 	}
 
 	/**
@@ -250,7 +255,7 @@ public final class UuidCreator {
 	 * @see MachineId
 	 */
 	public static UUID getTimeBasedWithHash() {
-		return TimeBasedWithHashHolder.INSTANCE.create();
+		return UUID1_HASH.create();
 	}
 
 	/**
@@ -263,7 +268,7 @@ public final class UuidCreator {
 	 * @see TimeBasedFactory
 	 */
 	public static UUID getTimeBasedWithRandom() {
-		return TimeBasedWithRandomHolder.INSTANCE.create();
+		return UUID1_RANDOM.create();
 	}
 
 	/**
@@ -319,9 +324,7 @@ public final class UuidCreator {
 	 * @return a UUIDv1
 	 */
 	public static UUID getTimeBasedMin(Instant instant) {
-		if (instant == null) {
-			throw new IllegalArgumentException("Null instant");
-		}
+		Objects.requireNonNull(instant, "Null instant");
 		TimeBasedFactory.Builder builder = TimeBasedFactory.builder();
 		return builder.withInstant(instant).withClockSeq(0x0000L).withNodeId(0x000000000000L).build().create();
 	}
@@ -343,9 +346,7 @@ public final class UuidCreator {
 	 * @return a UUIDv1
 	 */
 	public static UUID getTimeBasedMax(Instant instant) {
-		if (instant == null) {
-			throw new IllegalArgumentException("Null instant");
-		}
+		Objects.requireNonNull(instant, "Null instant");
 		TimeBasedFactory.Builder builder = TimeBasedFactory.builder();
 		return builder.withInstant(instant).withClockSeq(0xffffL).withNodeId(0xffffffffffffL).build().create();
 	}
@@ -366,7 +367,7 @@ public final class UuidCreator {
 	 *      UUID Formats</a>
 	 */
 	public static UUID getTimeOrdered() {
-		return TimeOrderedHolder.INSTANCE.create();
+		return UUID6.create();
 	}
 
 	/**
@@ -381,7 +382,7 @@ public final class UuidCreator {
 	 *      UUID Formats</a>
 	 */
 	public static UUID getTimeOrderedWithMac() {
-		return TimeOrderedWithMacHolder.INSTANCE.create();
+		return UUID6_MAC.create();
 	}
 
 	/**
@@ -399,7 +400,7 @@ public final class UuidCreator {
 	 *      UUID Formats</a>
 	 */
 	public static UUID getTimeOrderedWithHash() {
-		return TimeOrderedWithHashHolder.INSTANCE.create();
+		return UUID6_HASH.create();
 	}
 
 	/**
@@ -415,7 +416,7 @@ public final class UuidCreator {
 	 *      UUID Formats</a>
 	 */
 	public static UUID getTimeOrderedWithRandom() {
-		return TimeOrderedWithRandomHolder.INSTANCE.create();
+		return UUID6_RANDOM.create();
 	}
 
 	/**
@@ -474,9 +475,7 @@ public final class UuidCreator {
 	 * @return a UUIDv6
 	 */
 	public static UUID getTimeOrderedMin(Instant instant) {
-		if (instant == null) {
-			throw new IllegalArgumentException("Null instant");
-		}
+		Objects.requireNonNull(instant, "Null instant");
 		TimeOrderedFactory.Builder builder = TimeOrderedFactory.builder();
 		return builder.withInstant(instant).withClockSeq(0x0000L).withNodeId(0x000000000000L).build().create();
 	}
@@ -498,13 +497,11 @@ public final class UuidCreator {
 	 * @return a UUIDv6
 	 */
 	public static UUID getTimeOrderedMax(Instant instant) {
-		if (instant == null) {
-			throw new IllegalArgumentException("Null instant");
-		}
+		Objects.requireNonNull(instant, "Null instant");
 		TimeOrderedFactory.Builder builder = TimeOrderedFactory.builder();
 		return builder.withInstant(instant).withClockSeq(0xffffL).withNodeId(0xffffffffffffL).build().create();
 	}
-
+	
 	/**
 	 * Returns a time-ordered unique identifier that uses Unix Epoch (UUIDv7).
 	 * <p>
@@ -522,7 +519,7 @@ public final class UuidCreator {
 	 *      UUID Formats</a>
 	 */
 	public static UUID getTimeOrderedEpoch() {
-		return TimeOrderedEpochHolder.INSTANCE.create();
+		return UUID7.create();
 	}
 
 	/**
@@ -540,7 +537,7 @@ public final class UuidCreator {
 	 *      UUID Formats</a>
 	 */
 	public static UUID getTimeOrderedEpochPlus1() {
-		return TimeOrderedEpochPlus1Holder.INSTANCE.create();
+		return UUID7_PLUS_1.create();
 	}
 
 	/**
@@ -559,7 +556,7 @@ public final class UuidCreator {
 	 *      UUID Formats</a>
 	 */
 	public static UUID getTimeOrderedEpochPlusN() {
-		return TimeOrderedEpochPlusNHolder.INSTANCE.create();
+		return UUID7_PLUS_N.create();
 	}
 
 	/**
@@ -582,9 +579,7 @@ public final class UuidCreator {
 	 * @since 5.3.3
 	 */
 	public static UUID getTimeOrderedEpoch(Instant instant) {
-		if (instant == null) {
-			throw new IllegalArgumentException("Null instant");
-		}
+		Objects.requireNonNull(instant, "Null instant");
 		final long time = instant.toEpochMilli();
 		SecureRandom random = new SecureRandom();
 		final long msb = (time << 16) | (random.nextLong() & 0x0fffL) | 0x7000L;
@@ -609,9 +604,7 @@ public final class UuidCreator {
 	 * @return a UUIDv7
 	 */
 	public static UUID getTimeOrderedEpochMin(Instant instant) {
-		if (instant == null) {
-			throw new IllegalArgumentException("Null instant");
-		}
+		Objects.requireNonNull(instant, "Null instant");
 		final long time = instant.toEpochMilli();
 		return new UUID((time << 16) | 0x7000L, 0x8000000000000000L);
 	}
@@ -633,9 +626,7 @@ public final class UuidCreator {
 	 * @return a UUIDv7
 	 */
 	public static UUID getTimeOrderedEpochMax(Instant instant) {
-		if (instant == null) {
-			throw new IllegalArgumentException("Null instant");
-		}
+		Objects.requireNonNull(instant, "Null instant");
 		final long time = instant.toEpochMilli();
 		return new UUID((time << 16) | 0x7fffL, 0xbfffffffffffffffL);
 	}
@@ -650,7 +641,7 @@ public final class UuidCreator {
 	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(String name) {
-		return NameBasedMd5Holder.INSTANCE.create(name);
+		return UUID3.create(Parameters.builder().withName(name).build());
 	}
 
 	/**
@@ -661,7 +652,7 @@ public final class UuidCreator {
 	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(byte[] name) {
-		return NameBasedMd5Holder.INSTANCE.create(name);
+		return UUID3.create(Parameters.builder().withName(name).build());
 	}
 
 	/**
@@ -676,7 +667,7 @@ public final class UuidCreator {
 	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(UUID namespace, String name) {
-		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
+		return UUID3.create(Parameters.builder().withNamespace(namespace).withName(name).build());
 	}
 
 	/**
@@ -689,7 +680,7 @@ public final class UuidCreator {
 	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(UUID namespace, byte[] name) {
-		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
+		return UUID3.create(Parameters.builder().withNamespace(namespace).withName(name).build());
 	}
 
 	/**
@@ -705,7 +696,7 @@ public final class UuidCreator {
 	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(String namespace, String name) {
-		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
+		return UUID3.create(Parameters.builder().withNamespace(namespace).withName(name).build());
 	}
 
 	/**
@@ -719,7 +710,7 @@ public final class UuidCreator {
 	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(String namespace, byte[] name) {
-		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
+		return UUID3.create(Parameters.builder().withNamespace(namespace).withName(name).build());
 	}
 
 	/**
@@ -742,7 +733,7 @@ public final class UuidCreator {
 	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(UuidNamespace namespace, String name) {
-		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
+		return UUID3.create(Parameters.builder().withNamespace(namespace).withName(name).build());
 	}
 
 	/**
@@ -763,7 +754,7 @@ public final class UuidCreator {
 	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(UuidNamespace namespace, byte[] name) {
-		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
+		return UUID3.create(Parameters.builder().withNamespace(namespace).withName(name).build());
 	}
 
 	/**
@@ -776,7 +767,7 @@ public final class UuidCreator {
 	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(String name) {
-		return NameBasedSha1Holder.INSTANCE.create(name);
+		return UUID5.create(Parameters.builder().withName(name).build());
 	}
 
 	/**
@@ -787,7 +778,7 @@ public final class UuidCreator {
 	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(byte[] name) {
-		return NameBasedSha1Holder.INSTANCE.create(name);
+		return UUID5.create(Parameters.builder().withName(name).build());
 	}
 
 	/**
@@ -802,7 +793,7 @@ public final class UuidCreator {
 	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(UUID namespace, String name) {
-		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
+		return UUID5.create(Parameters.builder().withNamespace(namespace).withName(name).build());
 	}
 
 	/**
@@ -815,7 +806,7 @@ public final class UuidCreator {
 	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(UUID namespace, byte[] name) {
-		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
+		return UUID5.create(Parameters.builder().withNamespace(namespace).withName(name).build());
 	}
 
 	/**
@@ -831,7 +822,7 @@ public final class UuidCreator {
 	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(String namespace, String name) {
-		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
+		return UUID5.create(Parameters.builder().withNamespace(namespace).withName(name).build());
 	}
 
 	/**
@@ -845,7 +836,7 @@ public final class UuidCreator {
 	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(String namespace, byte[] name) {
-		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
+		return UUID5.create(Parameters.builder().withNamespace(namespace).withName(name).build());
 	}
 
 	/**
@@ -868,7 +859,7 @@ public final class UuidCreator {
 	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(UuidNamespace namespace, String name) {
-		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
+		return UUID5.create(Parameters.builder().withNamespace(namespace).withName(name).build());
 	}
 
 	/**
@@ -889,7 +880,7 @@ public final class UuidCreator {
 	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(UuidNamespace namespace, byte[] name) {
-		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
+		return UUID5.create(Parameters.builder().withNamespace(namespace).withName(name).build());
 	}
 
 	/**
@@ -902,7 +893,8 @@ public final class UuidCreator {
 	 * @see DceSecurityFactory
 	 */
 	public static UUID getDceSecurity(byte localDomain, int localIdentifier) {
-		return DceSecurityHolder.INSTANCE.create(localDomain, localIdentifier);
+		return UUID2
+				.create(Parameters.builder().withLocalDomain(localDomain).withLocalIdentifier(localIdentifier).build());
 	}
 
 	/**
@@ -915,7 +907,8 @@ public final class UuidCreator {
 	 * @see DceSecurityFactory
 	 */
 	public static UUID getDceSecurityWithMac(byte localDomain, int localIdentifier) {
-		return DceSecurityWithMacHolder.INSTANCE.create(localDomain, localIdentifier);
+		return UUID2_MAC
+				.create(Parameters.builder().withLocalDomain(localDomain).withLocalIdentifier(localIdentifier).build());
 	}
 
 	/**
@@ -928,7 +921,8 @@ public final class UuidCreator {
 	 * @see DceSecurityFactory
 	 */
 	public static UUID getDceSecurityWithHash(byte localDomain, int localIdentifier) {
-		return DceSecurityWithHashHolder.INSTANCE.create(localDomain, localIdentifier);
+		return UUID2_HASH
+				.create(Parameters.builder().withLocalDomain(localDomain).withLocalIdentifier(localIdentifier).build());
 	}
 
 	/**
@@ -941,7 +935,8 @@ public final class UuidCreator {
 	 * @see DceSecurityFactory
 	 */
 	public static UUID getDceSecurityWithRandom(byte localDomain, int localIdentifier) {
-		return DceSecurityWithRandomHolder.INSTANCE.create(localDomain, localIdentifier);
+		return UUID2_RANDOM
+				.create(Parameters.builder().withLocalDomain(localDomain).withLocalIdentifier(localIdentifier).build());
 	}
 
 	/**
@@ -962,7 +957,8 @@ public final class UuidCreator {
 	 * @see DceSecurityFactory
 	 */
 	public static UUID getDceSecurity(UuidLocalDomain localDomain, int localIdentifier) {
-		return DceSecurityHolder.INSTANCE.create(localDomain, localIdentifier);
+		return UUID2
+				.create(Parameters.builder().withLocalDomain(localDomain).withLocalIdentifier(localIdentifier).build());
 	}
 
 	/**
@@ -983,7 +979,8 @@ public final class UuidCreator {
 	 * @see DceSecurityFactory
 	 */
 	public static UUID getDceSecurityWithMac(UuidLocalDomain localDomain, int localIdentifier) {
-		return DceSecurityWithMacHolder.INSTANCE.create(localDomain, localIdentifier);
+		return UUID2_MAC
+				.create(Parameters.builder().withLocalDomain(localDomain).withLocalIdentifier(localIdentifier).build());
 	}
 
 	/**
@@ -1004,7 +1001,8 @@ public final class UuidCreator {
 	 * @see DceSecurityFactory
 	 */
 	public static UUID getDceSecurityWithHash(UuidLocalDomain localDomain, int localIdentifier) {
-		return DceSecurityWithHashHolder.INSTANCE.create(localDomain, localIdentifier);
+		return UUID2_HASH
+				.create(Parameters.builder().withLocalDomain(localDomain).withLocalIdentifier(localIdentifier).build());
 	}
 
 	/**
@@ -1025,7 +1023,8 @@ public final class UuidCreator {
 	 * @see DceSecurityFactory
 	 */
 	public static UUID getDceSecurityWithRandom(UuidLocalDomain localDomain, int localIdentifier) {
-		return DceSecurityWithRandomHolder.INSTANCE.create(localDomain, localIdentifier);
+		return UUID2_RANDOM
+				.create(Parameters.builder().withLocalDomain(localDomain).withLocalIdentifier(localIdentifier).build());
 	}
 
 	/**
@@ -1039,7 +1038,7 @@ public final class UuidCreator {
 	 *      of GUIDs as Primary Keys</a>
 	 */
 	public static UUID getPrefixComb() {
-		return PrefixCombHolder.INSTANCE.create();
+		return COMB_PREFIX.create();
 	}
 
 	/**
@@ -1059,9 +1058,7 @@ public final class UuidCreator {
 	 * @return a GUID
 	 */
 	public static UUID getPrefixCombMin(Instant instant) {
-		if (instant == null) {
-			throw new IllegalArgumentException("Null instant");
-		}
+		Objects.requireNonNull(instant, "Null instant");
 		final long time = instant.toEpochMilli();
 		return new UUID((time << 16) | 0x4000L, 0x8000000000000000L);
 	}
@@ -1083,9 +1080,7 @@ public final class UuidCreator {
 	 * @return a GUID
 	 */
 	public static UUID getPrefixCombMax(Instant instant) {
-		if (instant == null) {
-			throw new IllegalArgumentException("Null instant");
-		}
+		Objects.requireNonNull(instant, "Null instant");
 		final long time = instant.toEpochMilli();
 		return new UUID((time << 16) | 0x4fffL, 0xbfffffffffffffffL);
 	}
@@ -1102,7 +1097,7 @@ public final class UuidCreator {
 	 *      of GUIDs as Primary Keys</a>
 	 */
 	public static UUID getSuffixComb() {
-		return SuffixCombHolder.INSTANCE.create();
+		return COMB_SUFFIX.create();
 	}
 
 	/**
@@ -1122,9 +1117,7 @@ public final class UuidCreator {
 	 * @return a GUID
 	 */
 	public static UUID getSuffixCombMin(Instant instant) {
-		if (instant == null) {
-			throw new IllegalArgumentException("Null instant");
-		}
+		Objects.requireNonNull(instant, "Null instant");
 		final long time = instant.toEpochMilli();
 		return new UUID(0x0000000000004000L, 0x8000000000000000L | (time & 0x0000ffffffffffffL));
 	}
@@ -1146,9 +1139,7 @@ public final class UuidCreator {
 	 * @return a GUID
 	 */
 	public static UUID getSuffixCombMax(Instant instant) {
-		if (instant == null) {
-			throw new IllegalArgumentException("Null instant");
-		}
+		Objects.requireNonNull(instant, "Null instant");
 		final long time = instant.toEpochMilli();
 		return new UUID(0xffffffffffff4fffL, 0xbfff000000000000L | (time & 0x0000ffffffffffffL));
 	}
@@ -1167,7 +1158,7 @@ public final class UuidCreator {
 	 *      UUID Generators</a>
 	 */
 	public static UUID getShortPrefixComb() {
-		return ShortPrefixCombHolder.INSTANCE.create();
+		return COMB_SHORT_PREFIX.create();
 	}
 
 	/**
@@ -1184,102 +1175,110 @@ public final class UuidCreator {
 	 *      UUID Generators</a>
 	 */
 	public static UUID getShortSuffixComb() {
-		return ShortSuffixCombHolder.INSTANCE.create();
+		return COMB_SHORT_SUFFIX.create();
 	}
 
 	// ***************************************
 	// Lazy holders
 	// ***************************************
 
-	private static class RandomBasedHolder {
-		static final RandomBasedFactory INSTANCE = new RandomBasedFactory();
+	private static final Proxy UUID1 = new Proxy(Suppliers.UUID1);
+	private static final Proxy UUID1_MAC = new Proxy(Suppliers.UUID1_MAC);
+	private static final Proxy UUID1_HASH = new Proxy(Suppliers.UUID1_HASH);
+	private static final Proxy UUID1_RANDOM = new Proxy(Suppliers.UUID1_RANDOM);
+	private static final Proxy UUID2 = new Proxy(Suppliers.UUID2);
+	private static final Proxy UUID2_MAC = new Proxy(Suppliers.UUID2_MAC);
+	private static final Proxy UUID2_HASH = new Proxy(Suppliers.UUID2_HASH);
+	private static final Proxy UUID2_RANDOM = new Proxy(Suppliers.UUID2_RANDOM);
+	private static final Proxy UUID3 = new Proxy(Suppliers.UUID3);
+	private static final Proxy UUID4 = new Proxy(Suppliers.UUID4);
+	private static final Proxy UUID4_FAST = new Proxy(Suppliers.UUID4_FAST);
+	private static final Proxy UUID5 = new Proxy(Suppliers.UUID5);
+	private static final Proxy UUID6 = new Proxy(Suppliers.UUID6);
+	private static final Proxy UUID6_MAC = new Proxy(Suppliers.UUID6_MAC);
+	private static final Proxy UUID6_HASH = new Proxy(Suppliers.UUID6_HASH);
+	private static final Proxy UUID6_RANDOM = new Proxy(Suppliers.UUID6_RANDOM);
+	private static final Proxy UUID7 = new Proxy(Suppliers.UUID7);
+	private static final Proxy UUID7_PLUS_1 = new Proxy(Suppliers.UUID7_PLUS_1);
+	private static final Proxy UUID7_PLUS_N = new Proxy(Suppliers.UUID7_PLUS_N);
+	private static final Proxy COMB_PREFIX = new Proxy(Suppliers.COMB_PREFIX);
+	private static final Proxy COMB_SUFFIX = new Proxy(Suppliers.COMB_SUFFIX);
+	private static final Proxy COMB_SHORT_PREFIX = new Proxy(Suppliers.COMB_SHORT_PREFIX);
+	private static final Proxy COMB_SHORT_SUFFIX = new Proxy(Suppliers.COMB_SHORT_SUFFIX);
+
+	private static enum Suppliers {
+
+		UUID1(TimeBasedFactory::new), //
+		UUID1_MAC(() -> TimeBasedFactory.builder().withMacNodeId().build()), //
+		UUID1_HASH(() -> TimeBasedFactory.builder().withHashNodeId().build()), //
+		UUID1_RANDOM(() -> TimeBasedFactory.builder().withRandomNodeId().build()), //
+		UUID2(DceSecurityFactory::new), //
+		UUID2_MAC(() -> DceSecurityFactory.builder().withMacNodeId().build()), //
+		UUID2_HASH(() -> DceSecurityFactory.builder().withHashNodeId().build()), //
+		UUID2_RANDOM(() -> DceSecurityFactory.builder().withRandomNodeId().build()), //
+		UUID3(NameBasedMd5Factory::new), //
+		UUID4(RandomBasedFactory::new), //
+		UUID4_FAST(() -> RandomBasedFactory.builder().withFastRandom().build()), //
+		UUID5(NameBasedSha1Factory::new), //
+		UUID6(TimeOrderedFactory::new), //
+		UUID6_MAC(() -> TimeOrderedFactory.builder().withMacNodeId().build()), //
+		UUID6_HASH(() -> TimeOrderedFactory.builder().withHashNodeId().build()), //
+		UUID6_RANDOM(() -> TimeOrderedFactory.builder().withRandomNodeId().build()), //
+		UUID7(TimeOrderedEpochFactory::new), //
+		UUID7_PLUS_1(() -> TimeOrderedEpochFactory.builder().withIncrementPlus1().build()), //
+		UUID7_PLUS_N(() -> TimeOrderedEpochFactory.builder().withIncrementPlusN().build()), //
+		COMB_PREFIX(PrefixCombFactory::new), //
+		COMB_SUFFIX(SuffixCombFactory::new), //
+		COMB_SHORT_PREFIX(ShortPrefixCombFactory::new), //
+		COMB_SHORT_SUFFIX(ShortSuffixCombFactory::new), //
+		;
+
+		private final Supplier<UuidFactory> supplier;
+
+		Suppliers(Supplier<UuidFactory> supplier) {
+			this.supplier = supplier;
+		}
+
+		public Supplier<UuidFactory> getValue() {
+			return this.supplier;
+		}
 	}
 
-	private static class RandomBasedFastHolder {
-		static final RandomBasedFactory INSTANCE = RandomBasedFactory.builder().withFastRandom().build();
-	}
+	private static class Proxy extends UuidFactory {
 
-	private static class TimeBasedHolder {
-		static final TimeBasedFactory INSTANCE = new TimeBasedFactory();
-	}
+		private UuidFactory factory = null;
+		private Supplier<UuidFactory> supplier;
+		private static final ReentrantLock lock = new ReentrantLock();
 
-	private static class TimeBasedWithMacHolder {
-		static final TimeBasedFactory INSTANCE = TimeBasedFactory.builder().withMacNodeId().build();
-	}
+		public Proxy(Suppliers supplier) {
+			this.supplier = (Supplier<UuidFactory>) supplier.getValue();
+		}
 
-	private static class TimeBasedWithHashHolder {
-		static final TimeBasedFactory INSTANCE = TimeBasedFactory.builder().withHashNodeId().build();
-	}
+		private UuidFactory get() {
 
-	private static class TimeBasedWithRandomHolder {
-		static final TimeBasedFactory INSTANCE = TimeBasedFactory.builder().withRandomNodeId().build();
-	}
+			if (factory != null) {
+				return factory;
+			}
 
-	private static class TimeOrderedHolder {
-		static final TimeOrderedFactory INSTANCE = new TimeOrderedFactory();
-	}
+			lock.lock();
+			try {
+				if (factory == null) {
+					this.factory = supplier.get();
+				}
+				return this.factory;
+			} finally {
+				lock.unlock();
+			}
+		}
 
-	private static class TimeOrderedWithMacHolder {
-		static final TimeOrderedFactory INSTANCE = TimeOrderedFactory.builder().withMacNodeId().build();
-	}
+		@Override
+		public UUID create() {
+			return get().create();
+		}
 
-	private static class TimeOrderedWithHashHolder {
-		static final TimeOrderedFactory INSTANCE = TimeOrderedFactory.builder().withHashNodeId().build();
-	}
-
-	private static class TimeOrderedWithRandomHolder {
-		static final TimeOrderedFactory INSTANCE = TimeOrderedFactory.builder().withRandomNodeId().build();
-	}
-
-	private static class TimeOrderedEpochHolder {
-		static final TimeOrderedEpochFactory INSTANCE = new TimeOrderedEpochFactory();
-	}
-
-	private static class TimeOrderedEpochPlus1Holder {
-		static final TimeOrderedEpochFactory INSTANCE = TimeOrderedEpochFactory.builder().withIncrementPlus1().build();
-	}
-
-	private static class TimeOrderedEpochPlusNHolder {
-		static final TimeOrderedEpochFactory INSTANCE = TimeOrderedEpochFactory.builder().withIncrementPlusN().build();
-	}
-
-	private static class NameBasedMd5Holder {
-		static final NameBasedMd5Factory INSTANCE = new NameBasedMd5Factory();
-	}
-
-	private static class NameBasedSha1Holder {
-		static final NameBasedSha1Factory INSTANCE = new NameBasedSha1Factory();
-	}
-
-	private static class DceSecurityHolder {
-		static final DceSecurityFactory INSTANCE = new DceSecurityFactory();
-	}
-
-	private static class DceSecurityWithMacHolder {
-		static final DceSecurityFactory INSTANCE = DceSecurityFactory.builder().withMacNodeId().build();
-	}
-
-	private static class DceSecurityWithHashHolder {
-		static final DceSecurityFactory INSTANCE = DceSecurityFactory.builder().withHashNodeId().build();
-	}
-
-	private static class DceSecurityWithRandomHolder {
-		static final DceSecurityFactory INSTANCE = DceSecurityFactory.builder().withRandomNodeId().build();
-	}
-
-	private static class SuffixCombHolder {
-		static final SuffixCombFactory INSTANCE = new SuffixCombFactory();
-	}
-
-	private static class PrefixCombHolder {
-		static final PrefixCombFactory INSTANCE = new PrefixCombFactory();
-	}
-
-	private static class ShortPrefixCombHolder {
-		static final ShortPrefixCombFactory INSTANCE = new ShortPrefixCombFactory();
-	}
-
-	private static class ShortSuffixCombHolder {
-		static final ShortSuffixCombFactory INSTANCE = new ShortSuffixCombFactory();
+		@Override
+		public UUID create(Parameters parameters) {
+			return get().create(parameters);
+		}
 	}
 }
