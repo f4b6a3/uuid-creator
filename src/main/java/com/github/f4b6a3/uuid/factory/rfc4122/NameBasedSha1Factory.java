@@ -51,7 +51,7 @@ public final class NameBasedSha1Factory extends AbstNameBasedFactory {
 	 * @param namespace a namespace
 	 */
 	public NameBasedSha1Factory(UUID namespace) {
-		this(bytes(namespace));
+		this(namespaceBytes(namespace));
 	}
 
 	/**
@@ -60,7 +60,7 @@ public final class NameBasedSha1Factory extends AbstNameBasedFactory {
 	 * @param namespace a namespace
 	 */
 	public NameBasedSha1Factory(String namespace) {
-		this(bytes(namespace));
+		this(namespaceBytes(namespace));
 	}
 
 	/**
@@ -69,7 +69,7 @@ public final class NameBasedSha1Factory extends AbstNameBasedFactory {
 	 * @param namespace a namespace
 	 */
 	public NameBasedSha1Factory(UuidNamespace namespace) {
-		this(bytes(namespace));
+		this(namespaceBytes(namespace));
 	}
 
 	private NameBasedSha1Factory(byte[] namespace) {

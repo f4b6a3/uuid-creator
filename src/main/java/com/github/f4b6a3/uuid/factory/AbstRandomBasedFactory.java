@@ -26,6 +26,7 @@ package com.github.f4b6a3.uuid.factory;
 
 import java.security.SecureRandom;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.IntFunction;
@@ -41,7 +42,7 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  * 
  * @see RandomFunction
  */
-public abstract class AbstRandomBasedFactory extends UuidFactory implements NoArgsFactory {
+public abstract class AbstRandomBasedFactory extends UuidFactory {
 
 	/**
 	 * The random generator.
@@ -67,6 +68,11 @@ public abstract class AbstRandomBasedFactory extends UuidFactory implements NoAr
 	protected AbstRandomBasedFactory(UuidVersion version, Builder<?, ?> builder) {
 		super(version);
 		this.random = builder.getRandom();
+	}
+
+	@Override
+	public UUID create(Parameters parameters) {
+		return create(); // ignore parameters
 	}
 
 	/**

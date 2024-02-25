@@ -115,10 +115,10 @@ public abstract class UuidFactoryTest {
 	public static class TestThread extends Thread {
 
 		public static Set<UUID> hashSet = new HashSet<>();
-		private NoArgsFactory factory;
+		private UuidFactory factory;
 		private int loopLimit;
 
-		public TestThread(NoArgsFactory factory, int loopLimit) {
+		public TestThread(UuidFactory factory, int loopLimit) {
 			this.factory = factory;
 			this.loopLimit = loopLimit;
 		}

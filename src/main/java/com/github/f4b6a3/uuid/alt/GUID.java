@@ -31,6 +31,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -245,7 +246,7 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @param namespace a GUID (optional)
 	 * @param name      a string
 	 * @return a GUID
-	 * @throws IllegalArgumentException if the name is null
+	 * @throws NullPointerException if the name is null
 	 */
 	public static GUID v3(GUID namespace, String name) {
 		return hash(3, "MD5", namespace, name);
@@ -287,7 +288,7 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @param namespace a GUID (optional)
 	 * @param name      a string
 	 * @return a GUID
-	 * @throws IllegalArgumentException if the name is null
+	 * @throws NullPointerException if the name is null
 	 */
 	public static GUID v5(GUID namespace, String name) {
 		return hash(5, "SHA-1", namespace, name);
@@ -477,15 +478,13 @@ public final class GUID implements Serializable, Comparable<GUID> {
 
 	private static GUID hash(int version, String algorithm, GUID namespace, String name) {
 
-		if (name == null) {
-			throw new IllegalArgumentException("Null name");
-		}
+		Objects.requireNonNull(name, "Null name");
 
 		MessageDigest hasher = null;
 		try {
 			hasher = MessageDigest.getInstance(algorithm);
 		} catch (NoSuchAlgorithmException e) {
-			throw new IllegalArgumentException(String.format("%s not supported", algorithm));
+			throw new IllegalArgumentException(e.getMessage());
 		}
 
 		if (namespace != null) {

@@ -24,9 +24,16 @@
 
 package com.github.f4b6a3.uuid.factory;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.UUID;
 
+import com.github.f4b6a3.uuid.codec.BinaryCodec;
+import com.github.f4b6a3.uuid.codec.StringCodec;
+import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
 /**
  * Abstract factory that is base for all UUID factories.
@@ -42,6 +49,16 @@ public abstract class UuidFactory {
 	 * Version bit mask.
 	 */
 	protected final long versionMask;
+
+	/**
+	 * Default Constructor.
+	 * 
+	 * The version used is {@link UuidVersion#VERSION_UNKNOWN}.
+	 */
+	public UuidFactory() {
+		this.version = UuidVersion.VERSION_UNKNOWN;
+		this.versionMask = (long) version.getValue() << 12;
+	}
 
 	/**
 	 * Constructor with a version number.
@@ -60,6 +77,227 @@ public abstract class UuidFactory {
 	 */
 	public UuidVersion getVersion() {
 		return this.version;
+	}
+
+	/**
+	 * Create a UUID
+	 * 
+	 * @return a UUID
+	 */
+	public abstract UUID create();
+
+	/**
+	 * Creates a UUID using parameters.
+	 * 
+	 * @param parameters parameters object
+	 * @return a UUID
+	 */
+	public abstract UUID create(Parameters parameters);
+
+	/**
+	 * Parameters object to be used with a {@link UuidFactory#create(Parameters)}.
+	 */
+	public static class Parameters {
+
+		/**
+		 * Name space byte array.
+		 */
+		private byte[] namespace;
+
+		/**
+		 * Name byte array.
+		 */
+		private byte[] name;
+
+		/**
+		 * Constructor using a builder.
+		 * 
+		 * @param builder a builder
+		 */
+		public Parameters(Builder builder) {
+			if (builder != null) {
+				this.namespace = builder.namespace;
+				this.name = builder.name;
+			}
+		}
+
+		/**
+		 * Get the name space bytes
+		 * 
+		 * @return a byte array
+		 */
+		public byte[] getNamespace() {
+			return this.namespace;
+		}
+
+		/**
+		 * Get the name bytes
+		 * 
+		 * @return a byte array
+		 */
+		public byte[] getName() {
+			return this.name;
+		}
+
+		/**
+		 * Returns a new builder.
+		 * 
+		 * @return a builder
+		 */
+		public static Builder builder() {
+			return new Builder();
+		}
+
+		/**
+		 * Parameters builder.
+		 */
+		public static class Builder {
+
+			/**
+			 * Name space byte array.
+			 */
+			private byte[] namespace = null;
+
+			/**
+			 * Name byte array.
+			 */
+			private byte[] name = null;
+
+			private Builder() {
+			}
+
+			/**
+			 * Use the name space UUID.
+			 * 
+			 * @param namespace a name space
+			 * @return the builder
+			 */
+			public Builder withNamespace(UUID namespace) {
+				this.namespace = namespaceBytes(namespace);
+				return this;
+			}
+
+			/**
+			 * Use the name space string.
+			 * 
+			 * @param namespace a name space
+			 * @return the builder
+			 */
+			public Builder withNamespace(String namespace) {
+				this.namespace = namespaceBytes(namespace);
+				return this;
+			}
+
+			/**
+			 * Use the name space enum.
+			 * 
+			 * @param namespace a name space
+			 * @return the builder
+			 */
+			public Builder withNamespace(UuidNamespace namespace) {
+				this.namespace = namespaceBytes(namespace);
+				return this;
+			}
+
+			/**
+			 * Use the name byte array.
+			 * 
+			 * It makes a copy of the input byte array.
+			 * 
+			 * @param name a name
+			 * @return the builder
+			 */
+			public Builder withName(byte[] name) {
+				this.name = nameBytes(name);
+				return this;
+			}
+
+			/**
+			 * Use the name string.
+			 * 
+			 * The string is encoded into UTF-8 byte array.
+			 * 
+			 * @param name a name
+			 * @return the builder
+			 */
+			public Builder withName(String name) {
+				this.name = nameBytes(name);
+				return this;
+			}
+
+			/**
+			 * Finishes the parameters build.
+			 * 
+			 * @return the build parameters.
+			 */
+			public Parameters build() {
+				return new Parameters(this);
+			}
+		}
+	}
+
+	/**
+	 * Returns a copy of the input byte array.
+	 * 
+	 * @param name a name string
+	 * @return a byte array
+	 * @throws IllegalArgumentException if the input is null
+	 */
+	protected static byte[] nameBytes(byte[] name) {
+		Objects.requireNonNull(name, "Null name");
+		return Arrays.copyOf(name, name.length);
+	}
+
+	/**
+	 * Converts a name string into a byte array.
+	 * 
+	 * @param name a name string
+	 * @return a byte array
+	 * @throws IllegalArgumentException if the input is null
+	 */
+	protected static byte[] nameBytes(String name) {
+		Objects.requireNonNull(name, "Null name");
+		return name.getBytes(StandardCharsets.UTF_8);
+	}
+
+	/**
+	 * Converts a name space enumeration into a byte array.
+	 * 
+	 * @param namespace a name space enumeration
+	 * @return a byte array
+	 */
+	protected static byte[] namespaceBytes(UuidNamespace namespace) {
+		if (namespace != null) {
+			return namespaceBytes(namespace.getValue());
+		}
+		return null; // the name space can be null
+	}
+
+	/**
+	 * Converts a name space UUID into a byte array.
+	 * 
+	 * @param namespace a name space UUID
+	 * @return a byte array
+	 */
+	protected static byte[] namespaceBytes(UUID namespace) {
+		if (namespace != null) {
+			return BinaryCodec.INSTANCE.encode(namespace);
+		}
+		return null; // the name space can be null
+	}
+
+	/**
+	 * Converts a name space string into a byte array.
+	 * 
+	 * @param namespace a name space string
+	 * @return a byte array
+	 * @throws InvalidUuidException if the name space is invalid
+	 */
+	protected static byte[] namespaceBytes(String namespace) {
+		if (namespace != null) {
+			return BinaryCodec.INSTANCE.encode(StringCodec.INSTANCE.decode(namespace));
+		}
+		return null; // the name space can be null
 	}
 
 	/**

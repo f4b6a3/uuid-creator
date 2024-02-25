@@ -98,7 +98,7 @@ import com.github.f4b6a3.uuid.util.internal.SettingsUtil;
  * @see <a href= "https://www.rfc-editor.org/rfc/rfc4122#section-4.2">RFC-4122 -
  *      4.2. Algorithms for Creating a Time-Based UUID</a>
  */
-public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgsFactory {
+public abstract class AbstTimeBasedFactory extends UuidFactory {
 
 	/**
 	 * The time function.
@@ -167,6 +167,11 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 		} finally {
 			lock.unlock();
 		}
+	}
+
+	@Override
+	public UUID create(Parameters parameters) {
+		return create(); // ignore arguments
 	}
 
 	/**
