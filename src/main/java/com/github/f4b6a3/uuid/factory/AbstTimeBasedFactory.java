@@ -169,6 +169,11 @@ public abstract class AbstTimeBasedFactory extends UuidFactory {
 		}
 	}
 
+	/**
+	 * Returns a time-based UUID.
+	 * 
+	 * @return a time-based UUID
+	 */
 	@Override
 	public UUID create(Parameters parameters) {
 		return create(); // ignore arguments

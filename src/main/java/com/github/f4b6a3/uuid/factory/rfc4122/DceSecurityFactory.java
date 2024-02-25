@@ -178,6 +178,16 @@ public final class DceSecurityFactory extends AbstTimeBasedFactory {
 	}
 
 	/**
+	 * Returns a DCE Security unique identifier (UUIDv2).
+	 * 
+	 * @return a UUIDv2
+	 */
+	@Override
+	public UUID create(Parameters parameters) {
+		return create(parameters.getLocalDomain(), parameters.getLocalIdentifier());
+	}
+
+	/**
 	 * Embeds the local identifier in into the most significant bits.
 	 * 
 	 * @param msb             the MSB
