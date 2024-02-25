@@ -155,7 +155,6 @@ public class GUIDTest {
 			assertNotEquals(GUID.v3(null, name), GUID.v3(namespace, name));
 			assertNotEquals(GUID.v3(GUID.NIL, name), GUID.v3(namespace, name));
 			assertNotEquals(GUID.v3(namespace, name), GUID.v5(namespace, name)); // v5
-			assertNotEquals(GUID.v3(namespace, name), GUID.v8(namespace, name)); // v8
 			assertEquals(GUID.v3(null, name), GUID.v3(null, name));
 			assertEquals(GUID.v3(GUID.NIL, name), GUID.v3(GUID.NIL, name));
 			assertEquals(GUID.v3(namespace, name), GUID.v3(namespace, name));
@@ -199,7 +198,6 @@ public class GUIDTest {
 			assertNotEquals(GUID.v5(null, name), GUID.v5(namespace, name));
 			assertNotEquals(GUID.v5(GUID.NIL, name), GUID.v5(namespace, name));
 			assertNotEquals(GUID.v5(namespace, name), GUID.v3(namespace, name)); // v3
-			assertNotEquals(GUID.v5(namespace, name), GUID.v8(namespace, name)); // v8
 			assertEquals(GUID.v5(null, name), GUID.v5(null, name));
 			assertEquals(GUID.v5(GUID.NIL, name), GUID.v5(GUID.NIL, name));
 			assertEquals(GUID.v5(namespace, name), GUID.v5(namespace, name));
@@ -247,35 +245,6 @@ public class GUIDTest {
 			assertEquals(7, guid.version());
 			assertTrue(t0 <= t1 && t1 <= t2);
 			prev = guid;
-		}
-	}
-
-	@Test
-	public void testV8() {
-		GUID prev = GUID.v8(GUID.NIL, "");
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			GUID namespace = new GUID(UUID.randomUUID());
-			String name = UUID.randomUUID().toString();
-			GUID guid = GUID.v8(namespace, name);
-			assertNotNull(guid);
-			assertNotEquals(prev, guid);
-			assertEquals(8, guid.version());
-			assertNotEquals(GUID.NIL, guid);
-			assertNotEquals(GUID.MAX, guid);
-			assertNotEquals(GUID.v8(null, name), GUID.v8(namespace, name));
-			assertNotEquals(GUID.v8(GUID.NIL, name), GUID.v8(namespace, name));
-			assertNotEquals(GUID.v8(namespace, name), GUID.v3(namespace, name)); // v3
-			assertNotEquals(GUID.v8(namespace, name), GUID.v5(namespace, name)); // v5
-			assertEquals(GUID.v8(null, name), GUID.v8(null, name));
-			assertEquals(GUID.v8(GUID.NIL, name), GUID.v8(GUID.NIL, name));
-			assertEquals(GUID.v8(namespace, name), GUID.v8(namespace, name));
-			prev = guid;
-		}
-		{
-			// Example of a UUIDv8 Value
-			// draft-ietf-uuidrev-rfc4122bis-03
-			GUID guid = GUID.v8(GUID.NAMESPACE_DNS, "www.example.com");
-			assertEquals("401835fd-a627-870a-873f-ed73f2bc5b2c", guid.toString());
 		}
 	}
 

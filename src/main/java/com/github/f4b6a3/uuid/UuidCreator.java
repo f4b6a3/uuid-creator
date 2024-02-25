@@ -666,20 +666,6 @@ public final class UuidCreator {
 
 	/**
 	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
-	 * 
-	 * @deprecated This method will be removed when the new RFC is published.
-	 * 
-	 * @param name a UUID
-	 * @return a UUIDv3
-	 * @see NameBasedMd5Factory
-	 */
-	@Deprecated
-	public static UUID getNameBasedMd5(UUID name) {
-		return NameBasedMd5Holder.INSTANCE.create(name);
-	}
-
-	/**
-	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
 	 * <p>
 	 * The name string is encoded into a sequence of bytes using UTF-8.
 	 * 
@@ -703,22 +689,6 @@ public final class UuidCreator {
 	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(UUID namespace, byte[] name) {
-		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
-	}
-
-	/**
-	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
-	 * 
-	 * @deprecated This method will be removed when the new RFC is published.
-	 * 
-	 * @param namespace a custom name space UUID
-	 * @param name      a UUID
-	 * @return a UUIDv3
-	 * @see UuidNamespace
-	 * @see NameBasedMd5Factory
-	 */
-	@Deprecated
-	public static UUID getNameBasedMd5(UUID namespace, UUID name) {
 		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
 	}
 
@@ -749,23 +719,6 @@ public final class UuidCreator {
 	 * @see NameBasedMd5Factory
 	 */
 	public static UUID getNameBasedMd5(String namespace, byte[] name) {
-		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
-	}
-
-	/**
-	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
-	 * 
-	 * @deprecated This method will be removed when the new RFC is published.
-	 * 
-	 * @param namespace a custom name space UUID in string format
-	 * @param name      a UUID
-	 * @return a UUIDv3
-	 * @throws InvalidUuidException if namespace is invalid
-	 * @see UuidNamespace
-	 * @see NameBasedMd5Factory
-	 */
-	@Deprecated
-	public static UUID getNameBasedMd5(String namespace, UUID name) {
 		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
 	}
 
@@ -814,31 +767,6 @@ public final class UuidCreator {
 	}
 
 	/**
-	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
-	 * 
-	 * @deprecated This method will be removed when the new RFC is published.
-	 *             <p>
-	 *             Name spaces predefined by RFC-4122 (Appendix C):
-	 *             <ul>
-	 *             <li>NAMESPACE_DNS: Name string is a fully-qualified domain name;
-	 *             <li>NAMESPACE_URL: Name string is a URL;
-	 *             <li>NAMESPACE_OID: Name string is an ISO OID;
-	 *             <li>NAMESPACE_X500: Name string is an X.500 DN (in DER or text
-	 *             format).
-	 *             </ul>
-	 * 
-	 * @param namespace a predefined name space enumeration
-	 * @param name      a UUID
-	 * @return a UUIDv3
-	 * @see UuidNamespace
-	 * @see NameBasedMd5Factory
-	 */
-	@Deprecated
-	public static UUID getNameBasedMd5(UuidNamespace namespace, UUID name) {
-		return NameBasedMd5Holder.INSTANCE.create(namespace, name);
-	}
-
-	/**
 	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
 	 * <p>
 	 * The name string is encoded into a sequence of bytes using UTF-8.
@@ -859,20 +787,6 @@ public final class UuidCreator {
 	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(byte[] name) {
-		return NameBasedSha1Holder.INSTANCE.create(name);
-	}
-
-	/**
-	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
-	 * 
-	 * @deprecated This method will be removed when the new RFC is published.
-	 * 
-	 * @param name a UUID
-	 * @return a UUIDv5
-	 * @see NameBasedSha1Factory
-	 */
-	@Deprecated
-	public static UUID getNameBasedSha1(UUID name) {
 		return NameBasedSha1Holder.INSTANCE.create(name);
 	}
 
@@ -906,22 +820,6 @@ public final class UuidCreator {
 
 	/**
 	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
-	 * 
-	 * @deprecated This method will be removed when the new RFC is published.
-	 * 
-	 * @param namespace a custom name space UUID
-	 * @param name      a UUID
-	 * @return a UUIDv5
-	 * @see UuidNamespace
-	 * @see NameBasedSha1Factory
-	 */
-	@Deprecated
-	public static UUID getNameBasedSha1(UUID namespace, UUID name) {
-		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
-	}
-
-	/**
-	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
 	 * <p>
 	 * The name string is encoded into a sequence of bytes using UTF-8.
 	 * 
@@ -947,23 +845,6 @@ public final class UuidCreator {
 	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(String namespace, byte[] name) {
-		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
-	}
-
-	/**
-	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
-	 * 
-	 * @deprecated This method will be removed when the new RFC is published.
-	 * 
-	 * @param namespace a custom name space UUID in string format
-	 * @param name      a UUID
-	 * @return a UUIDv5
-	 * @throws InvalidUuidException if namespace is invalid
-	 * @see UuidNamespace
-	 * @see NameBasedSha1Factory
-	 */
-	@Deprecated
-	public static UUID getNameBasedSha1(String namespace, UUID name) {
 		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
 	}
 
@@ -1008,31 +889,6 @@ public final class UuidCreator {
 	 * @see NameBasedSha1Factory
 	 */
 	public static UUID getNameBasedSha1(UuidNamespace namespace, byte[] name) {
-		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
-	}
-
-	/**
-	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
-	 * 
-	 * @deprecated This method will be removed when the new RFC is published.
-	 *             <p>
-	 *             Name spaces predefined by RFC-4122 (Appendix C):
-	 *             <ul>
-	 *             <li>NAMESPACE_DNS: Name string is a fully-qualified domain name;
-	 *             <li>NAMESPACE_URL: Name string is a URL;
-	 *             <li>NAMESPACE_OID: Name string is an ISO OID;
-	 *             <li>NAMESPACE_X500: Name string is an X.500 DN (in DER or text
-	 *             format).
-	 *             </ul>
-	 * 
-	 * @param namespace a predefined name space enumeration
-	 * @param name      a UUID
-	 * @return a UUIDv5
-	 * @see UuidNamespace
-	 * @see NameBasedSha1Factory
-	 */
-	@Deprecated
-	public static UUID getNameBasedSha1(UuidNamespace namespace, UUID name) {
 		return NameBasedSha1Holder.INSTANCE.create(namespace, name);
 	}
 

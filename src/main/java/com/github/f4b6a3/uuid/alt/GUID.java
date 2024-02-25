@@ -122,7 +122,6 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	private static final long MASK_32 = 0x0000_0000_ffff_ffffL;
 
 	private static final long MULTICAST = 0x0000_0100_0000_0000L;
-	private static final GUID HASHSPACE_SHA2_256 = new GUID(0x3fb32780953c4464L, 0x9cfde85dbbe9843dL);
 
 	/**
 	 * Creates a new GUID.
@@ -243,12 +242,13 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * GUID guid = GUID.v3(Uuid.NAMESPACE_DNS, "www.example.com");
 	 * }</pre>
 	 * 
-	 * @param namespace a GUID
+	 * @param namespace a GUID (optional)
 	 * @param name      a string
 	 * @return a GUID
+	 * @throws IllegalArgumentException if the name is null
 	 */
 	public static GUID v3(GUID namespace, String name) {
-		return hash(3, "MD5", null, namespace, name);
+		return hash(3, "MD5", namespace, name);
 	}
 
 	/**
@@ -284,12 +284,13 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * GUID guid = GUID.v5(Uuid.NAMESPACE_DNS, "www.example.com");
 	 * }</pre>
 	 * 
-	 * @param namespace a GUID
+	 * @param namespace a GUID (optional)
 	 * @param name      a string
 	 * @return a GUID
+	 * @throws IllegalArgumentException if the name is null
 	 */
 	public static GUID v5(GUID namespace, String name) {
-		return hash(5, "SHA-1", null, namespace, name);
+		return hash(5, "SHA-1", namespace, name);
 	}
 
 	/**
@@ -330,35 +331,6 @@ public final class GUID implements Serializable, Comparable<GUID> {
 		final long msb = (time << 16) | (random.nextLong() & MASK_16);
 		final long lsb = random.nextLong();
 		return version(msb, lsb, 7);
-	}
-
-	/**
-	 * Returns a name-based unique identifier that uses SHA-256 hashing (UUIDv8).
-	 * <p>
-	 * Usage:
-	 * 
-	 * <pre>{@code
-	 * GUID guid = GUID.v8(Uuid.NAMESPACE_DNS, "www.example.com");
-	 * }</pre>
-	 * 
-	 * @deprecated This method is no longer supported due to recent sudden changes
-	 *             in the UUIDv8 discussions. It will be removed when the new RFC is
-	 *             finally published.
-	 *             <p>
-	 *             See the latest discussions about UUIDv8:
-	 *             <ul>
-	 *             <li>https://github.com/ietf-wg-uuidrev/rfc4122bis/issues/143
-	 *             <li>https://github.com/ietf-wg-uuidrev/rfc4122bis/issues/144
-	 *             <li>https://github.com/ietf-wg-uuidrev/rfc4122bis/issues/147
-	 *             </ul>
-	 * 
-	 * @param namespace a GUID
-	 * @param name      a string
-	 * @return a GUID
-	 */
-	@Deprecated
-	public static GUID v8(GUID namespace, String name) {
-		return hash(8, "SHA-256", HASHSPACE_SHA2_256, namespace, name);
 	}
 
 	/**
@@ -503,20 +475,17 @@ public final class GUID implements Serializable, Comparable<GUID> {
 		return time;
 	}
 
-	private static GUID hash(int version, String algorithm, GUID hashspace, GUID namespace, String name) {
+	private static GUID hash(int version, String algorithm, GUID namespace, String name) {
+
+		if (name == null) {
+			throw new IllegalArgumentException("Null name");
+		}
 
 		MessageDigest hasher = null;
 		try {
 			hasher = MessageDigest.getInstance(algorithm);
 		} catch (NoSuchAlgorithmException e) {
 			throw new IllegalArgumentException(String.format("%s not supported", algorithm));
-		}
-
-		if (hashspace != null) {
-			ByteBuffer ns = ByteBuffer.allocate(16);
-			ns.putLong(hashspace.msb);
-			ns.putLong(hashspace.lsb);
-			hasher.update(ns.array());
 		}
 
 		if (namespace != null) {
