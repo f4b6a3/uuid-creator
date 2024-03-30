@@ -328,14 +328,21 @@ public final class BaseN {
 	}
 
 	private static char[] expand(char a, char b, char min, char max) {
-
-		if ((a > b) || !(a >= min && a <= max && b >= min && b <= max)) {
+		if (!isValidRange(a, b, min, max)) {
 			return new char[0];
 		}
 
-		char[] buffer = new char[(b - a) + 1];
+		return fillRange(a, b);
+	}
+
+	private static boolean isValidRange(char start, char end, char min, char max) {
+		return start <= end && start >= min && end <= max;
+	}
+
+	private static char[] fillRange(char start, char end) {
+		char[] buffer = new char[(end - start) + 1];
 		for (int i = 0; i < buffer.length; i++) {
-			buffer[i] = (char) (a + i);
+			buffer[i] = (char) (start + i);
 		}
 		return buffer;
 	}

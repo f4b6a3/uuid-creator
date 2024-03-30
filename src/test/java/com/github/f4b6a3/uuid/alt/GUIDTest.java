@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.alt.GUID.Parser;
 import com.github.f4b6a3.uuid.codec.other.TimeOrderedCodec;
 import com.github.f4b6a3.uuid.util.UuidTime;
 import com.github.f4b6a3.uuid.util.UuidUtil;

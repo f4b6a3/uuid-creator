@@ -31,6 +31,7 @@ import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.UuidValidator;
 import com.github.f4b6a3.uuid.util.immutable.CharArray;
 import com.github.f4b6a3.uuid.util.immutable.LongArray;
+import com.github.f4b6a3.uuid.util.internal.JavaVersionUtil;
 
 /**
  * Codec for UUID string representation as defined in RFC-4122.
@@ -66,7 +67,7 @@ public class StringCodec implements UuidCodec<String> {
 	private static final CharArray ALPHABET = Base16Codec.INSTANCE.getBase().getAlphabet();
 
 	private static final String URN_PREFIX = "urn:uuid:";
-	private static final boolean JAVA_VERSION_GREATER_THAN_8 = getJavaVersion() > 8;
+	private static final boolean JAVA_VERSION_GREATER_THAN_8 = JavaVersionUtil.getJavaVersion() > 8;
 
 	/**
 	 * Get a string from a UUID.
@@ -269,32 +270,5 @@ public class StringCodec implements UuidCodec<String> {
 		}
 
 		return chars;
-	}
-
-	/**
-	 * Returns the java major version number.
-	 * 
-	 * @see <a href= "https://www.java.com/releases/">JDK Releases</a>
-	 * @return major version number
-	 */
-	protected static int getJavaVersion() {
-		try {
-
-			String property = System.getProperty("java.version");
-
-			if (property != null) {
-				String[] version = property.split("\\.");
-				if (version[0].equals("1")) {
-					return Integer.parseInt(version[1]);
-				} else {
-					return Integer.parseInt(version[0]);
-				}
-			} else {
-				return 8;
-			}
-
-		} catch (NullPointerException | NumberFormatException | IndexOutOfBoundsException e) {
-			return 8;
-		}
 	}
 }

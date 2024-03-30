@@ -88,10 +88,13 @@ public class TimeOrderedCodec implements UuidCodec<UUID> {
 
 		long timestamp = UuidUtil.getTimestamp(uuid);
 
-		long msb = ((timestamp & 0x0fff_0000_00000000L) >>> 48) //
-				| ((timestamp & 0x0000_ffff_00000000L) >>> 16) //
-				| ((timestamp & 0x0000_0000_ffffffffL) << 32) //
-				| 0x0000000000001000L; // set version 1
+		long timeHigh = (timestamp & 0x0fff_0000_00000000L) >>> 48;
+		long timeMid = (timestamp & 0x0000_ffff_00000000L) >>> 16;
+		long timeLow = (timestamp & 0x0000_0000_ffffffffL) << 32;
+		long version = 0x0000000000001000L; // Set version 1
+
+		// Combine the parts to form the Most Significant Bits (MSB)
+		long msb = timeHigh | timeMid | timeLow | version;
 
 		long lsb = uuid.getLeastSignificantBits();
 

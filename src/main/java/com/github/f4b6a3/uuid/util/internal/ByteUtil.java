@@ -91,4 +91,63 @@ public final class ByteUtil {
 		}
 		return 0;
 	}
+
+	/**
+	 * Converts an array of bytes into an array of integers. Each integer is formed by combining 4 bytes
+	 * from the input array. This method assumes that the input byte array is at least 16 bytes long.
+	 * The conversion is done by treating each set of 4 bytes as a single integer, with the first byte being the most significant.
+	 *
+	 * @param bytes An array of bytes to be converted into integers. This array should be at least 16 bytes long.
+	 * @return An array of 4 integers, where each integer is formed by combining 4 bytes from the input array.
+	 */
+	public static int[] toInts(byte[] bytes) {
+		int[] ints = new int[4];
+		ints[0] |= (bytes[0x0] & 0xff) << 24;
+		ints[0] |= (bytes[0x1] & 0xff) << 16;
+		ints[0] |= (bytes[0x2] & 0xff) << 8;
+		ints[0] |= (bytes[0x3] & 0xff);
+		ints[1] |= (bytes[0x4] & 0xff) << 24;
+		ints[1] |= (bytes[0x5] & 0xff) << 16;
+		ints[1] |= (bytes[0x6] & 0xff) << 8;
+		ints[1] |= (bytes[0x7] & 0xff);
+		ints[2] |= (bytes[0x8] & 0xff) << 24;
+		ints[2] |= (bytes[0x9] & 0xff) << 16;
+		ints[2] |= (bytes[0xa] & 0xff) << 8;
+		ints[2] |= (bytes[0xb] & 0xff);
+		ints[3] |= (bytes[0xc] & 0xff) << 24;
+		ints[3] |= (bytes[0xd] & 0xff) << 16;
+		ints[3] |= (bytes[0xe] & 0xff) << 8;
+		ints[3] |= (bytes[0xf] & 0xff);
+		return ints;
+	}
+
+	/**
+	 * Converts an array of integers into an array of bytes. Each integer is decomposed into 4 bytes,
+	 * with the most significant byte being placed first. This method produces a byte array of length 16,
+	 * assuming the input array contains exactly 4 integers. The conversion is performed by shifting
+	 * and masking operations to extract each byte from the integers.
+	 *
+	 * @param ints An array of integers to be converted into bytes. This array should contain exactly 4 integers.
+	 * @return A byte array of length 16, where each group of 4 bytes represents one of the integers from the input array.
+	 */
+	public static byte[] fromInts(int[] ints) {
+		byte[] bytes = new byte[16]; 
+		bytes[0x0] = (byte) (ints[0] >>> 24);
+		bytes[0x1] = (byte) (ints[0] >>> 16);
+		bytes[0x2] = (byte) (ints[0] >>> 8);
+		bytes[0x3] = (byte) (ints[0]);
+		bytes[0x4] = (byte) (ints[1] >>> 24);
+		bytes[0x5] = (byte) (ints[1] >>> 16);
+		bytes[0x6] = (byte) (ints[1] >>> 8);
+		bytes[0x7] = (byte) (ints[1]);
+		bytes[0x8] = (byte) (ints[2] >>> 24);
+		bytes[0x9] = (byte) (ints[2] >>> 16);
+		bytes[0xa] = (byte) (ints[2] >>> 8);
+		bytes[0xb] = (byte) (ints[2]);
+		bytes[0xc] = (byte) (ints[3] >>> 24);
+		bytes[0xd] = (byte) (ints[3] >>> 16);
+		bytes[0xe] = (byte) (ints[3] >>> 8);
+		bytes[0xf] = (byte) (ints[3]);
+		return bytes;
+	}
 }
