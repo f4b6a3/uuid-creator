@@ -35,6 +35,7 @@ import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.UuidValidator;
 import com.github.f4b6a3.uuid.util.immutable.CharArray;
 import com.github.f4b6a3.uuid.util.immutable.LongArray;
+import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
  * Codec for UUID NCNames.
@@ -174,7 +175,7 @@ public final class NcnameCodec implements UuidCodec<String> {
 
 		int version = uuid.version();
 		byte[] bytes = BinaryCodec.INSTANCE.encode(uuid);
-		int[] ints = toInts(bytes);
+		int[] ints = ByteUtil.toInts(bytes);
 
 		int variant = (ints[2] & 0xf0000000) >>> 24;
 
@@ -182,7 +183,7 @@ public final class NcnameCodec implements UuidCodec<String> {
 		ints[2] = (ints[2] & 0x00ffffff) << 8 | (ints[3] >>> 24);
 		ints[3] = (ints[3] << 8) | variant;
 
-		bytes = fromInts(ints);
+		bytes = ByteUtil.fromInts(ints);
 		bytes[15] = (byte) ((bytes[15] & 0xff) >>> this.shift);
 
 		UUID uuuu = BinaryCodec.INSTANCE.decode(bytes);
@@ -223,7 +224,7 @@ public final class NcnameCodec implements UuidCodec<String> {
 		byte[] bytes = BinaryCodec.INSTANCE.encode(uuid);
 		bytes[15] = (byte) ((bytes[15] & 0xff) << this.shift);
 
-		int[] ints = toInts(bytes);
+		int[] ints = ByteUtil.toInts(bytes);
 
 		int variant = (ints[3] & 0xf0) << 24;
 
@@ -233,50 +234,8 @@ public final class NcnameCodec implements UuidCodec<String> {
 		ints[2] |= ((ints[1] & 0xf) << 24) | variant;
 		ints[1] = (ints[1] & 0xffff0000) | (version << 12) | ((ints[1] >>> 4) & 0xfff);
 
-		bytes = fromInts(ints);
+		bytes = ByteUtil.fromInts(ints);
 
 		return BinaryCodec.INSTANCE.decode(bytes);
-	}
-
-	private static int[] toInts(byte[] bytes) {
-		int[] ints = new int[4];
-		ints[0] |= (bytes[0x0] & 0xff) << 24;
-		ints[0] |= (bytes[0x1] & 0xff) << 16;
-		ints[0] |= (bytes[0x2] & 0xff) << 8;
-		ints[0] |= (bytes[0x3] & 0xff);
-		ints[1] |= (bytes[0x4] & 0xff) << 24;
-		ints[1] |= (bytes[0x5] & 0xff) << 16;
-		ints[1] |= (bytes[0x6] & 0xff) << 8;
-		ints[1] |= (bytes[0x7] & 0xff);
-		ints[2] |= (bytes[0x8] & 0xff) << 24;
-		ints[2] |= (bytes[0x9] & 0xff) << 16;
-		ints[2] |= (bytes[0xa] & 0xff) << 8;
-		ints[2] |= (bytes[0xb] & 0xff);
-		ints[3] |= (bytes[0xc] & 0xff) << 24;
-		ints[3] |= (bytes[0xd] & 0xff) << 16;
-		ints[3] |= (bytes[0xe] & 0xff) << 8;
-		ints[3] |= (bytes[0xf] & 0xff);
-		return ints;
-	}
-
-	private static byte[] fromInts(int[] ints) {
-		byte[] bytes = new byte[16];
-		bytes[0x0] = (byte) (ints[0] >>> 24);
-		bytes[0x1] = (byte) (ints[0] >>> 16);
-		bytes[0x2] = (byte) (ints[0] >>> 8);
-		bytes[0x3] = (byte) (ints[0]);
-		bytes[0x4] = (byte) (ints[1] >>> 24);
-		bytes[0x5] = (byte) (ints[1] >>> 16);
-		bytes[0x6] = (byte) (ints[1] >>> 8);
-		bytes[0x7] = (byte) (ints[1]);
-		bytes[0x8] = (byte) (ints[2] >>> 24);
-		bytes[0x9] = (byte) (ints[2] >>> 16);
-		bytes[0xa] = (byte) (ints[2] >>> 8);
-		bytes[0xb] = (byte) (ints[2]);
-		bytes[0xc] = (byte) (ints[3] >>> 24);
-		bytes[0xd] = (byte) (ints[3] >>> 16);
-		bytes[0xe] = (byte) (ints[3] >>> 8);
-		bytes[0xf] = (byte) (ints[3]);
-		return bytes;
 	}
 }

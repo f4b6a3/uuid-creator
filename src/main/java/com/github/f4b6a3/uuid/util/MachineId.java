@@ -84,9 +84,9 @@ public final class MachineId {
 	public static UUID getMachineUuid() {
 		if (uuid == null) {
 			final byte[] bytes = getMachineHash();
-			final long msb = toNumber(bytes, 0, 8);
-			final long lsb = toNumber(bytes, 8, 16);
-			uuid = setVersion(new UUID(msb, lsb), 4);
+			final long mostSigBits = toNumber(bytes, 0, 8);
+			final long leastSigBits = toNumber(bytes, 8, 16);
+			uuid = setVersion(new UUID(mostSigBits, leastSigBits), 4);
 		}
 		return uuid;
 	}

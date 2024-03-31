@@ -1,6 +1,8 @@
 package com.github.f4b6a3.uuid.codec;
 
 import static org.junit.Assert.*;
+
+import com.github.f4b6a3.uuid.util.internal.JavaVersionUtil;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.UuidCreator;
@@ -256,37 +258,37 @@ public class StringCodecTest {
 		final String backup = System.getProperty(key);
 
 		System.setProperty(key, "1.8");
-		assertEquals(8, StringCodec.getJavaVersion());
+		assertEquals(8, JavaVersionUtil.getJavaVersion());
 
 		System.setProperty(key, "1.8.0");
-		assertEquals(8, StringCodec.getJavaVersion());
+		assertEquals(8, JavaVersionUtil.getJavaVersion());
 
 		System.setProperty(key, "8");
-		assertEquals(8, StringCodec.getJavaVersion());
+		assertEquals(8, JavaVersionUtil.getJavaVersion());
 
 		System.setProperty(key, "8.0");
-		assertEquals(8, StringCodec.getJavaVersion());
+		assertEquals(8, JavaVersionUtil.getJavaVersion());
 
 		System.setProperty(key, "8.0.0");
-		assertEquals(8, StringCodec.getJavaVersion());
+		assertEquals(8, JavaVersionUtil.getJavaVersion());
 
 		System.setProperty(key, "9");
-		assertEquals(9, StringCodec.getJavaVersion());
+		assertEquals(9, JavaVersionUtil.getJavaVersion());
 
 		System.setProperty(key, "9.0");
-		assertEquals(9, StringCodec.getJavaVersion());
+		assertEquals(9, JavaVersionUtil.getJavaVersion());
 
 		System.setProperty(key, "9.0.0");
-		assertEquals(9, StringCodec.getJavaVersion());
+		assertEquals(9, JavaVersionUtil.getJavaVersion());
 
 		System.setProperty(key, "10");
-		assertEquals(10, StringCodec.getJavaVersion());
+		assertEquals(10, JavaVersionUtil.getJavaVersion());
 
 		System.setProperty(key, "10.0");
-		assertEquals(10, StringCodec.getJavaVersion());
+		assertEquals(10, JavaVersionUtil.getJavaVersion());
 
 		System.setProperty(key, "10.0.0");
-		assertEquals(10, StringCodec.getJavaVersion());
+		assertEquals(10, JavaVersionUtil.getJavaVersion());
 
 		System.setProperty(key, backup);
 	}
