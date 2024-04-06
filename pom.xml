@@ -38,12 +38,6 @@
 			<version>4.13.1</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-inline</artifactId>
-			<version>3.4.0</version>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 
 	<scm>
