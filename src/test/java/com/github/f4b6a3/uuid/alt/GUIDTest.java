@@ -422,13 +422,13 @@ public class GUIDTest {
 		// canonical format with 36 characters
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			String string = UUID.randomUUID().toString();
-			GUID guid = Parser.parse(string);
+			GUID guid = GUID.Parser.parse(string);
 			assertEquals(string, guid.toString());
 		}
 
 		testValidator((String string) -> {
 			try {
-				return Parser.parse(string) != null;
+				return GUID.Parser.parse(string) != null;
 			} catch (IllegalArgumentException e) {
 				return false;
 			}
@@ -437,7 +437,7 @@ public class GUIDTest {
 		// compare with regular expression
 		testValidator((String string) -> {
 			boolean expected = (string != null && PATTERN.matcher(string).matches());
-			boolean result = Parser.valid(string);
+			boolean result = GUID.Parser.valid(string);
 			assertEquals(expected, result);
 			return expected && result;
 		});
