@@ -627,7 +627,7 @@ public final class GUID implements Serializable, Comparable<GUID> {
 				if (isCharValid(chr)) {
 					continue; // character is valid
 				}
-				if (isDashPosition(i) && chr == '-') {
+				if (chr == '-' && isDashPosition(i)) {
 					dashesCount++;
 					continue;
 				}

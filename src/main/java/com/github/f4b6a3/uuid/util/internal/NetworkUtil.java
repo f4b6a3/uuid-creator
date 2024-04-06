@@ -188,28 +188,24 @@ public final class NetworkUtil {
 	 */
 	public static synchronized NetworkInterface nic() {
 
-		NetworkInterface nic;
-
 		try {
 
 			InetAddress ip = null;
-			NetworkInterface ni = null;
+			NetworkInterface nic = null;
 			Enumeration<NetworkInterface> enu = null;
 
 			// try to find the network interface for the host name
 			ip = InetAddress.getByName(hostname());
-			ni = NetworkInterface.getByInetAddress(ip);
-			if (acceptable(ni)) {
-				nic = ni;
+			nic = NetworkInterface.getByInetAddress(ip);
+			if (acceptable(nic)) {
 				return nic;
 			}
 
 			// try to find the first network interface
 			enu = NetworkInterface.getNetworkInterfaces();
 			while (enu.hasMoreElements()) {
-				ni = enu.nextElement();
-				if (acceptable(ni)) {
-					nic = ni;
+				nic = enu.nextElement();
+				if (acceptable(nic)) {
 					return nic;
 				}
 			}
