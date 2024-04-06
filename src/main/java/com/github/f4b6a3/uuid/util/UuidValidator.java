@@ -238,6 +238,10 @@ public final class UuidValidator {
 		}
 	}
 
+	private static final int[] DASH_POSITIONS = {8, 13, 18, 23};
+	private static final int WITH_DASH_UUID_LENGTH = 36;
+	private static final int WITHOUT_DASH_UUID_LENGTH = 32;
+	private static final int MAX_DASH_COUNT = 4;
 	/**
 	 * Checks if the UUID char array can be parsed.
 	 * 
@@ -245,24 +249,23 @@ public final class UuidValidator {
 	 * @return true if valid, false if invalid
 	 */
 	protected static boolean isParseable(final char[] chars) {
-
-		int hyphens = 0;
+		int dashCount = 0;
 		for (int i = 0; i < chars.length; i++) {
 			if (MAP.get(chars[i]) == -1) {
 				if (chars[i] == '-') {
-					hyphens++;
+					dashCount++;
 					continue;
 				}
 				return false; // invalid character!
 			}
 		}
 
-		if (chars.length == 36 && hyphens == 4) {
+		if (chars.length == WITH_DASH_UUID_LENGTH && dashCount == MAX_DASH_COUNT) {
 			// check if the hyphens positions are correct
-			return chars[8] == '-' && chars[13] == '-' && chars[18] == '-' && chars[23] == '-';
+			return chars[DASH_POSITIONS[0]] == '-' && chars[DASH_POSITIONS[1]] == '-' && chars[DASH_POSITIONS[2]] == '-' && chars[DASH_POSITIONS[3]] == '-';
 		}
 
-		return chars.length == 32 && hyphens == 0;
+		return chars.length == WITHOUT_DASH_UUID_LENGTH && dashCount == 0;
 	}
 
 	/**
