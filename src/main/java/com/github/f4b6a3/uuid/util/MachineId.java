@@ -62,6 +62,8 @@ public final class MachineId {
 	 * <p>
 	 * It uses the first 8 bytes of the machine hash.
 	 * 
+	 * Note that the return value can be negative.
+	 * 
 	 * @return a number
 	 */
 	public static long getMachineId() {
