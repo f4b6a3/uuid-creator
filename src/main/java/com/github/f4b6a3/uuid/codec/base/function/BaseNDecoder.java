@@ -28,6 +28,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import com.github.f4b6a3.uuid.codec.base.BaseN;
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.immutable.ByteArray;
 
 /**
@@ -53,5 +54,13 @@ public abstract class BaseNDecoder implements Function<String, UUID> {
 	public BaseNDecoder(BaseN base) {
 		this.base = base;
 		this.map = base.getMap();
+	}
+
+	protected long get(String string, int i) {
+		final byte value = map.get(string.charAt(i));
+		if (value < 0) {
+			throw InvalidUuidException.newInstance(string);
+		}
+		return value & 0xffL;
 	}
 }

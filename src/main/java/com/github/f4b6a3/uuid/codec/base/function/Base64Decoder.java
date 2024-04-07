@@ -52,32 +52,18 @@ public final class Base64Decoder extends BaseNDecoder {
 		long msb = 0;
 		long lsb = 0;
 
-		msb = (msb << 6) | (map.get(string.charAt(0x00)) & 0xffL);
-		msb = (msb << 6) | (map.get(string.charAt(0x01)) & 0xffL);
-		msb = (msb << 6) | (map.get(string.charAt(0x02)) & 0xffL);
-		msb = (msb << 6) | (map.get(string.charAt(0x03)) & 0xffL);
-		msb = (msb << 6) | (map.get(string.charAt(0x04)) & 0xffL);
-		msb = (msb << 6) | (map.get(string.charAt(0x05)) & 0xffL);
-		msb = (msb << 6) | (map.get(string.charAt(0x06)) & 0xffL);
-		msb = (msb << 6) | (map.get(string.charAt(0x07)) & 0xffL);
-		msb = (msb << 6) | (map.get(string.charAt(0x08)) & 0xffL);
-		msb = (msb << 6) | (map.get(string.charAt(0x09)) & 0xffL);
-		
-		msb = (msb << 4) | ((map.get(string.charAt(0x0a)) & 0xffL) >>> 2);
-		
-		lsb = (lsb << 6) | (map.get(string.charAt(0x0a)) & 0xffL);
-		lsb = (lsb << 6) | (map.get(string.charAt(0x0b)) & 0xffL);
-		lsb = (lsb << 6) | (map.get(string.charAt(0x0c)) & 0xffL);
-		lsb = (lsb << 6) | (map.get(string.charAt(0x0d)) & 0xffL);
-		lsb = (lsb << 6) | (map.get(string.charAt(0x0e)) & 0xffL);
-		lsb = (lsb << 6) | (map.get(string.charAt(0x0f)) & 0xffL);
-		lsb = (lsb << 6) | (map.get(string.charAt(0x10)) & 0xffL);
-		lsb = (lsb << 6) | (map.get(string.charAt(0x11)) & 0xffL);
-		lsb = (lsb << 6) | (map.get(string.charAt(0x12)) & 0xffL);
-		lsb = (lsb << 6) | (map.get(string.charAt(0x13)) & 0xffL);
-		lsb = (lsb << 6) | (map.get(string.charAt(0x14)) & 0xffL);
-		
-		lsb = (lsb << 2) | ((map.get(string.charAt(0x15)) & 0xffL) >>> 4);
+		for (int i = 0; i < 10; i++) {
+			msb = (msb << 6) | get(string, i);
+		}
+
+		msb = (msb << 4) | (get(string, 10) >>> 2);
+		lsb = (lsb << 6) | get(string, 10);
+
+		for (int i = 11; i < 21; i++) {
+			lsb = (lsb << 6) | get(string, i);
+		}
+
+		lsb = (lsb << 2) | (get(string, 21) >>> 4);
 
 		return new UUID(msb, lsb);
 	}

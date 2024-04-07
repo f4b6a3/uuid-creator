@@ -52,36 +52,18 @@ public final class Base32Decoder extends BaseNDecoder {
 		long msb = 0;
 		long lsb = 0;
 
-		msb = (msb << 5) | (map.get(string.charAt(0x00)) & 0xffL);
-		msb = (msb << 5) | (map.get(string.charAt(0x01)) & 0xffL);
-		msb = (msb << 5) | (map.get(string.charAt(0x02)) & 0xffL);
-		msb = (msb << 5) | (map.get(string.charAt(0x03)) & 0xffL);
-		msb = (msb << 5) | (map.get(string.charAt(0x04)) & 0xffL);
-		msb = (msb << 5) | (map.get(string.charAt(0x05)) & 0xffL);
-		msb = (msb << 5) | (map.get(string.charAt(0x06)) & 0xffL);
-		msb = (msb << 5) | (map.get(string.charAt(0x07)) & 0xffL);
-		msb = (msb << 5) | (map.get(string.charAt(0x08)) & 0xffL);
-		msb = (msb << 5) | (map.get(string.charAt(0x09)) & 0xffL);
-		msb = (msb << 5) | (map.get(string.charAt(0x0a)) & 0xffL);
-		msb = (msb << 5) | (map.get(string.charAt(0x0b)) & 0xffL);
-		
-		msb = (msb << 4) | ((map.get(string.charAt(0x0c)) & 0xffL) >>> 1);
-		
-		lsb = (lsb << 5) | (map.get(string.charAt(0x0c)) & 0xffL);
-		lsb = (lsb << 5) | (map.get(string.charAt(0x0d)) & 0xffL);
-		lsb = (lsb << 5) | (map.get(string.charAt(0x0e)) & 0xffL);
-		lsb = (lsb << 5) | (map.get(string.charAt(0x0f)) & 0xffL);
-		lsb = (lsb << 5) | (map.get(string.charAt(0x10)) & 0xffL);
-		lsb = (lsb << 5) | (map.get(string.charAt(0x11)) & 0xffL);
-		lsb = (lsb << 5) | (map.get(string.charAt(0x12)) & 0xffL);
-		lsb = (lsb << 5) | (map.get(string.charAt(0x13)) & 0xffL);
-		lsb = (lsb << 5) | (map.get(string.charAt(0x14)) & 0xffL);
-		lsb = (lsb << 5) | (map.get(string.charAt(0x15)) & 0xffL);
-		lsb = (lsb << 5) | (map.get(string.charAt(0x16)) & 0xffL);
-		lsb = (lsb << 5) | (map.get(string.charAt(0x17)) & 0xffL);
-		lsb = (lsb << 5) | (map.get(string.charAt(0x18)) & 0xffL);
-		
-		lsb = (lsb << 3) | ((map.get(string.charAt(0x19)) & 0xffL) >>> 2);
+		for (int i = 0; i < 12; i++) {
+			msb = (msb << 5) | get(string, i);
+		}
+
+		msb = (msb << 4) | (get(string, 12) >>> 1);
+		lsb = (lsb << 5) | get(string, 12);
+
+		for (int i = 13; i < 25; i++) {
+			lsb = (lsb << 5) | get(string, i);
+		}
+
+		lsb = (lsb << 3) | (get(string, 25) >>> 2);
 
 		return new UUID(msb, lsb);
 	}

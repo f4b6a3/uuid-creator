@@ -274,10 +274,16 @@ public abstract class BaseNCodec implements UuidCodec<String> {
 	@Override
 	public UUID decode(String string) {
 		try {
-			base.validate(string);
+			validate(string);
 			return decoder.apply(string);
 		} catch (RuntimeException e) {
 			throw new InvalidUuidException(e.getMessage(), e);
+		}
+	}
+
+	protected void validate(String string) {
+		if (string == null || string.length() != this.base.getLength()) {
+			throw InvalidUuidException.newInstance(string);
 		}
 	}
 }
