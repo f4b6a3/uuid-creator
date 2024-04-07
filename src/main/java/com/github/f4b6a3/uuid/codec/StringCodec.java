@@ -29,7 +29,6 @@ import java.util.UUID;
 import com.github.f4b6a3.uuid.codec.base.Base16Codec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.UuidValidator;
-import com.github.f4b6a3.uuid.util.immutable.ByteArray;
 import com.github.f4b6a3.uuid.util.immutable.CharArray;
 import com.github.f4b6a3.uuid.util.internal.JavaVersionUtil;
 
@@ -63,7 +62,7 @@ public class StringCodec implements UuidCodec<String> {
 	 */
 	public static final StringCodec INSTANCE = new StringCodec();
 
-	private static final ByteArray MAP = Base16Codec.INSTANCE.getBase().getMap();
+	private static final byte[] MAP = Base16Codec.INSTANCE.getBase().getMap().array();
 	private static final CharArray ALPHABET = Base16Codec.INSTANCE.getBase().getAlphabet();
 
 	private static final String URN_PREFIX = "urn:uuid:";
@@ -164,59 +163,46 @@ public class StringCodec implements UuidCodec<String> {
 	public UUID decode(final String string) {
 
 		if (string == null) {
-			throw newInvalidUuidException(string);
+			throw InvalidUuidException.newInstance(string);
 		}
 
-		final String str = modifyString(string);
+		final String modified = modifyString(string);
 
-		if (str.length() == WITH_DASH_UUID_LENGTH) {
-			if (str.charAt(DASH_POSITION_1) != '-' || str.charAt(DASH_POSITION_2) != '-'
-					|| str.charAt(DASH_POSITION_3) != '-' || str.charAt(DASH_POSITION_4) != '-') {
-				throw newInvalidUuidException(str);
+		if (modified.length() == WITH_DASH_UUID_LENGTH) {
+
+			validateDashPositions(modified);
+
+			long msb = 0;
+			long lsb = 0;
+
+			for (int i = 0; i < 8; i++) {
+				msb = (msb << 4) | get(modified, i);
 			}
-			final long hi1 = parseShort(str, 0x00, 0x01, 0x02, 0x03) << 16 | parseShort(str, 0x04, 0x05, 0x06, 0x07);
-			final long hi2 = parseShort(str, 0x09, 0x0a, 0x0b, 0x0c) << 16 | parseShort(str, 0x0e, 0x0f, 0x10, 0x11);
-			final long lo1 = parseShort(str, 0x13, 0x14, 0x15, 0x16) << 16 | parseShort(str, 0x18, 0x19, 0x1a, 0x1b);
-			final long lo2 = parseShort(str, 0x1c, 0x1d, 0x1e, 0x1f) << 16 | parseShort(str, 0x20, 0x21, 0x22, 0x23);
-			return new UUID(hi1 << 32 | hi2, lo1 << 32 | lo2);
+
+			for (int i = 9; i < 13; i++) {
+				msb = (msb << 4) | get(modified, i);
+			}
+
+			for (int i = 14; i < 18; i++) {
+				msb = (msb << 4) | get(modified, i);
+			}
+
+			for (int i = 19; i < 23; i++) {
+				lsb = (lsb << 4) | get(modified, i);
+			}
+
+			for (int i = 24; i < 36; i++) {
+				lsb = (lsb << 4) | get(modified, i);
+			}
+
+			return new UUID(msb, lsb);
 		}
 
-		if (str.length() == WITHOUT_DASH_UUID_LENGTH) {
-			final long hi1 = parseShort(str, 0x00, 0x01, 0x02, 0x03) << 16 | parseShort(str, 0x04, 0x05, 0x06, 0x07);
-			final long hi2 = parseShort(str, 0x08, 0x09, 0x0a, 0x0b) << 16 | parseShort(str, 0x0c, 0x0d, 0x0e, 0x0f);
-			final long lo1 = parseShort(str, 0x10, 0x11, 0x12, 0x13) << 16 | parseShort(str, 0x14, 0x15, 0x16, 0x17);
-			final long lo2 = parseShort(str, 0x18, 0x19, 0x1a, 0x1b) << 16 | parseShort(str, 0x1c, 0x1d, 0x1e, 0x1f);
-			return new UUID(hi1 << 32 | hi2, lo1 << 32 | lo2);
+		if (modified.length() == WITHOUT_DASH_UUID_LENGTH) {
+			return Base16Codec.INSTANCE.decode(modified);
 		}
 
-		throw newInvalidUuidException(str);
-	}
-
-	private static long parseShort(final String str, final int i1, final int i2, final int i3, final int i4) {
-
-		final char chr1 = str.charAt(i1);
-		final char chr2 = str.charAt(i2);
-		final char chr3 = str.charAt(i3);
-		final char chr4 = str.charAt(i4);
-
-		if (chr1 > 0xff || chr2 > 0xff || chr3 > 0xff || chr4 > 0xff) {
-			throw newInvalidUuidException(str);
-		}
-
-		final int val1 = MAP.get(chr1);
-		final int val2 = MAP.get(chr2);
-		final int val3 = MAP.get(chr3);
-		final int val4 = MAP.get(chr4);
-
-		if (val1 == -1 || val2 == -1 || val3 == -1 || val4 == -1) {
-			throw newInvalidUuidException(str);
-		}
-
-		return (long) (val1 << 12 | val2 << 8 | val3 << 4 | val4);
-	}
-
-	private static RuntimeException newInvalidUuidException(final String str) {
-		return new InvalidUuidException("Invalid UUID: " + str);
+		throw InvalidUuidException.newInstance(modified);
 	}
 
 	/**
@@ -227,7 +213,7 @@ public class StringCodec implements UuidCodec<String> {
 	 * @param string a string
 	 * @return a substring
 	 */
-	protected static String modifyString(String string) {
+	protected static String modifyString(final String string) {
 
 		// UUID URN format: "urn:uuid:00000000-0000-0000-0000-000000000000"
 		if (string.length() == URN_PREFIX_UUID_LENGTH && string.startsWith(URN_PREFIX)) {
@@ -242,5 +228,27 @@ public class StringCodec implements UuidCodec<String> {
 		}
 
 		return string;
+	}
+
+	protected static void validateDashPositions(final String string) {
+		if (string.charAt(DASH_POSITION_1) != '-' || string.charAt(DASH_POSITION_2) != '-'
+				|| string.charAt(DASH_POSITION_3) != '-' || string.charAt(DASH_POSITION_4) != '-') {
+			throw InvalidUuidException.newInstance(string);
+		}
+	}
+
+	protected long get(final String string, int i) {
+
+		final int chr = string.charAt(i);
+		if (chr > 255) {
+			throw InvalidUuidException.newInstance(string);
+		}
+
+		final byte value = MAP[chr];
+		if (value < 0) {
+			throw InvalidUuidException.newInstance(string);
+		}
+
+		return value & 0xffL;
 	}
 }

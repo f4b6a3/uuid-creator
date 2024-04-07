@@ -523,33 +523,33 @@ public final class GUID implements Serializable, Comparable<GUID> {
 
 	static final class Parser {
 
-		private static final byte[] VALUES;
+		private static final byte[] MAP;
 		static {
-			byte[] temp = new byte[256];
-			Arrays.fill(temp, (byte) -1);
-			temp['0'] = 0;
-			temp['1'] = 1;
-			temp['2'] = 2;
-			temp['3'] = 3;
-			temp['4'] = 4;
-			temp['5'] = 5;
-			temp['6'] = 6;
-			temp['7'] = 7;
-			temp['8'] = 8;
-			temp['9'] = 9;
-			temp['A'] = 10;
-			temp['B'] = 11;
-			temp['C'] = 12;
-			temp['D'] = 13;
-			temp['E'] = 14;
-			temp['F'] = 15;
-			temp['a'] = 10;
-			temp['b'] = 11;
-			temp['c'] = 12;
-			temp['d'] = 13;
-			temp['e'] = 14;
-			temp['f'] = 15;
-			VALUES = temp;
+			byte[] mapping = new byte[256];
+			Arrays.fill(mapping, (byte) -1);
+			mapping['0'] = 0;
+			mapping['1'] = 1;
+			mapping['2'] = 2;
+			mapping['3'] = 3;
+			mapping['4'] = 4;
+			mapping['5'] = 5;
+			mapping['6'] = 6;
+			mapping['7'] = 7;
+			mapping['8'] = 8;
+			mapping['9'] = 9;
+			mapping['A'] = 10;
+			mapping['B'] = 11;
+			mapping['C'] = 12;
+			mapping['D'] = 13;
+			mapping['E'] = 14;
+			mapping['F'] = 15;
+			mapping['a'] = 10;
+			mapping['b'] = 11;
+			mapping['c'] = 12;
+			mapping['d'] = 13;
+			mapping['e'] = 14;
+			mapping['f'] = 15;
+			MAP = mapping;
 		}
 
 		private static final int DASH_POSITION_1 = 8;
@@ -557,50 +557,63 @@ public final class GUID implements Serializable, Comparable<GUID> {
 		private static final int DASH_POSITION_3 = 18;
 		private static final int DASH_POSITION_4 = 23;
 
-		public static GUID parse(final String str) {
+		public static GUID parse(final String string) {
 
-			if (str == null || str.length() != 36) {
-				throw newIllegalArgumentException(str);
+			if (string == null || string.length() != GUID.GUID_CHARS) {
+				throw newIllegalArgumentException(string);
 			}
 
-			if (str.charAt(DASH_POSITION_1) != '-' || str.charAt(DASH_POSITION_2) != '-'
-					|| str.charAt(DASH_POSITION_3) != '-' || str.charAt(DASH_POSITION_4) != '-') {
-				throw newIllegalArgumentException(str);
+			validateDashPositions(string);
+
+			long msb = 0;
+			long lsb = 0;
+
+			for (int i = 0; i < 8; i++) {
+				msb = (msb << 4) | get(string, i);
 			}
 
-			final long hi1 = parseShort(str, 0x00, 0x01, 0x02, 0x03) << 16 | parseShort(str, 0x04, 0x05, 0x06, 0x07);
-			final long hi2 = parseShort(str, 0x09, 0x0a, 0x0b, 0x0c) << 16 | parseShort(str, 0x0e, 0x0f, 0x10, 0x11);
-			final long lo1 = parseShort(str, 0x13, 0x14, 0x15, 0x16) << 16 | parseShort(str, 0x18, 0x19, 0x1a, 0x1b);
-			final long lo2 = parseShort(str, 0x1c, 0x1d, 0x1e, 0x1f) << 16 | parseShort(str, 0x20, 0x21, 0x22, 0x23);
+			for (int i = 9; i < 13; i++) {
+				msb = (msb << 4) | get(string, i);
+			}
 
-			return new GUID(hi1 << 32 | hi2, lo1 << 32 | lo2);
+			for (int i = 14; i < 18; i++) {
+				msb = (msb << 4) | get(string, i);
+			}
+
+			for (int i = 19; i < 23; i++) {
+				lsb = (lsb << 4) | get(string, i);
+			}
+
+			for (int i = 24; i < 36; i++) {
+				lsb = (lsb << 4) | get(string, i);
+			}
+
+			return new GUID(msb, lsb);
 		}
 
-		private static long parseShort(final String str, final int i1, final int i2, final int i3, final int i4) {
-
-			final char chr1 = str.charAt(i1);
-			final char chr2 = str.charAt(i2);
-			final char chr3 = str.charAt(i3);
-			final char chr4 = str.charAt(i4);
-
-			if (chr1 > 0xff || chr2 > 0xff || chr3 > 0xff || chr4 > 0xff) {
-				throw newIllegalArgumentException(str);
+		protected static void validateDashPositions(final String string) {
+			if (string.charAt(DASH_POSITION_1) != '-' || string.charAt(DASH_POSITION_2) != '-'
+					|| string.charAt(DASH_POSITION_3) != '-' || string.charAt(DASH_POSITION_4) != '-') {
+				throw newIllegalArgumentException(string);
 			}
-
-			final int val1 = VALUES[chr1];
-			final int val2 = VALUES[chr2];
-			final int val3 = VALUES[chr3];
-			final int val4 = VALUES[chr4];
-
-			if (val1 == -1 || val2 == -1 || val3 == -1 || val4 == -1) {
-				throw newIllegalArgumentException(str);
-			}
-
-			return (long) (val1 << 12 | val2 << 8 | val3 << 4 | val4);
 		}
 
 		private static RuntimeException newIllegalArgumentException(final String str) {
 			return new IllegalArgumentException("Invalid UUID: " + str);
+		}
+
+		protected static long get(final String string, int i) {
+
+			final int chr = string.charAt(i);
+			if (chr > 255) {
+				throw newIllegalArgumentException(string);
+			}
+
+			final byte value = MAP[chr];
+			if (value < 0) {
+				throw newIllegalArgumentException(string);
+			}
+			return value & 0xffL;
 		}
 
 		public static boolean valid(final String guid) {
