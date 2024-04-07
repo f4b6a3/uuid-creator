@@ -227,27 +227,24 @@ public class StringCodecTest {
 	}
 
 	@Test
-	public void testToCharArray() {
+	public void testModifyString() {
 
 		{
 			// 00000000-0000-0000-0000-000000000000
 			String string = UUID.randomUUID().toString();
-			char[] chars = StringCodec.toCharArray(string);
-			assertEquals(string, String.valueOf(chars));
+			assertEquals(string, StringCodec.modifyString(string));
 		}
 
 		{
 			// urn:uuid:00000000-0000-0000-0000-000000000000
 			String string = UUID.randomUUID().toString();
-			char[] chars = StringCodec.toCharArray(URN_PREFIX + string);
-			assertEquals(string, String.valueOf(chars));
+			assertEquals(string, StringCodec.modifyString(URN_PREFIX + string));
 		}
 
 		{
 			// {00000000-0000-0000-0000-000000000000}
 			String string = UUID.randomUUID().toString();
-			char[] chars = StringCodec.toCharArray("{" + string + "}");
-			assertEquals(string, String.valueOf(chars));
+			assertEquals(string, StringCodec.modifyString("{" + string + "}"));
 		}
 	}
 
