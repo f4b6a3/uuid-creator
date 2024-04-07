@@ -57,7 +57,13 @@ public abstract class BaseNDecoder implements Function<String, UUID> {
 	}
 
 	protected long get(String string, int i) {
-		final byte value = map.get(string.charAt(i));
+
+		final int chr = string.charAt(i);
+		if (chr > 255) {
+			throw InvalidUuidException.newInstance(string);
+		}
+
+		final byte value = map.get(chr);
 		if (value < 0) {
 			throw InvalidUuidException.newInstance(string);
 		}
