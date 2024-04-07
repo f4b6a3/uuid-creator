@@ -28,7 +28,7 @@ import java.util.UUID;
 
 import com.github.f4b6a3.uuid.codec.base.Base16Codec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
-import com.github.f4b6a3.uuid.util.immutable.LongArray;
+import com.github.f4b6a3.uuid.util.immutable.ByteArray;
 
 /**
  * Utility for UUID validation.
@@ -49,7 +49,7 @@ import com.github.f4b6a3.uuid.util.immutable.LongArray;
  */
 public final class UuidValidator {
 
-	private static final LongArray MAP = Base16Codec.INSTANCE.getBase().getMap();
+	private static final ByteArray MAP = Base16Codec.INSTANCE.getBase().getMap();
 
 	private UuidValidator() {
 	}

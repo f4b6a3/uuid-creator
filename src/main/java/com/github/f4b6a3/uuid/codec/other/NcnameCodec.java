@@ -24,6 +24,7 @@
 
 package com.github.f4b6a3.uuid.codec.other;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.codec.BinaryCodec;
@@ -33,8 +34,8 @@ import com.github.f4b6a3.uuid.codec.base.Base64UrlCodec;
 import com.github.f4b6a3.uuid.codec.base.BaseNCodec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.UuidValidator;
+import com.github.f4b6a3.uuid.util.immutable.ByteArray;
 import com.github.f4b6a3.uuid.util.immutable.CharArray;
-import com.github.f4b6a3.uuid.util.immutable.LongArray;
 import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
@@ -80,13 +81,13 @@ public final class NcnameCodec implements UuidCodec<String> {
 	private static final CharArray VERSION_UPPERCASE = CharArray.from("ABCDEFGHIJKLMNOP".toCharArray());
 	private static final CharArray VERSION_LOWERCASE = CharArray.from("abcdefghijklmnop".toCharArray());
 
-	private static final LongArray VERSION_MAP;
+	private static final ByteArray VERSION_MAP;
 	static {
+		
 		// initialize the array with -1
-		final long[] mapping = new long[128];
-		for (int i = 0; i < mapping.length; i++) {
-			mapping[i] = -1;
-		}
+		byte[] mapping = new byte[256];
+		Arrays.fill(mapping, (byte) -1);
+
 		// upper case for base-64
 		mapping['A'] = 0x0;
 		mapping['B'] = 0x1;
@@ -122,7 +123,7 @@ public final class NcnameCodec implements UuidCodec<String> {
 		mapping['o'] = 0xe;
 		mapping['p'] = 0xf;
 
-		VERSION_MAP = LongArray.from(mapping);
+		VERSION_MAP = ByteArray.from(mapping);
 	}
 
 	/**

@@ -28,7 +28,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import com.github.f4b6a3.uuid.codec.base.BaseN;
-import com.github.f4b6a3.uuid.util.immutable.LongArray;
+import com.github.f4b6a3.uuid.util.immutable.ByteArray;
 
 /**
  * Abstract function to be extended by all decoder functions of this package.
@@ -45,7 +45,7 @@ public abstract class BaseNDecoder implements Function<String, UUID> {
 	/**
 	 * The base-n map.
 	 */
-	protected final LongArray map;
+	protected final ByteArray map;
 
 	/**
 	 * @param base an enumeration that represents the base-n encoding

@@ -49,40 +49,39 @@ public final class Base32Decoder extends BaseNDecoder {
 	@Override
 	public UUID apply(String string) {
 
-		char[] chars = string.toCharArray();
-
 		long msb = 0;
 		long lsb = 0;
 
-		msb |= map.get(chars[0x00]) << 59;
-		msb |= map.get(chars[0x01]) << 54;
-		msb |= map.get(chars[0x02]) << 49;
-		msb |= map.get(chars[0x03]) << 44;
-		msb |= map.get(chars[0x04]) << 39;
-		msb |= map.get(chars[0x05]) << 34;
-		msb |= map.get(chars[0x06]) << 29;
-		msb |= map.get(chars[0x07]) << 24;
-		msb |= map.get(chars[0x08]) << 19;
-		msb |= map.get(chars[0x09]) << 14;
-		msb |= map.get(chars[0x0a]) << 9;
-		msb |= map.get(chars[0x0b]) << 4;
-
-		msb |= map.get(chars[0x0c]) >>> 1;
-		lsb |= map.get(chars[0x0c]) << 63;
-
-		lsb |= map.get(chars[0x0d]) << 58;
-		lsb |= map.get(chars[0x0e]) << 53;
-		lsb |= map.get(chars[0x0f]) << 48;
-		lsb |= map.get(chars[0x10]) << 43;
-		lsb |= map.get(chars[0x11]) << 38;
-		lsb |= map.get(chars[0x12]) << 33;
-		lsb |= map.get(chars[0x13]) << 28;
-		lsb |= map.get(chars[0x14]) << 23;
-		lsb |= map.get(chars[0x15]) << 18;
-		lsb |= map.get(chars[0x16]) << 13;
-		lsb |= map.get(chars[0x17]) << 8;
-		lsb |= map.get(chars[0x18]) << 3;
-		lsb |= map.get(chars[0x19]) >>> 2;
+		msb = (msb << 5) | (map.get(string.charAt(0x00)) & 0xffL);
+		msb = (msb << 5) | (map.get(string.charAt(0x01)) & 0xffL);
+		msb = (msb << 5) | (map.get(string.charAt(0x02)) & 0xffL);
+		msb = (msb << 5) | (map.get(string.charAt(0x03)) & 0xffL);
+		msb = (msb << 5) | (map.get(string.charAt(0x04)) & 0xffL);
+		msb = (msb << 5) | (map.get(string.charAt(0x05)) & 0xffL);
+		msb = (msb << 5) | (map.get(string.charAt(0x06)) & 0xffL);
+		msb = (msb << 5) | (map.get(string.charAt(0x07)) & 0xffL);
+		msb = (msb << 5) | (map.get(string.charAt(0x08)) & 0xffL);
+		msb = (msb << 5) | (map.get(string.charAt(0x09)) & 0xffL);
+		msb = (msb << 5) | (map.get(string.charAt(0x0a)) & 0xffL);
+		msb = (msb << 5) | (map.get(string.charAt(0x0b)) & 0xffL);
+		
+		msb = (msb << 4) | ((map.get(string.charAt(0x0c)) & 0xffL) >>> 1);
+		
+		lsb = (lsb << 5) | (map.get(string.charAt(0x0c)) & 0xffL);
+		lsb = (lsb << 5) | (map.get(string.charAt(0x0d)) & 0xffL);
+		lsb = (lsb << 5) | (map.get(string.charAt(0x0e)) & 0xffL);
+		lsb = (lsb << 5) | (map.get(string.charAt(0x0f)) & 0xffL);
+		lsb = (lsb << 5) | (map.get(string.charAt(0x10)) & 0xffL);
+		lsb = (lsb << 5) | (map.get(string.charAt(0x11)) & 0xffL);
+		lsb = (lsb << 5) | (map.get(string.charAt(0x12)) & 0xffL);
+		lsb = (lsb << 5) | (map.get(string.charAt(0x13)) & 0xffL);
+		lsb = (lsb << 5) | (map.get(string.charAt(0x14)) & 0xffL);
+		lsb = (lsb << 5) | (map.get(string.charAt(0x15)) & 0xffL);
+		lsb = (lsb << 5) | (map.get(string.charAt(0x16)) & 0xffL);
+		lsb = (lsb << 5) | (map.get(string.charAt(0x17)) & 0xffL);
+		lsb = (lsb << 5) | (map.get(string.charAt(0x18)) & 0xffL);
+		
+		lsb = (lsb << 3) | ((map.get(string.charAt(0x19)) & 0xffL) >>> 2);
 
 		return new UUID(msb, lsb);
 	}

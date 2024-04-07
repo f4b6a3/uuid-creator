@@ -29,8 +29,8 @@ import java.util.UUID;
 import com.github.f4b6a3.uuid.codec.base.Base16Codec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.UuidValidator;
+import com.github.f4b6a3.uuid.util.immutable.ByteArray;
 import com.github.f4b6a3.uuid.util.immutable.CharArray;
-import com.github.f4b6a3.uuid.util.immutable.LongArray;
 import com.github.f4b6a3.uuid.util.internal.JavaVersionUtil;
 
 /**
@@ -63,7 +63,7 @@ public class StringCodec implements UuidCodec<String> {
 	 */
 	public static final StringCodec INSTANCE = new StringCodec();
 
-	private static final LongArray MAP = Base16Codec.INSTANCE.getBase().getMap();
+	private static final ByteArray MAP = Base16Codec.INSTANCE.getBase().getMap();
 	private static final CharArray ALPHABET = Base16Codec.INSTANCE.getBase().getAlphabet();
 
 	private static final String URN_PREFIX = "urn:uuid:";
@@ -203,10 +203,10 @@ public class StringCodec implements UuidCodec<String> {
 			throw newInvalidUuidException(str);
 		}
 
-		final long val1 = MAP.get(chr1);
-		final long val2 = MAP.get(chr2);
-		final long val3 = MAP.get(chr3);
-		final long val4 = MAP.get(chr4);
+		final int val1 = MAP.get(chr1);
+		final int val2 = MAP.get(chr2);
+		final int val3 = MAP.get(chr3);
+		final int val4 = MAP.get(chr4);
 
 		if (val1 == -1 || val2 == -1 || val3 == -1 || val4 == -1) {
 			throw newInvalidUuidException(str);
