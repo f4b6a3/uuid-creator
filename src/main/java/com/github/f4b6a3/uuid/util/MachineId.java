@@ -68,10 +68,13 @@ public final class MachineId {
 	 */
 	public static long getMachineId() {
 		if (id == null) {
-			final byte[] bytes = getMachineHash();
-			id = toNumber(bytes, 0, 8);
+			id = getMachineId(getMachineHash());
 		}
 		return id;
+	}
+
+	static long getMachineId(byte[] hash) {
+		return toNumber(hash, 0, 8);
 	}
 
 	/**
@@ -85,12 +88,15 @@ public final class MachineId {
 	 */
 	public static UUID getMachineUuid() {
 		if (uuid == null) {
-			final byte[] bytes = getMachineHash();
-			final long mostSigBits = toNumber(bytes, 0, 8);
-			final long leastSigBits = toNumber(bytes, 8, 16);
-			uuid = setVersion(new UUID(mostSigBits, leastSigBits), 4);
+			uuid = getMachineUuid(getMachineHash());
 		}
 		return uuid;
+	}
+
+	static UUID getMachineUuid(byte[] hash) {
+		final long mostSigBits = toNumber(hash, 0, 8);
+		final long leastSigBits = toNumber(hash, 8, 16);
+		return setVersion(new UUID(mostSigBits, leastSigBits), 4);
 	}
 
 	/**
@@ -102,10 +108,13 @@ public final class MachineId {
 	 */
 	public static String getMachineHexa() {
 		if (hexa == null) {
-			final byte[] bytes = getMachineHash();
-			hexa = toHexadecimal(bytes);
+			hexa = getMachineHexa(getMachineHash());
 		}
 		return hexa;
+	}
+
+	static String getMachineHexa(byte[] hash) {
+		return toHexadecimal(hash);
 	}
 
 	/**
@@ -117,30 +126,30 @@ public final class MachineId {
 	 */
 	public static byte[] getMachineHash() {
 		if (hash == null) {
-			try {
-				final String string = getMachineString();
-				hash = MessageDigest.getInstance("SHA-256").digest(string.getBytes(StandardCharsets.UTF_8));
-			} catch (NoSuchAlgorithmException e) {
-				throw new InternalError("Message digest algorithm not supported.", e);
-			}
-
+			hash = getMachineHash(getMachineString());
 		}
 		return Arrays.copyOf(hash, hash.length);
+	}
+
+	static byte[] getMachineHash(String string) {
+		try {
+			return MessageDigest.getInstance("SHA-256").digest(string.getBytes(StandardCharsets.UTF_8));
+		} catch (NoSuchAlgorithmException e) {
+			throw new InternalError("Message digest algorithm not supported.", e);
+		}
 	}
 
 	/**
 	 * Returns a string containing host name, MAC and IP.
 	 * <p>
-	 * Output format: "hostname 11-11-11-11-11-11 222.222.222.222"
+	 * Output format: "hostname 11-11-11-11-11-11 222.222.222.222".
 	 * 
 	 * @return a string
 	 */
 	public static String getMachineString() {
-
 		if (string == null) {
 			string = NetworkUtil.getMachineString();
 		}
-
 		return string;
 	}
 }
