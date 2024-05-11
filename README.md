@@ -30,12 +30,12 @@ This library solves some of the JDK's UUID issues:
 | `UUID.compareTo()` [behaves unexpectedly](https://yoshiori.hatenablog.com/entry/2024/02/22/173322) due to signed `long` comparisons, causing non-alphabetical sorting. | Use [`UuidComparator`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/util/UuidComparator.html). |
 | `UUID.fromString()` allows non-canonical strings like `0-0-0-0-0` as valid UUID strings. | Use: <br> <ul><li> [`UuidCreator.fromString()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html#fromString(java.lang.String)); or </li><li> [`new GUID()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/alt/GUID.html#%3Cinit%3E(java.lang.String)). </li></ul> |
 
+> **HINT:**
+> A UUID version is a [**UUID subtype**](https://www.rfc-editor.org/rfc/rfc9562#name-iana-uuid-subtype-registry-). The word "version" is not used in the sense that a higher version number makes the previous one obsolete. There are 8 subtypes of UUID and each of them is assigned a number; for example, a UUIDv7 is a UUID of subtype 7. Likewise, a UUID variant is a [**UUID type**](https://www.rfc-editor.org/rfc/rfc9562#section-4.1). There are 4 types of UUID: (1) the prehistoric one, (2) the one described in RFC 9562, (3) the one belonging to Microsoft and (4) the one reserved for the future. RFC 9562 retains the terms “version” and “variant” for compatibility with previous specifications and existing implementations.
+
 This project contains a [micro benchmark](https://github.com/f4b6a3/uuid-creator/tree/master/benchmark) and a good amount of [unit tests](https://github.com/f4b6a3/uuid-creator/tree/master/src/test/java/com/github/f4b6a3/uuid).
 
 Read the [Wiki pages](https://github.com/f4b6a3/uuid-creator/wiki) and the [Javadocs](https://javadoc.io/doc/com.github.f4b6a3/uuid-creator).
-
-> **HINT:**
-> A UUID version is a [**UUID subtype**](https://www.rfc-editor.org/rfc/rfc9562#name-iana-uuid-subtype-registry-). The word "version" is not used in the sense that a higher version number makes the previous one obsolete. There are 8 subtypes of UUID and each of them is assigned a number; for example, a UUIDv7 is a UUID of subtype 7. Likewise, a UUID variant is a [**UUID type**](https://www.rfc-editor.org/rfc/rfc9562#section-4.1). There are 4 types of UUID: (1) the prehistoric one, (2) the one described in RFC 9562, (3) the one belonging to Microsoft and (4) the one reserved for the future. The RFC 9562 retain the terms "version" and "variant" for compatibility with previous specificantions and existing implementations.
 
 Dependency
 ------------------------------------------------------
