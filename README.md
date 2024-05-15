@@ -35,7 +35,7 @@ This project contains a [micro benchmark](https://github.com/f4b6a3/uuid-creator
 Read the [Wiki pages](https://github.com/f4b6a3/uuid-creator/wiki) and the [Javadocs](https://javadoc.io/doc/com.github.f4b6a3/uuid-creator).
 
 > **NOTE**:
-> This software is not supported or maintained by any organization. This note may be useful for people who believe that having an organization behind a project is a valid criterion for deciding whether software can be used or not.
+> This software is not supported or maintained by any organization. This information may be useful if you believe that having an organization behind a project is a criterion for deciding whether software can be adopted or not.
 
 Dependency
 ------------------------------------------------------
@@ -116,7 +116,7 @@ Create a [UUIDv7](https://github.com/f4b6a3/uuid-creator/wiki/1.7.-UUIDv7):
 ```java
 UUID uuid = UuidCreator.getTimeOrderedEpoch();
 ```
-> **HINT:**
+> **NOTE:**
 > A UUID version is a [**UUID subtype**](https://www.rfc-editor.org/rfc/rfc9562#name-iana-uuid-subtype-registry-). The word "version" is not used in the sense that a higher version number makes the previous one obsolete. There are 8 subtypes of UUID and each of them is assigned a number; for example, a UUIDv7 is a UUID of subtype 7. Likewise, a UUID variant is a [**UUID type**](https://www.rfc-editor.org/rfc/rfc9562#section-4.1). There are 4 types of UUID: (1) the prehistoric one, (2) the one described in RFC 9562, (3) the one belonging to Microsoft and (4) the one reserved for the future. RFC 9562 retains the terms “version” and “variant” for compatibility with previous specifications and existing implementations.
 
 > **PERSONAL NOTE:**
