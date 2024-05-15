@@ -120,7 +120,7 @@ UUID uuid = UuidCreator.getTimeOrderedEpoch();
 > A UUID version is a [**UUID subtype**](https://www.rfc-editor.org/rfc/rfc9562#name-iana-uuid-subtype-registry-). The word "version" is not used in the sense that a higher version number makes the previous one obsolete. There are 8 subtypes of UUID and each of them is assigned a number; for example, a UUIDv7 is a UUID of subtype 7. Likewise, a UUID variant is a [**UUID type**](https://www.rfc-editor.org/rfc/rfc9562#section-4.1). There are 4 types of UUID: (1) the prehistoric one, (2) the one described in RFC 9562, (3) the one belonging to Microsoft and (4) the one reserved for the future. RFC 9562 retains the terms “version” and “variant” for compatibility with previous specifications and existing implementations.
 
 > **PERSONAL NOTE:**
-> The library can do a lot more than the examples above (much more than I should have done). So I sincerely hope that most people are satisfied with this. In other words, your like is my payment.
+> The library can do a lot more than the examples above (much more than I should have done). So I sincerely hope that most people are satisfied with this. In other words, your like is my payment. Anther thing I want to say is that the name of this software is UUID Creator or uuid-creator. Use "f4b6a3" or "com.github.f4b6a3" only when necessary to avoid doubt, as this is just a unique package name to follow Java convention (I know it wasn't a good idea, but I can't change it anymore).
 
 Alternative API
 ------------------------------------------------------
