@@ -4,8 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Random;
+import java.util.SplittableRandom;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.Test;
 
@@ -30,11 +31,12 @@ public class BaseNRemainderDecoderTest {
 	@Test
 	public void testMultiply() {
 
+		SplittableRandom seeder = new SplittableRandom(1);
 		for (int i = 0; i < 1000; i++) {
 			byte[] bytes = new byte[UUID_BYTES];
-			ThreadLocalRandom.current().nextBytes(bytes);
-			long multiplier = ThreadLocalRandom.current().nextInt() & 0x7fffffff; // positive
-			long addend = ThreadLocalRandom.current().nextInt() & 0x7fffffff; // positive
+			(new Random(seeder.nextLong())).nextBytes(bytes);
+			long multiplier = seeder.nextInt() & 0x7fffffff; // positive
+			long addend = seeder.nextInt() & 0x7fffffff; // positive
 
 			BigInteger number1 = new BigInteger(1, bytes);
 			BigInteger product1 = number1.multiply(BigInteger.valueOf(multiplier)).add(BigInteger.valueOf(addend));
@@ -77,11 +79,12 @@ public class BaseNRemainderDecoderTest {
 
 	private String getRandomString(BaseN base) {
 
+		SplittableRandom random = new SplittableRandom(1);
 		char[] chars = new char[base.getLength()];
 
 		chars[0] = base.getPadding(); // to avoid overflow
 		for (int i = 1; i < chars.length; i++) {
-			chars[i] = base.getAlphabet().get(ThreadLocalRandom.current().nextInt(base.getRadix()));
+			chars[i] = base.getAlphabet().get(random.nextInt(base.getRadix()));
 		}
 
 		return new String(chars);

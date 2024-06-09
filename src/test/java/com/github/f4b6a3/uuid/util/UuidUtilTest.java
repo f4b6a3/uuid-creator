@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 import java.time.Instant;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.SplittableRandom;
 
 import org.junit.Test;
 
@@ -78,10 +78,10 @@ public class UuidUtilTest {
 
 	@Test
 	public void testGetTimestamp() {
-
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
-			Instant instant = UuidTime.fromGregTimestamp(ThreadLocalRandom.current().nextLong() & GREG_TIMESTAMP_MASK);
+			Instant instant = UuidTime.fromGregTimestamp(random.nextLong() & GREG_TIMESTAMP_MASK);
 			long unixTimestamp = UuidTime.toUnixTimestamp(instant);
 			long gregTimestamp = UuidTime.toGregTimestamp(instant);
 
@@ -105,10 +105,10 @@ public class UuidUtilTest {
 
 	@Test
 	public void testGetInstant() {
-
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
-			Instant instant = UuidTime.fromGregTimestamp(ThreadLocalRandom.current().nextLong() & GREG_TIMESTAMP_MASK);
+			Instant instant = UuidTime.fromGregTimestamp(random.nextLong() & GREG_TIMESTAMP_MASK);
 
 			TimeBasedFactory factory1 = TimeBasedFactory.builder().withInstant(instant).build();
 			UUID uuid1 = factory1.create();
@@ -129,8 +129,9 @@ public class UuidUtilTest {
 
 	@Test
 	public void testGetClockSequence() {
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			long clockSequence1 = ThreadLocalRandom.current().nextLong() & CLOCK_SEQUENCE_MASK;
+			long clockSequence1 = random.nextLong() & CLOCK_SEQUENCE_MASK;
 			UUID uuid = TimeBasedFactory.builder().withClockSeq(clockSequence1).build().create();
 			long clockSequence2 = getClockSequence(uuid);
 			assertEquals(clockSequence1, clockSequence2);
@@ -139,8 +140,9 @@ public class UuidUtilTest {
 
 	@Test
 	public void testGetNodeIdentifier() {
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			long nodeIdentifier1 = ThreadLocalRandom.current().nextLong() & NODE_IDENTIFIER_MASK;
+			long nodeIdentifier1 = random.nextLong() & NODE_IDENTIFIER_MASK;
 			UUID uuid = TimeBasedFactory.builder().withNodeId(nodeIdentifier1).build().create();
 			long nodeIdentifier2 = getNodeIdentifier(uuid);
 			assertEquals(nodeIdentifier1, nodeIdentifier2);
@@ -149,10 +151,10 @@ public class UuidUtilTest {
 
 	@Test
 	public void testGetLocalDomain() {
-
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			int localIdentifier1 = ThreadLocalRandom.current().nextInt();
-			byte localDomain1 = (byte) ThreadLocalRandom.current().nextInt();
+			int localIdentifier1 = random.nextInt();
+			byte localDomain1 = (byte) random.nextInt();
 			UUID uuid = UuidCreator.getDceSecurity(localDomain1, localIdentifier1);
 			byte localDomain2 = getLocalDomain(uuid);
 			assertEquals(localDomain1, localDomain2);
@@ -161,10 +163,10 @@ public class UuidUtilTest {
 
 	@Test
 	public void testGetLocalIdentifier() {
-
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			int localIdentifier1 = ThreadLocalRandom.current().nextInt();
-			byte localDomain1 = (byte) ThreadLocalRandom.current().nextInt();
+			int localIdentifier1 = random.nextInt();
+			byte localDomain1 = (byte) random.nextInt();
 			UUID uuid = UuidCreator.getDceSecurity(localDomain1, localIdentifier1);
 			int localIdentifier2 = getLocalIdentifier(uuid);
 			assertEquals(localIdentifier1, localIdentifier2);

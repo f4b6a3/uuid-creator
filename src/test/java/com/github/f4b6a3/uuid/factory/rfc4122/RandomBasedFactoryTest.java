@@ -9,8 +9,8 @@ import com.github.f4b6a3.uuid.factory.UuidFactoryTest;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Random;
+import java.util.SplittableRandom;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.LongSupplier;
 
 public class RandomBasedFactoryTest extends UuidFactoryTest {
@@ -47,8 +47,8 @@ public class RandomBasedFactoryTest extends UuidFactoryTest {
 	public void testGetRandomBasedWithRandom() {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		Random random = new Random();
-		RandomBasedFactory factory = new RandomBasedFactory(random);
+		SplittableRandom seeder = new SplittableRandom(1);
+		RandomBasedFactory factory = new RandomBasedFactory(new Random(seeder.nextLong()));
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = factory.create();
@@ -61,9 +61,9 @@ public class RandomBasedFactoryTest extends UuidFactoryTest {
 
 	@Test
 	public void testGetRandomBasedWithRandomFunction() {
-
+		SplittableRandom random = new SplittableRandom(1);
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		LongSupplier randomFunction = () -> ThreadLocalRandom.current().nextLong();
+		LongSupplier randomFunction = () -> random.nextLong();
 		RandomBasedFactory factory = new RandomBasedFactory(randomFunction);
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {

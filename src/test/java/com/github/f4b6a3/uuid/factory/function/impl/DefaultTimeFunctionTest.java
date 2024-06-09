@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.SplittableRandom;
 
 public class DefaultTimeFunctionTest {
 
@@ -33,10 +33,12 @@ public class DefaultTimeFunctionTest {
 		final long ticks = (long) Math.pow(10, 4);
 		final long bound = (long) Math.pow(2, 60) / ticks;
 
+		SplittableRandom random = new SplittableRandom(1);
+
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
 			// instantiate a factory with a Clock that returns a fixed value
-			final long millis = Math.abs(ThreadLocalRandom.current().nextLong(bound));
+			final long millis = Math.abs(random.nextLong(bound));
 			Clock clock = Clock.fixed(Instant.ofEpochMilli(millis), ZoneOffset.UTC);
 			DefaultTimeFunction function = new DefaultTimeFunction(clock);
 

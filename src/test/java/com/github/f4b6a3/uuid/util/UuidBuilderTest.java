@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.util.Random;
+import java.util.SplittableRandom;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -15,7 +16,6 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 public class UuidBuilderTest {
 
 	private static final int DEFAULT_LOOP_MAX = 1_000;
-	private static final Random seeder = new Random(1L);
 
 	@Test
 	public void testVersionNumber() {
@@ -23,8 +23,8 @@ public class UuidBuilderTest {
 		assertEquals(0x0L, new UuidBuilder().put((long) 0L).put((long) 0L).build().version());
 		assertEquals(0xfL, new UuidBuilder().put((long) -1L).put((long) -1L).build().version());
 
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < 15; i++) {
-			Random random = new Random(seeder.nextLong());
 			assertEquals(i, new UuidBuilder(i).put(random.nextLong()).put(random.nextLong()).build().version());
 		}
 	}
@@ -32,9 +32,9 @@ public class UuidBuilderTest {
 	@Test
 	public void testPutTwoLongsWithoutVersionNumber() {
 
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
-			Random random = new Random(seeder.nextLong());
 			long msb = random.nextLong();
 			long lsb = random.nextLong();
 
@@ -50,9 +50,8 @@ public class UuidBuilderTest {
 
 		int version = 4;
 
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-
-			Random random = new Random(seeder.nextLong());
 
 			long msb = random.nextLong();
 			long lsb = random.nextLong();
@@ -69,9 +68,8 @@ public class UuidBuilderTest {
 
 		int version = 4;
 
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-
-			Random random = new Random(seeder.nextLong());
 
 			int part1 = random.nextInt();
 			int part2 = random.nextInt();
@@ -93,15 +91,14 @@ public class UuidBuilderTest {
 
 		int version = 4;
 
+		SplittableRandom seeder = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
-			Random random = new Random(seeder.nextLong());
-
 			byte[] bytes1 = new byte[8];
-			random.nextBytes(bytes1);
+			(new Random(seeder.nextLong())).nextBytes(bytes1);
 
 			byte[] bytes2 = new byte[8];
-			random.nextBytes(bytes2);
+			(new Random(seeder.nextLong())).nextBytes(bytes2);
 
 			long msb = ByteUtil.toNumber(bytes1);
 			long lsb = ByteUtil.toNumber(bytes2);
@@ -117,9 +114,8 @@ public class UuidBuilderTest {
 
 		int version = 8;
 
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-
-			Random random = new Random(seeder.nextLong());
 
 			int p1 = random.nextInt();
 			short p2 = (short) random.nextInt();

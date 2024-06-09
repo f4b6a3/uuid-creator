@@ -11,8 +11,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
+import java.util.SplittableRandom;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.LongSupplier;
 
 public class ShortSuffixCombFactoryTest extends UuidFactoryTest {
@@ -92,8 +92,8 @@ public class ShortSuffixCombFactoryTest extends UuidFactoryTest {
 	public void testGetShortSuffixCombWithRandom() {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		Random random = new Random();
-		ShortSuffixCombFactory factory = new ShortSuffixCombFactory(random);
+		SplittableRandom seeder = new SplittableRandom(1);
+		ShortSuffixCombFactory factory = new ShortSuffixCombFactory(new Random(seeder.nextLong()));
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = factory.create();
@@ -107,9 +107,9 @@ public class ShortSuffixCombFactoryTest extends UuidFactoryTest {
 
 	@Test
 	public void testGetShortSuffixCombWithRandomFunction() {
-
+		SplittableRandom random = new SplittableRandom(1);
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		LongSupplier randomFunction = () -> ThreadLocalRandom.current().nextLong();
+		LongSupplier randomFunction = () -> random.nextLong();
 		ShortSuffixCombFactory factory = new ShortSuffixCombFactory(randomFunction);
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {

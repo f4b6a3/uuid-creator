@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.SplittableRandom;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -25,10 +25,10 @@ public class AbstRandomBasedFactoryTest extends UuidFactoryTest {
 
 	@Test
 	public void testByteRandomNextLong() {
-
+		SplittableRandom seeder = new SplittableRandom(1);
 		for (int i = 0; i < 10; i++) {
 			byte[] bytes = new byte[Long.BYTES];
-			(new Random()).nextBytes(bytes);
+			(new Random(seeder.nextLong())).nextBytes(bytes);
 			long number = ByteBuffer.wrap(bytes).getLong();
 			AbstRandomBasedFactory.IRandom random = new AbstRandomBasedFactory.SafeRandom((x) -> bytes);
 			assertEquals(number, random.nextLong());
@@ -40,7 +40,7 @@ public class AbstRandomBasedFactoryTest extends UuidFactoryTest {
 			int size = Long.BYTES * longs;
 
 			byte[] bytes = new byte[size];
-			(new Random()).nextBytes(bytes);
+			(new Random(seeder.nextLong())).nextBytes(bytes);
 			ByteBuffer buffer1 = ByteBuffer.wrap(bytes);
 			ByteBuffer buffer2 = ByteBuffer.wrap(bytes);
 
@@ -58,10 +58,10 @@ public class AbstRandomBasedFactoryTest extends UuidFactoryTest {
 
 	@Test
 	public void testByteRandomNextBytes() {
-
+		SplittableRandom seeder = new SplittableRandom(1);
 		for (int i = 0; i < 10; i++) {
 			byte[] bytes = new byte[Long.BYTES];
-			(new Random()).nextBytes(bytes);
+			(new Random(seeder.nextLong())).nextBytes(bytes);
 			AbstRandomBasedFactory.IRandom random = new AbstRandomBasedFactory.SafeRandom((x) -> bytes);
 			assertEquals(Arrays.toString(bytes), Arrays.toString(random.nextBytes(Long.BYTES)));
 		}
@@ -72,7 +72,7 @@ public class AbstRandomBasedFactoryTest extends UuidFactoryTest {
 			int size = Long.BYTES * ints;
 
 			byte[] bytes = new byte[size];
-			(new Random()).nextBytes(bytes);
+			(new Random(seeder.nextLong())).nextBytes(bytes);
 			ByteBuffer buffer1 = ByteBuffer.wrap(bytes);
 			ByteBuffer buffer2 = ByteBuffer.wrap(bytes);
 
@@ -92,10 +92,10 @@ public class AbstRandomBasedFactoryTest extends UuidFactoryTest {
 
 	@Test
 	public void testLogRandomNextLong() {
-
+		SplittableRandom seeder = new SplittableRandom(1);
 		for (int i = 0; i < 10; i++) {
 			byte[] bytes = new byte[Long.BYTES];
-			(new Random()).nextBytes(bytes);
+			(new Random(seeder.nextLong())).nextBytes(bytes);
 			long number = ByteBuffer.wrap(bytes).getLong();
 			AbstRandomBasedFactory.IRandom random = new AbstRandomBasedFactory.FastRandom(() -> number);
 			assertEquals(number, random.nextLong());
@@ -107,7 +107,7 @@ public class AbstRandomBasedFactoryTest extends UuidFactoryTest {
 			int size = Long.BYTES * ints;
 
 			byte[] bytes = new byte[size];
-			(new Random()).nextBytes(bytes);
+			(new Random(seeder.nextLong())).nextBytes(bytes);
 			ByteBuffer buffer1 = ByteBuffer.wrap(bytes);
 			ByteBuffer buffer2 = ByteBuffer.wrap(bytes);
 
@@ -122,10 +122,10 @@ public class AbstRandomBasedFactoryTest extends UuidFactoryTest {
 
 	@Test
 	public void testLogRandomNextBytes() {
-
+		SplittableRandom seeder = new SplittableRandom(1);
 		for (int i = 0; i < 10; i++) {
 			byte[] bytes = new byte[Long.BYTES];
-			(new Random()).nextBytes(bytes);
+			(new Random(seeder.nextLong())).nextBytes(bytes);
 			long number = ByteBuffer.wrap(bytes).getLong();
 			AbstRandomBasedFactory.IRandom random = new AbstRandomBasedFactory.FastRandom(() -> number);
 			assertEquals(Arrays.toString(bytes), Arrays.toString(random.nextBytes(Long.BYTES)));
@@ -137,7 +137,7 @@ public class AbstRandomBasedFactoryTest extends UuidFactoryTest {
 			int size = Long.BYTES * ints;
 
 			byte[] bytes = new byte[size];
-			(new Random()).nextBytes(bytes);
+			(new Random(seeder.nextLong())).nextBytes(bytes);
 			ByteBuffer buffer1 = ByteBuffer.wrap(bytes);
 			ByteBuffer buffer2 = ByteBuffer.wrap(bytes);
 
@@ -163,7 +163,7 @@ public class AbstRandomBasedFactoryTest extends UuidFactoryTest {
 		}
 
 		{
-			long nextLong = ThreadLocalRandom.current().nextLong();
+			long nextLong = new SplittableRandom(1).nextLong();
 			AbstRandomBasedFactory.IRandom random = new AbstRandomBasedFactory.FastRandom(() -> nextLong);
 			byte[] bytes = random.nextBytes(Long.BYTES);
 			ByteBuffer buffer = ByteBuffer.wrap(bytes);
@@ -198,11 +198,12 @@ public class AbstRandomBasedFactoryTest extends UuidFactoryTest {
 		}
 
 		{
+			SplittableRandom entropy = new SplittableRandom(1);
 			long[] nextLong = { //
-					ThreadLocalRandom.current().nextLong(), //
-					ThreadLocalRandom.current().nextLong(), //
-					ThreadLocalRandom.current().nextLong(), //
-					ThreadLocalRandom.current().nextLong() ///
+					entropy.nextLong(), //
+					entropy.nextLong(), //
+					entropy.nextLong(), //
+					entropy.nextLong() ///
 			};
 
 			int octects = nextLong.length * Byte.SIZE;
@@ -237,9 +238,10 @@ public class AbstRandomBasedFactoryTest extends UuidFactoryTest {
 
 		{
 			// RandomBasedFactory
+			SplittableRandom random = new SplittableRandom(1);
 			List<Long> list = new ArrayList<>();
-			list.add(ThreadLocalRandom.current().nextLong());
-			list.add(ThreadLocalRandom.current().nextLong());
+			list.add(random.nextLong());
+			list.add(random.nextLong());
 			UUID uuid1 = UuidUtil.setVersion(new UUID(list.get(0), list.get(1)), 4);
 			RandomBasedFactory factory = new RandomBasedFactory(() -> list.remove(0));
 			UUID uuid2 = factory.create();

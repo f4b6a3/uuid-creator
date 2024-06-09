@@ -15,8 +15,8 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.SplittableRandom;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.LongSupplier;
 
 public class PrefixCombFactoryTest extends UuidFactoryTest {
@@ -40,10 +40,12 @@ public class PrefixCombFactoryTest extends UuidFactoryTest {
 	@Test
 	public void testGetPrefixCombCheckTimestamp() {
 
+		SplittableRandom random = new SplittableRandom(1);
+
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
-			long random = ThreadLocalRandom.current().nextLong(1L << 48);
-			Clock clock = Clock.fixed(Instant.ofEpochMilli(random), Clock.systemUTC().getZone());
+			long time = random.nextLong(1L << 48);
+			Clock clock = Clock.fixed(Instant.ofEpochMilli(time), Clock.systemUTC().getZone());
 
 			Instant instant1 = clock.instant();
 			long timestamp1 = UuidTime.toUnixTimestamp(instant1);
@@ -87,8 +89,8 @@ public class PrefixCombFactoryTest extends UuidFactoryTest {
 	public void testGetPrefixCombWithRandom() {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		Random random = new Random();
-		PrefixCombFactory factory = new PrefixCombFactory(random);
+		SplittableRandom seeder = new SplittableRandom(1);
+		PrefixCombFactory factory = new PrefixCombFactory(new Random(seeder.nextLong()));
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = factory.create();
@@ -102,9 +104,9 @@ public class PrefixCombFactoryTest extends UuidFactoryTest {
 
 	@Test
 	public void testGetPrefixCombWithRandomFunction() {
-
+		SplittableRandom random = new SplittableRandom(1);
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		LongSupplier randomFunction = () -> ThreadLocalRandom.current().nextLong();
+		LongSupplier randomFunction = () -> random.nextLong();
 		PrefixCombFactory factory = new PrefixCombFactory(randomFunction);
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
@@ -143,7 +145,7 @@ public class PrefixCombFactoryTest extends UuidFactoryTest {
 	public void testMinAndMax() {
 
 		long time = 0;
-		Random random = new Random();
+		SplittableRandom random = new SplittableRandom(1);
 		final long mask = 0x0000ffffffffffffL;
 
 		for (int i = 0; i < 100; i++) {

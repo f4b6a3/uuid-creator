@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.SplittableRandom;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -26,7 +27,7 @@ public class GUIDTest {
 
 	@Test
 	public void testConstructorGUID() {
-		Random random = new Random();
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			final long msb = random.nextLong();
 			final long lsb = random.nextLong();
@@ -38,7 +39,7 @@ public class GUIDTest {
 
 	@Test
 	public void testConstructorLongs() {
-		Random random = new Random();
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			final long msb = random.nextLong();
 			final long lsb = random.nextLong();
@@ -50,7 +51,7 @@ public class GUIDTest {
 
 	@Test
 	public void testConstructorJdkUUID() {
-		Random random = new Random();
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			final long msb = random.nextLong();
 			final long lsb = random.nextLong();
@@ -62,7 +63,7 @@ public class GUIDTest {
 
 	@Test
 	public void testConstructorString() {
-		Random random = new Random();
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			final long msb = random.nextLong();
 			final long lsb = random.nextLong();
@@ -76,10 +77,10 @@ public class GUIDTest {
 
 	@Test
 	public void testConstructorBytes() {
-		Random random = new Random();
+		SplittableRandom seeder = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			byte[] bytes = new byte[GUID.GUID_BYTES];
-			random.nextBytes(bytes);
+			(new Random(seeder.nextLong())).nextBytes(bytes);
 			GUID guid = new GUID(bytes);
 			assertEquals(Arrays.toString(bytes), Arrays.toString(guid.toBytes()));
 		}
@@ -249,7 +250,7 @@ public class GUIDTest {
 
 	@Test
 	public void testToUUID() {
-		Random random = new Random();
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			final long msb = random.nextLong();
 			final long lsb = random.nextLong();
@@ -270,11 +271,11 @@ public class GUIDTest {
 
 	@Test
 	public void testToBytes() {
-		Random random = new Random();
+		SplittableRandom seeder = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
 			byte[] bytes1 = new byte[16];
-			random.nextBytes(bytes1);
+			(new Random(seeder.nextLong())).nextBytes(bytes1);
 			GUID guid0 = new GUID(bytes1);
 
 			byte[] bytes2 = guid0.toBytes();
@@ -287,19 +288,19 @@ public class GUIDTest {
 	@Test
 	public void testHashCode() {
 
-		Random random = new Random();
+		SplittableRandom seeder = new SplittableRandom(1);
 		byte[] bytes = new byte[GUID.GUID_BYTES];
 
 		// invoked on the same object
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			random.nextBytes(bytes);
+			(new Random(seeder.nextLong())).nextBytes(bytes);
 			GUID guid1 = new GUID(bytes);
 			assertEquals(guid1.hashCode(), guid1.hashCode());
 		}
 
 		// invoked on two equal objects
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			random.nextBytes(bytes);
+			(new Random(seeder.nextLong())).nextBytes(bytes);
 			GUID guid1 = new GUID(bytes);
 			GUID guid2 = new GUID(bytes);
 			assertEquals(guid1.hashCode(), guid2.hashCode());
@@ -309,12 +310,12 @@ public class GUIDTest {
 	@Test
 	public void testEquals() {
 
-		Random random = new Random();
+		SplittableRandom seeder = new SplittableRandom(1);
 		byte[] bytes = new byte[GUID.GUID_BYTES];
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
-			random.nextBytes(bytes);
+			(new Random(seeder.nextLong())).nextBytes(bytes);
 			GUID guid1 = new GUID(bytes);
 			GUID guid2 = new GUID(bytes);
 			assertEquals(guid1, guid2);
@@ -336,7 +337,7 @@ public class GUIDTest {
 	public void testCompareTo() {
 
 		final long zero = 0L;
-		Random random = new Random();
+		SplittableRandom random = new SplittableRandom(1);
 		byte[] bytes = new byte[GUID.GUID_BYTES];
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {

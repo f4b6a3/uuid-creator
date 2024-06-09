@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.util.Random;
+import java.util.SplittableRandom;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -75,7 +75,7 @@ public class UuidComparatorTest {
 
 		final long zero = 0L;
 		byte[] bytes = new byte[16];
-		Random random = new Random();
+		SplittableRandom random = new SplittableRandom(1);
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(random.nextLong()).array();
@@ -164,7 +164,7 @@ public class UuidComparatorTest {
 
 		final long zero = 0L;
 		byte[] bytes = new byte[16];
-		Random random = new Random();
+		SplittableRandom random = new SplittableRandom(1);
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(random.nextLong()).array();
