@@ -102,24 +102,6 @@ public abstract class AbstRandomBasedFactory extends UuidFactory {
 		}
 
 		/**
-		 * Set the random generator.
-		 * 
-		 * @param random a random
-		 * @return the builder
-		 */
-		@SuppressWarnings("unchecked")
-		public B withRandom(Random random) {
-			if (random != null) {
-				if (random instanceof SecureRandom) {
-					this.random = new SafeRandom(random);
-				} else {
-					this.random = new FastRandom(random);
-				}
-			}
-			return (B) this;
-		}
-
-		/**
 		 * Set the random generator with a fast algorithm.
 		 * 
 		 * Use it to replace the {@link DefaultRandomFunction} with
@@ -148,6 +130,24 @@ public abstract class AbstRandomBasedFactory extends UuidFactory {
 		}
 
 		/**
+		 * Set the random generator.
+		 * 
+		 * @param random a random
+		 * @return the builder
+		 */
+		@SuppressWarnings("unchecked")
+		public B withRandom(Random random) {
+			if (random != null) {
+				if (random instanceof SecureRandom) {
+					this.random = new SafeRandom(random);
+				} else {
+					this.random = new FastRandom(random);
+				}
+			}
+			return (B) this;
+		}
+
+		/**
 		 * Set a random function which returns random numbers.
 		 * 
 		 * @param randomFunction a function
@@ -156,18 +156,6 @@ public abstract class AbstRandomBasedFactory extends UuidFactory {
 		@SuppressWarnings("unchecked")
 		public B withRandomFunction(LongSupplier randomFunction) {
 			this.random = new FastRandom(randomFunction);
-			return (B) this;
-		}
-
-		/**
-		 * Set a random function which returns random arrays of bytes.
-		 * 
-		 * @param randomFunction a function
-		 * @return the builder
-		 */
-		@SuppressWarnings("unchecked")
-		public B withRandomFunction(IntFunction<byte[]> randomFunction) {
-			this.random = new SafeRandom(randomFunction);
 			return (B) this;
 		}
 

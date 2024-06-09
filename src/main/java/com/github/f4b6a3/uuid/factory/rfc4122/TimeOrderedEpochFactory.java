@@ -28,7 +28,6 @@ import java.time.Clock;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
@@ -136,15 +135,6 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	}
 
 	/**
-	 * Constructor with a function which returns random arrays of bytes.
-	 * 
-	 * @param randomFunction a function
-	 */
-	public TimeOrderedEpochFactory(IntFunction<byte[]> randomFunction) {
-		this(builder().withRandomFunction(randomFunction));
-	}
-
-	/**
 	 * Constructor with a function which a function which return random numbers and
 	 * a clock.
 	 * 
@@ -152,17 +142,6 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	 * @param clock          a clock
 	 */
 	public TimeOrderedEpochFactory(LongSupplier randomFunction, Clock clock) {
-		this(builder().withRandomFunction(randomFunction).withClock(clock));
-	}
-
-	/**
-	 * Constructor with a function which a function which returns random arrays of
-	 * bytes and a clock.
-	 * 
-	 * @param randomFunction a function
-	 * @param clock          a clock
-	 */
-	public TimeOrderedEpochFactory(IntFunction<byte[]> randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
 

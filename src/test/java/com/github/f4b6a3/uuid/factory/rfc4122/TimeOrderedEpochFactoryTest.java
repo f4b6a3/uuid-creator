@@ -5,7 +5,6 @@ import org.junit.Test;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.factory.UuidFactoryTest;
-import com.github.f4b6a3.uuid.factory.function.RandomFunction;
 import com.github.f4b6a3.uuid.util.UuidTime;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
@@ -23,7 +22,6 @@ import java.util.SplittableRandom;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
 
 public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
@@ -57,11 +55,7 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 			assertNotNull(factory.create());
 		}
 		{
-			IntFunction<byte[]> function = (length) -> {
-				byte[] bytes = new byte[length];
-				ThreadLocalRandom.current().nextBytes(bytes);
-				return bytes;
-			};
+			LongSupplier function = () -> ThreadLocalRandom.current().nextLong();
 			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory(function);
 			assertNotNull(factory.create());
 		}
@@ -72,11 +66,7 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 			assertNotNull(factory.create());
 		}
 		{
-			IntFunction<byte[]> function = (length) -> {
-				byte[] bytes = new byte[length];
-				ThreadLocalRandom.current().nextBytes(bytes);
-				return bytes;
-			};
+			LongSupplier function = () -> ThreadLocalRandom.current().nextLong();
 			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory(function, Clock.systemDefaultZone());
 			assertNotNull(factory.create());
 		}
@@ -291,11 +281,7 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 	@Test
 	public void testGetTimeOrderedEpochWithRandomFunction() {
 
-		RandomFunction randomFunction = x -> {
-			final byte[] bytes = new byte[x];
-			ThreadLocalRandom.current().nextBytes(bytes);
-			return bytes;
-		};
+		LongSupplier randomFunction = () -> ThreadLocalRandom.current().nextLong();
 
 		TimeOrderedEpochFactory factory;
 

@@ -26,7 +26,6 @@ package com.github.f4b6a3.uuid.factory.rfc4122;
 
 import java.util.Random;
 import java.util.UUID;
-import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
@@ -61,15 +60,6 @@ public final class RandomBasedFactory extends AbstRandomBasedFactory {
 	 */
 	public RandomBasedFactory(LongSupplier randomSupplier) {
 		this(builder().withRandomFunction(randomSupplier));
-	}
-
-	/**
-	 * Constructor with a function which returns a byte array.
-	 * 
-	 * @param randomFunction a function
-	 */
-	public RandomBasedFactory(IntFunction<byte[]> randomFunction) {
-		this(builder().withRandomFunction(randomFunction));
 	}
 
 	private RandomBasedFactory(Builder builder) {

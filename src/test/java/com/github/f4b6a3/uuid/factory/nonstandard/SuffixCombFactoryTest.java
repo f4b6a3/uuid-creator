@@ -4,7 +4,6 @@ import org.junit.Test;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.factory.UuidFactoryTest;
-import com.github.f4b6a3.uuid.factory.function.RandomFunction;
 import com.github.f4b6a3.uuid.util.CombUtil;
 import com.github.f4b6a3.uuid.util.UuidTime;
 
@@ -18,6 +17,7 @@ import java.util.Comparator;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.LongSupplier;
 
 public class SuffixCombFactoryTest extends UuidFactoryTest {
 
@@ -103,11 +103,7 @@ public class SuffixCombFactoryTest extends UuidFactoryTest {
 	public void testGetSuffixCombWithRandomFunction() {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		RandomFunction randomFunction = x -> {
-			final byte[] bytes = new byte[x];
-			ThreadLocalRandom.current().nextBytes(bytes);
-			return bytes;
-		};
+		LongSupplier randomFunction = () -> ThreadLocalRandom.current().nextLong();
 		SuffixCombFactory factory = new SuffixCombFactory(randomFunction);
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {

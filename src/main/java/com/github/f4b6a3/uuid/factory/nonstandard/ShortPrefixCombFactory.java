@@ -27,7 +27,6 @@ package com.github.f4b6a3.uuid.factory.nonstandard;
 import java.time.Clock;
 import java.util.Random;
 import java.util.UUID;
-import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
@@ -107,15 +106,6 @@ public final class ShortPrefixCombFactory extends AbstCombFactory {
 	}
 
 	/**
-	 * Constructor with a function which returns random arrays of bytes.
-	 * 
-	 * @param randomFunction a function
-	 */
-	public ShortPrefixCombFactory(IntFunction<byte[]> randomFunction) {
-		this(builder().withRandomFunction(randomFunction));
-	}
-
-	/**
 	 * Constructor with a function which a function which return random numbers and
 	 * a clock.
 	 * 
@@ -123,17 +113,6 @@ public final class ShortPrefixCombFactory extends AbstCombFactory {
 	 * @param clock          a clock
 	 */
 	public ShortPrefixCombFactory(LongSupplier randomFunction, Clock clock) {
-		this(builder().withRandomFunction(randomFunction).withClock(clock));
-	}
-
-	/**
-	 * Constructor with a function which a function which returns random arrays of
-	 * bytes and a clock.
-	 * 
-	 * @param randomFunction a function
-	 * @param clock          a clock
-	 */
-	public ShortPrefixCombFactory(IntFunction<byte[]> randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
 
