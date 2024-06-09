@@ -156,7 +156,7 @@ public final class PrefixCombFactory extends AbstCombFactory {
 		lock.lock();
 		try {
 			final long time = timeFunction.getAsLong();
-			if (this.random instanceof ByteRandom) {
+			if (this.random instanceof SafeRandom) {
 				final byte[] bytes = this.random.nextBytes(10);
 				final long long1 = ByteUtil.toNumber(bytes, 0, 2);
 				final long long2 = ByteUtil.toNumber(bytes, 2, 10);

@@ -117,7 +117,7 @@ public final class RandomBasedFactory extends AbstRandomBasedFactory {
 	public UUID create() {
 		lock.lock();
 		try {
-			if (this.random instanceof ByteRandom) {
+			if (this.random instanceof SafeRandom) {
 				final byte[] bytes = this.random.nextBytes(16);
 				final long msb = ByteUtil.toNumber(bytes, 0, 8);
 				final long lsb = ByteUtil.toNumber(bytes, 8, 16);

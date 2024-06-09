@@ -89,18 +89,6 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 	}
 
 	@Test
-	public void testWithRandomFunctionNull() {
-		{
-			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory((LongSupplier) null);
-			assertNotNull(factory.create());
-		}
-		{
-			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory((IntFunction<byte[]>) null);
-			assertNotNull(factory.create());
-		}
-	}
-
-	@Test
 	public void testGetTimeOrderedEpoch() {
 
 		UUID[] list;

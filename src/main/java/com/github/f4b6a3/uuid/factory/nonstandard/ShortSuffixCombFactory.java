@@ -197,7 +197,7 @@ public final class ShortSuffixCombFactory extends AbstCombFactory {
 		lock.lock();
 		try {
 			final long time = timeFunction.getAsLong() / interval;
-			if (this.random instanceof ByteRandom) {
+			if (this.random instanceof SafeRandom) {
 				final byte[] bytes = this.random.nextBytes(14);
 				final long long1 = ByteUtil.toNumber(bytes, 0, 8);
 				final long long2 = ByteUtil.toNumber(bytes, 8, 14);

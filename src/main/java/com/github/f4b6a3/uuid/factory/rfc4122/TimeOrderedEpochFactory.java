@@ -328,7 +328,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		}
 
 		void reset(final long time) {
-			if (random instanceof ByteRandom) {
+			if (random instanceof SafeRandom) {
 				final byte[] bytes = random.nextBytes(10);
 				this.msb = (time << 16) | (ByteUtil.toNumber(bytes, 0, 2));
 				this.lsb = ByteUtil.toNumber(bytes, 2, 10);
@@ -358,7 +358,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 			}
 
 			// then randomize the lower 48 bits
-			if (random instanceof ByteRandom) {
+			if (random instanceof SafeRandom) {
 				final byte[] bytes = random.nextBytes(6);
 				this.lsb |= ByteUtil.toNumber(bytes);
 			} else {
@@ -409,7 +409,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 
 		private LongSupplier customPlusNFunction(IRandom random, Long incrementMax) {
 			if (incrementMax == INCREMENT_MAX_DEFAULT) {
-				if (random instanceof ByteRandom) {
+				if (random instanceof SafeRandom) {
 					return () -> {
 						// return n, where 1 <= n <= 2^32
 						final byte[] bytes = random.nextBytes(4);
@@ -423,7 +423,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 				}
 			} else {
 				final long positive = 0x7fffffffffffffffL;
-				if (random instanceof ByteRandom) {
+				if (random instanceof SafeRandom) {
 					// the minimum number of bits and bytes for incrementMax
 					final int bits = (int) Math.ceil(Math.log(incrementMax) / Math.log(2));
 					final int size = ((bits - 1) / Byte.SIZE) + 1;
