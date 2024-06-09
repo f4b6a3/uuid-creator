@@ -4,15 +4,15 @@ import org.junit.Test;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.factory.UuidFactoryTest;
-import com.github.f4b6a3.uuid.factory.function.RandomFunction;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Random;
+import java.util.SplittableRandom;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.LongSupplier;
 
 public class ShortPrefixCombFactoryTest extends UuidFactoryTest {
 
@@ -91,8 +91,8 @@ public class ShortPrefixCombFactoryTest extends UuidFactoryTest {
 	public void testGetShortPrefixCombWithRandom() {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		Random random = new Random();
-		ShortPrefixCombFactory factory = new ShortPrefixCombFactory(random);
+		SplittableRandom seeder = new SplittableRandom(1);
+		ShortPrefixCombFactory factory = new ShortPrefixCombFactory(new Random(seeder.nextLong()));
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			list[i] = factory.create();
@@ -106,13 +106,9 @@ public class ShortPrefixCombFactoryTest extends UuidFactoryTest {
 
 	@Test
 	public void testGetShortPrefixCombWithRandomFunction() {
-
+		SplittableRandom random = new SplittableRandom(1);
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		RandomFunction randomFunction = x -> {
-			final byte[] bytes = new byte[x];
-			ThreadLocalRandom.current().nextBytes(bytes);
-			return bytes;
-		};
+		LongSupplier randomFunction = () -> random.nextLong();
 		ShortPrefixCombFactory factory = new ShortPrefixCombFactory(randomFunction);
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {

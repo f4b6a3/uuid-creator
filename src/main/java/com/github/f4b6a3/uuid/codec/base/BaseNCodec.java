@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -274,10 +274,16 @@ public abstract class BaseNCodec implements UuidCodec<String> {
 	@Override
 	public UUID decode(String string) {
 		try {
-			base.validate(string);
+			validate(string);
 			return decoder.apply(string);
 		} catch (RuntimeException e) {
 			throw new InvalidUuidException(e.getMessage(), e);
+		}
+	}
+
+	protected void validate(String string) {
+		if (string == null || string.length() != this.base.getLength()) {
+			throw InvalidUuidException.newInstance(string);
 		}
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,7 +48,7 @@ public interface NodeIdFunction extends LongSupplier {
 	 * @return a number in the range 0 to 2^48-1.
 	 */
 	public static long getRandom() {
-		return toExpectedRange(RandomUtil.nextLong());
+		return toExpectedRange(RandomUtil.newSecureRandom().nextLong());
 	}
 
 	/**
@@ -57,7 +57,7 @@ public interface NodeIdFunction extends LongSupplier {
 	 * @return a number in the range 0 to 2^48-1.
 	 */
 	public static long getMulticastRandom() {
-		return toMulticast(RandomUtil.nextLong());
+		return toMulticast(getRandom());
 	}
 
 	/**

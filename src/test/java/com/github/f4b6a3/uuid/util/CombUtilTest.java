@@ -6,7 +6,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.SplittableRandom;
 
 import org.junit.Test;
 
@@ -37,11 +37,11 @@ public class CombUtilTest {
 
 		final int bits = 48;
 		final long bound = (long) Math.pow(2, bits);
-
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
 			// instantiate a factory with a Clock that returns a fixed value
-			final long millis = Math.abs(ThreadLocalRandom.current().nextLong(bound));
+			final long millis = Math.abs(random.nextLong(bound));
 			Clock clock = Clock.fixed(Instant.ofEpochMilli(millis), ZoneOffset.UTC);
 			AbstRandomBasedFactory factory = new PrefixCombFactory(clock);
 
@@ -71,11 +71,11 @@ public class CombUtilTest {
 
 		final int bits = 48;
 		final long bound = (long) Math.pow(2, bits);
-
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
 			// instantiate a factory with a Clock that returns a fixed value
-			final long millis = Math.abs(ThreadLocalRandom.current().nextLong(bound));
+			final long millis = Math.abs(random.nextLong(bound));
 			Clock clock = Clock.fixed(Instant.ofEpochMilli(millis), ZoneOffset.UTC);
 			AbstRandomBasedFactory factory = new SuffixCombFactory(clock);
 

@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -55,16 +55,14 @@ public final class BaseNRemainderDecoder extends BaseNDecoder {
 
 	public UUID apply(String string) {
 
-		final char[] chars = string.toCharArray();
-
 		long msb = 0;
 		long lsb = 0;
 
 		long rem = 0; // remainder
 		long[] ans; // [product, overflow]
 
-		for (int i = 0; i < chars.length; i++) {
-			rem = (int) map.get(chars[i]);
+		for (int i = 0; i < base.getLength(); i++) {
+			rem = get(string, i);
 			ans = multiply(lsb, multiplier, rem);
 			lsb = ans[0];
 			rem = ans[1];

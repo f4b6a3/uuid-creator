@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,7 +51,7 @@ public final class NameBasedMd5Factory extends AbstNameBasedFactory {
 	 * @param namespace a namespace
 	 */
 	public NameBasedMd5Factory(UUID namespace) {
-		this(bytes(namespace));
+		this(namespaceBytes(namespace));
 	}
 
 	/**
@@ -60,7 +60,7 @@ public final class NameBasedMd5Factory extends AbstNameBasedFactory {
 	 * @param namespace a namespace
 	 */
 	public NameBasedMd5Factory(String namespace) {
-		this(bytes(namespace));
+		this(namespaceBytes(namespace));
 	}
 
 	/**
@@ -69,7 +69,7 @@ public final class NameBasedMd5Factory extends AbstNameBasedFactory {
 	 * @param namespace a namespace
 	 */
 	public NameBasedMd5Factory(UuidNamespace namespace) {
-		this(bytes(namespace));
+		this(namespaceBytes(namespace));
 	}
 
 	private NameBasedMd5Factory(byte[] namespace) {

@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -175,6 +175,16 @@ public final class DceSecurityFactory extends AbstTimeBasedFactory {
 	@Override
 	public UUID create() {
 		throw new UnsupportedOperationException("Unsuported operation for DCE Security UUID factory");
+	}
+
+	/**
+	 * Returns a DCE Security unique identifier (UUIDv2).
+	 * 
+	 * @return a UUIDv2
+	 */
+	@Override
+	public UUID create(Parameters parameters) {
+		return create(parameters.getLocalDomain(), parameters.getLocalIdentifier());
 	}
 
 	/**

@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,6 @@ import com.github.f4b6a3.uuid.codec.base.Base16Codec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.UuidValidator;
 import com.github.f4b6a3.uuid.util.immutable.CharArray;
-import com.github.f4b6a3.uuid.util.immutable.LongArray;
 import com.github.f4b6a3.uuid.util.internal.JavaVersionUtil;
 
 /**
@@ -63,11 +62,21 @@ public class StringCodec implements UuidCodec<String> {
 	 */
 	public static final StringCodec INSTANCE = new StringCodec();
 
-	private static final LongArray MAP = Base16Codec.INSTANCE.getBase().getMap();
+	private static final byte[] MAP = Base16Codec.INSTANCE.getBase().getMap().array();
 	private static final CharArray ALPHABET = Base16Codec.INSTANCE.getBase().getAlphabet();
 
 	private static final String URN_PREFIX = "urn:uuid:";
 	private static final boolean JAVA_VERSION_GREATER_THAN_8 = JavaVersionUtil.getJavaVersion() > 8;
+
+	private static final int WITH_DASH_UUID_LENGTH = 36;
+	private static final int WITHOUT_DASH_UUID_LENGTH = 32;
+	private static final int URN_PREFIX_UUID_LENGTH = 45;
+	private static final int CURLY_BRACES_UUID_LENGTH = 38;
+
+	private static final int DASH_POSITION_1 = 8;
+	private static final int DASH_POSITION_2 = 13;
+	private static final int DASH_POSITION_3 = 18;
+	private static final int DASH_POSITION_4 = 23;
 
 	/**
 	 * Get a string from a UUID.
@@ -151,124 +160,95 @@ public class StringCodec implements UuidCodec<String> {
 	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	@Override
-	public UUID decode(String string) {
+	public UUID decode(final String string) {
 
-		char[] chars = toCharArray(string);
-		UuidValidator.validate(chars);
-
-		long msb = 0;
-		long lsb = 0;
-
-		if (chars.length == 32) {
-			// UUID string WITHOUT hyphen
-			msb |= MAP.get(chars[0x00]) << 60;
-			msb |= MAP.get(chars[0x01]) << 56;
-			msb |= MAP.get(chars[0x02]) << 52;
-			msb |= MAP.get(chars[0x03]) << 48;
-			msb |= MAP.get(chars[0x04]) << 44;
-			msb |= MAP.get(chars[0x05]) << 40;
-			msb |= MAP.get(chars[0x06]) << 36;
-			msb |= MAP.get(chars[0x07]) << 32;
-			msb |= MAP.get(chars[0x08]) << 28;
-			msb |= MAP.get(chars[0x09]) << 24;
-			msb |= MAP.get(chars[0x0a]) << 20;
-			msb |= MAP.get(chars[0x0b]) << 16;
-			msb |= MAP.get(chars[0x0c]) << 12;
-			msb |= MAP.get(chars[0x0d]) << 8;
-			msb |= MAP.get(chars[0x0e]) << 4;
-			msb |= MAP.get(chars[0x0f]);
-
-			lsb |= MAP.get(chars[0x10]) << 60;
-			lsb |= MAP.get(chars[0x11]) << 56;
-			lsb |= MAP.get(chars[0x12]) << 52;
-			lsb |= MAP.get(chars[0x13]) << 48;
-			lsb |= MAP.get(chars[0x14]) << 44;
-			lsb |= MAP.get(chars[0x15]) << 40;
-			lsb |= MAP.get(chars[0x16]) << 36;
-			lsb |= MAP.get(chars[0x17]) << 32;
-			lsb |= MAP.get(chars[0x18]) << 28;
-			lsb |= MAP.get(chars[0x19]) << 24;
-			lsb |= MAP.get(chars[0x1a]) << 20;
-			lsb |= MAP.get(chars[0x1b]) << 16;
-			lsb |= MAP.get(chars[0x1c]) << 12;
-			lsb |= MAP.get(chars[0x1d]) << 8;
-			lsb |= MAP.get(chars[0x1e]) << 4;
-			lsb |= MAP.get(chars[0x1f]);
-		} else {
-			// UUID string WITH hyphen
-			msb |= MAP.get(chars[0x00]) << 60;
-			msb |= MAP.get(chars[0x01]) << 56;
-			msb |= MAP.get(chars[0x02]) << 52;
-			msb |= MAP.get(chars[0x03]) << 48;
-			msb |= MAP.get(chars[0x04]) << 44;
-			msb |= MAP.get(chars[0x05]) << 40;
-			msb |= MAP.get(chars[0x06]) << 36;
-			msb |= MAP.get(chars[0x07]) << 32;
-			// input[8] = '-'
-			msb |= MAP.get(chars[0x09]) << 28;
-			msb |= MAP.get(chars[0x0a]) << 24;
-			msb |= MAP.get(chars[0x0b]) << 20;
-			msb |= MAP.get(chars[0x0c]) << 16;
-			// input[13] = '-'
-			msb |= MAP.get(chars[0x0e]) << 12;
-			msb |= MAP.get(chars[0x0f]) << 8;
-			msb |= MAP.get(chars[0x10]) << 4;
-			msb |= MAP.get(chars[0x11]);
-			// input[18] = '-'
-			lsb |= MAP.get(chars[0x13]) << 60;
-			lsb |= MAP.get(chars[0x14]) << 56;
-			lsb |= MAP.get(chars[0x15]) << 52;
-			lsb |= MAP.get(chars[0x16]) << 48;
-			// input[23] = '-'
-			lsb |= MAP.get(chars[0x18]) << 44;
-			lsb |= MAP.get(chars[0x19]) << 40;
-			lsb |= MAP.get(chars[0x1a]) << 36;
-			lsb |= MAP.get(chars[0x1b]) << 32;
-			lsb |= MAP.get(chars[0x1c]) << 28;
-			lsb |= MAP.get(chars[0x1d]) << 24;
-			lsb |= MAP.get(chars[0x1e]) << 20;
-			lsb |= MAP.get(chars[0x1f]) << 16;
-			lsb |= MAP.get(chars[0x20]) << 12;
-			lsb |= MAP.get(chars[0x21]) << 8;
-			lsb |= MAP.get(chars[0x22]) << 4;
-			lsb |= MAP.get(chars[0x23]);
+		if (string == null) {
+			throw InvalidUuidException.newInstance(string);
 		}
 
-		return new UUID(msb, lsb);
+		final String modified = modifyString(string);
+
+		if (modified.length() == WITH_DASH_UUID_LENGTH) {
+
+			validateDashPositions(modified);
+
+			long msb = 0;
+			long lsb = 0;
+
+			for (int i = 0; i < 8; i++) {
+				msb = (msb << 4) | get(modified, i);
+			}
+
+			for (int i = 9; i < 13; i++) {
+				msb = (msb << 4) | get(modified, i);
+			}
+
+			for (int i = 14; i < 18; i++) {
+				msb = (msb << 4) | get(modified, i);
+			}
+
+			for (int i = 19; i < 23; i++) {
+				lsb = (lsb << 4) | get(modified, i);
+			}
+
+			for (int i = 24; i < 36; i++) {
+				lsb = (lsb << 4) | get(modified, i);
+			}
+
+			return new UUID(msb, lsb);
+		}
+
+		if (modified.length() == WITHOUT_DASH_UUID_LENGTH) {
+			return Base16Codec.INSTANCE.decode(modified);
+		}
+
+		throw InvalidUuidException.newInstance(modified);
 	}
 
 	/**
-	 * Returns a char array of a string.
+	 * Returns a modified string without URN prefix and curly braces.
 	 * <p>
-	 * It removes URN prefix and curly braces from the string.
+	 * It removes URN prefix and curly braces from the original string.
 	 * 
 	 * @param string a string
 	 * @return a substring
 	 */
-	protected static char[] toCharArray(String string) {
-
-		if (string == null) {
-			throw new InvalidUuidException("Invalid UUID: null");
-		}
-
-		char[] chars = string.toCharArray();
+	protected static String modifyString(final String string) {
 
 		// UUID URN format: "urn:uuid:00000000-0000-0000-0000-000000000000"
-		if (chars.length == 45 && string.startsWith(URN_PREFIX)) {
-			// Remove the UUID URN prefix: "urn:uuid:"
-			char[] substring = new char[chars.length - 9];
-			System.arraycopy(chars, 9, substring, 0, substring.length);
-			return substring;
+		if (string.length() == URN_PREFIX_UUID_LENGTH && string.startsWith(URN_PREFIX)) {
+			// Remove the URN prefix: "urn:uuid:"
+			return string.substring(URN_PREFIX.length());
 		}
 
 		// Curly braces format: "{00000000-0000-0000-0000-000000000000}"
-		if (chars.length == 38 && chars[0] == '{' && chars[chars.length - 1] == '}') {
+		if (string.length() == CURLY_BRACES_UUID_LENGTH && string.startsWith("{") && string.endsWith("}")) {
 			// Remove curly braces: '{' and '}'
-			char[] substring = new char[chars.length - 2];
-			System.arraycopy(chars, 1, substring, 0, substring.length);
-			return substring;
+			return string.substring(1, string.length() - 1);
 		}
 
-		return chars;
+		return string;
+	}
+
+	protected static void validateDashPositions(final String string) {
+		if (string.charAt(DASH_POSITION_1) != '-' || string.charAt(DASH_POSITION_2) != '-'
+				|| string.charAt(DASH_POSITION_3) != '-' || string.charAt(DASH_POSITION_4) != '-') {
+			throw InvalidUuidException.newInstance(string);
+		}
+	}
+
+	protected long get(final String string, int i) {
+
+		final int chr = string.charAt(i);
+		if (chr > 255) {
+			throw InvalidUuidException.newInstance(string);
+		}
+
+		final byte value = MAP[chr];
+		if (value < 0) {
+			throw InvalidUuidException.newInstance(string);
+		}
+
+		return value & 0xffL;
 	}
 }
