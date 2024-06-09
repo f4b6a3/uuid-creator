@@ -27,9 +27,9 @@ package com.github.f4b6a3.uuid.factory.function.impl;
 import static com.github.f4b6a3.uuid.util.UuidTime.TICKS_PER_MILLI;
 
 import java.time.Clock;
+import java.util.SplittableRandom;
 
 import com.github.f4b6a3.uuid.factory.function.TimeFunction;
-import com.github.f4b6a3.uuid.util.internal.RandomUtil;
 
 /**
  * Function that returns a number of 100-nanoseconds since 1970-01-01 (Unix
@@ -55,7 +55,7 @@ public final class WindowsTimeFunction implements TimeFunction {
 	private static final long TICKS_PER_GRANULARITY = TICKS_PER_MILLI * GRANULARITY;
 
 	// start the counter with a random number between 0 and 159,999
-	private long counter = Math.abs(RandomUtil.nextLong() % TICKS_PER_GRANULARITY);
+	private long counter = Math.abs(new SplittableRandom().nextLong()) % TICKS_PER_GRANULARITY;
 	// start the counter limit with a number between 160,000 and 319,999
 	private long counterMax = counter + TICKS_PER_GRANULARITY;
 

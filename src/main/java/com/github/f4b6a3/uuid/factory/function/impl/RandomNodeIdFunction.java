@@ -25,6 +25,7 @@
 package com.github.f4b6a3.uuid.factory.function.impl;
 
 import com.github.f4b6a3.uuid.factory.function.NodeIdFunction;
+import com.github.f4b6a3.uuid.util.internal.RandomUtil;
 
 /**
  * Function that returns a new random multicast node identifier.
@@ -37,6 +38,6 @@ public final class RandomNodeIdFunction implements NodeIdFunction {
 
 	@Override
 	public long getAsLong() {
-		return NodeIdFunction.getMulticastRandom();
+		return NodeIdFunction.toMulticast(RandomUtil.nextLong());
 	}
 }

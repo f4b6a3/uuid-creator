@@ -48,7 +48,7 @@ public interface NodeIdFunction extends LongSupplier {
 	 * @return a number in the range 0 to 2^48-1.
 	 */
 	public static long getRandom() {
-		return toExpectedRange(RandomUtil.nextLong());
+		return toExpectedRange(RandomUtil.newSecureRandom().nextLong());
 	}
 
 	/**
@@ -57,7 +57,7 @@ public interface NodeIdFunction extends LongSupplier {
 	 * @return a number in the range 0 to 2^48-1.
 	 */
 	public static long getMulticastRandom() {
-		return toMulticast(RandomUtil.nextLong());
+		return toMulticast(getRandom());
 	}
 
 	/**

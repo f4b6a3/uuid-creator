@@ -26,28 +26,26 @@ package com.github.f4b6a3.uuid.util.internal;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Random;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Utility class that wraps a shared {@link SecureRandom} and provides new
- * instances of {@link SecureRandom}.
+ * Utility class that provides random generator services.
+ * <p>
+ * The current implementation uses a pool {@link SecureRandom}.
+ * <p>
+ * The pool size depends on the number of processors available, up to a maximum
+ * of 32. The minimum is 4.
+ * <p>
+ * The pool items are deleted very often to avoid holding them for too long.
+ * They are also deleted to avoid holding more instances than threads running.
+ * <p>
+ * The PRNG algorithm can be specified by system property or environment
+ * variable. See {@link RandomUtil#newSecureRandom()}.
  */
 public final class RandomUtil {
 
-	/**
-	 * A globally shared {@link SecureRandom} instance.
-	 */
-	protected static final SecureRandom SHARED_RANDOM = newSecureRandom();
-
 	private RandomUtil() {
-	}
-
-	/**
-	 * Returns a random 32-bit number.
-	 * 
-	 * @return a number
-	 */
-	public static int nextInt() {
-		return SHARED_RANDOM.nextInt();
 	}
 
 	/**
@@ -56,7 +54,17 @@ public final class RandomUtil {
 	 * @return a number
 	 */
 	public static long nextLong() {
-		return SHARED_RANDOM.nextLong();
+		return SecureRandomPool.nextLong();
+	}
+
+	/**
+	 * Returns an array of random bytes.
+	 * 
+	 * @param length the array length
+	 * @return a byte array
+	 */
+	public static byte[] nextBytes(final int length) {
+		return SecureRandomPool.nextBytes(length);
 	}
 
 	/**
@@ -109,5 +117,76 @@ public final class RandomUtil {
 			}
 		}
 		return new SecureRandom();
+	}
+
+	private static class SecureRandomPool {
+
+		private static final int POOL_SIZE = processors();
+		private static final Random[] POOL = new Random[POOL_SIZE];
+		private static final ReentrantLock lock = new ReentrantLock();
+
+		private SecureRandomPool() {
+		}
+
+		public static long nextLong() {
+			return ByteUtil.toNumber(nextBytes(Long.BYTES));
+		}
+
+		public static byte[] nextBytes(final int length) {
+
+			final byte[] bytes = new byte[length];
+			current().nextBytes(bytes);
+
+			// every now and then
+			if (bytes.length > 0 && bytes[0x00] == 0) {
+				// delete a random item from the pool
+				delete((new Random()).nextInt(POOL_SIZE));
+			}
+
+			return bytes;
+		}
+
+		private static Random current() {
+
+			// calculate the pool index given the current thread ID
+			final int index = (int) Thread.currentThread().getId() % POOL_SIZE;
+
+			lock.lock();
+			try {
+				// lazy loading instance
+				if (POOL[index] == null) {
+					POOL[index] = RandomUtil.newSecureRandom();
+				}
+				return POOL[index];
+			} finally {
+				lock.unlock();
+			}
+		}
+
+		private static void delete(int index) {
+			lock.lock();
+			try {
+				POOL[index] = null;
+			} finally {
+				lock.unlock();
+			}
+		}
+
+		private static int processors() {
+
+			final int min = 4;
+			final int max = 32;
+
+			// get the number of processors from the runtime
+			final int processors = Runtime.getRuntime().availableProcessors();
+
+			if (processors < min) {
+				return min;
+			} else if (processors > max) {
+				return max;
+			}
+
+			return processors;
+		}
 	}
 }
