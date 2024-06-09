@@ -29,6 +29,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Objects;
@@ -208,9 +209,12 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @return a GUID
 	 */
 	public static GUID v1() {
+
 		final long time = gregorian();
+
 		final long msb = (time << 32) | ((time >>> 16) & (MASK_16 << 16)) | ((time >>> 48) & MASK_12);
-		final long lsb = ThreadLocalRandom.current().nextLong() | MULTICAST;
+		final long lsb = LazyHolder.random() | MULTICAST;
+
 		return version(msb, lsb, 1);
 	}
 
@@ -270,9 +274,8 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @return a GUID
 	 */
 	public static GUID v4() {
-		ThreadLocalRandom random = ThreadLocalRandom.current();
-		final long msb = random.nextLong();
-		final long lsb = random.nextLong();
+		final long msb = LazyHolder.random();
+		final long lsb = LazyHolder.random();
 		return version(msb, lsb, 4);
 	}
 
@@ -309,9 +312,12 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @return a GUID
 	 */
 	public static GUID v6() {
+
 		final long time = gregorian();
+
 		final long msb = ((time & ~MASK_12) << 4) | (time & MASK_12);
-		final long lsb = ThreadLocalRandom.current().nextLong() | MULTICAST;
+		final long lsb = LazyHolder.random() | MULTICAST;
+
 		return version(msb, lsb, 6);
 	}
 
@@ -327,10 +333,12 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @return a GUID
 	 */
 	public static GUID v7() {
+
 		final long time = System.currentTimeMillis();
-		ThreadLocalRandom random = ThreadLocalRandom.current();
-		final long msb = (time << 16) | (random.nextLong() & MASK_16);
-		final long lsb = random.nextLong();
+
+		final long msb = (time << 16) | (LazyHolder.random() & MASK_16);
+		final long lsb = LazyHolder.random();
+
 		return version(msb, lsb, 7);
 	}
 
@@ -474,6 +482,22 @@ public final class GUID implements Serializable, Comparable<GUID> {
 		final long secs = now.getEpochSecond() + greg;
 		final long time = (secs * 10_000_000L) + (nano / 100L);
 		return time;
+	}
+
+	private static class LazyHolder {
+
+		// The JVM unique number tries to mitigate the fact that the thread
+		// local random is not seeded with a secure random seed by default.
+		// Their seeds are based on temporal data and predefined constants.
+		// Although the seeds are unique per JVM, they are not across JVMs.
+		// It helps to generate different sequences of numbers even if two
+		// ThreadLocalRandom are by chance instantiated with the same seed.
+		// Of course it doesn't better the output, but doesn't hurt either.
+		static final long JVM_UNIQUE_NUMBER = new SecureRandom().nextLong();
+
+		private static long random() {
+			return ThreadLocalRandom.current().nextLong() ^ JVM_UNIQUE_NUMBER;
+		}
 	}
 
 	private static GUID hash(int version, String algorithm, GUID namespace, String name) {
