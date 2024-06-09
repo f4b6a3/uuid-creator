@@ -1208,69 +1208,30 @@ public final class UuidCreator {
 	// Lazy holders
 	// ***************************************
 
-	private static final Proxy UUID1 = new Proxy(Suppliers.UUID1);
-	private static final Proxy UUID1_MAC = new Proxy(Suppliers.UUID1_MAC);
-	private static final Proxy UUID1_HASH = new Proxy(Suppliers.UUID1_HASH);
-	private static final Proxy UUID1_RANDOM = new Proxy(Suppliers.UUID1_RANDOM);
-	private static final Proxy UUID2 = new Proxy(Suppliers.UUID2);
-	private static final Proxy UUID2_MAC = new Proxy(Suppliers.UUID2_MAC);
-	private static final Proxy UUID2_HASH = new Proxy(Suppliers.UUID2_HASH);
-	private static final Proxy UUID2_RANDOM = new Proxy(Suppliers.UUID2_RANDOM);
-	private static final Proxy UUID3 = new Proxy(Suppliers.UUID3);
-	private static final Proxy UUID4 = new Proxy(Suppliers.UUID4);
-	private static final Proxy UUID4_FAST = new Proxy(Suppliers.UUID4_FAST);
-	private static final Proxy UUID5 = new Proxy(Suppliers.UUID5);
-	private static final Proxy UUID6 = new Proxy(Suppliers.UUID6);
-	private static final Proxy UUID6_MAC = new Proxy(Suppliers.UUID6_MAC);
-	private static final Proxy UUID6_HASH = new Proxy(Suppliers.UUID6_HASH);
-	private static final Proxy UUID6_RANDOM = new Proxy(Suppliers.UUID6_RANDOM);
-	private static final Proxy UUID7 = new Proxy(Suppliers.UUID7);
-	private static final Proxy UUID7_FAST = new Proxy(Suppliers.UUID7_FAST);
-	private static final Proxy UUID7_PLUS_1 = new Proxy(Suppliers.UUID7_PLUS_1);
-	private static final Proxy UUID7_PLUS_N = new Proxy(Suppliers.UUID7_PLUS_N);
-	private static final Proxy COMB_PREFIX = new Proxy(Suppliers.COMB_PREFIX);
-	private static final Proxy COMB_SUFFIX = new Proxy(Suppliers.COMB_SUFFIX);
-	private static final Proxy COMB_SHORT_PREFIX = new Proxy(Suppliers.COMB_SHORT_PREFIX);
-	private static final Proxy COMB_SHORT_SUFFIX = new Proxy(Suppliers.COMB_SHORT_SUFFIX);
-
-	private static enum Suppliers {
-
-		UUID1(TimeBasedFactory::new), //
-		UUID1_MAC(() -> TimeBasedFactory.builder().withMacNodeId().build()), //
-		UUID1_HASH(() -> TimeBasedFactory.builder().withHashNodeId().build()), //
-		UUID1_RANDOM(() -> TimeBasedFactory.builder().withRandomNodeId().build()), //
-		UUID2(DceSecurityFactory::new), //
-		UUID2_MAC(() -> DceSecurityFactory.builder().withMacNodeId().build()), //
-		UUID2_HASH(() -> DceSecurityFactory.builder().withHashNodeId().build()), //
-		UUID2_RANDOM(() -> DceSecurityFactory.builder().withRandomNodeId().build()), //
-		UUID3(NameBasedMd5Factory::new), //
-		UUID4(RandomBasedFactory::new), //
-		UUID4_FAST(() -> RandomBasedFactory.builder().withFastRandom().build()), //
-		UUID5(NameBasedSha1Factory::new), //
-		UUID6(TimeOrderedFactory::new), //
-		UUID6_MAC(() -> TimeOrderedFactory.builder().withMacNodeId().build()), //
-		UUID6_HASH(() -> TimeOrderedFactory.builder().withHashNodeId().build()), //
-		UUID6_RANDOM(() -> TimeOrderedFactory.builder().withRandomNodeId().build()), //
-		UUID7(TimeOrderedEpochFactory::new), //
-		UUID7_FAST(() -> TimeOrderedEpochFactory.builder().withFastRandom().build()), //
-		UUID7_PLUS_1(() -> TimeOrderedEpochFactory.builder().withIncrementPlus1().build()), //
-		UUID7_PLUS_N(() -> TimeOrderedEpochFactory.builder().withIncrementPlusN().build()), //
-		COMB_PREFIX(PrefixCombFactory::new), //
-		COMB_SUFFIX(SuffixCombFactory::new), //
-		COMB_SHORT_PREFIX(ShortPrefixCombFactory::new), //
-		COMB_SHORT_SUFFIX(ShortSuffixCombFactory::new), //
-		;
-
-		private final Supplier<UuidFactory> supplier;
-
-		Suppliers(Supplier<UuidFactory> supplier) {
-			this.supplier = supplier;
-		}
-
-		public Supplier<UuidFactory> getValue() {
-			return this.supplier;
-		}
-	}
+	private static final Proxy UUID1 = new Proxy(Proxy.UUID1);
+	private static final Proxy UUID1_MAC = new Proxy(Proxy.UUID1_MAC);
+	private static final Proxy UUID1_HASH = new Proxy(Proxy.UUID1_HASH);
+	private static final Proxy UUID1_RANDOM = new Proxy(Proxy.UUID1_RANDOM);
+	private static final Proxy UUID2 = new Proxy(Proxy.UUID2);
+	private static final Proxy UUID2_MAC = new Proxy(Proxy.UUID2_MAC);
+	private static final Proxy UUID2_HASH = new Proxy(Proxy.UUID2_HASH);
+	private static final Proxy UUID2_RANDOM = new Proxy(Proxy.UUID2_RANDOM);
+	private static final Proxy UUID3 = new Proxy(Proxy.UUID3);
+	private static final Proxy UUID4 = new Proxy(Proxy.UUID4);
+	private static final Proxy UUID4_FAST = new Proxy(Proxy.UUID4_FAST);
+	private static final Proxy UUID5 = new Proxy(Proxy.UUID5);
+	private static final Proxy UUID6 = new Proxy(Proxy.UUID6);
+	private static final Proxy UUID6_MAC = new Proxy(Proxy.UUID6_MAC);
+	private static final Proxy UUID6_HASH = new Proxy(Proxy.UUID6_HASH);
+	private static final Proxy UUID6_RANDOM = new Proxy(Proxy.UUID6_RANDOM);
+	private static final Proxy UUID7 = new Proxy(Proxy.UUID7);
+	private static final Proxy UUID7_FAST = new Proxy(Proxy.UUID7_FAST);
+	private static final Proxy UUID7_PLUS_1 = new Proxy(Proxy.UUID7_PLUS_1);
+	private static final Proxy UUID7_PLUS_N = new Proxy(Proxy.UUID7_PLUS_N);
+	private static final Proxy COMB_PREFIX = new Proxy(Proxy.COMB_PREFIX);
+	private static final Proxy COMB_SUFFIX = new Proxy(Proxy.COMB_SUFFIX);
+	private static final Proxy COMB_SHORT_PREFIX = new Proxy(Proxy.COMB_SHORT_PREFIX);
+	private static final Proxy COMB_SHORT_SUFFIX = new Proxy(Proxy.COMB_SHORT_SUFFIX);
 
 	private static class Proxy extends UuidFactory {
 
@@ -1278,8 +1239,35 @@ public final class UuidCreator {
 		private Supplier<UuidFactory> supplier;
 		private static final ReentrantLock lock = new ReentrantLock();
 
-		public Proxy(Suppliers supplier) {
-			this.supplier = (Supplier<UuidFactory>) supplier.getValue();
+		// @formatter:off
+		static final Supplier<UuidFactory> UUID1 = TimeBasedFactory::new;
+		static final Supplier<UuidFactory> UUID1_MAC = () -> TimeBasedFactory.builder().withMacNodeId().build();
+		static final Supplier<UuidFactory> UUID1_HASH = () -> TimeBasedFactory.builder().withHashNodeId().build();
+		static final Supplier<UuidFactory> UUID1_RANDOM = () -> TimeBasedFactory.builder().withRandomNodeId().build();
+		static final Supplier<UuidFactory> UUID2 = DceSecurityFactory::new;
+		static final Supplier<UuidFactory> UUID2_MAC = () -> DceSecurityFactory.builder().withMacNodeId().build();
+		static final Supplier<UuidFactory> UUID2_HASH = () -> DceSecurityFactory.builder().withHashNodeId().build();
+		static final Supplier<UuidFactory> UUID2_RANDOM = () -> DceSecurityFactory.builder().withRandomNodeId().build();
+		static final Supplier<UuidFactory> UUID3 = NameBasedMd5Factory::new;
+		static final Supplier<UuidFactory> UUID4 = RandomBasedFactory::new;
+		static final Supplier<UuidFactory> UUID4_FAST = () -> RandomBasedFactory.builder().withFastRandom().build();
+		static final Supplier<UuidFactory> UUID5 = NameBasedSha1Factory::new;
+		static final Supplier<UuidFactory> UUID6 = TimeOrderedFactory::new;
+		static final Supplier<UuidFactory> UUID6_MAC = () -> TimeOrderedFactory.builder().withMacNodeId().build();
+		static final Supplier<UuidFactory> UUID6_HASH = () -> TimeOrderedFactory.builder().withHashNodeId().build();
+		static final Supplier<UuidFactory> UUID6_RANDOM = () -> TimeOrderedFactory.builder().withRandomNodeId().build();
+		static final Supplier<UuidFactory> UUID7 = TimeOrderedEpochFactory::new;
+		static final Supplier<UuidFactory> UUID7_FAST = () -> TimeOrderedEpochFactory.builder().withFastRandom().build();
+		static final Supplier<UuidFactory> UUID7_PLUS_1 = () -> TimeOrderedEpochFactory.builder().withIncrementPlus1().build();
+		static final Supplier<UuidFactory> UUID7_PLUS_N = () -> TimeOrderedEpochFactory.builder().withIncrementPlusN().build();
+		static final Supplier<UuidFactory> COMB_PREFIX = PrefixCombFactory::new;
+		static final Supplier<UuidFactory> COMB_SUFFIX = SuffixCombFactory::new;
+		static final Supplier<UuidFactory> COMB_SHORT_PREFIX = ShortPrefixCombFactory::new;
+		static final Supplier<UuidFactory> COMB_SHORT_SUFFIX = ShortSuffixCombFactory::new;
+		// @formatter:on
+
+		public Proxy(Supplier<UuidFactory> supplier) {
+			this.supplier = supplier;
 		}
 
 		private UuidFactory get() {

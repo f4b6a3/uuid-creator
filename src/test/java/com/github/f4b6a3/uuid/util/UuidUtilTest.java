@@ -89,6 +89,7 @@ public class UuidUtilTest {
 			UUID uuid1 = factory1.create();
 			long gregTimestamp1 = getTimestamp(uuid1);
 			assertEquals(gregTimestamp, gregTimestamp1);
+			assertEquals(gregTimestamp, uuid1.timestamp());
 
 			TimeOrderedFactory factory2 = TimeOrderedFactory.builder().withTimeFunction(() -> unixTimestamp).build();
 			UUID uuid2 = factory2.create();
