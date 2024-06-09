@@ -1,4 +1,4 @@
-package com.github.f4b6a3.uuid.factory.function;
+package com.github.f4b6a3.uuid.factory.function.impl;
 
 import org.junit.Test;
 
@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
 
-import com.github.f4b6a3.uuid.factory.function.ClockSeqFunction.ClockSeqPool;
+import com.github.f4b6a3.uuid.factory.function.impl.DefaultClockSeqFunction.ClockSeqPool;
 
 public class ClockSeqPoolTest {
 

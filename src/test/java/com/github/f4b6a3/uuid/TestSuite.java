@@ -17,7 +17,7 @@ import com.github.f4b6a3.uuid.codec.other.SlugCodecTest;
 import com.github.f4b6a3.uuid.codec.other.TimeOrderedCodecTest;
 import com.github.f4b6a3.uuid.factory.AbstRandomBasedFactoryTest;
 import com.github.f4b6a3.uuid.factory.AbstTimeBasedFactoryTest;
-import com.github.f4b6a3.uuid.factory.function.ClockSeqPoolTest;
+import com.github.f4b6a3.uuid.factory.function.impl.ClockSeqPoolTest;
 import com.github.f4b6a3.uuid.factory.function.impl.DefaultClockSeqFunctionTest;
 import com.github.f4b6a3.uuid.factory.function.impl.DefaultTimeFunctionTest;
 import com.github.f4b6a3.uuid.factory.function.impl.WindowsTimeFunctionTest;
