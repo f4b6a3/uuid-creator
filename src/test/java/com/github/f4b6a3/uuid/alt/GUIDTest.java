@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.SplittableRandom;
@@ -407,6 +408,50 @@ public class GUIDTest {
 			assertEquals(number1.compareTo(number2) > 0, guid1.toString().compareTo(guid2.toString()) > 0);
 			assertEquals(number1.compareTo(number2) < 0, guid1.toString().compareTo(guid2.toString()) < 0);
 			assertEquals(number2.compareTo(number3) == 0, guid2.toString().compareTo(guid3.toString()) == 0);
+		}
+	}
+
+	@Test
+	public void testProtectedGregorian() {
+		testProtectedGregorianInstant(Instant.parse("1582-10-15T00:00:00.000Z"));
+		testProtectedGregorianInstant(Instant.parse("1970-01-01T00:00:00.000Z"));
+		testProtectedGregorianInstant(Instant.parse("1955-11-12T06:38:00.000Z"));
+		testProtectedGregorianInstant(Instant.parse("1985-10-26T09:00:00.000Z"));
+		testProtectedGregorianInstant(Instant.parse("2015-10-21T07:28:00.000Z"));
+	}
+
+	private static void testProtectedGregorianInstant(Instant instant) {
+		long epoch = 12219292800L; // seconds since "1582-10-15T00:00:00.000Z"
+		assertEquals(GUID.gregorian(instant) / 10_000_000L, epoch + instant.getEpochSecond());
+	}
+
+	@Test
+	public void testProtectedHash() {
+		String name = "THIS IS A TEST";
+		GUID guid = GUID.v3(null, name);
+		UUID uuid = UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8));
+		assertEquals(guid.toString(), uuid.toString());
+	}
+
+	@Test
+	public void testProtectedHasher() {
+		assertNotNull(GUID.hasher("MD5"));
+		assertNotNull(GUID.hasher("SHA-1"));
+		try {
+			GUID.hasher("AAA");
+			fail("Should throw exception");
+		} catch (IllegalArgumentException e) {
+			// success
+		}
+	}
+
+	@Test
+	public void testProtectedVersion() {
+		for (int i = 0; i < 32; i++) {
+			GUID guid = GUID.version(GUID.NIL.getMostSignificantBits(), GUID.NIL.getLeastSignificantBits(), i);
+			assertEquals(guid.getMostSignificantBits() & 0xffffffffffff0fffL, 0L);
+			assertEquals(guid.getLeastSignificantBits() & 0x3fffffffffffffffL, 0L);
+			assertEquals(guid.version(), i % 16);
 		}
 	}
 

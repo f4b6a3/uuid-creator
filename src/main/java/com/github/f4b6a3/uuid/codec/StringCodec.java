@@ -62,21 +62,21 @@ public class StringCodec implements UuidCodec<String> {
 	 */
 	public static final StringCodec INSTANCE = new StringCodec();
 
+	private static final int DASH_POSITION_1 = 8;
+	private static final int DASH_POSITION_2 = 13;
+	private static final int DASH_POSITION_3 = 18;
+	private static final int DASH_POSITION_4 = 23;
+
+	private static final int LENGTH_WITH_DASH = 36;
+	private static final int LENGTH_WITHOUT_DASH = 32;
+	private static final int LENGTH_WITH_URN_PREFIX = 45;
+	private static final int LENGTH_WITH_CURLY_BRACES = 38;
+
 	private static final byte[] MAP = Base16Codec.INSTANCE.getBase().getMap().array();
 	private static final CharArray ALPHABET = Base16Codec.INSTANCE.getBase().getAlphabet();
 
 	private static final String URN_PREFIX = "urn:uuid:";
 	private static final boolean JAVA_VERSION_GREATER_THAN_8 = JavaVersionUtil.getJavaVersion() > 8;
-
-	private static final int WITH_DASH_UUID_LENGTH = 36;
-	private static final int WITHOUT_DASH_UUID_LENGTH = 32;
-	private static final int URN_PREFIX_UUID_LENGTH = 45;
-	private static final int CURLY_BRACES_UUID_LENGTH = 38;
-
-	private static final int DASH_POSITION_1 = 8;
-	private static final int DASH_POSITION_2 = 13;
-	private static final int DASH_POSITION_3 = 18;
-	private static final int DASH_POSITION_4 = 23;
 
 	/**
 	 * Get a string from a UUID.
@@ -166,78 +166,71 @@ public class StringCodec implements UuidCodec<String> {
 			throw InvalidUuidException.newInstance(string);
 		}
 
-		final String modified = modifyString(string);
+		final String modified = modify(string);
 
-		if (modified.length() == WITH_DASH_UUID_LENGTH) {
-
-			validateDashPositions(modified);
-
-			long msb = 0;
-			long lsb = 0;
-
-			for (int i = 0; i < 8; i++) {
-				msb = (msb << 4) | get(modified, i);
-			}
-
-			for (int i = 9; i < 13; i++) {
-				msb = (msb << 4) | get(modified, i);
-			}
-
-			for (int i = 14; i < 18; i++) {
-				msb = (msb << 4) | get(modified, i);
-			}
-
-			for (int i = 19; i < 23; i++) {
-				lsb = (lsb << 4) | get(modified, i);
-			}
-
-			for (int i = 24; i < 36; i++) {
-				lsb = (lsb << 4) | get(modified, i);
-			}
-
-			return new UUID(msb, lsb);
+		if (modified.length() == LENGTH_WITH_DASH) {
+			validate(modified);
+			return parse(modified);
 		}
 
-		if (modified.length() == WITHOUT_DASH_UUID_LENGTH) {
+		if (modified.length() == LENGTH_WITHOUT_DASH) {
 			return Base16Codec.INSTANCE.decode(modified);
 		}
 
 		throw InvalidUuidException.newInstance(modified);
 	}
 
-	/**
-	 * Returns a modified string without URN prefix and curly braces.
-	 * <p>
-	 * It removes URN prefix and curly braces from the original string.
-	 * 
-	 * @param string a string
-	 * @return a substring
-	 */
-	protected static String modifyString(final String string) {
+	private UUID parse(final String string) {
+
+		long msb = 0L;
+		long lsb = 0L;
+
+		for (int i = 0; i < 8; i++) {
+			msb = (msb << 4) | get(string, i);
+		}
+
+		for (int i = 9; i < 13; i++) {
+			msb = (msb << 4) | get(string, i);
+		}
+
+		for (int i = 14; i < 18; i++) {
+			msb = (msb << 4) | get(string, i);
+		}
+
+		for (int i = 19; i < 23; i++) {
+			lsb = (lsb << 4) | get(string, i);
+		}
+
+		for (int i = 24; i < 36; i++) {
+			lsb = (lsb << 4) | get(string, i);
+		}
+
+		return new UUID(msb, lsb);
+	}
+
+	protected static String modify(final String string) {
 
 		// UUID URN format: "urn:uuid:00000000-0000-0000-0000-000000000000"
-		if (string.length() == URN_PREFIX_UUID_LENGTH && string.startsWith(URN_PREFIX)) {
-			// Remove the URN prefix: "urn:uuid:"
-			return string.substring(URN_PREFIX.length());
+		if (string.length() == LENGTH_WITH_URN_PREFIX && string.startsWith(URN_PREFIX)) {
+			return string.substring(URN_PREFIX.length()); // Remove the URN prefix: "urn:uuid:"
 		}
 
 		// Curly braces format: "{00000000-0000-0000-0000-000000000000}"
-		if (string.length() == CURLY_BRACES_UUID_LENGTH && string.startsWith("{") && string.endsWith("}")) {
-			// Remove curly braces: '{' and '}'
-			return string.substring(1, string.length() - 1);
+		if (string.length() == LENGTH_WITH_CURLY_BRACES && string.startsWith("{") && string.endsWith("}")) {
+			return string.substring(1, string.length() - 1); // Remove curly braces: '{' and '}'
 		}
 
 		return string;
 	}
 
-	protected static void validateDashPositions(final String string) {
+	private static void validate(final String string) {
 		if (string.charAt(DASH_POSITION_1) != '-' || string.charAt(DASH_POSITION_2) != '-'
 				|| string.charAt(DASH_POSITION_3) != '-' || string.charAt(DASH_POSITION_4) != '-') {
 			throw InvalidUuidException.newInstance(string);
 		}
 	}
 
-	protected long get(final String string, int i) {
+	private long get(final String string, final int i) {
 
 		final int chr = string.charAt(i);
 		if (chr > 255) {

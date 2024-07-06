@@ -54,4 +54,8 @@ public abstract class BaseNEncoder implements Function<UUID, String> {
 		this.base = base;
 		this.alphabet = base.getAlphabet();
 	}
+
+	protected char get(final long index) {
+		return alphabet.get((int) index);
+	}
 }

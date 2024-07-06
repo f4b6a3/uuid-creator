@@ -232,19 +232,19 @@ public class StringCodecTest {
 		{
 			// 00000000-0000-0000-0000-000000000000
 			String string = UUID.randomUUID().toString();
-			assertEquals(string, StringCodec.modifyString(string));
+			assertEquals(string, StringCodec.modify(string));
 		}
 
 		{
 			// urn:uuid:00000000-0000-0000-0000-000000000000
 			String string = UUID.randomUUID().toString();
-			assertEquals(string, StringCodec.modifyString(URN_PREFIX + string));
+			assertEquals(string, StringCodec.modify(URN_PREFIX + string));
 		}
 
 		{
 			// {00000000-0000-0000-0000-000000000000}
 			String string = UUID.randomUUID().toString();
-			assertEquals(string, StringCodec.modifyString("{" + string + "}"));
+			assertEquals(string, StringCodec.modify("{" + string + "}"));
 		}
 	}
 
