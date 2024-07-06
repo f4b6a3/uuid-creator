@@ -21,7 +21,7 @@ public class StringCodecTest {
 	@Test
 	public void testEncode() {
 
-		StringCodec codec = new StringCodec();
+		StandardStringCodec codec = new StandardStringCodec();
 
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			// UuidCreator.toString();
@@ -45,7 +45,7 @@ public class StringCodecTest {
 	@Test
 	public void testDecode() {
 
-		StringCodec codec = new StringCodec();
+		StandardStringCodec codec = new StandardStringCodec();
 
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			// UuidCreator.fromString();
@@ -100,7 +100,7 @@ public class StringCodecTest {
 	@Test
 	public void testEncodeAndDecode() {
 
-		final StringCodec codec = new StringCodec();
+		final StandardStringCodec codec = new StandardStringCodec();
 
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUID.randomUUID();
@@ -112,7 +112,7 @@ public class StringCodecTest {
 	@Test
 	public void testEncodeInvalidUuidException() {
 
-		StringCodec codec = new StringCodec();
+		StandardStringCodec codec = new StandardStringCodec();
 
 		{
 			try {
@@ -146,7 +146,7 @@ public class StringCodecTest {
 	@Test
 	public void testDecodeInvalidUuidException() {
 
-		StringCodec codec = new StringCodec();
+		StandardStringCodec codec = new StandardStringCodec();
 
 		try {
 			String string = new UUID(0L, 0L).toString();
@@ -232,19 +232,19 @@ public class StringCodecTest {
 		{
 			// 00000000-0000-0000-0000-000000000000
 			String string = UUID.randomUUID().toString();
-			assertEquals(string, StringCodec.modify(string));
+			assertEquals(string, StandardStringCodec.modify(string));
 		}
 
 		{
 			// urn:uuid:00000000-0000-0000-0000-000000000000
 			String string = UUID.randomUUID().toString();
-			assertEquals(string, StringCodec.modify(URN_PREFIX + string));
+			assertEquals(string, StandardStringCodec.modify(URN_PREFIX + string));
 		}
 
 		{
 			// {00000000-0000-0000-0000-000000000000}
 			String string = UUID.randomUUID().toString();
-			assertEquals(string, StringCodec.modify("{" + string + "}"));
+			assertEquals(string, StandardStringCodec.modify("{" + string + "}"));
 		}
 	}
 

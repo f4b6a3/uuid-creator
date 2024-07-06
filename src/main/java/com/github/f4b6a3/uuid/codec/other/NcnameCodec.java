@@ -27,7 +27,7 @@ package com.github.f4b6a3.uuid.codec.other;
 import java.util.Arrays;
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.codec.BinaryCodec;
+import com.github.f4b6a3.uuid.codec.StandardBinaryCodec;
 import com.github.f4b6a3.uuid.codec.UuidCodec;
 import com.github.f4b6a3.uuid.codec.base.Base32Codec;
 import com.github.f4b6a3.uuid.codec.base.Base64UrlCodec;
@@ -175,7 +175,7 @@ public final class NcnameCodec implements UuidCodec<String> {
 		UuidValidator.validate(uuid);
 
 		int version = uuid.version();
-		byte[] bytes = BinaryCodec.INSTANCE.encode(uuid);
+		byte[] bytes = StandardBinaryCodec.INSTANCE.encode(uuid);
 		int[] ints = ByteUtil.toInts(bytes);
 
 		int variant = (ints[2] & 0xf0000000) >>> 24;
@@ -187,7 +187,7 @@ public final class NcnameCodec implements UuidCodec<String> {
 		bytes = ByteUtil.fromInts(ints);
 		bytes[15] = (byte) ((bytes[15] & 0xff) >>> this.shift);
 
-		UUID uuuu = BinaryCodec.INSTANCE.decode(bytes);
+		UUID uuuu = StandardBinaryCodec.INSTANCE.decode(bytes);
 		String encoded = this.codec.encode(uuuu).substring(0, this.length - 1);
 
 		// if base is 64, use upper case version, else use lower case
@@ -222,7 +222,7 @@ public final class NcnameCodec implements UuidCodec<String> {
 		String substring = ncname.substring(1, ncname.length());
 		UUID uuid = this.codec.decode(substring + padding);
 
-		byte[] bytes = BinaryCodec.INSTANCE.encode(uuid);
+		byte[] bytes = StandardBinaryCodec.INSTANCE.encode(uuid);
 		bytes[15] = (byte) ((bytes[15] & 0xff) << this.shift);
 
 		int[] ints = ByteUtil.toInts(bytes);
@@ -237,6 +237,6 @@ public final class NcnameCodec implements UuidCodec<String> {
 
 		bytes = ByteUtil.fromInts(ints);
 
-		return BinaryCodec.INSTANCE.decode(bytes);
+		return StandardBinaryCodec.INSTANCE.decode(bytes);
 	}
 }

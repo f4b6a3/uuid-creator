@@ -9,7 +9,7 @@ import java.util.SplittableRandom;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.codec.BinaryCodec;
+import com.github.f4b6a3.uuid.codec.StandardBinaryCodec;
 import com.github.f4b6a3.uuid.codec.base.Base62Codec;
 import com.github.f4b6a3.uuid.codec.base.BaseN;
 import com.github.f4b6a3.uuid.codec.base.BaseNCodec.CustomDivider;
@@ -27,7 +27,7 @@ public class BaseNRemainderEncoderTest {
 		for (int i = 0; i < 1000; i++) {
 			byte[] bytes = new byte[UUID_BYTES];
 			(new Random(seeder.nextLong())).nextBytes(bytes);
-			UUID uuid = BinaryCodec.INSTANCE.decode(bytes);
+			UUID uuid = StandardBinaryCodec.INSTANCE.decode(bytes);
 			String string = Base62Codec.INSTANCE.encode(uuid);
 			assertEquals(encode(Base62Codec.INSTANCE.getBase(), bytes), string);
 		}

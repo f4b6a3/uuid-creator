@@ -66,7 +66,7 @@ public class UrnCodec implements UuidCodec<String> {
 	@Override
 	public String encode(UUID uuid) {
 		UuidValidator.validate(uuid);
-		return URN_PREFIX + StringCodec.INSTANCE.encode(uuid);
+		return URN_PREFIX + StandardStringCodec.INSTANCE.encode(uuid);
 	}
 
 	/**
@@ -81,7 +81,7 @@ public class UrnCodec implements UuidCodec<String> {
 		if (!isUuidUrn(urn)) {
 			throw InvalidUuidException.newInstance(urn);
 		}
-		return StringCodec.INSTANCE.decode(urn);
+		return StandardStringCodec.INSTANCE.decode(urn);
 	}
 
 	/**

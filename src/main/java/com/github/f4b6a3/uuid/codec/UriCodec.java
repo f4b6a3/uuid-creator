@@ -81,7 +81,7 @@ public class UriCodec implements UuidCodec<URI> {
 		if (!isUuidUri(uri)) {
 			throw InvalidUuidException.newInstance(uri);
 		}
-		return StringCodec.INSTANCE.decode(uri.toString());
+		return StandardStringCodec.INSTANCE.decode(uri.toString());
 	}
 
 	/**

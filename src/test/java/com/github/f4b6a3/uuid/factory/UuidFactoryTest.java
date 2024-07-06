@@ -1,7 +1,7 @@
 package com.github.f4b6a3.uuid.factory;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import com.github.f4b6a3.uuid.codec.BinaryCodec;
+import com.github.f4b6a3.uuid.codec.StandardBinaryCodec;
 import com.github.f4b6a3.uuid.codec.UuidCodec;
 import com.github.f4b6a3.uuid.factory.function.NodeIdFunction;
 import com.github.f4b6a3.uuid.util.UuidUtil;
@@ -19,7 +19,7 @@ public abstract class UuidFactoryTest {
 
 	protected static final String DUPLICATE_UUID_MSG = "A duplicate UUID was created";
 
-	private static final UuidCodec<byte[]> bytesCodec = new BinaryCodec();
+	private static final UuidCodec<byte[]> bytesCodec = new StandardBinaryCodec();
 
 	protected static final int THREAD_TOTAL = availableProcessors();
 

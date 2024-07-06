@@ -3,7 +3,7 @@ package com.github.f4b6a3.uuid.codec.base;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.codec.BinaryCodec;
+import com.github.f4b6a3.uuid.codec.StandardBinaryCodec;
 import com.github.f4b6a3.uuid.codec.UuidCodec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
@@ -16,7 +16,7 @@ public class BaseNCodec1Test {
 
 	private static final int DEFAULT_LOOP_LIMIT = 100;
 
-	private static final UuidCodec<byte[]> CODEC_BYTES = new BinaryCodec();
+	private static final UuidCodec<byte[]> CODEC_BYTES = new StandardBinaryCodec();
 
 	// Alphabet used by BigInteger.toString(32);
 	protected static final char[] ALPHABET_JAVA = "0123456789abcdefghijklmnopqrstuv".toCharArray();

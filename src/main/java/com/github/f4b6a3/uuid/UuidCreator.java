@@ -32,8 +32,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
-import com.github.f4b6a3.uuid.codec.BinaryCodec;
-import com.github.f4b6a3.uuid.codec.StringCodec;
+import com.github.f4b6a3.uuid.codec.StandardBinaryCodec;
+import com.github.f4b6a3.uuid.codec.StandardStringCodec;
 import com.github.f4b6a3.uuid.enums.UuidLocalDomain;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
@@ -135,7 +135,7 @@ public final class UuidCreator {
 	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	public static byte[] toBytes(final UUID uuid) {
-		return BinaryCodec.INSTANCE.encode(uuid);
+		return StandardBinaryCodec.INSTANCE.encode(uuid);
 	}
 
 	/**
@@ -148,7 +148,7 @@ public final class UuidCreator {
 	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	public static UUID fromBytes(byte[] uuid) {
-		return BinaryCodec.INSTANCE.decode(uuid);
+		return StandardBinaryCodec.INSTANCE.decode(uuid);
 	}
 
 	/**
@@ -161,7 +161,7 @@ public final class UuidCreator {
 	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	public static String toString(UUID uuid) {
-		return StringCodec.INSTANCE.encode(uuid);
+		return StandardStringCodec.INSTANCE.encode(uuid);
 	}
 
 	/**
@@ -184,7 +184,7 @@ public final class UuidCreator {
 	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	public static UUID fromString(String uuid) {
-		return StringCodec.INSTANCE.decode(uuid);
+		return StandardStringCodec.INSTANCE.decode(uuid);
 	}
 
 	/**

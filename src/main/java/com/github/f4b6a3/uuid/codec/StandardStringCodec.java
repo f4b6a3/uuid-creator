@@ -33,34 +33,37 @@ import com.github.f4b6a3.uuid.util.immutable.CharArray;
 import com.github.f4b6a3.uuid.util.internal.JavaVersionUtil;
 
 /**
- * Codec for UUID string representation as defined in RFC-4122.
+ * Codec for UUID canonical string as defined in RFC-4122.
  * <p>
- * The string representation, also referred as canonical textual representation,
- * is a string of 32 hexadecimal (base-16) digits, displayed in five groups
+ * In the canonical textual representation, the 16 bytes of a UUID are
+ * represented as 32 hexadecimal (base-16) digits, displayed in five groups
  * separated by hyphens, in the form 8-4-4-4-12 for a total of 36 characters (32
  * hexadecimal characters and 4 hyphens).
  * <p>
- * This codec decodes (parses) strings in these formats, with/without hyphens:
+ * This codec decodes (parses) strings in these formats:
  * <ul>
- * <li>00000000-0000-V000-0000-000000000000 (canonical string)
- * <li>{00000000-0000-V000-0000-000000000000} (MS GUID string)
- * <li>urn:uuid:00000000-0000-V000-0000-000000000000 (URN UUID string)
+ * <li>000000000000V0000000000000000000 (hexadecimal string)
+ * <li>00000000-0000-0000-0000-000000000000 (THE canonical string)
+ * <li>{00000000-0000-0000-0000-000000000000} (Microsoft string)
+ * <li>urn:uuid:00000000-0000-0000-0000-000000000000 (URN string)
  * </ul>
  * <p>
  * The encoding and decoding processes can be much faster (7x) than
  * {@link UUID#toString()} and {@link UUID#fromString(String)} in JDK 8.
  * <p>
  * If you prefer a string representation without hyphens, use
- * {@link Base16Codec} instead of {@link StringCodec}. {@link Base16Codec} can
- * be much faster (22x) than doing
+ * {@link Base16Codec} instead of {@link StandardStringCodec}.
+ * {@link Base16Codec} can be much faster (22x) than doing
  * <code>uuid.toString().replaceAll("-", "")</code>.
+ * <p>
+ * Read: https://www.rfc-editor.org/rfc/rfc9562.html#name-uuid-format
  */
-public class StringCodec implements UuidCodec<String> {
+public class StandardStringCodec implements UuidCodec<String> {
 
 	/**
 	 * A shared immutable instance.
 	 */
-	public static final StringCodec INSTANCE = new StringCodec();
+	public static final StandardStringCodec INSTANCE = new StandardStringCodec();
 
 	private static final int DASH_POSITION_1 = 8;
 	private static final int DASH_POSITION_2 = 13;

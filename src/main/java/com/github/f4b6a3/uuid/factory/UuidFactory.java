@@ -29,8 +29,8 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.codec.BinaryCodec;
-import com.github.f4b6a3.uuid.codec.StringCodec;
+import com.github.f4b6a3.uuid.codec.StandardBinaryCodec;
+import com.github.f4b6a3.uuid.codec.StandardStringCodec;
 import com.github.f4b6a3.uuid.enums.UuidLocalDomain;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
@@ -354,7 +354,7 @@ public abstract class UuidFactory {
 	 */
 	protected static byte[] namespaceBytes(UUID namespace) {
 		if (namespace != null) {
-			return BinaryCodec.INSTANCE.encode(namespace);
+			return StandardBinaryCodec.INSTANCE.encode(namespace);
 		}
 		return null; // the name space can be null
 	}
@@ -368,7 +368,7 @@ public abstract class UuidFactory {
 	 */
 	protected static byte[] namespaceBytes(String namespace) {
 		if (namespace != null) {
-			return BinaryCodec.INSTANCE.encode(StringCodec.INSTANCE.decode(namespace));
+			return StandardBinaryCodec.INSTANCE.encode(StandardStringCodec.INSTANCE.decode(namespace));
 		}
 		return null; // the name space can be null
 	}

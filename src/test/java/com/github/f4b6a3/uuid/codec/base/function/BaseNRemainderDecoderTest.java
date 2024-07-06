@@ -10,7 +10,7 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.codec.BinaryCodec;
+import com.github.f4b6a3.uuid.codec.StandardBinaryCodec;
 import com.github.f4b6a3.uuid.codec.base.Base62Codec;
 import com.github.f4b6a3.uuid.codec.base.BaseN;
 
@@ -23,7 +23,7 @@ public class BaseNRemainderDecoderTest {
 		for (int i = 0; i < 1000; i++) {
 			String string = getRandomString(Base62Codec.INSTANCE.getBase());
 			UUID uuid = Base62Codec.INSTANCE.decode(string);
-			byte[] bytes = BinaryCodec.INSTANCE.encode(uuid);
+			byte[] bytes = StandardBinaryCodec.INSTANCE.encode(uuid);
 			assertEquals(Arrays.toString(decode(Base62Codec.INSTANCE.getBase(), string)), Arrays.toString(bytes));
 		}
 	}
@@ -68,13 +68,13 @@ public class BaseNRemainderDecoderTest {
 	}
 
 	protected static long[] toLongs(byte[] bytes) {
-		UUID uuid = BinaryCodec.INSTANCE.decode(bytes);
+		UUID uuid = StandardBinaryCodec.INSTANCE.decode(bytes);
 		return new long[] { uuid.getMostSignificantBits(), uuid.getLeastSignificantBits() };
 	}
 
 	protected static byte[] fromLongs(long[] longs) {
 		UUID uuid = new UUID(longs[0], longs[1]);
-		return BinaryCodec.INSTANCE.encode(uuid);
+		return StandardBinaryCodec.INSTANCE.encode(uuid);
 	}
 
 	private String getRandomString(BaseN base) {
