@@ -114,6 +114,7 @@ Create a [UUIDv7](https://github.com/f4b6a3/uuid-creator/wiki/1.7.-UUIDv7):
 ```java
 UUID uuid = UuidCreator.getTimeOrderedEpoch();
 ```
+
 > **NOTE:**
 > A UUID version is a [**UUID subtype**](https://www.rfc-editor.org/rfc/rfc9562#name-iana-uuid-subtype-registry-). The word "version" is not used in the sense that a higher version number makes the previous one obsolete. There are 8 subtypes of UUID and each of them is assigned a number; for example, a UUIDv7 is a UUID of subtype 7. Likewise, a UUID variant is a [**UUID type**](https://www.rfc-editor.org/rfc/rfc9562#section-4.1). There are 4 types of UUID: (1) the prehistoric one, (2) the one described in RFC 9562, (3) the one belonging to Microsoft and (4) the one reserved for the future. RFC 9562 retains the terms “version” and “variant” for compatibility with previous specifications and existing implementations.
 
@@ -146,18 +147,14 @@ GUID guid = GUID.v6();
 GUID guid = GUID.v7();
 ```
 
-> **NOTE:**
-> It uses a **non-cryptographic** PRNG. So it doesn't block when generating random-based UUIDs. However, it is not recommended when the security provided by “cryptographic quality” generators is considered necessary.
-
-### Generate JDK's UUID using the alternative API
-
 You can generate JDK's UUIDs using GUID's API. For example, you can generate a JDK's UUID version 7 with this simple statement:
 
 ```java
 UUID uuid = GUID.v7().toUUID();
 ```
 
-When you call `toUUID()` the internal value of GUID is copied to the new JDK's UUID.
+> **NOTE:**
+> It uses a **non-cryptographic** PRNG. So it doesn't block when generating random-based UUIDs. However, it is not recommended when the security provided by “cryptographic quality” generators is considered necessary.
 
 Other identifier generators
 ------------------------------------------------------
