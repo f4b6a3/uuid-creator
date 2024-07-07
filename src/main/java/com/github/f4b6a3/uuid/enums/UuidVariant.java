@@ -25,15 +25,17 @@
 package com.github.f4b6a3.uuid.enums;
 
 /**
- * UUID variants defined by RFC-4122.
+ * UUID variants defined by RFC 9562.
  * <p>
  * List of variants:
  * <ul>
  * <li>{@link VARIANT_RESERVED_NCS}: 0
- * <li>{@link VARIANT_RFC_4122}: 2
+ * <li>{@link VARIANT_STANDARD}: 2
  * <li>{@link VARIANT_RESERVED_MICROSOFT}: 6
  * <li>{@link VARIANT_RESERVED_FUTURE}: 7
  * </ul>
+ * 
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc9562.html">RFC 9562</a>
  */
 public enum UuidVariant {
 
@@ -42,9 +44,9 @@ public enum UuidVariant {
 	 */
 	VARIANT_RESERVED_NCS(0),
 	/**
-	 * The variant specified in RFC-4122.
+	 * The variant specified in RFC 9562.
 	 */
-	VARIANT_RFC_4122(2),
+	VARIANT_STANDARD(2),
 	/**
 	 * Reserved for Microsoft Corporation backward compatibility.
 	 */

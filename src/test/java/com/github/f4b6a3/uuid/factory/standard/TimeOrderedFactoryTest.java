@@ -151,7 +151,7 @@ public class TimeOrderedFactoryTest extends UuidFactoryTest {
 			UUID uuid = UuidCreator.getTimeOrdered(instant, clockseq, nodeid);
 
 			// Check if it is valid
-			assertTrue(UuidUtil.isRfc4122(uuid));
+			assertTrue(UuidUtil.isStandard(uuid));
 
 			// Check if the embedded values are correct.
 			assertEquals("The timestamp is incorrect.", instant, UuidUtil.getInstant(uuid));

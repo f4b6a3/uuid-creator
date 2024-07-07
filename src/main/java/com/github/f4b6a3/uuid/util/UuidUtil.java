@@ -61,7 +61,7 @@ public final class UuidUtil {
 	 * The Nil UUID is special UUID that has all 128 bits set to zero.
 	 * 
 	 * @param uuid a UUID
-	 * @return boolean true if it is an RFC4122 variant
+	 * @return boolean true if it is an RFC 9562 variant
 	 * @exception NullPointerException if null
 	 */
 	public static boolean isNil(UUID uuid) {
@@ -75,7 +75,7 @@ public final class UuidUtil {
 	 * The Max UUID is special UUID that has all 128 bits set to one.
 	 * 
 	 * @param uuid a UUID
-	 * @return boolean true if it is an RFC4122 variant
+	 * @return boolean true if it is an RFC 9562 variant
 	 * @exception NullPointerException if null
 	 */
 	public static boolean isMax(UUID uuid) {
@@ -121,13 +121,13 @@ public final class UuidUtil {
 	}
 
 	/**
-	 * Checks whether the UUID variant is the one defined by the RFC-4122.
+	 * Checks whether the UUID variant is the one defined by the RFC 9562.
 	 * 
 	 * @param uuid a UUID
-	 * @return boolean true if it is an RFC4122 variant
+	 * @return boolean true if it is an RFC 9562 variant
 	 */
-	public static boolean isRfc4122(UUID uuid) {
-		return isVariant(uuid, UuidVariant.VARIANT_RFC_4122);
+	public static boolean isStandard(UUID uuid) {
+		return isVariant(uuid, UuidVariant.VARIANT_STANDARD);
 	}
 
 	/**
@@ -390,7 +390,7 @@ public final class UuidUtil {
 	 */
 	private static boolean isVersion(UUID uuid, UuidVersion version) {
 		Objects.requireNonNull(uuid, "Null UUID");
-		return isRfc4122(uuid) && (uuid.version() == version.getValue());
+		return isStandard(uuid) && (uuid.version() == version.getValue());
 	}
 
 	private static long getTimeBasedTimestamp(long msb) {

@@ -178,8 +178,8 @@ public class UuidUtilTest {
 		UUID uuid1 = UuidNamespace.NAMESPACE_DNS.getValue();
 		UUID uuid2 = UuidCreator.getNil();
 
-		assertTrue(isRfc4122(uuid1));
-		assertFalse(isRfc4122(uuid2));
+		assertTrue(isStandard(uuid1));
+		assertFalse(isStandard(uuid2));
 	}
 
 	@Test

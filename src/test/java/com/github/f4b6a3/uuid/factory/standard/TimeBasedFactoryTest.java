@@ -152,7 +152,7 @@ public class TimeBasedFactoryTest extends UuidFactoryTest {
 			UUID uuid = UuidCreator.getTimeBased(instant, clockseq, nodeid);
 
 			// Check if it is valid
-			assertTrue(UuidUtil.isRfc4122(uuid));
+			assertTrue(UuidUtil.isStandard(uuid));
 
 			// Check if the embedded values are correct.
 			assertEquals("The timestamp is incorrect.", instant, UuidUtil.getInstant(uuid));

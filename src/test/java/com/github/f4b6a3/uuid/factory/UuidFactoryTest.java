@@ -39,7 +39,7 @@ public abstract class UuidFactoryTest {
 
 	protected void checkVersion(UUID[] list, int version) {
 		for (UUID uuid : list) {
-			assertTrue("UUID is not RFC-4122 variant", UuidUtil.isRfc4122(uuid));
+			assertTrue("UUID is not RFC-4122 variant", UuidUtil.isStandard(uuid));
 			assertEquals(String.format("UUID is not version %s", version), uuid.version(), version);
 		}
 	}
