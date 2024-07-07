@@ -1,11 +1,9 @@
-
-
 UUID Creator
 ======================================================
 
 This is a Java library for generating [Universally Unique Identifiers](https://en.wikipedia.org/wiki/Universally_unique_identifier).
 
-The Internet standard [RFC 9562](https://www.rfc-editor.org/rfc/rfc9562) was published in May 2024, making RFC 4122 obsolete. This library is fully compliant with the new RFC, as it was developed following the evolution of the new standard until its publication.
+This library is fully compliant with [RFC 9562](https://www.rfc-editor.org/rfc/rfc9562), the Internet standard which obsoletes [RFC 4122](https://www.rfc-editor.org/rfc/rfc9562).
 
 List of implemented UUID subtypes:
 
@@ -21,21 +19,21 @@ This library solves some of the JDK's UUID issues:
 
 | Problem | Solution |
 |---------|----------|
-| `UUID` can't generate Gregorian time-based UUIDs (UUIDv1). | Use: <br> <ul><li> [`UuidCreator.getTimeBased()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html#getTimeBased()); or </li><li> [`GUID.v1()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/alt/GUID.html#v1()). </li></ul> |
-| `UUID` can't generate SHA-1 UUIDs (UUIDv5). | Use: <br> <ul><li>[`UuidCreator.getNameBasedSha1()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html#getNameBasedSha1(java.util.UUID,java.lang.String)); or </li><li> [`GUID.v5()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/alt/GUID.html#v5(com.github.f4b6a3.uuid.alt.GUID,java.lang.String)). </li></ul> |
-| `UUID` has no validation method, which makes developers use `UUID.fromString()` or regular expression for validation. | Use: <br> <ul><li> [`UuidValidator.isValid()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/util/UuidValidator.html#isValid(java.lang.String)); or </li><li> [`GUID.valid()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/alt/GUID.html#valid(java.lang.String)). </li></ul> |
-| `UUID.nameUUIDFromBytes()`, which generates MD5 UUIDs (UUIDv3), does not have a namespace parameter as required by the standard. | Use: <br> <ul><li> [`UuidCreator.getNameBasedMd5()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html#getNameBasedMd5(java.util.UUID,java.lang.String)); or </li><li>  [`GUID.v3()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/alt/GUID.html#v3(com.github.f4b6a3.uuid.alt.GUID,java.lang.String)). </li></ul> |
+| `UUID` can't generate Gregorian time-based UUIDs (UUIDv1). | Use [`UuidCreator.getTimeBased()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html#getTimeBased()). |
+| `UUID` can't generate SHA-1 UUIDs (UUIDv5). | Use [`UuidCreator.getNameBasedSha1()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html#getNameBasedSha1(java.util.UUID,java.lang.String)) |
+| `UUID.nameUUIDFromBytes()`, which generates MD5 UUIDs (UUIDv3), does not have a namespace parameter as required by the standard. | Use [`UuidCreator.getNameBasedMd5()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html#getNameBasedMd5(java.util.UUID,java.lang.String)) |
+| `UUID` has no validation method, which makes developers use `UUID.fromString()` or regular expression for validation. | Use [`UuidValidator.isValid()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/util/UuidValidator.html#isValid(java.lang.String)). |
 | Some methods such as `UUID.timestamp()` are strongly related to UUIDv1, even though it's impossible to generate UUIDv1. | Use [`UuidUtil`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/util/UuidUtil.html). |
-| `UUID.randomUUID()` can be slow due to [lack of entropy](https://medium.com/@RamLakshmanan/java-uuid-generation-performance-impact-cec888b7d9b8) in the operating system. | Use: <br> <ul><li> [`UuidCreator.getRandomBasedFast()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html#getRandomBasedFast()); or </li><li> [`GUID.v4()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/alt/GUID.html#v4()). </li></ul> <em>However, keep in mind that none of them are cryptographically secure.</em> |
+| `UUID.randomUUID()` can be slow due to [lack of entropy](https://medium.com/@RamLakshmanan/java-uuid-generation-performance-impact-cec888b7d9b8) in the operating system. | Use [`UuidCreator.getRandomBasedFast()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html#getRandomBasedFast()).<br><em>However, keep in mind that it is not cryptographically secure.</em> |
 | `UUID.compareTo()` [behaves unexpectedly](https://yoshiori.hatenablog.com/entry/2024/02/22/173322) due to signed `long` comparisons, causing non-alphabetical sorting. | Use [`UuidComparator`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/util/UuidComparator.html). |
-| `UUID.fromString()` allows non-canonical strings like `0-0-0-0-0` as valid UUID strings. | Use: <br> <ul><li> [`UuidCreator.fromString()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html#fromString(java.lang.String)); or </li><li> [`new GUID()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/alt/GUID.html#%3Cinit%3E(java.lang.String)). </li></ul> |
+| `UUID.fromString()` allows non-standard strings like `0-0-0-0-0` as valid UUID strings. | Use [`UuidCreator.fromString()`](https://javadoc.io/static/com.github.f4b6a3/uuid-creator/5.3.7/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html#fromString(java.lang.String)). |
 
-This project contains a [micro benchmark](https://github.com/f4b6a3/uuid-creator/tree/master/benchmark) and a good amount of [unit tests](https://github.com/f4b6a3/uuid-creator/tree/master/src/test/java/com/github/f4b6a3/uuid).
+This project contains a [micro benchmark](https://github.com/f4b6a3/uuid-creator/tree/master/benchmark) and a good amount of [unit tests](https://github.com/f4b6a3/uuid-creator/tree/master/src/test/java/com/github/f4b6a3/uuid), with more than 90% coverage.
 
-Read the [Wiki pages](https://github.com/f4b6a3/uuid-creator/wiki) and the [Javadocs](https://javadoc.io/doc/com.github.f4b6a3/uuid-creator).
+For more information, read the the [Javadocs](https://javadoc.io/doc/com.github.f4b6a3/uuid-creator) and the [Wiki pages](https://github.com/f4b6a3/uuid-creator/wiki).
 
 > **NOTE**:
-> This software is not supported or maintained by any organization. This information may be useful if you believe that having an organization behind a project is a criterion for deciding whether software can be adopted or not.
+> This software is not supported or maintained by any organization. This information may be useful when having an organization behind a project is a criterion for deciding whether software can be adopted or not.
 
 Dependency
 ------------------------------------------------------
@@ -71,9 +69,9 @@ Module and bundle names are the same as the root package name.
 Usage
 ------------------------------------------------------
 
-All UUID types can be created from the facade [`UuidCreator`](https://javadoc.io/doc/com.github.f4b6a3/uuid-creator/latest/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html).
+All UUID subtypes can be created from the facade [`UuidCreator`](https://javadoc.io/doc/com.github.f4b6a3/uuid-creator/latest/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html).
 
-The goal of this class is to make most of the library's functionality available in a single place so that you developers don't have to worry about the internals of the library. All you need is to decide which type of UUID you need for your application and call the respective generation method. If in doubt, read the documentation and check the source code.
+The goal of the facade is to make most of the library's functionality available in a single place so that you don't have to worry about the internals of the library. All you need is to decide which UUID subtype you need for your application and call the respective generation method. If in doubt, read the documentation and check out the source code.
 
 Create a [UUIDv1](https://github.com/f4b6a3/uuid-creator/wiki/1.1.-UUIDv1):
 
@@ -119,17 +117,12 @@ UUID uuid = UuidCreator.getTimeOrderedEpoch();
 > **NOTE:**
 > A UUID version is a [**UUID subtype**](https://www.rfc-editor.org/rfc/rfc9562#name-iana-uuid-subtype-registry-). The word "version" is not used in the sense that a higher version number makes the previous one obsolete. There are 8 subtypes of UUID and each of them is assigned a number; for example, a UUIDv7 is a UUID of subtype 7. Likewise, a UUID variant is a [**UUID type**](https://www.rfc-editor.org/rfc/rfc9562#section-4.1). There are 4 types of UUID: (1) the prehistoric one, (2) the one described in RFC 9562, (3) the one belonging to Microsoft and (4) the one reserved for the future. RFC 9562 retains the terms “version” and “variant” for compatibility with previous specifications and existing implementations.
 
-> **PERSONAL NOTE:**
-> The library can do a lot more than the examples above (much more than I should have done). So I sincerely hope that most people are satisfied with this. In other words, your like is my payment. Anther thing I want to say is that the name of this software is UUID Creator or uuid-creator. Use "f4b6a3" or "com.github.f4b6a3" only when necessary to avoid doubt, as this is just a unique package name to follow Java convention (I know it wasn't a good idea, but I can't change it anymore).
-
 Alternative API
 ------------------------------------------------------
 
 [`GUID`](https://javadoc.io/doc/com.github.f4b6a3/uuid-creator/latest/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/alt/GUID.html) is an alternative implementation to the classic JDK's UUID. It also serves as a standalone generator, independent from the rest of the library. This may result in fewer classes being loaded.
 
 This new API was also designed to be an alternative to [`UuidCreator`](https://javadoc.io/doc/com.github.f4b6a3/uuid-creator/latest/com.github.f4b6a3.uuid/com/github/f4b6a3/uuid/UuidCreator.html) with three goals in mind: clean interface, simple implementation, and high performance. It was inspired by popular libraries for [Javascript](https://www.npmjs.com/package/uuid) and [Python](https://docs.python.org/3/library/uuid.html).
-
-Additionaly, it does not block during GUID generation due to the **non-cryptographic** random number generator used by its factory methods. However, it is not recommended when the security of “cryptographic quality” generators is considered necessary.
 
 ```java
 GUID guid = GUID.v1();
@@ -153,7 +146,10 @@ GUID guid = GUID.v6();
 GUID guid = GUID.v7();
 ```
 
-### Generate JDK's UUID from GUID's API
+> **NOTE:**
+> It uses a **non-cryptographic** PRNG. So it doesn't block when generating random-based UUIDs. However, it is not recommended when the security provided by “cryptographic quality” generators is considered necessary.
+
+### Generate JDK's UUID using the alternative API
 
 You can generate JDK's UUIDs using GUID's API. For example, you can generate a JDK's UUID version 7 with this simple statement:
 
@@ -162,13 +158,6 @@ UUID uuid = GUID.v7().toUUID();
 ```
 
 When you call `toUUID()` the internal value of GUID is copied to the new JDK's UUID.
-
-Deprecation
-------------------------------------------------------
-
-The methods which use a UUID as a "name" parameter such as [`UuidCreator.getNameBasedMd5(UUID name)`](https://github.com/f4b6a3/uuid-creator/blob/79e049eeeb43a7cd288f4c73f0d0daa6c339c7d6/src/main/java/com/github/f4b6a3/uuid/UuidCreator.java#L656) are **deprecated**. They will be removed soon after the new RFC is published. For more details, please read https://github.com/f4b6a3/uuid-creator/issues/91.
-
-The [`v8()`](https://github.com/f4b6a3/uuid-creator/blob/master/src/main/java/com/github/f4b6a3/uuid/alt/GUID.java#L355) method of the alternative [`GUID`](https://github.com/f4b6a3/uuid-creator/blob/master/src/main/java/com/github/f4b6a3/uuid/alt/GUID.java) class is also **deprecated** and will be removed soon.
 
 Other identifier generators
 ------------------------------------------------------
@@ -183,3 +172,9 @@ License
 ------------------------------------------------------
 
 This library is Open Source software released under the [MIT license](https://opensource.org/licenses/MIT).
+
+------------------------------------------------------
+
+_Personal Notes:_
+1. _The library can do much more than the examples shown in this document (much more than I should have done). I hope most people find this project useful. In other words, your like is my payment._
+2. _The name of this software is UUID Creator or uuid-creator. Use "com.github.f4b6a3" or "f4b6a3" only when necessary to avoid doubt, as this is just a unique package name to follow Java convention (now I know it wasn't a good idea)._
