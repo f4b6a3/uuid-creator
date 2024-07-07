@@ -103,7 +103,7 @@ public final class NetworkUtil {
 		}
 
 		try {
-			if (nic != null) {
+			if (nic != null && nic.getHardwareAddress() != null) {
 				byte[] ha = nic.getHardwareAddress();
 				String[] hex = new String[ha.length];
 				for (int i = 0; i < ha.length; i++) {
@@ -112,7 +112,7 @@ public final class NetworkUtil {
 				mac = String.join("-", hex);
 				return mac;
 			}
-		} catch (SocketException | NullPointerException e) {
+		} catch (SocketException e) {
 			return null;
 		}
 

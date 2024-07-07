@@ -146,7 +146,7 @@ public final class UuidValidator {
 	 */
 	public static void validate(final UUID uuid) {
 		if (uuid == null) {
-			throw InvalidUuidException.newInstance(uuid);
+			throw InvalidUuidException.newInstance(null);
 		}
 	}
 

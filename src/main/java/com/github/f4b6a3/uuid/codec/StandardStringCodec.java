@@ -167,7 +167,7 @@ public class StandardStringCodec implements UuidCodec<String> {
 	public UUID decode(final String string) {
 
 		if (string == null) {
-			throw InvalidUuidException.newInstance(string);
+			throw InvalidUuidException.newInstance(null);
 		}
 
 		final String modified = modify(string);
