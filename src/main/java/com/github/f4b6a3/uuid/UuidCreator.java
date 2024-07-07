@@ -24,7 +24,6 @@
 
 package com.github.f4b6a3.uuid;
 
-import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
@@ -605,12 +604,7 @@ public final class UuidCreator {
 	 * @since 5.3.3
 	 */
 	public static UUID getTimeOrderedEpoch(Instant instant) {
-		Objects.requireNonNull(instant, "Null instant");
-		final long time = instant.toEpochMilli();
-		SecureRandom random = new SecureRandom();
-		final long msb = (time << 16) | (random.nextLong() & 0x0fffL) | 0x7000L;
-		final long lsb = (random.nextLong() & 0x3fffffffffffffffL) | 0x8000000000000000L;
-		return new UUID(msb, lsb);
+		return UUID7.create(Parameters.builder().withInstant(instant).build());
 	}
 
 	/**

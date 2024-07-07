@@ -25,6 +25,7 @@
 package com.github.f4b6a3.uuid.factory;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
@@ -101,6 +102,11 @@ public abstract class UuidFactory {
 	public static class Parameters {
 
 		/**
+		 * Instant to be used.
+		 */
+		private final Instant instant;
+
+		/**
 		 * Name space byte array.
 		 */
 		private final byte[] namespace;
@@ -127,10 +133,15 @@ public abstract class UuidFactory {
 		 */
 		public Parameters(Builder builder) {
 			Objects.requireNonNull(builder);
+			this.instant = builder.instant;
 			this.namespace = builder.namespace;
 			this.name = builder.name;
 			this.localDomain = builder.localDomain;
 			this.localIdentifier = builder.localIdentifier;
+		}
+
+		public Instant getInstant() {
+			return this.instant;
 		}
 
 		/**
@@ -184,6 +195,11 @@ public abstract class UuidFactory {
 		public static class Builder {
 
 			/**
+			 * Instant to be used.
+			 */
+			private Instant instant;
+
+			/**
 			 * Name space byte array.
 			 */
 			private byte[] namespace = null;
@@ -204,6 +220,17 @@ public abstract class UuidFactory {
 			private int localIdentifier;
 
 			private Builder() {
+			}
+
+			/**
+			 * Use the instant provided.
+			 * 
+			 * @param instant an instant
+			 * @return the builder
+			 */
+			public Builder withInstant(Instant instant) {
+				this.instant = instant;
+				return this;
 			}
 
 			/**

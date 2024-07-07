@@ -25,11 +25,13 @@
 package com.github.f4b6a3.uuid.factory.standard;
 
 import java.time.Clock;
+import java.time.Instant;
+import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
 import java.util.function.LongSupplier;
-import java.util.function.Supplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstCombFactory;
@@ -251,11 +253,26 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	 */
 	@Override
 	public UUID create() {
-		UUID uuid = this.uuidFunction.get();
+		UUID uuid = this.uuidFunction.apply(null);
 		return toUuid(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits());
 	}
 
-	static abstract class UuidFunction implements Supplier<UUID> {
+	/**
+	 * Returns a time-ordered unique identifier (UUIDv7) for a given instant.
+	 * <p>
+	 * The random component is generated with each method invocation.
+	 * 
+	 * @return a UUIDv7
+	 * @param instant a given instant
+	 */
+	@Override
+	public UUID create(Parameters parameters) {
+		Objects.requireNonNull(parameters.getInstant(), "Null instant");
+		UUID uuid = this.uuidFunction.apply(parameters.getInstant());
+		return toUuid(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits());
+	}
+
+	static abstract class UuidFunction implements Function<Instant, UUID> {
 
 		protected long msb = 0L; // most significant bits
 		protected long lsb = 0L; // least significant bits
@@ -276,9 +293,15 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		}
 
 		@Override
-		public UUID get() {
+		public UUID apply(Instant instant) {
 			lock.lock();
 			try {
+
+				if (instant != null) {
+					// The user provided the time.
+					reset(instant.toEpochMilli());
+					return new UUID(this.msb, this.lsb);
+				}
 
 				final long lastTime = this.time();
 				final long time = timeFunction.getAsLong();
