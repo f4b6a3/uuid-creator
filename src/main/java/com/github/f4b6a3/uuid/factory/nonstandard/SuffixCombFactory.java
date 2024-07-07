@@ -41,7 +41,7 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  * <p>
  * The creation millisecond is a 6 bytes SUFFIX at the LEAST significant bits.
  * <p>
- * The created UUID is a UUIDv4 for compatibility with RFC-4122.
+ * The created UUID is a UUIDv4 for compatibility with RFC 9562.
  * 
  * @see AbstCombFactory
  * @see AbstRandomBasedFactory

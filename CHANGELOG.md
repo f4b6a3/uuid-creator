@@ -17,6 +17,7 @@ This version has breaking changes.
 - Removed `UuidCreator.getNameBasedMD5()` with `UUID` as name parameter (deprecated);
 - Removed `UuidCreator.getNameBasedSHA1()` with `UUID` as name parameter (deprecated);
 - Removed several code-smells in order improve code-quality and adhere to SOLID principles (by Jay Patel);
+- Updated references to the standard RFC 9562;
 - Many refactorings and optimizations.
 
 ## [5.3.7] - 2023-12-22

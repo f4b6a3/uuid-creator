@@ -288,7 +288,7 @@ public final class UuidValidator {
 	 */
 	protected static boolean isVersion(UUID uuid, int version) {
 		boolean versionOk = ((version & ~0xf) == 0) && (uuid.version() == version);
-		boolean variantOk = uuid.variant() == 2; // RFC-4122
+		boolean variantOk = uuid.variant() == 2; // RFC 9562
 		return versionOk && variantOk;
 	}
 
@@ -301,7 +301,7 @@ public final class UuidValidator {
 	 */
 	protected static boolean isVersion(byte[] bytes, int version) {
 		boolean versionOk = ((version & ~0xf) == 0) && (((bytes[6] & 0xff) >>> 4) == version);
-		boolean variantOk = ((bytes[8] & 0xff) >>> 6) == 2; // RFC-4122
+		boolean variantOk = ((bytes[8] & 0xff) >>> 6) == 2; // RFC 9562
 		return versionOk && variantOk;
 	}
 

@@ -513,9 +513,9 @@ public final class GUID implements Serializable, Comparable<GUID> {
 
 	static GUID version(long hi, long lo, int version) {
 		// set the 4 most significant bits of the 7th byte
-		final long msb = (hi & 0xffff_ffff_ffff_0fffL) | (version & 0xfL) << 12; // RFC-4122 version
+		final long msb = (hi & 0xffff_ffff_ffff_0fffL) | (version & 0xfL) << 12; // RFC 9562 version
 		// set the 2 most significant bits of the 9th byte to 1 and 0
-		final long lsb = (lo & 0x3fff_ffff_ffff_ffffL) | 0x8000_0000_0000_0000L; // RFC-4122 variant
+		final long lsb = (lo & 0x3fff_ffff_ffff_ffffL) | 0x8000_0000_0000_0000L; // RFC 9562 variant
 		return new GUID(msb, lsb);
 	}
 

@@ -43,7 +43,7 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  * <p>
  * The prefix wraps around every ~45 days (2^16/60/24 = ~45).
  * <p>
- * The created UUID is a UUIDv4 for compatibility with RFC-4122.
+ * The created UUID is a UUIDv4 for compatibility with RFC 9562.
  * 
  * @see <a href=
  *      "https://www.2ndquadrant.com/en/blog/sequential-uuid-generators/">Sequential

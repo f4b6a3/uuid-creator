@@ -33,7 +33,7 @@ import com.github.f4b6a3.uuid.util.immutable.CharArray;
 import com.github.f4b6a3.uuid.util.internal.JavaVersionUtil;
 
 /**
- * Codec for UUID canonical string as defined in RFC-4122.
+ * Codec for UUID canonical string as defined in RFC 9562.
  * <p>
  * In the canonical textual representation, the 16 bytes of a UUID are
  * represented as 32 hexadecimal (base-16) digits, displayed in five groups
@@ -56,7 +56,8 @@ import com.github.f4b6a3.uuid.util.internal.JavaVersionUtil;
  * {@link Base16Codec} can be much faster (22x) than doing
  * <code>uuid.toString().replaceAll("-", "")</code>.
  * <p>
- * Read: https://www.rfc-editor.org/rfc/rfc9562.html#name-uuid-format
+ * 
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc9562.html">RFC 9562</a>
  */
 public class StandardStringCodec implements UuidCodec<String> {
 

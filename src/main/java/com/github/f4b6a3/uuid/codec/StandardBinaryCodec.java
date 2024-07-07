@@ -30,11 +30,11 @@ import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.UuidValidator;
 
 /**
- * Codec for UUID binary encoding as defined in the RFC-4122.
+ * Codec for UUID binary encoding as defined in RFC 9562.
  * <p>
  * The UUID is encoded as 16 octets (bytes).
- * <p>
- * Read: https://www.rfc-editor.org/rfc/rfc9562.html#name-uuid-format
+ * 
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc9562.html">RFC 9562</a>
  */
 public class StandardBinaryCodec implements UuidCodec<byte[]> {
 

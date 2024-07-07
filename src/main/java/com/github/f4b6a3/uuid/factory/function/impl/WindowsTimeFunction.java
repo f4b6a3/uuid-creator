@@ -108,7 +108,6 @@ public final class WindowsTimeFunction implements TimeFunction {
 		// save time for the next call
 		lastTime = time;
 
-		// RFC-4122 - 4.2.1.2 (P4):
 		// simulate a high resolution clock
 		return (time * TICKS_PER_MILLI) + counter;
 	}

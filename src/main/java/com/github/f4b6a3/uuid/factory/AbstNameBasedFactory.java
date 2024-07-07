@@ -45,8 +45,7 @@ import static com.github.f4b6a3.uuid.enums.UuidVersion.VERSION_NAME_BASED_SHA1;
  * generating UUIDv3, which is {@link UUID#nameUUIDFromBytes(byte[])}.
  * 
  * @see UuidNamespace
- * @see <a href= "https://www.rfc-editor.org/rfc/rfc4122#section-4.3">RFC-4122 -
- *      4.3. Algorithm for Creating a Name-Based UUID</a>
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc9562.html">RFC 9562</a>
  */
 public abstract class AbstNameBasedFactory extends UuidFactory {
 

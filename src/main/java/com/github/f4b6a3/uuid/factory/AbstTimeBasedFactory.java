@@ -95,8 +95,7 @@ import com.github.f4b6a3.uuid.util.internal.SettingsUtil;
  * @see TimeFunction
  * @see NodeIdFunction
  * @see ClockSeqFunction
- * @see <a href= "https://www.rfc-editor.org/rfc/rfc4122#section-4.2">RFC-4122 -
- *      4.2. Algorithms for Creating a Time-Based UUID</a>
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc9562.html">RFC 9562</a>
  */
 public abstract class AbstTimeBasedFactory extends UuidFactory {
 
