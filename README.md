@@ -44,14 +44,14 @@ Maven:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>5.3.7</version>
+  <version>6.0.0</version>
 </dependency>
 ```
 
 Gradle:
 
 ```
-implementation 'com.github.f4b6a3:uuid-creator:5.3.3'
+implementation 'com.github.f4b6a3:uuid-creator:6.0.0'
 ```
 
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).

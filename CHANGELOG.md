@@ -6,6 +6,19 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [6.0.0] - 2024-07-07
+
+This version has breaking changes.
+
+- Added `UuidBuilder` as a helper for generating custom UUIDs (UUIDv8);
+- Renamed `StringCodec` to `StandardStringCodec`;
+- Renamed `BinaryCodec` to `StandardBinaryCodec`;
+- Removed `GUID.v8()` (deprecated);
+- Removed `UuidCreator.getNameBasedMD5()` with `UUID` as name parameter (deprecated);
+- Removed `UuidCreator.getNameBasedSHA1()` with `UUID` as name parameter (deprecated);
+- Removed several code-smells in order improve code-quality and adhere to SOLID principles (by Jay Patel);
+- Many refactorings and optimizations.
+
 ## [5.3.7] - 2023-12-22
 
 Regular maintenance.
@@ -71,7 +84,7 @@ Add support for `RandomGenerator` in Java 17. #70
 
 Please go to v5.2.0 due to incorrect MAX UUID.
 
-This version contains has breaking changes.
+This version has breaking changes.
 
 - Added Max UUID (**wrong!**, fixed in v5.2.0). #67
 - Added implementations for UUID v7. #67
@@ -368,7 +381,7 @@ Change name-based generators to prevent thread contention #26
 -   Update javadoc
 -   Coverage: 85.8%
 
-### Remoded
+### Removed
 Remove `TlsSecureRandom` // replaced by SharedRandom
 Remove `NetworkData` // too much properties
 Remove `Fingerprint` // too complex
@@ -390,14 +403,15 @@ Remove `Fingerprint` // too complex
 -   Updated javadoc
 -   Test coverage: 87.4%
 
-### Remoded
+### Removed
 
 -   Removed UuidCreatorException // used by overrun exception
 -   Removed IllegalUuidException // use IllegalArgumentException instead
 -   Removed UuidSettings.getNodeIdentifierDeprecated // remove deprecated
 -   Renamed UuidSettings to UuidCreatorSettings
 
-[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.7...HEAD
+[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-6.0.0...HEAD
+[6.0.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.7...uuid-creator-6.0.0
 [5.3.7]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.6...uuid-creator-5.3.7
 [5.3.6]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.5...uuid-creator-5.3.6
 [5.3.5]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.4...uuid-creator-5.3.5
