@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.factory.rfc4122;
+package com.github.f4b6a3.uuid.factory.standard;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstTimeBasedFactory;

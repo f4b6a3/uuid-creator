@@ -22,57 +22,47 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.factory.rfc4122;
+package com.github.f4b6a3.uuid.factory.standard;
 
-import java.util.UUID;
-
-import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
-import com.github.f4b6a3.uuid.factory.AbstNameBasedFactory;
+import com.github.f4b6a3.uuid.factory.AbstTimeBasedFactory;
 
 /**
- * Concrete factory for creating name-based unique identifiers using SHA-1
- * hashing (UUIDv5).
+ * Concrete factory for creating time-based unique identifiers (UUIDv1).
  * 
- * @see AbstNameBasedFactory
+ * @see AbstTimeBasedFactory
  */
-public final class NameBasedSha1Factory extends AbstNameBasedFactory {
+public final class TimeBasedFactory extends AbstTimeBasedFactory {
 
 	/**
 	 * Default constructor.
 	 */
-	public NameBasedSha1Factory() {
-		this((byte[]) null);
+	public TimeBasedFactory() {
+		this(builder());
+	}
+
+	private TimeBasedFactory(Builder builder) {
+		super(UuidVersion.VERSION_TIME_BASED, builder);
 	}
 
 	/**
-	 * Constructor with a namespace.
+	 * Returns a builder of time-based factory.
 	 * 
-	 * @param namespace a namespace
+	 * @return a builder
 	 */
-	public NameBasedSha1Factory(UUID namespace) {
-		this(namespaceBytes(namespace));
+	public static Builder builder() {
+		return new Builder();
 	}
 
 	/**
-	 * Constructor with a namespace.
+	 * Concrete builder for creating a time-based factory.
 	 * 
-	 * @param namespace a namespace
+	 * @see AbstTimeBasedFactory.Builder
 	 */
-	public NameBasedSha1Factory(String namespace) {
-		this(namespaceBytes(namespace));
-	}
-
-	/**
-	 * Constructor with a namespace.
-	 * 
-	 * @param namespace a namespace
-	 */
-	public NameBasedSha1Factory(UuidNamespace namespace) {
-		this(namespaceBytes(namespace));
-	}
-
-	private NameBasedSha1Factory(byte[] namespace) {
-		super(UuidVersion.VERSION_NAME_BASED_SHA1, ALGORITHM_SHA1, namespace);
+	public static class Builder extends AbstTimeBasedFactory.Builder<TimeBasedFactory, Builder> {
+		@Override
+		public TimeBasedFactory build() {
+			return new TimeBasedFactory(this);
+		}
 	}
 }

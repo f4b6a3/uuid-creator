@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.factory.rfc4122;
+package com.github.f4b6a3.uuid.factory.standard;
 
 import java.util.Random;
 import java.util.UUID;
@@ -90,7 +90,7 @@ public final class RandomBasedFactory extends AbstRandomBasedFactory {
 	/**
 	 * Returns a random-based UUID.
 	 * 
-	 * ### RFC-4122 - 4.4. Algorithms for Creating a UUID from Truly Random or
+	 * ### RFC 9562 - 4.4. Algorithms for Creating a UUID from Truly Random or
 	 * Pseudo-Random Numbers
 	 * 
 	 * (1) Set the two most significant bits (bits 6 and 7) of the

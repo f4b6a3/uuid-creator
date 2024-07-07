@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.factory.rfc4122;
+package com.github.f4b6a3.uuid.factory.standard;
 
 import java.util.UUID;
 
@@ -31,17 +31,17 @@ import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstNameBasedFactory;
 
 /**
- * Concrete factory for creating name-based unique identifiers using MD5 hashing
- * (UUIDv3).
+ * Concrete factory for creating name-based unique identifiers using SHA-1
+ * hashing (UUIDv5).
  * 
  * @see AbstNameBasedFactory
  */
-public final class NameBasedMd5Factory extends AbstNameBasedFactory {
+public final class NameBasedSha1Factory extends AbstNameBasedFactory {
 
 	/**
 	 * Default constructor.
 	 */
-	public NameBasedMd5Factory() {
+	public NameBasedSha1Factory() {
 		this((byte[]) null);
 	}
 
@@ -50,7 +50,7 @@ public final class NameBasedMd5Factory extends AbstNameBasedFactory {
 	 * 
 	 * @param namespace a namespace
 	 */
-	public NameBasedMd5Factory(UUID namespace) {
+	public NameBasedSha1Factory(UUID namespace) {
 		this(namespaceBytes(namespace));
 	}
 
@@ -59,7 +59,7 @@ public final class NameBasedMd5Factory extends AbstNameBasedFactory {
 	 * 
 	 * @param namespace a namespace
 	 */
-	public NameBasedMd5Factory(String namespace) {
+	public NameBasedSha1Factory(String namespace) {
 		this(namespaceBytes(namespace));
 	}
 
@@ -68,11 +68,11 @@ public final class NameBasedMd5Factory extends AbstNameBasedFactory {
 	 * 
 	 * @param namespace a namespace
 	 */
-	public NameBasedMd5Factory(UuidNamespace namespace) {
+	public NameBasedSha1Factory(UuidNamespace namespace) {
 		this(namespaceBytes(namespace));
 	}
 
-	private NameBasedMd5Factory(byte[] namespace) {
-		super(UuidVersion.VERSION_NAME_BASED_MD5, ALGORITHM_MD5, namespace);
+	private NameBasedSha1Factory(byte[] namespace) {
+		super(UuidVersion.VERSION_NAME_BASED_SHA1, ALGORITHM_SHA1, namespace);
 	}
 }

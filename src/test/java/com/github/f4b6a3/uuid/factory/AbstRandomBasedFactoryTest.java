@@ -4,7 +4,7 @@ import com.github.f4b6a3.uuid.factory.nonstandard.PrefixCombFactory;
 import com.github.f4b6a3.uuid.factory.nonstandard.ShortPrefixCombFactory;
 import com.github.f4b6a3.uuid.factory.nonstandard.ShortSuffixCombFactory;
 import com.github.f4b6a3.uuid.factory.nonstandard.SuffixCombFactory;
-import com.github.f4b6a3.uuid.factory.rfc4122.RandomBasedFactory;
+import com.github.f4b6a3.uuid.factory.standard.RandomBasedFactory;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 import static org.junit.Assert.assertEquals;

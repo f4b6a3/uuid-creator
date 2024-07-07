@@ -12,9 +12,9 @@ import org.junit.Test;
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.enums.UuidLocalDomain;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
-import com.github.f4b6a3.uuid.factory.rfc4122.DceSecurityFactory;
-import com.github.f4b6a3.uuid.factory.rfc4122.TimeBasedFactory;
-import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedFactory;
+import com.github.f4b6a3.uuid.factory.standard.DceSecurityFactory;
+import com.github.f4b6a3.uuid.factory.standard.TimeBasedFactory;
+import com.github.f4b6a3.uuid.factory.standard.TimeOrderedFactory;
 
 public class UuidUtilTest {
 

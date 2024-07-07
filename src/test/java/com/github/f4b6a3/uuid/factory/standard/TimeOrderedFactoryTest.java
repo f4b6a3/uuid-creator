@@ -1,4 +1,4 @@
-package com.github.f4b6a3.uuid.factory.rfc4122;
+package com.github.f4b6a3.uuid.factory.standard;
 
 import org.junit.Ignore;
 import org.junit.Test;

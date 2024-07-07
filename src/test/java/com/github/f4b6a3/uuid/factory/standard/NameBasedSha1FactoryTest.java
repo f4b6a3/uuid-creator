@@ -1,4 +1,4 @@
-package com.github.f4b6a3.uuid.factory.rfc4122;
+package com.github.f4b6a3.uuid.factory.standard;
 
 import org.junit.Test;
 
@@ -14,7 +14,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-public class NameBasedMd5FactoryTest extends UuidFactoryTest {
+public class NameBasedSha1FactoryTest extends UuidFactoryTest {
 
 	private static final int DEFAULT_LOOP_MAX = 100;
 
@@ -37,65 +37,64 @@ public class NameBasedMd5FactoryTest extends UuidFactoryTest {
 	 * 
 	 * Commands used:
 	 * 
-	 * uuidgen --md5 --namespace @dns --name "www.example.com"
+	 * uuidgen --sha1 --namespace @dns --name "www.example.com"
 	 * 
-	 * uuidgen --md5 --namespace @url --name "https://www.example.com/"
+	 * uuidgen --sha1 --namespace @url --name "https://www.example.com/"
 	 * 
-	 * uuidgen --md5 --namespace "3c20a4dd-157c-4e22-865a-89632154b825" --name "The
+	 * uuidgen --sha1 --namespace "3c20a4dd-157c-4e22-865a-89632154b825" --name "The
 	 * Movie"
 	 * 
 	 */
 	private static final String[][] LIST_DNS = { //
-			{ "817f86bc-5b24-3b96-b81b-9e96fb58b7c0", "www.cnet.com" }, //
-			{ "c5adc751-6fa1-30e0-890b-bcca69242cee", "www.examiner.com" }, //
-			{ "c91331ef-10fa-3991-8f39-4b0c10645a9d", "www.gov.uk" }, //
-			{ "dd2e5195-e0d1-394f-8ba9-307aa2ab4962", "www.intel.com" }, //
-			{ "cc26cd3c-61d1-3430-8aa7-b02f014a488c", "www.mit.edu" }, //
-			{ "dcab659f-ad0a-34cc-8f80-7862c85206de", "www.prnewswire.com" }, //
-			{ "569966b7-1d05-3478-a83d-1689d1707b7b", "www.sitemeter.com" }, //
-			{ "ad27aa10-e243-348b-b9a7-7b43a089c5c1", "www.skype.com" }, //
-			{ "5b68cc4b-ac2a-3a30-90f7-2de5d7223a24", "www.taobao.com" }, //
-			{ "80123f96-d6ae-3cc2-8c4d-f987fdb660cf", "www.tinyurl.com" }, //
-			{ "ac2692dc-0410-313a-8483-de8be07f45d8", "www.tuttocitta.it" }, //
-			{ "871298a0-027a-3f9a-9bda-c339e3e0b8e6", "www.yale.edu" }, //
+			{ "d47fb1f9-9829-580f-887a-212253f600fc", "www.amazon.de" }, //
+			{ "755c52b7-cb5d-591e-998e-c839ea45664d", "www.aol.com" }, //
+			{ "ec602edd-a876-5ceb-bc0d-47d23a3cf0a0", "www.dell.com" }, //
+			{ "066e11fb-16d1-5ebc-90d3-da3af0e0f461", "www.dot.gov" }, //
+			{ "2ed6657d-e927-568b-95e1-2665a8aea6a2", "www.example.com" }, //
+			{ "48adeaa0-d5c5-5ed1-8d01-d1d9243080c2", "www.home.pl" }, //
+			{ "a44d4f2d-0d59-5b73-94c6-f0d58544d9ef", "www.naver.com" }, //
+			{ "85d2dbee-39e0-5a27-92bc-8a7a1bf3158e", "www.opensource.org" }, //
+			{ "1eaf0cb1-fb36-5fe1-988b-fc95e4068ad9", "www.privacy.gov.au" }, //
+			{ "fceee119-7b23-5d08-90e8-01f3747b58f7", "www.samsung.com" }, //
+			{ "5197121f-8af2-5e9a-9d45-b8595036512f", "www.wunderground.com" }, //
+			{ "3ea285aa-a9bb-5edb-994f-0b8445e804ef", "www.zimbio.com" }, //
 	};
 
 	private static final String[][] LIST_URL = { //
-			{ "6198f7e6-5154-3ea4-bb9b-ef38628d4789", "http://amusement.example.org/basket" }, //
-			{ "773536a8-4b7b-383d-9106-697d4d366254", "http://example.com/" }, //
-			{ "0440df8e-c162-3ac0-8b80-64e50016f1ae", "http://example.com/aftermath" }, //
-			{ "df2746ca-ad20-3d68-bd5a-74acd87c5211", "http://example.com/bird/bead.html" }, //
-			{ "dd3d862d-9bbf-3d8a-880d-d601af871379", "http://example.com/boot/bomb" }, //
-			{ "45792131-d809-3c19-b49c-901c9aee7865",
-					"https://birth.example.net/bottle/achiever?alarm=bell&amusement=aftermath" }, //
-			{ "74a61761-a3d2-3db3-a78f-b6e3a6412b02", "https://example.com/bee/airport#arch" }, //
-			{ "7fed185f-0864-319f-875b-a3d5458e30ac", "https://www.example.com/" }, //
-			{ "88039255-62dd-3d11-8f2e-c7962cb49984", "https://www.example.com/?achiever=bell" }, //
-			{ "aa5bd769-4d61-3b5f-b8ab-57a515c9e6f8", "https://www.example.com/#books" }, //
-			{ "1a8add93-a98f-36df-abfc-98b18af0fce4", "https://www.example.net/" }, //
-			{ "556cf76b-3b36-3ae6-85f9-50424b369b50", "http://www.example.com/" }, //
+			{ "b87fc5de-0f35-5c4e-aa98-09af1104ae6a", "http://anger.example.com/border/blade.html" }, //
+			{ "148c9b87-5ee8-5642-a594-f6f211e560fe", "http://basket.example.com/" }, //
+			{ "6bf7b75e-1b31-5f37-9178-e16c6c20e15b", "http://bikes.example.org/?art=books" }, //
+			{ "0a300ee9-f9e4-5697-a51a-efc7fafaba67", "http://example.com/" }, //
+			{ "554d83e9-bb4d-57d5-b6e8-c60a5054d662", "https://advertisement.example.com/amount/basketball" }, //
+			{ "52cdf6ec-c0d9-5a9f-844b-d2228d85dfa5", "https://www.example.com/?beds=bedroom&bear=animal" }, //
+			{ "c0e4d795-dbfc-5340-9e5b-fbdf69176183", "https://www.example.com/?bridge=bear" }, //
+			{ "3a46d9e4-53c3-5c6e-8dc9-52abd8a5e09e", "https://www.example.edu/bead#bell" }, //
+			{ "ae9b57c4-a56a-5607-adcb-c069724bd1f7", "https://www.example.net/" }, //
+			{ "911b3d40-f52e-57fd-a7e6-f11f861ab1ec", "https://www.example.net/aftermath?bait=arithmetic" }, //
+			{ "88c2936c-68e4-5770-b910-7ea30fdecae1", "http://www.example.com/angle/beginner.php" }, //
+			{ "39ee08dc-e9aa-5e91-a00e-fc9f5fbee4d0", "http://www.example.com/#apparel" }, //
 	};
 
 	private static final String[][] LIST_MOVIES = { //
-			{ "4c466e80-59cc-3ccb-a5f8-79b80c136261", "Animal Crackers" }, //
-			{ "d1d5c821-ead5-3c08-aab2-0ee89700991d", "Black Water: Abyss" }, //
-			{ "0776d513-8af3-3a9f-a512-fb11542d63ac", "Dino King: Journey to Fire Mountain" }, //
-			{ "49a351f0-c725-3d90-b4fb-43e79e2b0a66", "Fast & Furious Presents: Hobbs & Shaw" }, //
-			{ "50129117-4b42-39a1-b0de-1ca6eb67a3b2", "Force of Nature" }, //
-			{ "5036bdf2-f888-3383-912d-0a01c94461a7", "Host" }, //
-			{ "65af000a-0491-3aed-822b-cc164afb2e4c", "Mulan" }, //
-			{ "c763d65b-b65a-3b3e-80a9-ebbbb4307852", "Rambo: Last Blood" }, //
-			{ "eead91c1-1371-38c6-86b6-21a829cc1011", "Ready Player One" }, //
-			{ "ca43ca01-fa48-3303-a914-e95e4f1cc59f", "The Candy Witch" }, //
-			{ "aff9b8f5-bd5f-3c3a-bdc9-ef89e70c6c9e", "The Immortal Wars: Resurgence" }, //
-			{ "4c89193e-d988-306a-9fe1-616d11d4f7af", "The Rising Hawk" }, //
+			{ "4e841bcd-a125-5692-9469-d9c537cb1a79", "Ava" }, //
+			{ "bd6b30c1-5616-5f4d-b35c-baedf4327133", "Black and Blue" }, //
+			{ "1079f2f2-f231-5cb8-bc33-363710c90d93", "Centigrade" }, //
+			{ "99028b51-709a-5d99-8380-254491f4d25b", "Deathstroke: Knights & Dragons - The Movie" }, //
+			{ "48a0cb3d-5e88-5b92-b727-d6a7644394ee", "Fast & Furious Presents: Hobbs & Shaw" }, //
+			{ "2ef8e877-92ab-51b7-bfc4-a083c124c36b", "Fat Ass Zombies" }, //
+			{ "49262659-f891-5cf3-a48c-99bc281c2fb2", "Infamous" }, //
+			{ "ecf6779f-c99a-510d-b7fc-3f66c1fd060e", "Lamp Life" }, //
+			{ "406690a8-0bfc-5e06-a776-e2ae2fb4c581", "Ready Player One" }, //
+			{ "7b516eb5-d7e1-54f6-9941-9008592f35c9", "The Flu" }, //
+			{ "e824f17c-360e-5eab-836e-e879853f1310", "The Pale Door" }, //
+			{ "0c5576e8-2975-5880-be15-7b260027fb05", "Toxic" }, //
 	};
 
 	@Test
-	public void testNameBasedMd5() {
+	public void testNameBasedSha1() {
 
 		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-		NameBasedMd5Factory factory = new NameBasedMd5Factory();
+		NameBasedSha1Factory factory = new NameBasedSha1Factory();
 
 		// Generate a list of UUIDs
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
@@ -112,18 +111,18 @@ public class NameBasedMd5FactoryTest extends UuidFactoryTest {
 		// Check the list
 		checkNotNull(list);
 		checkUniqueness(list);
-		checkVersion(list, UuidVersion.VERSION_NAME_BASED_MD5.getValue());
+		checkVersion(list, UuidVersion.VERSION_NAME_BASED_SHA1.getValue());
 	}
 
 	@Test
-	public void testNameBasedMd5NamespaceDns() {
+	public void testNameBasedSha1WithNamespaceDns() {
 
-		NameBasedMd5Factory factory1;
-		NameBasedMd5Factory factory2;
-		NameBasedMd5Factory factory3;
-		NameBasedMd5Factory factory4;
-		NameBasedMd5Factory factory5;
-		NameBasedMd5Factory factory6;
+		NameBasedSha1Factory factory1;
+		NameBasedSha1Factory factory2;
+		NameBasedSha1Factory factory3;
+		NameBasedSha1Factory factory4;
+		NameBasedSha1Factory factory5;
+		NameBasedSha1Factory factory6;
 
 		// Test methods of the facade UuidCreator
 		for (int i = 0; i < LIST_DNS.length; i++) {
@@ -132,12 +131,12 @@ public class NameBasedMd5FactoryTest extends UuidFactoryTest {
 			String name = LIST_DNS[i][1];
 
 			UUID expected = UUID.fromString(uuid);
-			UUID actual1 = UuidCreator.getNameBasedMd5(NAMESPACE_DNS_ENUM, name);
-			UUID actual2 = UuidCreator.getNameBasedMd5(NAMESPACE_DNS_ENUM, name.getBytes(UTF8));
-			UUID actual3 = UuidCreator.getNameBasedMd5(NAMESPACE_DNS_UUID, name);
-			UUID actual4 = UuidCreator.getNameBasedMd5(NAMESPACE_DNS_UUID, name.getBytes(UTF8));
-			UUID actual5 = UuidCreator.getNameBasedMd5(NAMESPACE_DNS_STRING, name);
-			UUID actual6 = UuidCreator.getNameBasedMd5(NAMESPACE_DNS_STRING, name.getBytes(UTF8));
+			UUID actual1 = UuidCreator.getNameBasedSha1(NAMESPACE_DNS_ENUM, name);
+			UUID actual2 = UuidCreator.getNameBasedSha1(NAMESPACE_DNS_ENUM, name.getBytes(UTF8));
+			UUID actual3 = UuidCreator.getNameBasedSha1(NAMESPACE_DNS_UUID, name);
+			UUID actual4 = UuidCreator.getNameBasedSha1(NAMESPACE_DNS_UUID, name.getBytes(UTF8));
+			UUID actual5 = UuidCreator.getNameBasedSha1(NAMESPACE_DNS_STRING, name);
+			UUID actual6 = UuidCreator.getNameBasedSha1(NAMESPACE_DNS_STRING, name.getBytes(UTF8));
 
 			assertEquals(expected, actual1);
 			assertEquals(expected, actual2);
@@ -147,14 +146,14 @@ public class NameBasedMd5FactoryTest extends UuidFactoryTest {
 			assertEquals(expected, actual6);
 		}
 
-		factory1 = new NameBasedMd5Factory();
-		factory2 = new NameBasedMd5Factory();
-		factory3 = new NameBasedMd5Factory();
-		factory4 = new NameBasedMd5Factory();
-		factory5 = new NameBasedMd5Factory();
-		factory6 = new NameBasedMd5Factory();
+		factory1 = new NameBasedSha1Factory();
+		factory2 = new NameBasedSha1Factory();
+		factory3 = new NameBasedSha1Factory();
+		factory4 = new NameBasedSha1Factory();
+		factory5 = new NameBasedSha1Factory();
+		factory6 = new NameBasedSha1Factory();
 
-		// Test methods of the factory NameBasedMd5UuidCreator
+		// Test methods of the factory NameBasedSha1UuidCreator
 		for (int i = 0; i < LIST_DNS.length; i++) {
 
 			String uuid = LIST_DNS[i][0];
@@ -176,14 +175,14 @@ public class NameBasedMd5FactoryTest extends UuidFactoryTest {
 			assertEquals(expected, actual6);
 		}
 
-		factory1 = new NameBasedMd5Factory(NAMESPACE_DNS_ENUM);
-		factory2 = new NameBasedMd5Factory(NAMESPACE_DNS_ENUM);
-		factory3 = new NameBasedMd5Factory(NAMESPACE_DNS_UUID);
-		factory4 = new NameBasedMd5Factory(NAMESPACE_DNS_UUID);
-		factory5 = new NameBasedMd5Factory(NAMESPACE_DNS_STRING);
-		factory6 = new NameBasedMd5Factory(NAMESPACE_DNS_STRING);
+		factory1 = new NameBasedSha1Factory(NAMESPACE_DNS_ENUM);
+		factory2 = new NameBasedSha1Factory(NAMESPACE_DNS_ENUM);
+		factory3 = new NameBasedSha1Factory(NAMESPACE_DNS_UUID);
+		factory4 = new NameBasedSha1Factory(NAMESPACE_DNS_UUID);
+		factory5 = new NameBasedSha1Factory(NAMESPACE_DNS_STRING);
+		factory6 = new NameBasedSha1Factory(NAMESPACE_DNS_STRING);
 
-		// Test methods of the factory NameBasedMd5UuidCreator with fixed namespace
+		// Test methods of the factory NameBasedSha1UuidCreator with fixed namespace
 		for (int i = 0; i < LIST_DNS.length; i++) {
 
 			String uuid = LIST_DNS[i][0];
@@ -207,14 +206,14 @@ public class NameBasedMd5FactoryTest extends UuidFactoryTest {
 	}
 
 	@Test
-	public void testNameBasedMd5NamespaceUrl() {
+	public void testNameBasedSha1WithNamespaceUrl() {
 
-		NameBasedMd5Factory factory1;
-		NameBasedMd5Factory factory2;
-		NameBasedMd5Factory factory3;
-		NameBasedMd5Factory factory4;
-		NameBasedMd5Factory factory5;
-		NameBasedMd5Factory factory6;
+		NameBasedSha1Factory factory1;
+		NameBasedSha1Factory factory2;
+		NameBasedSha1Factory factory3;
+		NameBasedSha1Factory factory4;
+		NameBasedSha1Factory factory5;
+		NameBasedSha1Factory factory6;
 
 		// Test methods of the facade UuidCreator
 		for (int i = 0; i < LIST_URL.length; i++) {
@@ -223,12 +222,12 @@ public class NameBasedMd5FactoryTest extends UuidFactoryTest {
 			String name = LIST_URL[i][1];
 
 			UUID expected = UUID.fromString(uuid);
-			UUID actual1 = UuidCreator.getNameBasedMd5(NAMESPACE_URL_ENUM, name);
-			UUID actual2 = UuidCreator.getNameBasedMd5(NAMESPACE_URL_ENUM, name.getBytes(UTF8));
-			UUID actual3 = UuidCreator.getNameBasedMd5(NAMESPACE_URL_UUID, name);
-			UUID actual4 = UuidCreator.getNameBasedMd5(NAMESPACE_URL_UUID, name.getBytes(UTF8));
-			UUID actual5 = UuidCreator.getNameBasedMd5(NAMESPACE_URL_STRING, name);
-			UUID actual6 = UuidCreator.getNameBasedMd5(NAMESPACE_URL_STRING, name.getBytes(UTF8));
+			UUID actual1 = UuidCreator.getNameBasedSha1(NAMESPACE_URL_ENUM, name);
+			UUID actual2 = UuidCreator.getNameBasedSha1(NAMESPACE_URL_ENUM, name.getBytes(UTF8));
+			UUID actual3 = UuidCreator.getNameBasedSha1(NAMESPACE_URL_UUID, name);
+			UUID actual4 = UuidCreator.getNameBasedSha1(NAMESPACE_URL_UUID, name.getBytes(UTF8));
+			UUID actual5 = UuidCreator.getNameBasedSha1(NAMESPACE_URL_STRING, name);
+			UUID actual6 = UuidCreator.getNameBasedSha1(NAMESPACE_URL_STRING, name.getBytes(UTF8));
 
 			assertEquals(expected, actual1);
 			assertEquals(expected, actual2);
@@ -238,14 +237,14 @@ public class NameBasedMd5FactoryTest extends UuidFactoryTest {
 			assertEquals(expected, actual6);
 		}
 
-		factory1 = new NameBasedMd5Factory();
-		factory2 = new NameBasedMd5Factory();
-		factory3 = new NameBasedMd5Factory();
-		factory4 = new NameBasedMd5Factory();
-		factory5 = new NameBasedMd5Factory();
-		factory6 = new NameBasedMd5Factory();
+		factory1 = new NameBasedSha1Factory();
+		factory2 = new NameBasedSha1Factory();
+		factory3 = new NameBasedSha1Factory();
+		factory4 = new NameBasedSha1Factory();
+		factory5 = new NameBasedSha1Factory();
+		factory6 = new NameBasedSha1Factory();
 
-		// Test methods of the factory NameBasedMd5UuidCreator
+		// Test methods of the factory NameBasedSha1UuidCreator
 		for (int i = 0; i < LIST_URL.length; i++) {
 
 			String uuid = LIST_URL[i][0];
@@ -267,14 +266,14 @@ public class NameBasedMd5FactoryTest extends UuidFactoryTest {
 			assertEquals(expected, actual6);
 		}
 
-		factory1 = new NameBasedMd5Factory(NAMESPACE_URL_ENUM);
-		factory2 = new NameBasedMd5Factory(NAMESPACE_URL_ENUM);
-		factory3 = new NameBasedMd5Factory(NAMESPACE_URL_UUID);
-		factory4 = new NameBasedMd5Factory(NAMESPACE_URL_UUID);
-		factory5 = new NameBasedMd5Factory(NAMESPACE_URL_STRING);
-		factory6 = new NameBasedMd5Factory(NAMESPACE_URL_STRING);
+		factory1 = new NameBasedSha1Factory(NAMESPACE_URL_ENUM);
+		factory2 = new NameBasedSha1Factory(NAMESPACE_URL_ENUM);
+		factory3 = new NameBasedSha1Factory(NAMESPACE_URL_UUID);
+		factory4 = new NameBasedSha1Factory(NAMESPACE_URL_UUID);
+		factory5 = new NameBasedSha1Factory(NAMESPACE_URL_STRING);
+		factory6 = new NameBasedSha1Factory(NAMESPACE_URL_STRING);
 
-		// Test methods of the factory NameBasedMd5UuidCreator with fixed namespace
+		// Test methods of the factory NameBasedSha1UuidCreator with fixed namespace
 		for (int i = 0; i < LIST_URL.length; i++) {
 
 			String uuid = LIST_URL[i][0];
@@ -298,12 +297,12 @@ public class NameBasedMd5FactoryTest extends UuidFactoryTest {
 	}
 
 	@Test
-	public void testNameBasedMd5NamespaceMovies() {
+	public void testNameBasedSha1WithNamespaceMovies() {
 
-		NameBasedMd5Factory factory1;
-		NameBasedMd5Factory factory2;
-		NameBasedMd5Factory factory3;
-		NameBasedMd5Factory factory4;
+		NameBasedSha1Factory factory1;
+		NameBasedSha1Factory factory2;
+		NameBasedSha1Factory factory3;
+		NameBasedSha1Factory factory4;
 
 		// Test methods of the facade UuidCreator
 		for (int i = 0; i < LIST_MOVIES.length; i++) {
@@ -312,10 +311,10 @@ public class NameBasedMd5FactoryTest extends UuidFactoryTest {
 			String name = LIST_MOVIES[i][1];
 
 			UUID expected = UUID.fromString(uuid);
-			UUID actual1 = UuidCreator.getNameBasedMd5(NAMESPACE_MOVIES_UUID, name);
-			UUID actual2 = UuidCreator.getNameBasedMd5(NAMESPACE_MOVIES_UUID, name.getBytes(UTF8));
-			UUID actual3 = UuidCreator.getNameBasedMd5(NAMESPACE_MOVIES_STRING, name);
-			UUID actual4 = UuidCreator.getNameBasedMd5(NAMESPACE_MOVIES_STRING, name.getBytes(UTF8));
+			UUID actual1 = UuidCreator.getNameBasedSha1(NAMESPACE_MOVIES_UUID, name);
+			UUID actual2 = UuidCreator.getNameBasedSha1(NAMESPACE_MOVIES_UUID, name.getBytes(UTF8));
+			UUID actual3 = UuidCreator.getNameBasedSha1(NAMESPACE_MOVIES_STRING, name);
+			UUID actual4 = UuidCreator.getNameBasedSha1(NAMESPACE_MOVIES_STRING, name.getBytes(UTF8));
 
 			assertEquals(expected, actual1);
 			assertEquals(expected, actual2);
@@ -323,12 +322,12 @@ public class NameBasedMd5FactoryTest extends UuidFactoryTest {
 			assertEquals(expected, actual4);
 		}
 
-		factory1 = new NameBasedMd5Factory();
-		factory2 = new NameBasedMd5Factory();
-		factory3 = new NameBasedMd5Factory();
-		factory4 = new NameBasedMd5Factory();
+		factory1 = new NameBasedSha1Factory();
+		factory2 = new NameBasedSha1Factory();
+		factory3 = new NameBasedSha1Factory();
+		factory4 = new NameBasedSha1Factory();
 
-		// Test methods of the factory NameBasedMd5UuidCreator
+		// Test methods of the factory NameBasedSha1UuidCreator
 		for (int i = 0; i < LIST_MOVIES.length; i++) {
 
 			String uuid = LIST_MOVIES[i][0];
@@ -346,12 +345,12 @@ public class NameBasedMd5FactoryTest extends UuidFactoryTest {
 			assertEquals(expected, actual4);
 		}
 
-		factory1 = new NameBasedMd5Factory(NAMESPACE_MOVIES_UUID);
-		factory2 = new NameBasedMd5Factory(NAMESPACE_MOVIES_UUID);
-		factory3 = new NameBasedMd5Factory(NAMESPACE_MOVIES_STRING);
-		factory4 = new NameBasedMd5Factory(NAMESPACE_MOVIES_STRING);
+		factory1 = new NameBasedSha1Factory(NAMESPACE_MOVIES_UUID);
+		factory2 = new NameBasedSha1Factory(NAMESPACE_MOVIES_UUID);
+		factory3 = new NameBasedSha1Factory(NAMESPACE_MOVIES_STRING);
+		factory4 = new NameBasedSha1Factory(NAMESPACE_MOVIES_STRING);
 
-		// Test methods of the factory NameBasedMd5UuidCreator with fixed namespace
+		// Test methods of the factory NameBasedSha1UuidCreator with fixed namespace
 		for (int i = 0; i < LIST_MOVIES.length; i++) {
 
 			String uuid = LIST_MOVIES[i][0];
@@ -371,14 +370,14 @@ public class NameBasedMd5FactoryTest extends UuidFactoryTest {
 	}
 
 	@Test
-	public void testGetNameBasedMd5InParallel1() throws InterruptedException {
+	public void testGetNameBasedSha1InParallel1() throws InterruptedException {
 
 		Thread[] threads = new Thread[THREAD_TOTAL];
 		NameBasedTestThread.clearHashSet();
 
 		// Instantiate and start many threads
 		for (int i = 0; i < THREAD_TOTAL; i++) {
-			NameBasedMd5Factory factory = new NameBasedMd5Factory();
+			NameBasedSha1Factory factory = new NameBasedSha1Factory();
 			threads[i] = new NameBasedTestThread(factory, DEFAULT_LOOP_MAX);
 			threads[i].start();
 		}
@@ -393,14 +392,14 @@ public class NameBasedMd5FactoryTest extends UuidFactoryTest {
 	}
 
 	@Test
-	public void testGetNameBasedMd5InParallel2() throws InterruptedException {
+	public void testGetNameBasedSha1InParallel2() throws InterruptedException {
 
 		UUID[][][] array = new UUID[THREAD_TOTAL][3][LIST_DNS.length];
 		Thread[] threads = new Thread[THREAD_TOTAL];
 
 		// Instantiate and start many threads
 		for (int t = 0; t < THREAD_TOTAL; t++) {
-			threads[t] = new Thread(new TestRunnable(t, array, new NameBasedMd5Factory()));
+			threads[t] = new Thread(new TestRunnable(t, array, new NameBasedSha1Factory()));
 			threads[t].start();
 		}
 
@@ -475,27 +474,6 @@ public class NameBasedMd5FactoryTest extends UuidFactoryTest {
 					array[threadId][2][i] = actual;
 				}
 			}
-		}
-	}
-
-	@Test
-	public void testGetNameBasedMd5CheckCompatibility() {
-
-		NameBasedMd5Factory factory = new NameBasedMd5Factory();
-
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-
-			String random = UUID.randomUUID().toString();
-
-			String name = random;
-			byte[] bytes = random.getBytes();
-
-			UUID expected = UUID.nameUUIDFromBytes(bytes);
-			UUID actual1 = factory.create(name);
-			UUID actual2 = factory.create(bytes);
-
-			assertEquals(expected, actual1);
-			assertEquals(expected, actual2);
 		}
 	}
 }

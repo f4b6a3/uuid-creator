@@ -43,14 +43,14 @@ import com.github.f4b6a3.uuid.factory.nonstandard.PrefixCombFactory;
 import com.github.f4b6a3.uuid.factory.nonstandard.ShortPrefixCombFactory;
 import com.github.f4b6a3.uuid.factory.nonstandard.ShortSuffixCombFactory;
 import com.github.f4b6a3.uuid.factory.nonstandard.SuffixCombFactory;
-import com.github.f4b6a3.uuid.factory.rfc4122.DceSecurityFactory;
-import com.github.f4b6a3.uuid.factory.rfc4122.NameBasedMd5Factory;
-import com.github.f4b6a3.uuid.factory.rfc4122.NameBasedSha1Factory;
-import com.github.f4b6a3.uuid.factory.rfc4122.RandomBasedFactory;
-import com.github.f4b6a3.uuid.factory.rfc4122.TimeBasedFactory;
-import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedFactory;
+import com.github.f4b6a3.uuid.factory.standard.DceSecurityFactory;
+import com.github.f4b6a3.uuid.factory.standard.NameBasedMd5Factory;
+import com.github.f4b6a3.uuid.factory.standard.NameBasedSha1Factory;
+import com.github.f4b6a3.uuid.factory.standard.RandomBasedFactory;
+import com.github.f4b6a3.uuid.factory.standard.TimeBasedFactory;
+import com.github.f4b6a3.uuid.factory.standard.TimeOrderedEpochFactory;
+import com.github.f4b6a3.uuid.factory.standard.TimeOrderedFactory;
 import com.github.f4b6a3.uuid.util.MachineId;
-import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedEpochFactory;
 
 /**
  * Facade for everything.
@@ -744,7 +744,7 @@ public final class UuidCreator {
 	 * <p>
 	 * The name string is encoded into a sequence of bytes using UTF-8.
 	 * <p>
-	 * Name spaces predefined by RFC-4122 (Appendix C):
+	 * Name spaces predefined by RFC 9562 (Appendix C):
 	 * <ul>
 	 * <li>NAMESPACE_DNS: Name string is a fully-qualified domain name;
 	 * <li>NAMESPACE_URL: Name string is a URL;
@@ -765,7 +765,7 @@ public final class UuidCreator {
 	/**
 	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
 	 * <p>
-	 * Name spaces predefined by RFC-4122 (Appendix C):
+	 * Name spaces predefined by RFC 9562 (Appendix C):
 	 * <ul>
 	 * <li>NAMESPACE_DNS: Name string is a fully-qualified domain name;
 	 * <li>NAMESPACE_URL: Name string is a URL;
@@ -870,7 +870,7 @@ public final class UuidCreator {
 	 * <p>
 	 * The name string is encoded into a sequence of bytes using UTF-8.
 	 * <p>
-	 * Name spaces predefined by RFC-4122 (Appendix C):
+	 * Name spaces predefined by RFC 9562 (Appendix C):
 	 * <ul>
 	 * <li>NAMESPACE_DNS: Name string is a fully-qualified domain name;
 	 * <li>NAMESPACE_URL: Name string is a URL;
@@ -891,7 +891,7 @@ public final class UuidCreator {
 	/**
 	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
 	 * <p>
-	 * Name spaces predefined by RFC-4122 (Appendix C):
+	 * Name spaces predefined by RFC 9562 (Appendix C):
 	 * <ul>
 	 * <li>NAMESPACE_DNS: Name string is a fully-qualified domain name;
 	 * <li>NAMESPACE_URL: Name string is a URL;

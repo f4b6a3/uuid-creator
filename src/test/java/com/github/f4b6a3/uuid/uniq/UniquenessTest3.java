@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.TestSuite;
-import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedEpochFactory;
+import com.github.f4b6a3.uuid.factory.standard.TimeOrderedEpochFactory;
 
 /**
  * This test runs many threads that request time-based UUIDs in a loop.

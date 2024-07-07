@@ -22,47 +22,57 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.factory.rfc4122;
+package com.github.f4b6a3.uuid.factory.standard;
 
+import java.util.UUID;
+
+import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
-import com.github.f4b6a3.uuid.factory.AbstTimeBasedFactory;
+import com.github.f4b6a3.uuid.factory.AbstNameBasedFactory;
 
 /**
- * Concrete factory for creating time-based unique identifiers (UUIDv1).
+ * Concrete factory for creating name-based unique identifiers using MD5 hashing
+ * (UUIDv3).
  * 
- * @see AbstTimeBasedFactory
+ * @see AbstNameBasedFactory
  */
-public final class TimeBasedFactory extends AbstTimeBasedFactory {
+public final class NameBasedMd5Factory extends AbstNameBasedFactory {
 
 	/**
 	 * Default constructor.
 	 */
-	public TimeBasedFactory() {
-		this(builder());
-	}
-
-	private TimeBasedFactory(Builder builder) {
-		super(UuidVersion.VERSION_TIME_BASED, builder);
+	public NameBasedMd5Factory() {
+		this((byte[]) null);
 	}
 
 	/**
-	 * Returns a builder of time-based factory.
+	 * Constructor with a namespace.
 	 * 
-	 * @return a builder
+	 * @param namespace a namespace
 	 */
-	public static Builder builder() {
-		return new Builder();
+	public NameBasedMd5Factory(UUID namespace) {
+		this(namespaceBytes(namespace));
 	}
 
 	/**
-	 * Concrete builder for creating a time-based factory.
+	 * Constructor with a namespace.
 	 * 
-	 * @see AbstTimeBasedFactory.Builder
+	 * @param namespace a namespace
 	 */
-	public static class Builder extends AbstTimeBasedFactory.Builder<TimeBasedFactory, Builder> {
-		@Override
-		public TimeBasedFactory build() {
-			return new TimeBasedFactory(this);
-		}
+	public NameBasedMd5Factory(String namespace) {
+		this(namespaceBytes(namespace));
+	}
+
+	/**
+	 * Constructor with a namespace.
+	 * 
+	 * @param namespace a namespace
+	 */
+	public NameBasedMd5Factory(UuidNamespace namespace) {
+		this(namespaceBytes(namespace));
+	}
+
+	private NameBasedMd5Factory(byte[] namespace) {
+		super(UuidVersion.VERSION_NAME_BASED_MD5, ALGORITHM_MD5, namespace);
 	}
 }
