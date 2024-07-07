@@ -4,12 +4,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Random;
+import java.util.SplittableRandom;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.codec.BinaryCodec;
+import com.github.f4b6a3.uuid.codec.StandardBinaryCodec;
 import com.github.f4b6a3.uuid.codec.base.Base62Codec;
 import com.github.f4b6a3.uuid.codec.base.BaseN;
 
@@ -22,7 +23,7 @@ public class BaseNRemainderDecoderTest {
 		for (int i = 0; i < 1000; i++) {
 			String string = getRandomString(Base62Codec.INSTANCE.getBase());
 			UUID uuid = Base62Codec.INSTANCE.decode(string);
-			byte[] bytes = BinaryCodec.INSTANCE.encode(uuid);
+			byte[] bytes = StandardBinaryCodec.INSTANCE.encode(uuid);
 			assertEquals(Arrays.toString(decode(Base62Codec.INSTANCE.getBase(), string)), Arrays.toString(bytes));
 		}
 	}
@@ -30,11 +31,12 @@ public class BaseNRemainderDecoderTest {
 	@Test
 	public void testMultiply() {
 
+		SplittableRandom seeder = new SplittableRandom(1);
 		for (int i = 0; i < 1000; i++) {
 			byte[] bytes = new byte[UUID_BYTES];
-			ThreadLocalRandom.current().nextBytes(bytes);
-			long multiplier = ThreadLocalRandom.current().nextInt() & 0x7fffffff; // positive
-			long addend = ThreadLocalRandom.current().nextInt() & 0x7fffffff; // positive
+			(new Random(seeder.nextLong())).nextBytes(bytes);
+			long multiplier = seeder.nextInt() & 0x7fffffff; // positive
+			long addend = seeder.nextInt() & 0x7fffffff; // positive
 
 			BigInteger number1 = new BigInteger(1, bytes);
 			BigInteger product1 = number1.multiply(BigInteger.valueOf(multiplier)).add(BigInteger.valueOf(addend));
@@ -66,22 +68,23 @@ public class BaseNRemainderDecoderTest {
 	}
 
 	protected static long[] toLongs(byte[] bytes) {
-		UUID uuid = BinaryCodec.INSTANCE.decode(bytes);
+		UUID uuid = StandardBinaryCodec.INSTANCE.decode(bytes);
 		return new long[] { uuid.getMostSignificantBits(), uuid.getLeastSignificantBits() };
 	}
 
 	protected static byte[] fromLongs(long[] longs) {
 		UUID uuid = new UUID(longs[0], longs[1]);
-		return BinaryCodec.INSTANCE.encode(uuid);
+		return StandardBinaryCodec.INSTANCE.encode(uuid);
 	}
 
 	private String getRandomString(BaseN base) {
 
+		SplittableRandom random = new SplittableRandom(1);
 		char[] chars = new char[base.getLength()];
 
 		chars[0] = base.getPadding(); // to avoid overflow
 		for (int i = 1; i < chars.length; i++) {
-			chars[i] = base.getAlphabet().get(ThreadLocalRandom.current().nextInt(base.getRadix()));
+			chars[i] = base.getAlphabet().get(random.nextInt(base.getRadix()));
 		}
 
 		return new String(chars);

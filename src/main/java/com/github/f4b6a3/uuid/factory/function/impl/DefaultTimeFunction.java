@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,9 @@ package com.github.f4b6a3.uuid.factory.function.impl;
 import static com.github.f4b6a3.uuid.util.UuidTime.TICKS_PER_MILLI;
 
 import java.time.Clock;
+import java.util.SplittableRandom;
 
 import com.github.f4b6a3.uuid.factory.function.TimeFunction;
-import com.github.f4b6a3.uuid.util.internal.RandomUtil;
 
 /**
  * Function that returns a number of 100-nanoseconds since 1970-01-01 (Unix
@@ -46,7 +46,7 @@ public final class DefaultTimeFunction implements TimeFunction {
 	private long lastTime = -1;
 
 	// start the counter with a random number between 0 and 9,999
-	private long counter = Math.abs(RandomUtil.nextLong() % TICKS_PER_MILLI);
+	private long counter = Math.abs(new SplittableRandom().nextLong()) % TICKS_PER_MILLI;
 	// start the counter limit with a number between 10,000 and 19,999
 	private long counterMax = counter + TICKS_PER_MILLI;
 
@@ -99,7 +99,6 @@ public final class DefaultTimeFunction implements TimeFunction {
 		// save time for the next call
 		lastTime = time;
 
-		// RFC-4122 - 4.2.1.2 (P4):
 		// simulate a high resolution clock
 		return (time * TICKS_PER_MILLI) + counter;
 	}

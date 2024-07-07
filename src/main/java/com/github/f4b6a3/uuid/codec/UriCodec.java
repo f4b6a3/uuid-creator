@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -81,7 +81,7 @@ public class UriCodec implements UuidCodec<URI> {
 		if (!isUuidUri(uri)) {
 			throw InvalidUuidException.newInstance(uri);
 		}
-		return StringCodec.INSTANCE.decode(uri.toString());
+		return StandardStringCodec.INSTANCE.decode(uri.toString());
 	}
 
 	/**

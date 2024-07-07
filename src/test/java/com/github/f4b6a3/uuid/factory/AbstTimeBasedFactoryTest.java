@@ -3,7 +3,7 @@ package com.github.f4b6a3.uuid.factory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.SplittableRandom;
 
 import org.junit.Test;
 
@@ -39,7 +39,7 @@ public class AbstTimeBasedFactoryTest extends UuidFactoryTest {
 			fail("It should use Random node identifier supplier");
 		}
 
-		Long number = ThreadLocalRandom.current().nextLong() & 0x0000ffffffffffffL;
+		Long number = new SplittableRandom(1).nextLong() & 0x0000ffffffffffffL;
 		SettingsUtil.setProperty(SettingsUtil.PROPERTY_NODE, number.toString());
 		supplier = AbstTimeBasedFactory.selectNodeIdFunction();
 		assertEquals(number.longValue(), supplier.getAsLong());

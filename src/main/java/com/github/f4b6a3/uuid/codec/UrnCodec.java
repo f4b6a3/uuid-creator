@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -66,7 +66,7 @@ public class UrnCodec implements UuidCodec<String> {
 	@Override
 	public String encode(UUID uuid) {
 		UuidValidator.validate(uuid);
-		return URN_PREFIX + StringCodec.INSTANCE.encode(uuid);
+		return URN_PREFIX + StandardStringCodec.INSTANCE.encode(uuid);
 	}
 
 	/**
@@ -81,7 +81,7 @@ public class UrnCodec implements UuidCodec<String> {
 		if (!isUuidUrn(urn)) {
 			throw InvalidUuidException.newInstance(urn);
 		}
-		return StringCodec.INSTANCE.decode(urn);
+		return StandardStringCodec.INSTANCE.decode(urn);
 	}
 
 	/**

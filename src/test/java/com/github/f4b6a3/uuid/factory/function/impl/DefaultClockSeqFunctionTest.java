@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.factory.function.ClockSeqFunction;
-import com.github.f4b6a3.uuid.factory.rfc4122.TimeBasedFactory;
+import com.github.f4b6a3.uuid.factory.standard.TimeBasedFactory;
 import com.github.f4b6a3.uuid.util.UuidTime;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
@@ -43,7 +43,7 @@ public class DefaultClockSeqFunctionTest {
 		long first = 0;
 		long last = 0;
 
-		int max = ClockSeqFunction.ClockSeqPool.POOL_MAX + 1; // 16,384
+		int max = DefaultClockSeqFunction.ClockSeqPool.POOL_MAX + 1; // 16,384
 		DefaultClockSeqFunction clockSequence = new DefaultClockSeqFunction();
 
 		first = clockSequence.applyAsLong(CURRENT_TIMESTAMP);
@@ -61,7 +61,7 @@ public class DefaultClockSeqFunctionTest {
 		int first = 0;
 		int last = 0;
 
-		int max = ClockSeqFunction.ClockSeqPool.POOL_MAX + 1; // 16,384
+		int max = DefaultClockSeqFunction.ClockSeqPool.POOL_MAX + 1; // 16,384
 		TimeBasedFactory factory = new TimeBasedFactory.Builder().withInstant(Instant.now()).build();
 
 		UUID uuid = factory.create();
@@ -81,7 +81,7 @@ public class DefaultClockSeqFunctionTest {
 	public void testGetClockSequenceUnique1() {
 
 		HashSet<Long> set = new HashSet<>();
-		int max = ClockSeqFunction.ClockSeqPool.POOL_MAX; // 16,383
+		int max = DefaultClockSeqFunction.ClockSeqPool.POOL_MAX; // 16,383
 		DefaultClockSeqFunction clockSequence = new DefaultClockSeqFunction();
 
 		for (int i = 0; i < max; i++) {
@@ -93,7 +93,7 @@ public class DefaultClockSeqFunctionTest {
 	public void testGetClockSequenceUnique2() {
 
 		HashSet<UUID> set = new HashSet<>();
-		int max = ClockSeqFunction.ClockSeqPool.POOL_MAX; // 16,383
+		int max = DefaultClockSeqFunction.ClockSeqPool.POOL_MAX; // 16,383
 		TimeBasedFactory factory = new TimeBasedFactory.Builder().withInstant(Instant.now()).build();
 
 		for (int i = 0; i < max; i++) {

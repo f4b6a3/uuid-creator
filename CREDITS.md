@@ -18,3 +18,4 @@ The people who contributed to this open source project.
 *   [Adam Gent](https://github.com/agentgt)
 *   [BaoHo](https://github.com/tri-bao)
 *   [Nicola](https://github.com/nicolarosada)
+*   [Jay Patel](https://github.com/pateljay15)

@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +24,11 @@
 
 package com.github.f4b6a3.uuid.factory;
 
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 import java.util.UUID;
 
-import com.github.f4b6a3.uuid.codec.BinaryCodec;
-import com.github.f4b6a3.uuid.codec.StringCodec;
 import com.github.f4b6a3.uuid.enums.UuidNamespace;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
@@ -43,16 +41,18 @@ import static com.github.f4b6a3.uuid.enums.UuidVersion.VERSION_NAME_BASED_SHA1;
  * Abstract factory for creating name-based unique identifiers (UUIDv3 and
  * UUIDv5).
  * 
+ * The name space is optional for compatibility with the JDK's UUID method for
+ * generating UUIDv3, which is {@link UUID#nameUUIDFromBytes(byte[])}.
+ * 
  * @see UuidNamespace
- * @see <a href= "https://www.rfc-editor.org/rfc/rfc4122#section-4.3">RFC-4122 -
- *      4.3. Algorithm for Creating a Name-Based UUID</a>
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc9562.html">RFC 9562</a>
  */
 public abstract class AbstNameBasedFactory extends UuidFactory {
 
 	/**
-	 * The namespace.
+	 * The namespace (optional).
 	 */
-	protected byte[] namespace = null;
+	protected byte[] namespace; // can be null
 	/**
 	 * The hash algorithm.
 	 */
@@ -88,15 +88,12 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 			throw new IllegalArgumentException("Invalid message digest algorithm");
 		}
 
-		if (namespace == null) {
-			// null is accepted
-			this.namespace = null;
-		} else {
+		if (namespace != null) {
 			if (namespace.length == 16) {
 				// must be 16 bytes length
 				this.namespace = namespace;
 			} else {
-				throw new IllegalArgumentException("Invalid namespace length");
+				throw new IllegalArgumentException("Invalid namespace");
 			}
 		}
 	}
@@ -106,9 +103,10 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	 * 
 	 * @param name a byte array
 	 * @return a name-based UUID
+	 * @throws NullPointerException if name is null
 	 */
 	public UUID create(final byte[] name) {
-		return create(this.namespace, name);
+		return create(this.namespace, nameBytes(name));
 	}
 
 	/**
@@ -118,23 +116,10 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	 * 
 	 * @param name a string
 	 * @return a name-based UUID
+	 * @throws NullPointerException if name is null
 	 */
 	public UUID create(final String name) {
-		final byte[] n = name.getBytes(StandardCharsets.UTF_8);
-		return create(this.namespace, n);
-	}
-
-	/**
-	 * Returns a name-based UUID.
-	 * 
-	 * @deprecated This method will be removed when the new RFC is published.
-	 * 
-	 * @param name a UUID
-	 * @return a name-based UUID
-	 */
-	@Deprecated
-	public UUID create(final UUID name) {
-		return create(this.namespace, bytes(name));
+		return create(this.namespace, nameBytes(name));
 	}
 
 	/**
@@ -143,10 +128,10 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	 * @param namespace a name space UUID
 	 * @param name      a byte array
 	 * @return a name-based UUID
+	 * @throws IllegalArgumentException if name is null
 	 */
 	public UUID create(final UUID namespace, final byte[] name) {
-		final byte[] ns = namespace == null ? null : bytes(namespace);
-		return create(ns, name);
+		return create(namespaceBytes(namespace), nameBytes(name));
 	}
 
 	/**
@@ -157,27 +142,10 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	 * @param namespace a name space UUID
 	 * @param name      a string
 	 * @return a name-based UUID
+	 * @throws NullPointerException if name is null
 	 */
 	public UUID create(final UUID namespace, final String name) {
-		final byte[] ns = namespace == null ? null : bytes(namespace);
-		final byte[] n = name.getBytes(StandardCharsets.UTF_8);
-		return create(ns, n);
-	}
-
-	/**
-	 * Returns a name-based UUID.
-	 * 
-	 * @deprecated This method will be removed when the new RFC is published.
-	 * 
-	 * @param namespace a name space UUID
-	 * @param name      a UUID
-	 * @return a name-based UUID
-	 */
-	@Deprecated
-	public UUID create(final UUID namespace, final UUID name) {
-		final byte[] ns = namespace == null ? null : bytes(namespace);
-		final byte[] n = bytes(name);
-		return create(ns, n);
+		return create(namespaceBytes(namespace), nameBytes(name));
 	}
 
 	/**
@@ -186,12 +154,12 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	 * @param namespace a name space string
 	 * @param name      a byte array
 	 * @return a name-based UUID
+	 * @throws NullPointerException if name is null
 	 * @throws InvalidUuidException if the name space is invalid
 	 * @see InvalidUuidException
 	 */
 	public UUID create(final String namespace, final byte[] name) {
-		final byte[] ns = namespace == null ? null : bytes(namespace);
-		return create(ns, name);
+		return create(namespaceBytes(namespace), nameBytes(name));
 	}
 
 	/**
@@ -202,31 +170,12 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	 * @param namespace a name space string
 	 * @param name      a string
 	 * @return a name-based UUID
+	 * @throws NullPointerException if name is null
 	 * @throws InvalidUuidException if the name space is invalid
 	 * @see InvalidUuidException
 	 */
 	public UUID create(final String namespace, final String name) {
-		final byte[] ns = namespace == null ? null : bytes(namespace);
-		final byte[] n = name.getBytes(StandardCharsets.UTF_8);
-		return create(ns, n);
-	}
-
-	/**
-	 * Returns a name-based UUID.
-	 * 
-	 * @deprecated This method will be removed when the new RFC is published.
-	 * 
-	 * @param namespace a name space string
-	 * @param name      a UUID
-	 * @return a name-based UUID
-	 * @throws InvalidUuidException if the name space is invalid
-	 * @see InvalidUuidException
-	 */
-	@Deprecated
-	public UUID create(final String namespace, final UUID name) {
-		final byte[] ns = namespace == null ? null : bytes(namespace);
-		final byte[] n = bytes(name);
-		return create(ns, n);
+		return create(namespaceBytes(namespace), nameBytes(name));
 	}
 
 	/**
@@ -235,11 +184,10 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	 * @param namespace a name space enumeration
 	 * @param name      a byte array
 	 * @return a name-based UUID
-	 * @see UuidNamespace
+	 * @throws NullPointerException if name is null
 	 */
 	public UUID create(final UuidNamespace namespace, final byte[] name) {
-		final byte[] ns = namespace == null ? null : bytes(namespace);
-		return create(ns, name);
+		return create(namespaceBytes(namespace), nameBytes(name));
 	}
 
 	/**
@@ -250,71 +198,32 @@ public abstract class AbstNameBasedFactory extends UuidFactory {
 	 * @param namespace a name space enumeration
 	 * @param name      a string
 	 * @return a name-based UUID
-	 * @see UuidNamespace
+	 * @throws NullPointerException if name is null
 	 */
 	public UUID create(final UuidNamespace namespace, final String name) {
-		final byte[] ns = namespace == null ? null : bytes(namespace);
-		final byte[] n = name.getBytes(StandardCharsets.UTF_8);
-		return create(ns, n);
+		return create(namespaceBytes(namespace), nameBytes(name));
 	}
 
-	/**
-	 * Returns a name-based UUID.
-	 * 
-	 * @deprecated This method will be removed when the new RFC is published.
-	 * 
-	 * @param namespace a name space enumeration
-	 * @param name      a UUID
-	 * @return a name-based UUID
-	 * @see UuidNamespace
-	 */
-	@Deprecated
-	public UUID create(final UuidNamespace namespace, final UUID name) {
-		final byte[] ns = namespace == null ? null : bytes(namespace);
-		final byte[] n = bytes(name);
-		return create(ns, n);
+	@Override
+	public UUID create() {
+		return create(Parameters.builder().build());
 	}
 
-	/**
-	 * Converts a name space enumeration into a byte array.
-	 * 
-	 * @param namespace a name space enumeration
-	 * @return a byte array
-	 */
-	protected static byte[] bytes(UuidNamespace namespace) {
-		return bytes(namespace.getValue());
-	}
-
-	/**
-	 * Converts a name space UUID into a byte array.
-	 * 
-	 * @param namespace a name space UUID
-	 * @return a byte array
-	 */
-	protected static byte[] bytes(UUID namespace) {
-		return BinaryCodec.INSTANCE.encode(namespace);
-	}
-
-	/**
-	 * Converts a name space string into a byte array.
-	 * 
-	 * @param namespace a name space string
-	 * @return a byte array
-	 * @throws InvalidUuidException if the name space is invalid
-	 * @see InvalidUuidException
-	 */
-	protected static byte[] bytes(String namespace) {
-		return BinaryCodec.INSTANCE.encode(StringCodec.INSTANCE.decode(namespace));
+	@Override
+	public UUID create(Parameters parameters) {
+		return create(parameters.getNamespace(), parameters.getName());
 	}
 
 	private UUID create(final byte[] namespace, final byte[] name) {
+
+		Objects.requireNonNull(name, "Null name");
 
 		MessageDigest hasher;
 
 		try {
 			hasher = MessageDigest.getInstance(this.algorithm);
 		} catch (NoSuchAlgorithmException e) {
-			throw new IllegalArgumentException("Message digest algorithm not available: " + this.algorithm, e);
+			throw new IllegalArgumentException(e.getMessage());
 		}
 
 		if (namespace != null) {

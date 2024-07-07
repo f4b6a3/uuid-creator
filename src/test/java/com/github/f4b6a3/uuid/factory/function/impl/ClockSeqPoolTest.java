@@ -1,12 +1,12 @@
-package com.github.f4b6a3.uuid.factory.function;
+package com.github.f4b6a3.uuid.factory.function.impl;
 
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 import java.util.HashSet;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.SplittableRandom;
 
-import com.github.f4b6a3.uuid.factory.function.ClockSeqFunction.ClockSeqPool;
+import com.github.f4b6a3.uuid.factory.function.impl.DefaultClockSeqFunction.ClockSeqPool;
 
 public class ClockSeqPoolTest {
 
@@ -125,6 +125,7 @@ public class ClockSeqPoolTest {
 	private static class TestThread extends Thread {
 
 		private int index;
+		private static SplittableRandom random = new SplittableRandom(1);
 		public static int[] list = new int[CLOCK_SEQUENCE_MAX];
 
 		private ClockSeqPool pool;
@@ -136,7 +137,7 @@ public class ClockSeqPoolTest {
 
 		@Override
 		public void run() {
-			int take = ThreadLocalRandom.current().nextInt(CLOCK_SEQUENCE_MAX);
+			int take = random.nextInt(CLOCK_SEQUENCE_MAX);
 			list[index] = pool.take(take);
 		}
 	}

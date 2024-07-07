@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,16 +30,18 @@ import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.UuidValidator;
 
 /**
- * Codec for UUID binary encoding as defined in the RFC-4122.
+ * Codec for UUID binary encoding as defined in RFC 9562.
  * <p>
  * The UUID is encoded as 16 octets (bytes).
+ * 
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc9562.html">RFC 9562</a>
  */
-public class BinaryCodec implements UuidCodec<byte[]> {
+public class StandardBinaryCodec implements UuidCodec<byte[]> {
 
 	/**
 	 * A shared immutable instance.
 	 */
-	public static final BinaryCodec INSTANCE = new BinaryCodec();
+	public static final StandardBinaryCodec INSTANCE = new StandardBinaryCodec();
 
 	/**
 	 * Get an array of bytes from a UUID.

@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,9 +24,11 @@
 
 package com.github.f4b6a3.uuid.codec.base;
 
+import java.util.Arrays;
+
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
+import com.github.f4b6a3.uuid.util.immutable.ByteArray;
 import com.github.f4b6a3.uuid.util.immutable.CharArray;
-import com.github.f4b6a3.uuid.util.immutable.LongArray;
 
 /**
  * Class that represents the base-n encodings.
@@ -39,7 +41,7 @@ public final class BaseN {
 	private final boolean sensitive;
 
 	private final CharArray alphabet;
-	private final LongArray map;
+	private final ByteArray map;
 
 	/**
 	 * The minimum radix: 2.
@@ -59,7 +61,7 @@ public final class BaseN {
 	 */
 	protected static final String ALPHABET_64 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
 
-	private static final int BIT_LENGTH = 128;
+	private static final int UUID_BITS = 128;
 
 	/**
 	 * Public constructor for the base-n object.
@@ -145,7 +147,7 @@ public final class BaseN {
 		this.radix = charset.length();
 
 		// set the length field
-		this.length = (int) Math.ceil(BIT_LENGTH / (Math.log(this.radix) / Math.log(2)));
+		this.length = (int) Math.ceil(UUID_BITS / (Math.log(this.radix) / Math.log(2)));
 
 		// set the padding field
 		this.padding = charset.charAt(0);
@@ -210,7 +212,7 @@ public final class BaseN {
 	 * 
 	 * @return a map
 	 */
-	public LongArray getMap() {
+	public ByteArray getMap() {
 		return this.map;
 	}
 
@@ -250,22 +252,23 @@ public final class BaseN {
 		return !(charset.equals(lowercase) || charset.equals(uppercase));
 	}
 
-	private static LongArray map(String alphabet, boolean sensitive) {
+	private static ByteArray map(String alphabet, boolean sensitive) {
+		
 		// initialize the map with -1
-		final long[] mapping = new long[128];
-		for (int i = 0; i < mapping.length; i++) {
-			mapping[i] = -1;
-		}
+		byte[] mapping = new byte[256];
+		Arrays.fill(mapping, (byte) -1);
+		
 		// map the alphabets chars to values
 		for (int i = 0; i < alphabet.length(); i++) {
 			if (sensitive) {
-				mapping[alphabet.charAt(i)] = i;
+				mapping[alphabet.charAt(i)] = (byte) i;
 			} else {
-				mapping[alphabet.toLowerCase().charAt(i)] = i;
-				mapping[alphabet.toUpperCase().charAt(i)] = i;
+				mapping[alphabet.toLowerCase().charAt(i)] = (byte) i;
+				mapping[alphabet.toUpperCase().charAt(i)] = (byte) i;
 			}
 		}
-		return LongArray.from(mapping);
+		
+		return ByteArray.from(mapping);
 	}
 
 	private static String expand(int radix) {

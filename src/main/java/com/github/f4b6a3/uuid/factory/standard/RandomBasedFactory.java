@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,11 +22,10 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.factory.rfc4122;
+package com.github.f4b6a3.uuid.factory.standard;
 
 import java.util.Random;
 import java.util.UUID;
-import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
@@ -63,15 +62,6 @@ public final class RandomBasedFactory extends AbstRandomBasedFactory {
 		this(builder().withRandomFunction(randomSupplier));
 	}
 
-	/**
-	 * Constructor with a function which returns a byte array.
-	 * 
-	 * @param randomFunction a function
-	 */
-	public RandomBasedFactory(IntFunction<byte[]> randomFunction) {
-		this(builder().withRandomFunction(randomFunction));
-	}
-
 	private RandomBasedFactory(Builder builder) {
 		super(UuidVersion.VERSION_RANDOM_BASED, builder);
 	}
@@ -100,7 +90,7 @@ public final class RandomBasedFactory extends AbstRandomBasedFactory {
 	/**
 	 * Returns a random-based UUID.
 	 * 
-	 * ### RFC-4122 - 4.4. Algorithms for Creating a UUID from Truly Random or
+	 * ### RFC 9562 - 4.4. Algorithms for Creating a UUID from Truly Random or
 	 * Pseudo-Random Numbers
 	 * 
 	 * (1) Set the two most significant bits (bits 6 and 7) of the
@@ -117,7 +107,7 @@ public final class RandomBasedFactory extends AbstRandomBasedFactory {
 	public UUID create() {
 		lock.lock();
 		try {
-			if (this.random instanceof ByteRandom) {
+			if (this.random instanceof SafeRandom) {
 				final byte[] bytes = this.random.nextBytes(16);
 				final long msb = ByteUtil.toNumber(bytes, 0, 8);
 				final long lsb = ByteUtil.toNumber(bytes, 8, 16);

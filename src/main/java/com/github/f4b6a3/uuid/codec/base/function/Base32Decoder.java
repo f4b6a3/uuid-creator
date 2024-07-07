@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -49,40 +49,21 @@ public final class Base32Decoder extends BaseNDecoder {
 	@Override
 	public UUID apply(String string) {
 
-		char[] chars = string.toCharArray();
-
 		long msb = 0;
 		long lsb = 0;
 
-		msb |= map.get(chars[0x00]) << 59;
-		msb |= map.get(chars[0x01]) << 54;
-		msb |= map.get(chars[0x02]) << 49;
-		msb |= map.get(chars[0x03]) << 44;
-		msb |= map.get(chars[0x04]) << 39;
-		msb |= map.get(chars[0x05]) << 34;
-		msb |= map.get(chars[0x06]) << 29;
-		msb |= map.get(chars[0x07]) << 24;
-		msb |= map.get(chars[0x08]) << 19;
-		msb |= map.get(chars[0x09]) << 14;
-		msb |= map.get(chars[0x0a]) << 9;
-		msb |= map.get(chars[0x0b]) << 4;
+		for (int i = 0; i < 12; i++) {
+			msb = (msb << 5) | get(string, i);
+		}
 
-		msb |= map.get(chars[0x0c]) >>> 1;
-		lsb |= map.get(chars[0x0c]) << 63;
+		msb = (msb << 4) | (get(string, 12) >>> 1);
+		lsb = (lsb << 5) | get(string, 12);
 
-		lsb |= map.get(chars[0x0d]) << 58;
-		lsb |= map.get(chars[0x0e]) << 53;
-		lsb |= map.get(chars[0x0f]) << 48;
-		lsb |= map.get(chars[0x10]) << 43;
-		lsb |= map.get(chars[0x11]) << 38;
-		lsb |= map.get(chars[0x12]) << 33;
-		lsb |= map.get(chars[0x13]) << 28;
-		lsb |= map.get(chars[0x14]) << 23;
-		lsb |= map.get(chars[0x15]) << 18;
-		lsb |= map.get(chars[0x16]) << 13;
-		lsb |= map.get(chars[0x17]) << 8;
-		lsb |= map.get(chars[0x18]) << 3;
-		lsb |= map.get(chars[0x19]) >>> 2;
+		for (int i = 13; i < 25; i++) {
+			lsb = (lsb << 5) | get(string, i);
+		}
+
+		lsb = (lsb << 3) | (get(string, 25) >>> 2);
 
 		return new UUID(msb, lsb);
 	}

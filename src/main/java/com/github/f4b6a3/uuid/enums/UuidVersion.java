@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 package com.github.f4b6a3.uuid.enums;
 
 /**
- * UUID versions defined by RFC-4122.
+ * UUID versions defined by RFC 9562.
  * <p>
  * List of versions:
  * <ul>
@@ -39,6 +39,8 @@ package com.github.f4b6a3.uuid.enums;
  * <li>{@link VERSION_TIME_ORDERED_EPOCH}: 7
  * <li>{@link VERSION_CUSTOM}: 8
  * </ul>
+ * 
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc9562.html">RFC 9562</a>
  */
 public enum UuidVersion {
 
@@ -47,7 +49,7 @@ public enum UuidVersion {
 	 */
 	VERSION_UNKNOWN(0),
 	/**
-	 * The time-based version with gregorian epoch specified in RFC-4122.
+	 * The time-based version with gregorian epoch specified in RFC 9562.
 	 */
 	VERSION_TIME_BASED(1),
 	/**
@@ -55,15 +57,15 @@ public enum UuidVersion {
 	 */
 	VERSION_DCE_SECURITY(2),
 	/**
-	 * The name-based version specified in RFC-4122 that uses MD5 hashing.
+	 * The name-based version specified in RFC 9562 that uses MD5 hashing.
 	 */
 	VERSION_NAME_BASED_MD5(3),
 	/**
-	 * The randomly or pseudo-randomly generated version specified in RFC-4122.
+	 * The randomly or pseudo-randomly generated version specified in RFC 9562.
 	 */
 	VERSION_RANDOM_BASED(4),
 	/**
-	 * The name-based version specified in RFC-4122 that uses SHA-1 hashing.
+	 * The name-based version specified in RFC 9562 that uses SHA-1 hashing.
 	 */
 	VERSION_NAME_BASED_SHA1(5),
 	/**

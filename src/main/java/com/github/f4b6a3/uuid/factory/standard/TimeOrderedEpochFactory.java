@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,12 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.factory.rfc4122;
+package com.github.f4b6a3.uuid.factory.standard;
 
 import java.time.Clock;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
@@ -136,15 +135,6 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	}
 
 	/**
-	 * Constructor with a function which returns random arrays of bytes.
-	 * 
-	 * @param randomFunction a function
-	 */
-	public TimeOrderedEpochFactory(IntFunction<byte[]> randomFunction) {
-		this(builder().withRandomFunction(randomFunction));
-	}
-
-	/**
 	 * Constructor with a function which a function which return random numbers and
 	 * a clock.
 	 * 
@@ -152,17 +142,6 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	 * @param clock          a clock
 	 */
 	public TimeOrderedEpochFactory(LongSupplier randomFunction, Clock clock) {
-		this(builder().withRandomFunction(randomFunction).withClock(clock));
-	}
-
-	/**
-	 * Constructor with a function which a function which returns random arrays of
-	 * bytes and a clock.
-	 * 
-	 * @param randomFunction a function
-	 * @param clock          a clock
-	 */
-	public TimeOrderedEpochFactory(IntFunction<byte[]> randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
 
@@ -328,7 +307,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		}
 
 		void reset(final long time) {
-			if (random instanceof ByteRandom) {
+			if (random instanceof SafeRandom) {
 				final byte[] bytes = random.nextBytes(10);
 				this.msb = (time << 16) | (ByteUtil.toNumber(bytes, 0, 2));
 				this.lsb = ByteUtil.toNumber(bytes, 2, 10);
@@ -358,7 +337,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 			}
 
 			// then randomize the lower 48 bits
-			if (random instanceof ByteRandom) {
+			if (random instanceof SafeRandom) {
 				final byte[] bytes = random.nextBytes(6);
 				this.lsb |= ByteUtil.toNumber(bytes);
 			} else {
@@ -409,7 +388,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 
 		private LongSupplier customPlusNFunction(IRandom random, Long incrementMax) {
 			if (incrementMax == INCREMENT_MAX_DEFAULT) {
-				if (random instanceof ByteRandom) {
+				if (random instanceof SafeRandom) {
 					return () -> {
 						// return n, where 1 <= n <= 2^32
 						final byte[] bytes = random.nextBytes(4);
@@ -423,7 +402,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 				}
 			} else {
 				final long positive = 0x7fffffffffffffffL;
-				if (random instanceof ByteRandom) {
+				if (random instanceof SafeRandom) {
 					// the minimum number of bits and bytes for incrementMax
 					final int bits = (int) Math.ceil(Math.log(incrementMax) / Math.log(2));
 					final int size = ((bits - 1) / Byte.SIZE) + 1;

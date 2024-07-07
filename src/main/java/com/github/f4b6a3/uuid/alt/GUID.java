@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2023 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,10 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -115,14 +117,12 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 */
 	public static final int GUID_BYTES = 16;
 
-	private static final long MASK_04 = 0x0000_0000_0000_000fL;
 	private static final long MASK_08 = 0x0000_0000_0000_00ffL;
 	private static final long MASK_12 = 0x0000_0000_0000_0fffL;
 	private static final long MASK_16 = 0x0000_0000_0000_ffffL;
 	private static final long MASK_32 = 0x0000_0000_ffff_ffffL;
 
 	private static final long MULTICAST = 0x0000_0100_0000_0000L;
-	private static final GUID HASHSPACE_SHA2_256 = new GUID(0x3fb32780953c4464L, 0x9cfde85dbbe9843dL);
 
 	/**
 	 * Creates a new GUID.
@@ -208,9 +208,12 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @return a GUID
 	 */
 	public static GUID v1() {
-		final long time = gregorian();
+
+		final long time = gregorian(Instant.now());
+
 		final long msb = (time << 32) | ((time >>> 16) & (MASK_16 << 16)) | ((time >>> 48) & MASK_12);
-		final long lsb = ThreadLocalRandom.current().nextLong() | MULTICAST;
+		final long lsb = LazyHolder.random() | MULTICAST;
+
 		return version(msb, lsb, 1);
 	}
 
@@ -243,12 +246,13 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * GUID guid = GUID.v3(Uuid.NAMESPACE_DNS, "www.example.com");
 	 * }</pre>
 	 * 
-	 * @param namespace a GUID
+	 * @param namespace a GUID (optional)
 	 * @param name      a string
 	 * @return a GUID
+	 * @throws NullPointerException if the name is null
 	 */
 	public static GUID v3(GUID namespace, String name) {
-		return hash(3, "MD5", null, namespace, name);
+		return hash(3, "MD5", namespace, name);
 	}
 
 	/**
@@ -269,9 +273,8 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @return a GUID
 	 */
 	public static GUID v4() {
-		ThreadLocalRandom random = ThreadLocalRandom.current();
-		final long msb = random.nextLong();
-		final long lsb = random.nextLong();
+		final long msb = LazyHolder.random();
+		final long lsb = LazyHolder.random();
 		return version(msb, lsb, 4);
 	}
 
@@ -284,12 +287,13 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * GUID guid = GUID.v5(Uuid.NAMESPACE_DNS, "www.example.com");
 	 * }</pre>
 	 * 
-	 * @param namespace a GUID
+	 * @param namespace a GUID (optional)
 	 * @param name      a string
 	 * @return a GUID
+	 * @throws NullPointerException if the name is null
 	 */
 	public static GUID v5(GUID namespace, String name) {
-		return hash(5, "SHA-1", null, namespace, name);
+		return hash(5, "SHA-1", namespace, name);
 	}
 
 	/**
@@ -307,9 +311,12 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @return a GUID
 	 */
 	public static GUID v6() {
-		final long time = gregorian();
+
+		final long time = gregorian(Instant.now());
+
 		final long msb = ((time & ~MASK_12) << 4) | (time & MASK_12);
-		final long lsb = ThreadLocalRandom.current().nextLong() | MULTICAST;
+		final long lsb = LazyHolder.random() | MULTICAST;
+
 		return version(msb, lsb, 6);
 	}
 
@@ -325,40 +332,13 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @return a GUID
 	 */
 	public static GUID v7() {
-		final long time = System.currentTimeMillis();
-		ThreadLocalRandom random = ThreadLocalRandom.current();
-		final long msb = (time << 16) | (random.nextLong() & MASK_16);
-		final long lsb = random.nextLong();
-		return version(msb, lsb, 7);
-	}
 
-	/**
-	 * Returns a name-based unique identifier that uses SHA-256 hashing (UUIDv8).
-	 * <p>
-	 * Usage:
-	 * 
-	 * <pre>{@code
-	 * GUID guid = GUID.v8(Uuid.NAMESPACE_DNS, "www.example.com");
-	 * }</pre>
-	 * 
-	 * @deprecated This method is no longer supported due to recent sudden changes
-	 *             in the UUIDv8 discussions. It will be removed when the new RFC is
-	 *             finally published.
-	 *             <p>
-	 *             See the latest discussions about UUIDv8:
-	 *             <ul>
-	 *             <li>https://github.com/ietf-wg-uuidrev/rfc4122bis/issues/143
-	 *             <li>https://github.com/ietf-wg-uuidrev/rfc4122bis/issues/144
-	 *             <li>https://github.com/ietf-wg-uuidrev/rfc4122bis/issues/147
-	 *             </ul>
-	 * 
-	 * @param namespace a GUID
-	 * @param name      a string
-	 * @return a GUID
-	 */
-	@Deprecated
-	public static GUID v8(GUID namespace, String name) {
-		return hash(8, "SHA-256", HASHSPACE_SHA2_256, namespace, name);
+		final long time = System.currentTimeMillis();
+
+		final long msb = (time << 16) | (LazyHolder.random() & MASK_12);
+		final long lsb = LazyHolder.random();
+
+		return version(msb, lsb, 7);
 	}
 
 	/**
@@ -493,9 +473,8 @@ public final class GUID implements Serializable, Comparable<GUID> {
 		return 0;
 	}
 
-	private static long gregorian() {
+	static long gregorian(final Instant now) {
 		// 1582-10-15T00:00:00.000Z
-		Instant now = Instant.now();
 		final long greg = 12219292800L;
 		final long nano = now.getNano();
 		final long secs = now.getEpochSecond() + greg;
@@ -503,21 +482,10 @@ public final class GUID implements Serializable, Comparable<GUID> {
 		return time;
 	}
 
-	private static GUID hash(int version, String algorithm, GUID hashspace, GUID namespace, String name) {
+	static GUID hash(int version, String algorithm, GUID namespace, String name) {
 
-		MessageDigest hasher = null;
-		try {
-			hasher = MessageDigest.getInstance(algorithm);
-		} catch (NoSuchAlgorithmException e) {
-			throw new IllegalArgumentException(String.format("%s not supported", algorithm));
-		}
-
-		if (hashspace != null) {
-			ByteBuffer ns = ByteBuffer.allocate(16);
-			ns.putLong(hashspace.msb);
-			ns.putLong(hashspace.lsb);
-			hasher.update(ns.array());
-		}
+		Objects.requireNonNull(name, "Null name");
+		MessageDigest hasher = hasher(algorithm);
 
 		if (namespace != null) {
 			ByteBuffer ns = ByteBuffer.allocate(16);
@@ -535,13 +503,19 @@ public final class GUID implements Serializable, Comparable<GUID> {
 		return version(msb, lsb, version);
 	}
 
-	private static GUID version(long hi, long lo, int version) {
+	static MessageDigest hasher(String algorithm) {
+		try {
+			return MessageDigest.getInstance(algorithm);
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalArgumentException(e.getMessage());
+		}
+	}
 
+	static GUID version(long hi, long lo, int version) {
 		// set the 4 most significant bits of the 7th byte
-		final long msb = (hi & 0xffff_ffff_ffff_0fffL) | (version & MASK_04) << 12; // RFC-4122 version
+		final long msb = (hi & 0xffff_ffff_ffff_0fffL) | (version & 0xfL) << 12; // RFC 9562 version
 		// set the 2 most significant bits of the 9th byte to 1 and 0
-		final long lsb = (lo & 0x3fff_ffff_ffff_ffffL) | 0x8000_0000_0000_0000L; // RFC-4122 variant
-
+		final long lsb = (lo & 0x3fff_ffff_ffff_ffffL) | 0x8000_0000_0000_0000L; // RFC 9562 variant
 		return new GUID(msb, lsb);
 	}
 
@@ -551,5 +525,125 @@ public final class GUID implements Serializable, Comparable<GUID> {
 
 	long getLeastSignificantBits() {
 		return this.lsb;
+	}
+
+	static final class Parser {
+
+		private static final byte[] MAP;
+		static {
+			byte[] mapping = new byte[256];
+			Arrays.fill(mapping, (byte) -1);
+			mapping['0'] = 0;
+			mapping['1'] = 1;
+			mapping['2'] = 2;
+			mapping['3'] = 3;
+			mapping['4'] = 4;
+			mapping['5'] = 5;
+			mapping['6'] = 6;
+			mapping['7'] = 7;
+			mapping['8'] = 8;
+			mapping['9'] = 9;
+			mapping['a'] = 10;
+			mapping['b'] = 11;
+			mapping['c'] = 12;
+			mapping['d'] = 13;
+			mapping['e'] = 14;
+			mapping['f'] = 15;
+			mapping['A'] = 10;
+			mapping['B'] = 11;
+			mapping['C'] = 12;
+			mapping['D'] = 13;
+			mapping['E'] = 14;
+			mapping['F'] = 15;
+			MAP = mapping;
+		}
+
+		private static final int DASH_POSITION_1 = 8;
+		private static final int DASH_POSITION_2 = 13;
+		private static final int DASH_POSITION_3 = 18;
+		private static final int DASH_POSITION_4 = 23;
+
+		public static GUID parse(final String string) {
+
+			validate(string);
+
+			long msb = 0;
+			long lsb = 0;
+
+			for (int i = 0; i < 8; i++) {
+				msb = (msb << 4) | get(string, i);
+			}
+
+			for (int i = 9; i < 13; i++) {
+				msb = (msb << 4) | get(string, i);
+			}
+
+			for (int i = 14; i < 18; i++) {
+				msb = (msb << 4) | get(string, i);
+			}
+
+			for (int i = 19; i < 23; i++) {
+				lsb = (lsb << 4) | get(string, i);
+			}
+
+			for (int i = 24; i < 36; i++) {
+				lsb = (lsb << 4) | get(string, i);
+			}
+
+			return new GUID(msb, lsb);
+		}
+
+		public static boolean valid(final String guid) {
+			try {
+				parse(guid);
+				return true;
+			} catch (IllegalArgumentException e) {
+				return false;
+			}
+		}
+
+		private static long get(final String string, int i) {
+
+			final int chr = string.charAt(i);
+			if (chr > 255) {
+				throw exception(string);
+			}
+
+			final byte value = MAP[chr];
+			if (value < 0) {
+				throw exception(string);
+			}
+			return value & 0xffL;
+		}
+
+		private static RuntimeException exception(final String str) {
+			return new IllegalArgumentException("Invalid UUID: " + str);
+		}
+
+		private static void validate(final String string) {
+			if (string == null || string.length() != GUID_CHARS) {
+				throw exception(string);
+			}
+			if (string.charAt(DASH_POSITION_1) != '-' || string.charAt(DASH_POSITION_2) != '-'
+					|| string.charAt(DASH_POSITION_3) != '-' || string.charAt(DASH_POSITION_4) != '-') {
+				throw exception(string);
+			}
+		}
+	}
+
+	private static class LazyHolder {
+
+		// The JVM unique number tries to mitigate the fact that the thread
+		// local random is not seeded with a secure random seed by default.
+		// Their seeds are based on temporal data and predefined constants.
+		// Although the seeds are unique per JVM, they are not across JVMs.
+		// It helps to generate different sequences of numbers even if two
+		// ThreadLocalRandom are by chance instantiated with the same seed.
+		// Of course it doesn't better the output, but doesn't hurt either.
+		static final long JVM_UNIQUE_NUMBER = new SecureRandom().nextLong();
+
+		private static long random() {
+			return ThreadLocalRandom.current().nextLong() ^ JVM_UNIQUE_NUMBER;
+		}
 	}
 }

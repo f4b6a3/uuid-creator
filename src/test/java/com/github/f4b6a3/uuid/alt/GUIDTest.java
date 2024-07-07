@@ -5,8 +5,10 @@ import static org.junit.Assert.*;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.SplittableRandom;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -26,7 +28,7 @@ public class GUIDTest {
 
 	@Test
 	public void testConstructorGUID() {
-		Random random = new Random();
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			final long msb = random.nextLong();
 			final long lsb = random.nextLong();
@@ -38,7 +40,7 @@ public class GUIDTest {
 
 	@Test
 	public void testConstructorLongs() {
-		Random random = new Random();
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			final long msb = random.nextLong();
 			final long lsb = random.nextLong();
@@ -50,7 +52,7 @@ public class GUIDTest {
 
 	@Test
 	public void testConstructorJdkUUID() {
-		Random random = new Random();
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			final long msb = random.nextLong();
 			final long lsb = random.nextLong();
@@ -62,7 +64,7 @@ public class GUIDTest {
 
 	@Test
 	public void testConstructorString() {
-		Random random = new Random();
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			final long msb = random.nextLong();
 			final long lsb = random.nextLong();
@@ -76,10 +78,10 @@ public class GUIDTest {
 
 	@Test
 	public void testConstructorBytes() {
-		Random random = new Random();
+		SplittableRandom seeder = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			byte[] bytes = new byte[GUID.GUID_BYTES];
-			random.nextBytes(bytes);
+			(new Random(seeder.nextLong())).nextBytes(bytes);
 			GUID guid = new GUID(bytes);
 			assertEquals(Arrays.toString(bytes), Arrays.toString(guid.toBytes()));
 		}
@@ -154,7 +156,6 @@ public class GUIDTest {
 			assertNotEquals(GUID.v3(null, name), GUID.v3(namespace, name));
 			assertNotEquals(GUID.v3(GUID.NIL, name), GUID.v3(namespace, name));
 			assertNotEquals(GUID.v3(namespace, name), GUID.v5(namespace, name)); // v5
-			assertNotEquals(GUID.v3(namespace, name), GUID.v8(namespace, name)); // v8
 			assertEquals(GUID.v3(null, name), GUID.v3(null, name));
 			assertEquals(GUID.v3(GUID.NIL, name), GUID.v3(GUID.NIL, name));
 			assertEquals(GUID.v3(namespace, name), GUID.v3(namespace, name));
@@ -198,7 +199,6 @@ public class GUIDTest {
 			assertNotEquals(GUID.v5(null, name), GUID.v5(namespace, name));
 			assertNotEquals(GUID.v5(GUID.NIL, name), GUID.v5(namespace, name));
 			assertNotEquals(GUID.v5(namespace, name), GUID.v3(namespace, name)); // v3
-			assertNotEquals(GUID.v5(namespace, name), GUID.v8(namespace, name)); // v8
 			assertEquals(GUID.v5(null, name), GUID.v5(null, name));
 			assertEquals(GUID.v5(GUID.NIL, name), GUID.v5(GUID.NIL, name));
 			assertEquals(GUID.v5(namespace, name), GUID.v5(namespace, name));
@@ -250,37 +250,8 @@ public class GUIDTest {
 	}
 
 	@Test
-	public void testV8() {
-		GUID prev = GUID.v8(GUID.NIL, "");
-		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			GUID namespace = new GUID(UUID.randomUUID());
-			String name = UUID.randomUUID().toString();
-			GUID guid = GUID.v8(namespace, name);
-			assertNotNull(guid);
-			assertNotEquals(prev, guid);
-			assertEquals(8, guid.version());
-			assertNotEquals(GUID.NIL, guid);
-			assertNotEquals(GUID.MAX, guid);
-			assertNotEquals(GUID.v8(null, name), GUID.v8(namespace, name));
-			assertNotEquals(GUID.v8(GUID.NIL, name), GUID.v8(namespace, name));
-			assertNotEquals(GUID.v8(namespace, name), GUID.v3(namespace, name)); // v3
-			assertNotEquals(GUID.v8(namespace, name), GUID.v5(namespace, name)); // v5
-			assertEquals(GUID.v8(null, name), GUID.v8(null, name));
-			assertEquals(GUID.v8(GUID.NIL, name), GUID.v8(GUID.NIL, name));
-			assertEquals(GUID.v8(namespace, name), GUID.v8(namespace, name));
-			prev = guid;
-		}
-		{
-			// Example of a UUIDv8 Value
-			// draft-ietf-uuidrev-rfc4122bis-03
-			GUID guid = GUID.v8(GUID.NAMESPACE_DNS, "www.example.com");
-			assertEquals("401835fd-a627-870a-873f-ed73f2bc5b2c", guid.toString());
-		}
-	}
-
-	@Test
 	public void testToUUID() {
-		Random random = new Random();
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			final long msb = random.nextLong();
 			final long lsb = random.nextLong();
@@ -301,11 +272,11 @@ public class GUIDTest {
 
 	@Test
 	public void testToBytes() {
-		Random random = new Random();
+		SplittableRandom seeder = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
 			byte[] bytes1 = new byte[16];
-			random.nextBytes(bytes1);
+			(new Random(seeder.nextLong())).nextBytes(bytes1);
 			GUID guid0 = new GUID(bytes1);
 
 			byte[] bytes2 = guid0.toBytes();
@@ -318,19 +289,19 @@ public class GUIDTest {
 	@Test
 	public void testHashCode() {
 
-		Random random = new Random();
+		SplittableRandom seeder = new SplittableRandom(1);
 		byte[] bytes = new byte[GUID.GUID_BYTES];
 
 		// invoked on the same object
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			random.nextBytes(bytes);
+			(new Random(seeder.nextLong())).nextBytes(bytes);
 			GUID guid1 = new GUID(bytes);
 			assertEquals(guid1.hashCode(), guid1.hashCode());
 		}
 
 		// invoked on two equal objects
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			random.nextBytes(bytes);
+			(new Random(seeder.nextLong())).nextBytes(bytes);
 			GUID guid1 = new GUID(bytes);
 			GUID guid2 = new GUID(bytes);
 			assertEquals(guid1.hashCode(), guid2.hashCode());
@@ -340,12 +311,12 @@ public class GUIDTest {
 	@Test
 	public void testEquals() {
 
-		Random random = new Random();
+		SplittableRandom seeder = new SplittableRandom(1);
 		byte[] bytes = new byte[GUID.GUID_BYTES];
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
-			random.nextBytes(bytes);
+			(new Random(seeder.nextLong())).nextBytes(bytes);
 			GUID guid1 = new GUID(bytes);
 			GUID guid2 = new GUID(bytes);
 			assertEquals(guid1, guid2);
@@ -367,7 +338,7 @@ public class GUIDTest {
 	public void testCompareTo() {
 
 		final long zero = 0L;
-		Random random = new Random();
+		SplittableRandom random = new SplittableRandom(1);
 		byte[] bytes = new byte[GUID.GUID_BYTES];
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
@@ -441,6 +412,50 @@ public class GUIDTest {
 	}
 
 	@Test
+	public void testProtectedGregorian() {
+		testProtectedGregorianInstant(Instant.parse("1582-10-15T00:00:00.000Z"));
+		testProtectedGregorianInstant(Instant.parse("1970-01-01T00:00:00.000Z"));
+		testProtectedGregorianInstant(Instant.parse("1955-11-12T06:38:00.000Z"));
+		testProtectedGregorianInstant(Instant.parse("1985-10-26T09:00:00.000Z"));
+		testProtectedGregorianInstant(Instant.parse("2015-10-21T07:28:00.000Z"));
+	}
+
+	private static void testProtectedGregorianInstant(Instant instant) {
+		long epoch = 12219292800L; // seconds since "1582-10-15T00:00:00.000Z"
+		assertEquals(GUID.gregorian(instant) / 10_000_000L, epoch + instant.getEpochSecond());
+	}
+
+	@Test
+	public void testProtectedHash() {
+		String name = "THIS IS A TEST";
+		GUID guid = GUID.v3(null, name);
+		UUID uuid = UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8));
+		assertEquals(guid.toString(), uuid.toString());
+	}
+
+	@Test
+	public void testProtectedHasher() {
+		assertNotNull(GUID.hasher("MD5"));
+		assertNotNull(GUID.hasher("SHA-1"));
+		try {
+			GUID.hasher("AAA");
+			fail("Should throw exception");
+		} catch (IllegalArgumentException e) {
+			// success
+		}
+	}
+
+	@Test
+	public void testProtectedVersion() {
+		for (int i = 0; i < 32; i++) {
+			GUID guid = GUID.version(GUID.NIL.getMostSignificantBits(), GUID.NIL.getLeastSignificantBits(), i);
+			assertEquals(guid.getMostSignificantBits() & 0xffffffffffff0fffL, 0L);
+			assertEquals(guid.getLeastSignificantBits() & 0x3fffffffffffffffL, 0L);
+			assertEquals(guid.version(), i % 16);
+		}
+	}
+
+	@Test
 	public void testValid() {
 		testValidator((String string) -> {
 			return GUID.valid(string);
@@ -453,13 +468,13 @@ public class GUIDTest {
 		// canonical format with 36 characters
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			String string = UUID.randomUUID().toString();
-			GUID guid = Parser.parse(string);
+			GUID guid = GUID.Parser.parse(string);
 			assertEquals(string, guid.toString());
 		}
 
 		testValidator((String string) -> {
 			try {
-				return Parser.parse(string) != null;
+				return GUID.Parser.parse(string) != null;
 			} catch (IllegalArgumentException e) {
 				return false;
 			}
@@ -468,7 +483,7 @@ public class GUIDTest {
 		// compare with regular expression
 		testValidator((String string) -> {
 			boolean expected = (string != null && PATTERN.matcher(string).matches());
-			boolean result = Parser.valid(string);
+			boolean result = GUID.Parser.valid(string);
 			assertEquals(expected, result);
 			return expected && result;
 		});

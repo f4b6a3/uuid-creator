@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,18 +22,47 @@
  * SOFTWARE.
  */
 
-package com.github.f4b6a3.uuid.factory;
+package com.github.f4b6a3.uuid.factory.standard;
 
-import java.util.UUID;
+import com.github.f4b6a3.uuid.enums.UuidVersion;
+import com.github.f4b6a3.uuid.factory.AbstTimeBasedFactory;
 
 /**
- * Interface for create methods without arguments.
+ * Concrete factory for creating time-based unique identifiers (UUIDv1).
+ * 
+ * @see AbstTimeBasedFactory
  */
-public interface NoArgsFactory {
+public final class TimeBasedFactory extends AbstTimeBasedFactory {
+
 	/**
-	 * Returns a new UUID.
-	 * 
-	 * @return a UUID
+	 * Default constructor.
 	 */
-	public UUID create();
+	public TimeBasedFactory() {
+		this(builder());
+	}
+
+	private TimeBasedFactory(Builder builder) {
+		super(UuidVersion.VERSION_TIME_BASED, builder);
+	}
+
+	/**
+	 * Returns a builder of time-based factory.
+	 * 
+	 * @return a builder
+	 */
+	public static Builder builder() {
+		return new Builder();
+	}
+
+	/**
+	 * Concrete builder for creating a time-based factory.
+	 * 
+	 * @see AbstTimeBasedFactory.Builder
+	 */
+	public static class Builder extends AbstTimeBasedFactory.Builder<TimeBasedFactory, Builder> {
+		@Override
+		public TimeBasedFactory build() {
+			return new TimeBasedFactory(this);
+		}
+	}
 }

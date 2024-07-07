@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.TestSuite;
-import com.github.f4b6a3.uuid.factory.rfc4122.TimeBasedFactory;
+import com.github.f4b6a3.uuid.factory.standard.TimeBasedFactory;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
 /**

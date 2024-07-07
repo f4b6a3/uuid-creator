@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,8 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import com.github.f4b6a3.uuid.codec.base.BaseN;
-import com.github.f4b6a3.uuid.util.immutable.LongArray;
+import com.github.f4b6a3.uuid.exception.InvalidUuidException;
+import com.github.f4b6a3.uuid.util.immutable.ByteArray;
 
 /**
  * Abstract function to be extended by all decoder functions of this package.
@@ -45,7 +46,7 @@ public abstract class BaseNDecoder implements Function<String, UUID> {
 	/**
 	 * The base-n map.
 	 */
-	protected final LongArray map;
+	protected final ByteArray map;
 
 	/**
 	 * @param base an enumeration that represents the base-n encoding
@@ -53,5 +54,19 @@ public abstract class BaseNDecoder implements Function<String, UUID> {
 	public BaseNDecoder(BaseN base) {
 		this.base = base;
 		this.map = base.getMap();
+	}
+
+	protected long get(String string, int i) {
+
+		final int chr = string.charAt(i);
+		if (chr > 255) {
+			throw InvalidUuidException.newInstance(string);
+		}
+
+		final byte value = map.get(chr);
+		if (value < 0) {
+			throw InvalidUuidException.newInstance(string);
+		}
+		return value & 0xffL;
 	}
 }

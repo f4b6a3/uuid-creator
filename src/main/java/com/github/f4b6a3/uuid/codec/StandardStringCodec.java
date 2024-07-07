@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,40 +30,53 @@ import com.github.f4b6a3.uuid.codec.base.Base16Codec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 import com.github.f4b6a3.uuid.util.UuidValidator;
 import com.github.f4b6a3.uuid.util.immutable.CharArray;
-import com.github.f4b6a3.uuid.util.immutable.LongArray;
 import com.github.f4b6a3.uuid.util.internal.JavaVersionUtil;
 
 /**
- * Codec for UUID string representation as defined in RFC-4122.
+ * Codec for UUID canonical string as defined in RFC 9562.
  * <p>
- * The string representation, also referred as canonical textual representation,
- * is a string of 32 hexadecimal (base-16) digits, displayed in five groups
+ * In the canonical textual representation, the 16 bytes of a UUID are
+ * represented as 32 hexadecimal (base-16) digits, displayed in five groups
  * separated by hyphens, in the form 8-4-4-4-12 for a total of 36 characters (32
  * hexadecimal characters and 4 hyphens).
  * <p>
- * This codec decodes (parses) strings in these formats, with/without hyphens:
+ * This codec decodes (parses) strings in these formats:
  * <ul>
- * <li>00000000-0000-V000-0000-000000000000 (canonical string)
- * <li>{00000000-0000-V000-0000-000000000000} (MS GUID string)
- * <li>urn:uuid:00000000-0000-V000-0000-000000000000 (URN UUID string)
+ * <li>000000000000V0000000000000000000 (hexadecimal string)
+ * <li>00000000-0000-0000-0000-000000000000 (THE canonical string)
+ * <li>{00000000-0000-0000-0000-000000000000} (Microsoft string)
+ * <li>urn:uuid:00000000-0000-0000-0000-000000000000 (URN string)
  * </ul>
  * <p>
  * The encoding and decoding processes can be much faster (7x) than
  * {@link UUID#toString()} and {@link UUID#fromString(String)} in JDK 8.
  * <p>
  * If you prefer a string representation without hyphens, use
- * {@link Base16Codec} instead of {@link StringCodec}. {@link Base16Codec} can
- * be much faster (22x) than doing
+ * {@link Base16Codec} instead of {@link StandardStringCodec}.
+ * {@link Base16Codec} can be much faster (22x) than doing
  * <code>uuid.toString().replaceAll("-", "")</code>.
+ * <p>
+ * 
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc9562.html">RFC 9562</a>
  */
-public class StringCodec implements UuidCodec<String> {
+public class StandardStringCodec implements UuidCodec<String> {
 
 	/**
 	 * A shared immutable instance.
 	 */
-	public static final StringCodec INSTANCE = new StringCodec();
+	public static final StandardStringCodec INSTANCE = new StandardStringCodec();
 
-	private static final LongArray MAP = Base16Codec.INSTANCE.getBase().getMap();
+	private static final int DASH_POSITION_1 = 8;
+	private static final int DASH_POSITION_2 = 13;
+	private static final int DASH_POSITION_3 = 18;
+	private static final int DASH_POSITION_4 = 23;
+
+	private static final int LENGTH_WITH_DASH = 36;
+	private static final int LENGTH_WITHOUT_DASH = 32;
+	private static final int LENGTH_WITH_URN_PREFIX = 45;
+	private static final int LENGTH_WITH_CURLY_BRACES = 38;
+
+	private static final byte[] MAP = Base16Codec.INSTANCE.getBase().getMap().array();
 	private static final CharArray ALPHABET = Base16Codec.INSTANCE.getBase().getAlphabet();
 
 	private static final String URN_PREFIX = "urn:uuid:";
@@ -151,124 +164,88 @@ public class StringCodec implements UuidCodec<String> {
 	 * @throws InvalidUuidException if the argument is invalid
 	 */
 	@Override
-	public UUID decode(String string) {
+	public UUID decode(final String string) {
 
-		char[] chars = toCharArray(string);
-		UuidValidator.validate(chars);
+		if (string == null) {
+			throw InvalidUuidException.newInstance(string);
+		}
 
-		long msb = 0;
-		long lsb = 0;
+		final String modified = modify(string);
 
-		if (chars.length == 32) {
-			// UUID string WITHOUT hyphen
-			msb |= MAP.get(chars[0x00]) << 60;
-			msb |= MAP.get(chars[0x01]) << 56;
-			msb |= MAP.get(chars[0x02]) << 52;
-			msb |= MAP.get(chars[0x03]) << 48;
-			msb |= MAP.get(chars[0x04]) << 44;
-			msb |= MAP.get(chars[0x05]) << 40;
-			msb |= MAP.get(chars[0x06]) << 36;
-			msb |= MAP.get(chars[0x07]) << 32;
-			msb |= MAP.get(chars[0x08]) << 28;
-			msb |= MAP.get(chars[0x09]) << 24;
-			msb |= MAP.get(chars[0x0a]) << 20;
-			msb |= MAP.get(chars[0x0b]) << 16;
-			msb |= MAP.get(chars[0x0c]) << 12;
-			msb |= MAP.get(chars[0x0d]) << 8;
-			msb |= MAP.get(chars[0x0e]) << 4;
-			msb |= MAP.get(chars[0x0f]);
+		if (modified.length() == LENGTH_WITH_DASH) {
+			validate(modified);
+			return parse(modified);
+		}
 
-			lsb |= MAP.get(chars[0x10]) << 60;
-			lsb |= MAP.get(chars[0x11]) << 56;
-			lsb |= MAP.get(chars[0x12]) << 52;
-			lsb |= MAP.get(chars[0x13]) << 48;
-			lsb |= MAP.get(chars[0x14]) << 44;
-			lsb |= MAP.get(chars[0x15]) << 40;
-			lsb |= MAP.get(chars[0x16]) << 36;
-			lsb |= MAP.get(chars[0x17]) << 32;
-			lsb |= MAP.get(chars[0x18]) << 28;
-			lsb |= MAP.get(chars[0x19]) << 24;
-			lsb |= MAP.get(chars[0x1a]) << 20;
-			lsb |= MAP.get(chars[0x1b]) << 16;
-			lsb |= MAP.get(chars[0x1c]) << 12;
-			lsb |= MAP.get(chars[0x1d]) << 8;
-			lsb |= MAP.get(chars[0x1e]) << 4;
-			lsb |= MAP.get(chars[0x1f]);
-		} else {
-			// UUID string WITH hyphen
-			msb |= MAP.get(chars[0x00]) << 60;
-			msb |= MAP.get(chars[0x01]) << 56;
-			msb |= MAP.get(chars[0x02]) << 52;
-			msb |= MAP.get(chars[0x03]) << 48;
-			msb |= MAP.get(chars[0x04]) << 44;
-			msb |= MAP.get(chars[0x05]) << 40;
-			msb |= MAP.get(chars[0x06]) << 36;
-			msb |= MAP.get(chars[0x07]) << 32;
-			// input[8] = '-'
-			msb |= MAP.get(chars[0x09]) << 28;
-			msb |= MAP.get(chars[0x0a]) << 24;
-			msb |= MAP.get(chars[0x0b]) << 20;
-			msb |= MAP.get(chars[0x0c]) << 16;
-			// input[13] = '-'
-			msb |= MAP.get(chars[0x0e]) << 12;
-			msb |= MAP.get(chars[0x0f]) << 8;
-			msb |= MAP.get(chars[0x10]) << 4;
-			msb |= MAP.get(chars[0x11]);
-			// input[18] = '-'
-			lsb |= MAP.get(chars[0x13]) << 60;
-			lsb |= MAP.get(chars[0x14]) << 56;
-			lsb |= MAP.get(chars[0x15]) << 52;
-			lsb |= MAP.get(chars[0x16]) << 48;
-			// input[23] = '-'
-			lsb |= MAP.get(chars[0x18]) << 44;
-			lsb |= MAP.get(chars[0x19]) << 40;
-			lsb |= MAP.get(chars[0x1a]) << 36;
-			lsb |= MAP.get(chars[0x1b]) << 32;
-			lsb |= MAP.get(chars[0x1c]) << 28;
-			lsb |= MAP.get(chars[0x1d]) << 24;
-			lsb |= MAP.get(chars[0x1e]) << 20;
-			lsb |= MAP.get(chars[0x1f]) << 16;
-			lsb |= MAP.get(chars[0x20]) << 12;
-			lsb |= MAP.get(chars[0x21]) << 8;
-			lsb |= MAP.get(chars[0x22]) << 4;
-			lsb |= MAP.get(chars[0x23]);
+		if (modified.length() == LENGTH_WITHOUT_DASH) {
+			return Base16Codec.INSTANCE.decode(modified);
+		}
+
+		throw InvalidUuidException.newInstance(modified);
+	}
+
+	private UUID parse(final String string) {
+
+		long msb = 0L;
+		long lsb = 0L;
+
+		for (int i = 0; i < 8; i++) {
+			msb = (msb << 4) | get(string, i);
+		}
+
+		for (int i = 9; i < 13; i++) {
+			msb = (msb << 4) | get(string, i);
+		}
+
+		for (int i = 14; i < 18; i++) {
+			msb = (msb << 4) | get(string, i);
+		}
+
+		for (int i = 19; i < 23; i++) {
+			lsb = (lsb << 4) | get(string, i);
+		}
+
+		for (int i = 24; i < 36; i++) {
+			lsb = (lsb << 4) | get(string, i);
 		}
 
 		return new UUID(msb, lsb);
 	}
 
-	/**
-	 * Returns a char array of a string.
-	 * <p>
-	 * It removes URN prefix and curly braces from the string.
-	 * 
-	 * @param string a string
-	 * @return a substring
-	 */
-	protected static char[] toCharArray(String string) {
-
-		if (string == null) {
-			throw new InvalidUuidException("Invalid UUID: null");
-		}
-
-		char[] chars = string.toCharArray();
+	protected static String modify(final String string) {
 
 		// UUID URN format: "urn:uuid:00000000-0000-0000-0000-000000000000"
-		if (chars.length == 45 && string.startsWith(URN_PREFIX)) {
-			// Remove the UUID URN prefix: "urn:uuid:"
-			char[] substring = new char[chars.length - 9];
-			System.arraycopy(chars, 9, substring, 0, substring.length);
-			return substring;
+		if (string.length() == LENGTH_WITH_URN_PREFIX && string.startsWith(URN_PREFIX)) {
+			return string.substring(URN_PREFIX.length()); // Remove the URN prefix: "urn:uuid:"
 		}
 
 		// Curly braces format: "{00000000-0000-0000-0000-000000000000}"
-		if (chars.length == 38 && chars[0] == '{' && chars[chars.length - 1] == '}') {
-			// Remove curly braces: '{' and '}'
-			char[] substring = new char[chars.length - 2];
-			System.arraycopy(chars, 1, substring, 0, substring.length);
-			return substring;
+		if (string.length() == LENGTH_WITH_CURLY_BRACES && string.startsWith("{") && string.endsWith("}")) {
+			return string.substring(1, string.length() - 1); // Remove curly braces: '{' and '}'
 		}
 
-		return chars;
+		return string;
+	}
+
+	private static void validate(final String string) {
+		if (string.charAt(DASH_POSITION_1) != '-' || string.charAt(DASH_POSITION_2) != '-'
+				|| string.charAt(DASH_POSITION_3) != '-' || string.charAt(DASH_POSITION_4) != '-') {
+			throw InvalidUuidException.newInstance(string);
+		}
+	}
+
+	private long get(final String string, final int i) {
+
+		final int chr = string.charAt(i);
+		if (chr > 255) {
+			throw InvalidUuidException.newInstance(string);
+		}
+
+		final byte value = MAP[chr];
+		if (value < 0) {
+			throw InvalidUuidException.newInstance(string);
+		}
+
+		return value & 0xffL;
 	}
 }

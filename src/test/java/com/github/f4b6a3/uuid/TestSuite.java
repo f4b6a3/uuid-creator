@@ -17,7 +17,7 @@ import com.github.f4b6a3.uuid.codec.other.SlugCodecTest;
 import com.github.f4b6a3.uuid.codec.other.TimeOrderedCodecTest;
 import com.github.f4b6a3.uuid.factory.AbstRandomBasedFactoryTest;
 import com.github.f4b6a3.uuid.factory.AbstTimeBasedFactoryTest;
-import com.github.f4b6a3.uuid.factory.function.ClockSeqPoolTest;
+import com.github.f4b6a3.uuid.factory.function.impl.ClockSeqPoolTest;
 import com.github.f4b6a3.uuid.factory.function.impl.DefaultClockSeqFunctionTest;
 import com.github.f4b6a3.uuid.factory.function.impl.DefaultTimeFunctionTest;
 import com.github.f4b6a3.uuid.factory.function.impl.WindowsTimeFunctionTest;
@@ -25,13 +25,13 @@ import com.github.f4b6a3.uuid.factory.nonstandard.PrefixCombFactoryTest;
 import com.github.f4b6a3.uuid.factory.nonstandard.ShortPrefixCombFactoryTest;
 import com.github.f4b6a3.uuid.factory.nonstandard.ShortSuffixCombFactoryTest;
 import com.github.f4b6a3.uuid.factory.nonstandard.SuffixCombFactoryTest;
-import com.github.f4b6a3.uuid.factory.rfc4122.DceSecurityFactoryTest;
-import com.github.f4b6a3.uuid.factory.rfc4122.NameBasedMd5FactoryTest;
-import com.github.f4b6a3.uuid.factory.rfc4122.NameBasedSha1FactoryTest;
-import com.github.f4b6a3.uuid.factory.rfc4122.RandomBasedFactoryTest;
-import com.github.f4b6a3.uuid.factory.rfc4122.TimeBasedFactoryTest;
-import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedEpochFactoryTest;
-import com.github.f4b6a3.uuid.factory.rfc4122.TimeOrderedFactoryTest;
+import com.github.f4b6a3.uuid.factory.standard.DceSecurityFactoryTest;
+import com.github.f4b6a3.uuid.factory.standard.NameBasedMd5FactoryTest;
+import com.github.f4b6a3.uuid.factory.standard.NameBasedSha1FactoryTest;
+import com.github.f4b6a3.uuid.factory.standard.RandomBasedFactoryTest;
+import com.github.f4b6a3.uuid.factory.standard.TimeBasedFactoryTest;
+import com.github.f4b6a3.uuid.factory.standard.TimeOrderedEpochFactoryTest;
+import com.github.f4b6a3.uuid.factory.standard.TimeOrderedFactoryTest;
 import com.github.f4b6a3.uuid.alt.GUIDTest;
 import com.github.f4b6a3.uuid.codec.BinaryCodecTest;
 import com.github.f4b6a3.uuid.codec.StringCodecTest;
@@ -40,6 +40,8 @@ import com.github.f4b6a3.uuid.codec.UrnCodecTest;
 import com.github.f4b6a3.uuid.util.internal.ByteUtilTest;
 import com.github.f4b6a3.uuid.util.internal.SettingsUtilTest;
 import com.github.f4b6a3.uuid.util.CombUtilTest;
+import com.github.f4b6a3.uuid.util.MachineIdTest;
+import com.github.f4b6a3.uuid.util.UuidBuilderTest;
 import com.github.f4b6a3.uuid.util.UuidComparatorTest;
 import com.github.f4b6a3.uuid.util.UuidTimeTest;
 import com.github.f4b6a3.uuid.util.UuidUtilTest;
@@ -65,6 +67,7 @@ import com.github.f4b6a3.uuid.util.UuidValidatorTest;
 	DotNetGuid1CodecTest.class,
 	DotNetGuid4CodecTest.class,
 	GUIDTest.class,
+	MachineIdTest.class,
 	NameBasedMd5FactoryTest.class,
 	NameBasedSha1FactoryTest.class,
 	NcnameCodecTest.class,
@@ -80,6 +83,7 @@ import com.github.f4b6a3.uuid.util.UuidValidatorTest;
 	TimeOrderedCodecTest.class,
 	TimeOrderedEpochFactoryTest.class,
 	TimeOrderedFactoryTest.class,
+	UuidBuilderTest.class,
 	UriCodecTest.class,
 	UrnCodecTest.class,
 	UuidComparatorTest.class,

@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,6 @@ package com.github.f4b6a3.uuid.factory.nonstandard;
 import java.time.Clock;
 import java.util.Random;
 import java.util.UUID;
-import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
@@ -44,7 +43,7 @@ import com.github.f4b6a3.uuid.util.internal.ByteUtil;
  * <p>
  * The suffix wraps around every ~45 days (2^16/60/24 = ~45).
  * <p>
- * The created UUID is a UUIDv4 for compatibility with RFC-4122.
+ * The created UUID is a UUIDv4 for compatibility with RFC 9562.
  * 
  * @see <a href=
  *      "https://www.2ndquadrant.com/en/blog/sequential-uuid-generators/">Sequential
@@ -107,15 +106,6 @@ public final class ShortSuffixCombFactory extends AbstCombFactory {
 	}
 
 	/**
-	 * Constructor with a function which returns random arrays of bytes.
-	 * 
-	 * @param randomFunction a function
-	 */
-	public ShortSuffixCombFactory(IntFunction<byte[]> randomFunction) {
-		this(builder().withRandomFunction(randomFunction));
-	}
-
-	/**
 	 * Constructor with a function which a function which return random numbers and
 	 * a clock.
 	 * 
@@ -123,17 +113,6 @@ public final class ShortSuffixCombFactory extends AbstCombFactory {
 	 * @param clock          a clock
 	 */
 	public ShortSuffixCombFactory(LongSupplier randomFunction, Clock clock) {
-		this(builder().withRandomFunction(randomFunction).withClock(clock));
-	}
-
-	/**
-	 * Constructor with a function which a function which returns random arrays of
-	 * bytes and a clock.
-	 * 
-	 * @param randomFunction a function
-	 * @param clock          a clock
-	 */
-	public ShortSuffixCombFactory(IntFunction<byte[]> randomFunction, Clock clock) {
 		this(builder().withRandomFunction(randomFunction).withClock(clock));
 	}
 
@@ -197,7 +176,7 @@ public final class ShortSuffixCombFactory extends AbstCombFactory {
 		lock.lock();
 		try {
 			final long time = timeFunction.getAsLong() / interval;
-			if (this.random instanceof ByteRandom) {
+			if (this.random instanceof SafeRandom) {
 				final byte[] bytes = this.random.nextBytes(14);
 				final long long1 = ByteUtil.toNumber(bytes, 0, 8);
 				final long long2 = ByteUtil.toNumber(bytes, 8, 14);

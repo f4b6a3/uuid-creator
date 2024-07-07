@@ -16,7 +16,7 @@ public class BinaryCodecTest {
 	@Test
 	public void testEncode() {
 
-		BinaryCodec codec = new BinaryCodec();
+		StandardBinaryCodec codec = new StandardBinaryCodec();
 
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			// UuidCreator.toBytes();
@@ -44,7 +44,7 @@ public class BinaryCodecTest {
 	@Test
 	public void testDecode() {
 
-		BinaryCodec codec = new BinaryCodec();
+		StandardBinaryCodec codec = new StandardBinaryCodec();
 
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			// UuidCreator.fromBytes();
@@ -72,7 +72,7 @@ public class BinaryCodecTest {
 	@Test
 	public void testEncodeAndDecode() {
 
-		final BinaryCodec codec = new BinaryCodec();
+		final StandardBinaryCodec codec = new StandardBinaryCodec();
 
 		for (int i = 0; i < DEFAULT_LOOP_LIMIT; i++) {
 			UUID uuid = UUID.randomUUID();
@@ -84,7 +84,7 @@ public class BinaryCodecTest {
 	@Test
 	public void testEncodeInvalidUuidException() {
 
-		BinaryCodec codec = new BinaryCodec();
+		StandardBinaryCodec codec = new StandardBinaryCodec();
 
 		{
 			try {
@@ -118,7 +118,7 @@ public class BinaryCodecTest {
 	@Test
 	public void testDecodeInvalidUuidException() {
 
-		BinaryCodec codec = new BinaryCodec();
+		StandardBinaryCodec codec = new StandardBinaryCodec();
 
 		{
 			try {

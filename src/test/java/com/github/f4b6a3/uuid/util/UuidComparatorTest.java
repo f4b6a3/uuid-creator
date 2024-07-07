@@ -4,12 +4,12 @@ import static org.junit.Assert.*;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.util.Random;
+import java.util.SplittableRandom;
 import java.util.UUID;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.codec.BinaryCodec;
+import com.github.f4b6a3.uuid.codec.StandardBinaryCodec;
 import com.github.f4b6a3.uuid.codec.other.TimeOrderedCodec;
 
 public class UuidComparatorTest {
@@ -75,18 +75,18 @@ public class UuidComparatorTest {
 
 		final long zero = 0L;
 		byte[] bytes = new byte[16];
-		Random random = new Random();
+		SplittableRandom random = new SplittableRandom(1);
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(random.nextLong()).array();
 			bytes = setVersion(bytes, 1); // set version 1
-			UUID uuid1 = BinaryCodec.INSTANCE.decode(rearrange(bytes));
+			UUID uuid1 = StandardBinaryCodec.INSTANCE.decode(rearrange(bytes));
 			BigInteger number1 = new BigInteger(1, bytes);
 
 			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(random.nextLong()).array();
 			bytes = setVersion(bytes, 1); // set version 1
-			UUID uuid2 = BinaryCodec.INSTANCE.decode(rearrange(bytes));
-			UUID uuid3 = BinaryCodec.INSTANCE.decode(rearrange(bytes));
+			UUID uuid2 = StandardBinaryCodec.INSTANCE.decode(rearrange(bytes));
+			UUID uuid3 = StandardBinaryCodec.INSTANCE.decode(rearrange(bytes));
 			BigInteger number2 = new BigInteger(1, bytes);
 			BigInteger number3 = new BigInteger(1, bytes);
 
@@ -107,13 +107,13 @@ public class UuidComparatorTest {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			bytes = ByteBuffer.allocate(16).putLong(zero).putLong(random.nextLong()).array();
 			bytes = setVersion(bytes, 1); // set version 1
-			UUID uuid1 = BinaryCodec.INSTANCE.decode(rearrange(bytes));
+			UUID uuid1 = StandardBinaryCodec.INSTANCE.decode(rearrange(bytes));
 			BigInteger number1 = new BigInteger(1, bytes);
 
 			bytes = ByteBuffer.allocate(16).putLong(zero).putLong(random.nextLong()).array();
 			bytes = setVersion(bytes, 1); // set version 1
-			UUID uuid2 = BinaryCodec.INSTANCE.decode(rearrange(bytes));
-			UUID uuid3 = BinaryCodec.INSTANCE.decode(rearrange(bytes));
+			UUID uuid2 = StandardBinaryCodec.INSTANCE.decode(rearrange(bytes));
+			UUID uuid3 = StandardBinaryCodec.INSTANCE.decode(rearrange(bytes));
 			BigInteger number2 = new BigInteger(1, bytes);
 			BigInteger number3 = new BigInteger(1, bytes);
 
@@ -134,13 +134,13 @@ public class UuidComparatorTest {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(zero).array();
 			bytes = setVersion(bytes, 1); // set version 1
-			UUID uuid1 = BinaryCodec.INSTANCE.decode(rearrange(bytes));
+			UUID uuid1 = StandardBinaryCodec.INSTANCE.decode(rearrange(bytes));
 			BigInteger number1 = new BigInteger(1, bytes);
 
 			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(zero).array();
 			bytes = setVersion(bytes, 1); // set version 1
-			UUID uuid2 = BinaryCodec.INSTANCE.decode(rearrange(bytes));
-			UUID uuid3 = BinaryCodec.INSTANCE.decode(rearrange(bytes));
+			UUID uuid2 = StandardBinaryCodec.INSTANCE.decode(rearrange(bytes));
+			UUID uuid3 = StandardBinaryCodec.INSTANCE.decode(rearrange(bytes));
 			BigInteger number2 = new BigInteger(1, bytes);
 			BigInteger number3 = new BigInteger(1, bytes);
 
@@ -164,16 +164,16 @@ public class UuidComparatorTest {
 
 		final long zero = 0L;
 		byte[] bytes = new byte[16];
-		Random random = new Random();
+		SplittableRandom random = new SplittableRandom(1);
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(random.nextLong()).array();
-			UUID uuid1 = BinaryCodec.INSTANCE.decode(bytes);
+			UUID uuid1 = StandardBinaryCodec.INSTANCE.decode(bytes);
 			BigInteger number1 = new BigInteger(1, bytes);
 
 			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(random.nextLong()).array();
-			UUID uuid2 = BinaryCodec.INSTANCE.decode(bytes);
-			UUID uuid3 = BinaryCodec.INSTANCE.decode(bytes);
+			UUID uuid2 = StandardBinaryCodec.INSTANCE.decode(bytes);
+			UUID uuid3 = StandardBinaryCodec.INSTANCE.decode(bytes);
 			BigInteger number2 = new BigInteger(1, bytes);
 			BigInteger number3 = new BigInteger(1, bytes);
 
@@ -190,12 +190,12 @@ public class UuidComparatorTest {
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			bytes = ByteBuffer.allocate(16).putLong(zero).putLong(random.nextLong()).array();
-			UUID uuid1 = BinaryCodec.INSTANCE.decode(bytes);
+			UUID uuid1 = StandardBinaryCodec.INSTANCE.decode(bytes);
 			BigInteger number1 = new BigInteger(1, bytes);
 
 			bytes = ByteBuffer.allocate(16).putLong(zero).putLong(random.nextLong()).array();
-			UUID uuid2 = BinaryCodec.INSTANCE.decode(bytes);
-			UUID uuid3 = BinaryCodec.INSTANCE.decode(bytes);
+			UUID uuid2 = StandardBinaryCodec.INSTANCE.decode(bytes);
+			UUID uuid3 = StandardBinaryCodec.INSTANCE.decode(bytes);
 			BigInteger number2 = new BigInteger(1, bytes);
 			BigInteger number3 = new BigInteger(1, bytes);
 
@@ -212,12 +212,12 @@ public class UuidComparatorTest {
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(zero).array();
-			UUID uuid1 = BinaryCodec.INSTANCE.decode(bytes);
+			UUID uuid1 = StandardBinaryCodec.INSTANCE.decode(bytes);
 			BigInteger number1 = new BigInteger(1, bytes);
 
 			bytes = ByteBuffer.allocate(16).putLong(random.nextLong()).putLong(zero).array();
-			UUID uuid2 = BinaryCodec.INSTANCE.decode(bytes);
-			UUID uuid3 = BinaryCodec.INSTANCE.decode(bytes);
+			UUID uuid2 = StandardBinaryCodec.INSTANCE.decode(bytes);
+			UUID uuid3 = StandardBinaryCodec.INSTANCE.decode(bytes);
 			BigInteger number2 = new BigInteger(1, bytes);
 			BigInteger number3 = new BigInteger(1, bytes);
 
@@ -234,16 +234,16 @@ public class UuidComparatorTest {
 	}
 
 	private byte[] setVersion(byte[] bytes, int version) {
-		UUID uuid = BinaryCodec.INSTANCE.decode(bytes);
+		UUID uuid = StandardBinaryCodec.INSTANCE.decode(bytes);
 		uuid = UuidUtil.setVersion(uuid, version);
-		return BinaryCodec.INSTANCE.encode(uuid);
+		return StandardBinaryCodec.INSTANCE.encode(uuid);
 	}
 
 	private byte[] rearrange(byte[] bytes) {
-		UUID uuid = BinaryCodec.INSTANCE.decode(bytes);
+		UUID uuid = StandardBinaryCodec.INSTANCE.decode(bytes);
 		uuid = UuidUtil.setVersion(uuid, 6);
 		uuid = TimeOrderedCodec.INSTANCE.decode(uuid);
 		uuid = UuidUtil.setVersion(uuid, 1);
-		return BinaryCodec.INSTANCE.encode(uuid);
+		return StandardBinaryCodec.INSTANCE.encode(uuid);
 	}
 }

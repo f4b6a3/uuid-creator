@@ -1,4 +1,4 @@
-package com.github.f4b6a3.uuid.factory.rfc4122;
+package com.github.f4b6a3.uuid.factory.standard;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -7,7 +7,6 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.factory.UuidFactoryTest;
 import com.github.f4b6a3.uuid.factory.function.ClockSeqFunction;
 import com.github.f4b6a3.uuid.factory.function.NodeIdFunction;
-import com.github.f4b6a3.uuid.util.UuidComparator;
 import com.github.f4b6a3.uuid.util.UuidTime;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
@@ -16,38 +15,37 @@ import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Random;
+import java.util.SplittableRandom;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
-public class TimeBasedFactoryTest extends UuidFactoryTest {
+public class TimeOrderedFactoryTest extends UuidFactoryTest {
 
 	@Test
-	public void testCreateTimeBased() {
+	public void testTimeOrdered() {
 		boolean multicast = true;
-		testGetAbstractTimeBased(new TimeBasedFactory(), multicast);
+		testGetAbstractTimeBased(new TimeOrderedFactory(), multicast);
 	}
 
 	@Test
-	public void testCreateTimeBasedWithMac() {
+	public void testTimeOrderedWithMac() {
 		boolean multicast = false;
-		testGetAbstractTimeBased(TimeBasedFactory.builder().withMacNodeId().build(), multicast);
+		testGetAbstractTimeBased(TimeOrderedFactory.builder().withMacNodeId().build(), multicast);
 	}
 
 	@Test
-	public void testCreateTimeBasedWithHash() {
+	public void testTimeOrderedWithHash() {
 		boolean multicast = true;
-		testGetAbstractTimeBased(TimeBasedFactory.builder().withHashNodeId().build(), multicast);
+		testGetAbstractTimeBased(TimeOrderedFactory.builder().withHashNodeId().build(), multicast);
 	}
 
 	@Test
-	public void testGetTimeBasedWithNodeIdFunction() {
+	public void testGetTimeOrderedWithNodeIdFunction() {
 
 		long nodeid = NodeIdFunction.toExpectedRange(System.nanoTime());
-		NodeIdFunction nodeIdSupplier = () -> nodeid;
-		long nodeIdentifier1 = nodeIdSupplier.getAsLong();
+		NodeIdFunction nodeIdFunction = () -> nodeid;
+		long nodeIdentifier1 = nodeIdFunction.getAsLong();
 
-		UUID uuid = TimeBasedFactory.builder().withNodeIdFunction(nodeIdSupplier).build().create();
+		UUID uuid = TimeOrderedFactory.builder().withNodeIdFunction(nodeIdFunction).build().create();
 
 		long nodeIdentifier2 = UuidUtil.getNodeIdentifier(uuid);
 
@@ -55,13 +53,13 @@ public class TimeBasedFactoryTest extends UuidFactoryTest {
 	}
 
 	@Test
-	public void testGetTimeBasedWithClockSeqFunction() {
+	public void testGetTimeOrderedWithClockSeqFunction() {
 
 		long clockSeq = ClockSeqFunction.toExpectedRange((int) System.nanoTime());
-		ClockSeqFunction clockSeqOperator = x -> clockSeq;
-		long clockseq1 = clockSeqOperator.applyAsLong(0);
+		ClockSeqFunction clockSeqFunction = x -> clockSeq;
+		long clockseq1 = clockSeqFunction.applyAsLong(0);
 
-		UUID uuid = TimeBasedFactory.builder().withClockSeqFunction(clockSeqOperator).build().create();
+		UUID uuid = TimeOrderedFactory.builder().withClockSeqFunction(clockSeqFunction).build().create();
 
 		long clockseq2 = UuidUtil.getClockSequence(uuid);
 
@@ -69,22 +67,22 @@ public class TimeBasedFactoryTest extends UuidFactoryTest {
 	}
 
 	@Test
-	public void testGetTimeBasedWithInstant() {
+	public void testGetTimeOrderedWithInstant() {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			Instant instant1 = Instant.now().truncatedTo(ChronoUnit.MICROS);
-			UUID uuid = TimeBasedFactory.builder().withInstant(instant1).build().create();
+			UUID uuid = TimeOrderedFactory.builder().withInstant(instant1).build().create();
 			Instant instant2 = UuidUtil.getInstant(uuid).truncatedTo(ChronoUnit.MICROS);
 			assertEquals(instant1, instant2);
 		}
 	}
 
 	@Test
-	public void testGetTimeBasedCheckTimestamp() {
+	public void testGetTimeOrderedCheckTimestamp() {
 
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
 			Instant instant1 = Instant.now();
-			UUID uuid = TimeBasedFactory.builder().withInstant(instant1).build().create();
+			UUID uuid = TimeOrderedFactory.builder().withInstant(instant1).build().create();
 			Instant instant2 = UuidUtil.getInstant(uuid);
 
 			long timestamp1 = UuidTime.toGregTimestamp(instant1);
@@ -95,13 +93,13 @@ public class TimeBasedFactoryTest extends UuidFactoryTest {
 	}
 
 	@Test
-	public void testGetTimeBasedCheckGreatestTimestamp() {
+	public void testGetTimeOrderedCheckGreatestTimestamp() {
 
 		// Check if the greatest 60 bit timestamp corresponds to the date
 		long maxTimestamp = 0x0fffffffffffffffL;
 		Instant maxInstant = Instant.parse("5236-03-31T21:21:00.684697500Z");
 
-		UUID uuid = TimeBasedFactory.builder().withInstant(maxInstant).build().create();
+		UUID uuid = TimeOrderedFactory.builder().withInstant(maxInstant).build().create();
 
 		// Test the extraction of the maximum 60 bit timestamp
 		long timestamp = UuidUtil.getTimestamp(uuid);
@@ -113,14 +111,14 @@ public class TimeBasedFactoryTest extends UuidFactoryTest {
 	}
 
 	@Test
-	public void testGetTimeBasedInParallel() throws InterruptedException {
+	public void testGetTimeOrderedInParallel() throws InterruptedException {
 
 		Thread[] threads = new Thread[THREAD_TOTAL];
 		TestThread.clearHashSet();
 
 		// Instantiate and start many threads
 		for (int i = 0; i < THREAD_TOTAL; i++) {
-			TimeBasedFactory factory = TimeBasedFactory.builder().withHashNodeId().build();
+			TimeOrderedFactory factory = TimeOrderedFactory.builder().withHashNodeId().build();
 			threads[i] = new TestThread(factory, DEFAULT_LOOP_MAX);
 			threads[i].start();
 		}
@@ -135,25 +133,25 @@ public class TimeBasedFactoryTest extends UuidFactoryTest {
 	}
 
 	@Test
-	public void testGetTimeBasedWithOptionalArguments() {
-
+	public void testGetTimeOrderedWithOptionalArguments() {
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
 			// Get 46 random bits to generate a date from the year 1970 to 2193.
 			// (2^46 / 10000 / 60 / 60 / 24 / 365.25 + 1970 A.D. = ~2193 A.D.)
-			final Instant instant = Instant.ofEpochMilli(ThreadLocalRandom.current().nextLong() >>> 24);
+			final Instant instant = Instant.ofEpochMilli(random.nextLong() >>> 24);
 
 			// Get 14 random bits random to generate the clock sequence
-			final int clockseq = ThreadLocalRandom.current().nextInt() & 0x000003ff;
+			final int clockseq = random.nextInt() & 0x000003ff;
 
 			// Get 48 random bits for the node identifier, and set the multicast bit to ONE
-			final long nodeid = ThreadLocalRandom.current().nextLong() & 0x0000ffffffffffffL | 0x0000010000000000L;
+			final long nodeid = random.nextLong() & 0x0000ffffffffffffL | 0x0000010000000000L;
 
 			// Create a time-based UUID with those random values
-			UUID uuid = UuidCreator.getTimeBased(instant, clockseq, nodeid);
+			UUID uuid = UuidCreator.getTimeOrdered(instant, clockseq, nodeid);
 
 			// Check if it is valid
-			assertTrue(UuidUtil.isRfc4122(uuid));
+			assertTrue(UuidUtil.isStandard(uuid));
 
 			// Check if the embedded values are correct.
 			assertEquals("The timestamp is incorrect.", instant, UuidUtil.getInstant(uuid));
@@ -163,10 +161,53 @@ public class TimeBasedFactoryTest extends UuidFactoryTest {
 	}
 
 	@Test
+	public void testGetTimeOrderedTimestampBitsAreTimeOrdered() {
+
+		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			list[i] = UuidCreator.getTimeOrdered();
+		}
+
+		long oldTimestemp = 0;
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			long newTimestamp = UuidUtil.getTimestamp(list[i]);
+
+			if (i > 0) {
+				assertTrue(newTimestamp >= oldTimestemp);
+			}
+			oldTimestemp = newTimestamp;
+		}
+	}
+
+	@Test
+	public void testGetTimeOrderedCheckOrder() {
+
+		UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+		TimeOrderedFactory factory = new TimeOrderedFactory();
+
+		// Create list of UUIDs
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			list[i] = factory.create();
+		}
+
+		// Check if the MSBs are ordered
+		long old = 0;
+		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
+			long msb = list[i].getMostSignificantBits();
+
+			if (i > 0) {
+				assertTrue(msb > old);
+			}
+			old = msb;
+		}
+	}
+
+	@Test
 	public void testMinAndMax() {
 
 		long time = 0;
-		Random random = new Random();
+		SplittableRandom random = new SplittableRandom(1);
 		final long mask = 0x0fffffffffffffffL;
 
 		for (int i = 0; i < 100; i++) {
@@ -176,16 +217,16 @@ public class TimeBasedFactoryTest extends UuidFactoryTest {
 			{
 				// Test MIN
 				Instant instant = UuidTime.fromGregTimestamp(time);
-				UUID uuid = UuidCreator.getTimeBasedMin(instant);
-				assertEquals(time, uuid.timestamp());
+				UUID uuid = UuidCreator.getTimeOrderedMin(instant);
+				assertEquals(time, UuidUtil.getTimestamp(uuid));
 				assertEquals(0x8000000000000000L, uuid.getLeastSignificantBits());
 			}
 
 			{
 				// Test MAX
 				Instant instant = UuidTime.fromGregTimestamp(time);
-				UUID uuid = UuidCreator.getTimeBasedMax(instant);
-				assertEquals(time, uuid.timestamp());
+				UUID uuid = UuidCreator.getTimeOrderedMax(instant);
+				assertEquals(time, UuidUtil.getTimestamp(uuid));
 				assertEquals(0xbfffffffffffffffL, uuid.getLeastSignificantBits());
 			}
 		}
@@ -203,10 +244,10 @@ public class TimeBasedFactoryTest extends UuidFactoryTest {
 		UUID bigger = null;
 
 		for (i = 0; i < Integer.MAX_VALUE; i++) {
-			smaller = UuidCreator.getTimeBased();
-			bigger = UuidCreator.getTimeBased();
+			smaller = UuidCreator.getTimeOrdered();
+			bigger = UuidCreator.getTimeOrdered();
 
-			if (UuidComparator.defaultCompare(smaller, bigger) >= 0) {
+			if (smaller.compareTo(bigger) >= 0) {
 				ok = false;
 				break;
 			}

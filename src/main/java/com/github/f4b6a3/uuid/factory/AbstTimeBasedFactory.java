@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -95,10 +95,9 @@ import com.github.f4b6a3.uuid.util.internal.SettingsUtil;
  * @see TimeFunction
  * @see NodeIdFunction
  * @see ClockSeqFunction
- * @see <a href= "https://www.rfc-editor.org/rfc/rfc4122#section-4.2">RFC-4122 -
- *      4.2. Algorithms for Creating a Time-Based UUID</a>
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc9562.html">RFC 9562</a>
  */
-public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgsFactory {
+public abstract class AbstTimeBasedFactory extends UuidFactory {
 
 	/**
 	 * The time function.
@@ -167,6 +166,16 @@ public abstract class AbstTimeBasedFactory extends UuidFactory implements NoArgs
 		} finally {
 			lock.unlock();
 		}
+	}
+
+	/**
+	 * Returns a time-based UUID.
+	 * 
+	 * @return a time-based UUID
+	 */
+	@Override
+	public UUID create(Parameters parameters) {
+		return create(); // ignore arguments
 	}
 
 	/**

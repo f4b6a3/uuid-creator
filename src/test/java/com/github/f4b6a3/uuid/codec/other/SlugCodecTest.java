@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.github.f4b6a3.uuid.codec.BinaryCodec;
+import com.github.f4b6a3.uuid.codec.StandardBinaryCodec;
 import com.github.f4b6a3.uuid.codec.UuidCodec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
@@ -16,7 +16,7 @@ public class SlugCodecTest {
 
 	private static final int DEFAULT_LOOP_LIMIT = 100;
 
-	private static final UuidCodec<byte[]> CODEC_BYTES = new BinaryCodec();
+	private static final UuidCodec<byte[]> CODEC_BYTES = new StandardBinaryCodec();
 
 	@Test
 	public void testEncode() {

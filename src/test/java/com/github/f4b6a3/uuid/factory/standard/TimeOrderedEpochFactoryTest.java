@@ -1,11 +1,10 @@
-package com.github.f4b6a3.uuid.factory.rfc4122;
+package com.github.f4b6a3.uuid.factory.standard;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.f4b6a3.uuid.factory.UuidFactoryTest;
-import com.github.f4b6a3.uuid.factory.function.RandomFunction;
 import com.github.f4b6a3.uuid.util.UuidTime;
 import com.github.f4b6a3.uuid.util.UuidUtil;
 
@@ -13,7 +12,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -22,8 +20,6 @@ import java.util.Random;
 import java.util.SplittableRandom;
 import java.util.TreeSet;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
 
 public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
@@ -36,47 +32,37 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 
 	@Test
 	public void testWithRandom() {
+		SplittableRandom seeder = new SplittableRandom(1);
 		{
-			Random random = new Random();
-			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory(random);
+			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory(new Random(seeder.nextLong()));
 			assertNotNull(factory.create());
 		}
 		{
-			SecureRandom random = new SecureRandom();
-			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory(random);
+			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory(new Random(seeder.nextLong()));
 			assertNotNull(factory.create());
 		}
 	}
 
 	@Test
 	public void testWithRandomFunction() {
+		SplittableRandom random = new SplittableRandom(1);
 		{
-			SplittableRandom random = new SplittableRandom();
 			LongSupplier function = () -> random.nextLong();
 			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory(function);
 			assertNotNull(factory.create());
 		}
 		{
-			IntFunction<byte[]> function = (length) -> {
-				byte[] bytes = new byte[length];
-				ThreadLocalRandom.current().nextBytes(bytes);
-				return bytes;
-			};
+			LongSupplier function = () -> random.nextLong();
 			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory(function);
 			assertNotNull(factory.create());
 		}
 		{
-			SplittableRandom random = new SplittableRandom();
 			LongSupplier function = () -> random.nextLong();
 			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory(function, Clock.systemDefaultZone());
 			assertNotNull(factory.create());
 		}
 		{
-			IntFunction<byte[]> function = (length) -> {
-				byte[] bytes = new byte[length];
-				ThreadLocalRandom.current().nextBytes(bytes);
-				return bytes;
-			};
+			LongSupplier function = () -> random.nextLong();
 			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory(function, Clock.systemDefaultZone());
 			assertNotNull(factory.create());
 		}
@@ -86,18 +72,6 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 	public void testWithRandomNull() {
 		TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory((Random) null);
 		assertNotNull(factory.create());
-	}
-
-	@Test
-	public void testWithRandomFunctionNull() {
-		{
-			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory((LongSupplier) null);
-			assertNotNull(factory.create());
-		}
-		{
-			TimeOrderedEpochFactory factory = new TimeOrderedEpochFactory((IntFunction<byte[]>) null);
-			assertNotNull(factory.create());
-		}
 	}
 
 	@Test
@@ -138,11 +112,11 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 
 	@Test
 	public void testGetTimeOrderedEpochCheckTimestamp() {
-
+		SplittableRandom random = new SplittableRandom(1);
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 
-			long random = ThreadLocalRandom.current().nextLong(1L << 48);
-			Clock clock = Clock.fixed(Instant.ofEpochMilli(random), Clock.systemUTC().getZone());
+			long time = random.nextLong(1L << 48);
+			Clock clock = Clock.fixed(Instant.ofEpochMilli(time), Clock.systemUTC().getZone());
 
 			Instant instant1 = clock.instant();
 			long timestamp1 = UuidTime.toGregTimestamp(instant1);
@@ -244,12 +218,12 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 	@Test
 	public void testGetTimeOrderedEpochWithRandom() {
 
-		Random random = new Random();
+		SplittableRandom seeder = new SplittableRandom(1);
 		TimeOrderedEpochFactory factory;
 
 		{
 			UUID[] list = new UUID[DEFAULT_LOOP_MAX];
-			factory = new TimeOrderedEpochFactory(random);
+			factory = new TimeOrderedEpochFactory(new Random(seeder.nextLong()));
 
 			for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 				list[i] = factory.create();
@@ -262,6 +236,7 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 
 		{
 			UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+			Random random = new Random(seeder.nextLong());
 			factory = TimeOrderedEpochFactory.builder().withRandom(random).withIncrementPlus1().build();
 
 			for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
@@ -275,6 +250,7 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 
 		{
 			UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+			Random random = new Random(seeder.nextLong());
 			factory = TimeOrderedEpochFactory.builder().withRandom(random).withIncrementPlusN().build();
 
 			for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
@@ -288,6 +264,7 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 
 		{
 			UUID[] list = new UUID[DEFAULT_LOOP_MAX];
+			Random random = new Random(seeder.nextLong());
 			factory = TimeOrderedEpochFactory.builder().withRandom(random).withIncrementPlusN(1_000_000).build();
 
 			for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
@@ -302,12 +279,8 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 
 	@Test
 	public void testGetTimeOrderedEpochWithRandomFunction() {
-
-		RandomFunction randomFunction = x -> {
-			final byte[] bytes = new byte[x];
-			ThreadLocalRandom.current().nextBytes(bytes);
-			return bytes;
-		};
+		SplittableRandom random = new SplittableRandom(1);
+		LongSupplier randomFunction = () -> random.nextLong();
 
 		TimeOrderedEpochFactory factory;
 
@@ -367,14 +340,15 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 	@Test
 	public void testGetTimeOrderedEpochInParallel() throws InterruptedException {
 
-		Random random = new Random();
 		Clock clock = Clock.systemDefaultZone();
+		SplittableRandom seeder = new SplittableRandom(1);
 
 		Thread[] threads = new Thread[THREAD_TOTAL];
 		TestThread.clearHashSet();
 
 		// Instantiate and start many threads
 		for (int i = 0; i < THREAD_TOTAL; i++) {
+			Random random = new Random(seeder.nextLong());
 			threads[i] = new TestThread(new TimeOrderedEpochFactory(random, clock), DEFAULT_LOOP_MAX);
 			threads[i].start();
 		}
@@ -457,7 +431,7 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 	public void testMinAndMax() {
 
 		long time = 0;
-		Random random = new Random();
+		SplittableRandom random = new SplittableRandom(1);
 		final long mask = 0x0000ffffffffffffL;
 
 		for (int i = 0; i < 100; i++) {
@@ -488,7 +462,7 @@ public class TimeOrderedEpochFactoryTest extends UuidFactoryTest {
 	public void testRandom() {
 
 		long time = 0;
-		Random random = new Random();
+		SplittableRandom random = new SplittableRandom(1);
 		final long mask = 0x0000ffffffffffffL;
 
 		for (int i = 0; i < 100; i++) {

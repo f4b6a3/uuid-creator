@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ package com.github.f4b6a3.uuid.enums;
 import java.util.UUID;
 
 /**
- * Name spaces defined by RFC-4122, used to create name-based unique identifiers
+ * Name spaces defined by RFC 9562, used to create name-based unique identifiers
  * (UUIDv3 and UUIDv5).
  * <p>
  * List of name spaces:
@@ -38,8 +38,7 @@ import java.util.UUID;
  * <li>{@link NAMESPACE_X500}: 6ba7b814-9dad-11d1-80b4-00c04fd430c8
  * </ul>
  * 
- * @see <a href= "https://tools.ietf.org/html/rfc4122#appendix-C">RFC-4122 -
- *      Appendix C - Some Name Space IDs</a>
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc9562.html">RFC 9562</a>
  */
 public enum UuidNamespace {
 

@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@ import java.util.UUID;
 
 import com.github.f4b6a3.uuid.codec.base.Base16Codec;
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
-import com.github.f4b6a3.uuid.util.immutable.LongArray;
+import com.github.f4b6a3.uuid.util.immutable.ByteArray;
 
 /**
  * Utility for UUID validation.
@@ -49,7 +49,7 @@ import com.github.f4b6a3.uuid.util.immutable.LongArray;
  */
 public final class UuidValidator {
 
-	private static final LongArray MAP = Base16Codec.INSTANCE.getBase().getMap();
+	private static final ByteArray MAP = Base16Codec.INSTANCE.getBase().getMap();
 
 	private UuidValidator() {
 	}
@@ -288,7 +288,7 @@ public final class UuidValidator {
 	 */
 	protected static boolean isVersion(UUID uuid, int version) {
 		boolean versionOk = ((version & ~0xf) == 0) && (uuid.version() == version);
-		boolean variantOk = uuid.variant() == 2; // RFC-4122
+		boolean variantOk = uuid.variant() == 2; // RFC 9562
 		return versionOk && variantOk;
 	}
 
@@ -301,7 +301,7 @@ public final class UuidValidator {
 	 */
 	protected static boolean isVersion(byte[] bytes, int version) {
 		boolean versionOk = ((version & ~0xf) == 0) && (((bytes[6] & 0xff) >>> 4) == version);
-		boolean variantOk = ((bytes[8] & 0xff) >>> 6) == 2; // RFC-4122
+		boolean variantOk = ((bytes[8] & 0xff) >>> 6) == 2; // RFC 9562
 		return versionOk && variantOk;
 	}
 

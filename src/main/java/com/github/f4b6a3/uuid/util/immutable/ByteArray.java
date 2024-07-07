@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2022 Fabio Lima
+ * Copyright (c) 2018-2024 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,33 +27,33 @@ package com.github.f4b6a3.uuid.util.immutable;
 import java.util.Arrays;
 
 /**
- * Immutable array of longs.
+ * Immutable array of bytes.
  */
-public final class LongArray {
+public final class ByteArray {
 
-	private final long[] array;
+	private final byte[] array;
 
-	private LongArray(long[] a) {
+	private ByteArray(byte[] a) {
 		array = Arrays.copyOf(a, a.length);
 	}
 
 	/**
 	 * Creates an instance of this class.
 	 * 
-	 * @param a an array of longs
+	 * @param a an array of bytes
 	 * @return a new instance
 	 */
-	public static LongArray from(long[] a) {
-		return new LongArray(a);
+	public static ByteArray from(byte[] a) {
+		return new ByteArray(a);
 	}
 
 	/**
-	 * Return the long at a position.
+	 * Return the byte at a position.
 	 * 
 	 * @param index the position
-	 * @return a long
+	 * @return a byte
 	 */
-	public long get(int index) {
+	public byte get(int index) {
 		return array[index];
 	}
 
@@ -69,10 +69,10 @@ public final class LongArray {
 	/**
 	 * Returns copy of the array.
 	 * 
-	 * @return an array of longs
+	 * @return an array of bytes
 	 */
-	public long[] array() {
-		return array.clone();
+	public byte[] array() {
+		return Arrays.copyOf(array, array.length);
 	}
 
 	@Override
@@ -91,12 +91,12 @@ public final class LongArray {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		LongArray other = (LongArray) obj;
+		ByteArray other = (ByteArray) obj;
 		return Arrays.equals(array, other.array);
 	}
 
 	@Override
 	public String toString() {
-		return "LongArray [array=" + Arrays.toString(array) + "]";
+		return "ByteArray [array=" + Arrays.toString(array) + "]";
 	}
 }

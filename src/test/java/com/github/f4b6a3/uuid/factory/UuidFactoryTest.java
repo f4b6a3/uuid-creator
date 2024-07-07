@@ -1,7 +1,7 @@
 package com.github.f4b6a3.uuid.factory;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import com.github.f4b6a3.uuid.codec.BinaryCodec;
+import com.github.f4b6a3.uuid.codec.StandardBinaryCodec;
 import com.github.f4b6a3.uuid.codec.UuidCodec;
 import com.github.f4b6a3.uuid.factory.function.NodeIdFunction;
 import com.github.f4b6a3.uuid.util.UuidUtil;
@@ -19,7 +19,7 @@ public abstract class UuidFactoryTest {
 
 	protected static final String DUPLICATE_UUID_MSG = "A duplicate UUID was created";
 
-	private static final UuidCodec<byte[]> bytesCodec = new BinaryCodec();
+	private static final UuidCodec<byte[]> bytesCodec = new StandardBinaryCodec();
 
 	protected static final int THREAD_TOTAL = availableProcessors();
 
@@ -39,7 +39,7 @@ public abstract class UuidFactoryTest {
 
 	protected void checkVersion(UUID[] list, int version) {
 		for (UUID uuid : list) {
-			assertTrue("UUID is not RFC-4122 variant", UuidUtil.isRfc4122(uuid));
+			assertTrue("UUID is not RFC-4122 variant", UuidUtil.isStandard(uuid));
 			assertEquals(String.format("UUID is not version %s", version), uuid.version(), version);
 		}
 	}
@@ -115,10 +115,10 @@ public abstract class UuidFactoryTest {
 	public static class TestThread extends Thread {
 
 		public static Set<UUID> hashSet = new HashSet<>();
-		private NoArgsFactory factory;
+		private UuidFactory factory;
 		private int loopLimit;
 
-		public TestThread(NoArgsFactory factory, int loopLimit) {
+		public TestThread(UuidFactory factory, int loopLimit) {
 			this.factory = factory;
 			this.loopLimit = loopLimit;
 		}
