@@ -55,7 +55,7 @@ public final class DceSecurityFactory extends AbstTimeBasedFactory {
 
 	private DceSecurityFactory(Builder builder) {
 		super(UuidVersion.VERSION_DCE_SECURITY, builder);
-		this.localDomain = builder != null ? builder.localDomain : 0;
+		this.localDomain = builder.localDomain;
 		this.counter = new AtomicInteger();
 	}
 

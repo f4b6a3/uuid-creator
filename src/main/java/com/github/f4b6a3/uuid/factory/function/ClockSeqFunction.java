@@ -50,7 +50,7 @@ public interface ClockSeqFunction extends LongUnaryOperator {
 	 * 
 	 * @return a number in the range 0 to 16383 (2^14-1)
 	 */
-	public static long getRandom() {
+	static long getRandom() {
 		return toExpectedRange(RandomUtil.newSecureRandom().nextLong());
 	}
 
@@ -63,7 +63,7 @@ public interface ClockSeqFunction extends LongUnaryOperator {
 	 * @param clockseq a clock sequence
 	 * @return a number in the range 0 to 16383 (2^14-1).
 	 */
-	public static long toExpectedRange(final long clockseq) {
+	static long toExpectedRange(final long clockseq) {
 		return clockseq & 0x0000000000003fffL;
 	}
 }

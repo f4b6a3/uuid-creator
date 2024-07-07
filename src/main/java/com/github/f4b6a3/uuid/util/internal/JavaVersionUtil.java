@@ -48,7 +48,7 @@ public class JavaVersionUtil {
                 return 8;
             }
 
-        } catch (NullPointerException | NumberFormatException | IndexOutOfBoundsException e) {
+        } catch (NumberFormatException | IndexOutOfBoundsException e) {
             return 8;
         }
     }

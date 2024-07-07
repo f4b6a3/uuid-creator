@@ -71,7 +71,7 @@ public abstract class BaseNCodec implements UuidCodec<String> {
 	 * }</pre>
 	 */
 	@FunctionalInterface
-	public static interface CustomDivider {
+	public interface CustomDivider {
 		/**
 		 * Divide a number by x.
 		 * 
@@ -80,7 +80,7 @@ public abstract class BaseNCodec implements UuidCodec<String> {
 		 * @param x the divisor
 		 * @return a pair of longs
 		 */
-		public long[] divide(long x);
+		long[] divide(long x);
 	}
 
 	/**

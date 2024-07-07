@@ -121,6 +121,7 @@ public final class RandomUtil {
 
 	private static class SecureRandomPool {
 
+		private static final Random random = new Random();
 		private static final int POOL_SIZE = processors();
 		private static final Random[] POOL = new Random[POOL_SIZE];
 		private static final ReentrantLock lock = new ReentrantLock();
@@ -140,7 +141,7 @@ public final class RandomUtil {
 			// every now and then
 			if (bytes.length > 0 && bytes[0x00] == 0) {
 				// delete a random item from the pool
-				delete((new Random()).nextInt(POOL_SIZE));
+				delete(random.nextInt(POOL_SIZE));
 			}
 
 			return bytes;

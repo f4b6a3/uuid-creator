@@ -60,7 +60,7 @@ public interface TimeFunction extends LongSupplier {
 	 * @param instant an instant
 	 * @return a number of 100-nanoseconds since 1970-01-01 (Unix epoch)
 	 */
-	public static long toUnixTimestamp(final Instant instant) {
+	static long toUnixTimestamp(final Instant instant) {
 		return UuidTime.toUnixTimestamp(instant);
 	}
 
@@ -73,7 +73,7 @@ public interface TimeFunction extends LongSupplier {
 	 * @param timestamp a number of 100-nanoseconds since 1970-01-01 (Unix epoch)
 	 * @return a number in the range 0 to 2^60-1.
 	 */
-	public static long toExpectedRange(final long timestamp) {
+	static long toExpectedRange(final long timestamp) {
 		return timestamp & 0x0_fffffffffffffffL;
 	}
 }

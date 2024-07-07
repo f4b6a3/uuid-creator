@@ -65,7 +65,7 @@ public final class MacNodeIdFunction implements NodeIdFunction {
 				return toNumber(nic.getHardwareAddress());
 			}
 		} catch (SocketException e) {
-			// do nothing
+			return NodeIdFunction.getMulticastRandom();
 		}
 
 		return NodeIdFunction.getMulticastRandom();

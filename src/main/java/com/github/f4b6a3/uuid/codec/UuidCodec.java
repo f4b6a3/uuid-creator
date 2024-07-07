@@ -49,7 +49,7 @@ public interface UuidCodec<T> {
 	 * @return a generic type
 	 * @throws InvalidUuidException if the argument is invalid
 	 */
-	public T encode(UUID uuid);
+	T encode(UUID uuid);
 
 	/**
 	 * Get a UUID from a generic type.
@@ -58,5 +58,5 @@ public interface UuidCodec<T> {
 	 * @return a UUID
 	 * @throws InvalidUuidException if the argument is invalid
 	 */
-	public UUID decode(T type);
+	UUID decode(T type);
 }

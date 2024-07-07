@@ -80,8 +80,8 @@ public final class NetworkUtil {
 			if (hostname != null && !hostname.isEmpty()) {
 				return hostname;
 			}
-		} catch (UnknownHostException | NullPointerException e) {
-			// do nothing
+		} catch (UnknownHostException e) {
+			return null;
 		}
 
 		// not found
@@ -113,7 +113,7 @@ public final class NetworkUtil {
 				return mac;
 			}
 		} catch (SocketException | NullPointerException e) {
-			// do nothing
+			return null;
 		}
 
 		// not found
@@ -134,16 +134,12 @@ public final class NetworkUtil {
 			return ip;
 		}
 
-		try {
-			if (nic != null) {
-				Enumeration<InetAddress> ips = nic.getInetAddresses();
-				if (ips.hasMoreElements()) {
-					ip = ips.nextElement().getHostAddress();
-					return ip;
-				}
+		if (nic != null) {
+			Enumeration<InetAddress> ips = nic.getInetAddresses();
+			if (ips.hasMoreElements()) {
+				ip = ips.nextElement().getHostAddress();
+				return ip;
 			}
-		} catch (NullPointerException e) {
-			// do nothing
 		}
 
 		// not found
@@ -210,8 +206,8 @@ public final class NetworkUtil {
 				}
 			}
 
-		} catch (UnknownHostException | SocketException | NullPointerException e) {
-			// do nothing
+		} catch (UnknownHostException | SocketException e) {
+			return null;
 		}
 
 		// NIC not found
@@ -232,8 +228,8 @@ public final class NetworkUtil {
 					return true;
 				}
 			}
-		} catch (SocketException | NullPointerException e) {
-			// do nothing
+		} catch (SocketException e) {
+			return false;
 		}
 
 		return false;

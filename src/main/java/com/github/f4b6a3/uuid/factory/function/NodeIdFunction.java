@@ -47,7 +47,7 @@ public interface NodeIdFunction extends LongSupplier {
 	 * 
 	 * @return a number in the range 0 to 2^48-1.
 	 */
-	public static long getRandom() {
+	static long getRandom() {
 		return toExpectedRange(RandomUtil.newSecureRandom().nextLong());
 	}
 
@@ -56,7 +56,7 @@ public interface NodeIdFunction extends LongSupplier {
 	 * 
 	 * @return a number in the range 0 to 2^48-1.
 	 */
-	public static long getMulticastRandom() {
+	static long getMulticastRandom() {
 		return toMulticast(getRandom());
 	}
 
@@ -69,7 +69,7 @@ public interface NodeIdFunction extends LongSupplier {
 	 * @param nodeid the node identifier
 	 * @return a number in the range 0 to 2^48-1.
 	 */
-	public static long toExpectedRange(final long nodeid) {
+	static long toExpectedRange(final long nodeid) {
 		return nodeid & 0x0000_ffffffffffffL;
 	}
 
@@ -82,7 +82,7 @@ public interface NodeIdFunction extends LongSupplier {
 	 * @param nodeid the node identifier
 	 * @return a node identifier with the multicast bit set
 	 */
-	public static long toMulticast(long nodeid) {
+	static long toMulticast(long nodeid) {
 		return (nodeid & 0x0000_ffffffffffffL) | 0x0000_010000000000L;
 	}
 
@@ -92,7 +92,7 @@ public interface NodeIdFunction extends LongSupplier {
 	 * @param nodeid a node identifier
 	 * @return true if the node identifier is multicast
 	 */
-	public static boolean isMulticast(long nodeid) {
+	static boolean isMulticast(long nodeid) {
 		return (nodeid & 0x0000_010000000000L) == 0x0000_010000000000L;
 	}
 }

@@ -170,14 +170,14 @@ public abstract class AbstRandomBasedFactory extends UuidFactory {
 	/**
 	 * Interface for random generator.
 	 */
-	protected static interface IRandom {
+	protected interface IRandom {
 
 		/**
 		 * Return a random number.
 		 * 
 		 * @return a number
 		 */
-		public long nextLong();
+		long nextLong();
 
 		/**
 		 * Return a random array of bytes.
@@ -185,7 +185,7 @@ public abstract class AbstRandomBasedFactory extends UuidFactory {
 		 * @param length the length
 		 * @return an array
 		 */
-		public byte[] nextBytes(int length);
+		byte[] nextBytes(int length);
 	}
 
 	/**
