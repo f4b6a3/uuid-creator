@@ -20,8 +20,8 @@ public class WindowsTimeFunctionTest {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			long m1 = System.currentTimeMillis();
 			long ts = function.getAsLong() / 10000L;
-			// TS can be 48ms ahead due to time granularity and counter shift
-			long m2 = System.currentTimeMillis() + 48;
+			// can be 1 second ahead of system clock
+			long m2 = System.currentTimeMillis() + 1000L;
 			assertTrue("The current timstamp millisecond is incorrect", ts >= m1 && ts <= m2);
 		}
 	}
@@ -44,8 +44,7 @@ public class WindowsTimeFunctionTest {
 
 			long ts = function.getAsLong() / 10000L;
 
-			// TS can be 48ms ahead due to time granularity and counter shift
-			long tolerance = millis + 48;
+			long tolerance = millis + 1000; // can be 1 second ahead of system clock
 			assertTrue("The current timstamp millisecond is incorrect", ts >= millis && ts <= tolerance);
 		}
 	}
@@ -59,5 +58,6 @@ public class WindowsTimeFunctionTest {
 			assertTrue("The current timstamp should be greater than the last one", ts > lastTs);
 			lastTs = ts;
 		}
+
 	}
 }

@@ -96,7 +96,7 @@ public final class WindowsTimeFunction implements TimeFunction {
 			// if the time repeats,
 			// check the counter limit
 			if (counter >= counterMax) {
-				time++; // need to go ahead of system clock
+				time += GRANULARITY; // let it go forwards
 				// reset to a number between 0 and 159,999
 				counter = counter % TICKS_PER_GRANULARITY;
 				// reset to a number between 160,000 and 319,999
