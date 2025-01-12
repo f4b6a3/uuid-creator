@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.LongSupplier;
 
 /**
  * A class that represents and generates GUIDs/UUIDs.
@@ -199,6 +200,9 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * The clock sequence and node bits are reset to a pseudo-random value for each
 	 * new UUIDv1 generated.
 	 * <p>
+	 * It uses {@link ThreadLocalRandom}, which is not cryptographically strong.
+	 * <p>
+	 * 
 	 * Usage:
 	 * 
 	 * <pre>{@code
@@ -208,13 +212,54 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @return a GUID
 	 */
 	public static GUID v1() {
+		return v1(System::currentTimeMillis, LazyHolder::random);
+	}
 
-		final long time = gregorian(Instant.now());
+	/**
+	 * Returns a gregorian time-based unique identifier (UUIDv1).
+	 * <p>
+	 * The clock sequence and node bits are reset to a pseudo-random value for each
+	 * new UUIDv1 generated.
+	 * <p>
+	 * Usage:
+	 * 
+	 * <pre>{@code
+	 * SecureRandom random = new SecureRandom();
+	 * GUID guid = GUID.v1(Instant.now(), random);
+	 * }</pre>
+	 * 
+	 * @param instant an instant (optional)
+	 * @param random  a random generator (optional)
+	 * @return a GUID
+	 */
+	public static GUID v1(Instant instant, SecureRandom random) {
+		return v1(optional(instant), optional(random));
+	}
 
+	private static GUID v1(LongSupplier msec, LongSupplier random) {
+		final long time = gregorian(msec.getAsLong());
 		final long msb = (time << 32) | ((time >>> 16) & (MASK_16 << 16)) | ((time >>> 48) & MASK_12);
-		final long lsb = LazyHolder.random() | MULTICAST;
-
+		final long lsb = random.getAsLong() | MULTICAST;
 		return version(msb, lsb, 1);
+	}
+
+	/**
+	 * Returns a DCE Security unique identifier (UUIDv2).
+	 * <p>
+	 * It uses {@link ThreadLocalRandom}, which is not cryptographically strong.
+	 * <p>
+	 * Usage:
+	 * 
+	 * <pre>{@code
+	 * GUID guid = GUID.v2(Uuid.LOCAL_DOMAIN_PERSON, 1234);
+	 * }</pre>
+	 * 
+	 * @param localDomain     a custom local domain byte
+	 * @param localIdentifier a local identifier
+	 * @return a GUID
+	 */
+	public static GUID v2(byte localDomain, int localIdentifier) {
+		return v2(localDomain, localIdentifier, v1());
 	}
 
 	/**
@@ -223,17 +268,23 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * Usage:
 	 * 
 	 * <pre>{@code
-	 * GUID guid = GUID.v2(Uuid.LOCAL_DOMAIN_PERSON, 1234567890);
+	 * SecureRandom random = new SecureRandom();
+	 * GUID guid = GUID.v2(Uuid.LOCAL_DOMAIN_PERSON, 1234, Instant.now(), random);
 	 * }</pre>
 	 * 
 	 * @param localDomain     a custom local domain byte
 	 * @param localIdentifier a local identifier
+	 * @param instant         an instant (optional)
+	 * @param random          a random generator (optional)
 	 * @return a GUID
 	 */
-	public static GUID v2(byte localDomain, int localIdentifier) {
-		GUID uuid = v1();
-		final long msb = (uuid.msb & MASK_32) | ((localIdentifier & MASK_32) << 32);
-		final long lsb = (uuid.lsb & 0x3f00_ffff_ffff_ffffL) | ((localDomain & MASK_08) << 48);
+	public static GUID v2(byte localDomain, int localIdentifier, Instant instant, SecureRandom random) {
+		return v2(localDomain, localIdentifier, v1(instant, random));
+	}
+
+	private static GUID v2(byte localDomain, int localIdentifier, GUID guid) {
+		final long msb = (guid.msb & MASK_32) | ((localIdentifier & MASK_32) << 32);
+		final long lsb = (guid.lsb & 0x3f00_ffff_ffff_ffffL) | ((localDomain & MASK_08) << 48);
 		return version(msb, lsb, 2);
 	}
 
@@ -256,13 +307,30 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	}
 
 	/**
+	 * Returns a name-based unique identifier that uses MD5 hashing (UUIDv3).
+	 * <p>
+	 * Usage:
+	 * 
+	 * <pre>{@code
+	 * GUID guid = GUID.v3(myNameSpace, myBytes);
+	 * }</pre>
+	 * 
+	 * @param namespace a GUID (optional)
+	 * @param bytes     a byte array
+	 * @return a GUID
+	 * @throws NullPointerException if the byte array is null
+	 */
+	public static GUID v3(GUID namespace, byte[] bytes) {
+		return hash(3, "MD5", namespace, bytes);
+	}
+
+	/**
 	 * Returns a random-based unique identifier (UUIDv4).
 	 * <p>
 	 * It is an extremely fast and non-blocking alternative to
 	 * {@link UUID#randomUUID()}.
 	 * <p>
-	 * It employs {@link ThreadLocalRandom} which works very well, although not
-	 * cryptographically strong.
+	 * It uses {@link ThreadLocalRandom}, which is not cryptographically strong.
 	 * <p>
 	 * Usage:
 	 * 
@@ -273,9 +341,28 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @return a GUID
 	 */
 	public static GUID v4() {
-		final long msb = LazyHolder.random();
-		final long lsb = LazyHolder.random();
-		return version(msb, lsb, 4);
+		return version(LazyHolder.random(), LazyHolder.random(), 4);
+	}
+
+	/**
+	 * Returns a random-based unique identifier (UUIDv4).
+	 * <p>
+	 * It is equivalent to {@link UUID#randomUUID()}.
+	 * <p>
+	 * Usage:
+	 * 
+	 * <pre>{@code
+	 * SecureRandom random = new SecureRandom();
+	 * GUID guid = GUID.v4(random);
+	 * }</pre>
+	 * 
+	 * @return a GUID
+	 * @throws NullPointerException if the random is null
+	 */
+	public static GUID v4(final SecureRandom random) {
+		Objects.requireNonNull(random, "Null random");
+		final LongSupplier function = function(random);
+		return version(function.getAsLong(), function.getAsLong(), 4);
 	}
 
 	/**
@@ -297,6 +384,24 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	}
 
 	/**
+	 * Returns a name-based unique identifier that uses SHA-1 hashing (UUIDv5).
+	 * <p>
+	 * Usage:
+	 * 
+	 * <pre>{@code
+	 * GUID guid = GUID.v5(myNameSpace, myBytes);
+	 * }</pre>
+	 * 
+	 * @param namespace a GUID (optional)
+	 * @param bytes     a byte array
+	 * @return a GUID
+	 * @throws NullPointerException if the byte array is null
+	 */
+	public static GUID v5(GUID namespace, byte[] bytes) {
+		return hash(5, "SHA-1", namespace, bytes);
+	}
+
+	/**
 	 * Returns a reordered gregorian time-based unique identifier (UUIDv6).
 	 * <p>
 	 * The clock sequence and node bits are reset to a pseudo-random value for each
@@ -311,17 +416,41 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @return a GUID
 	 */
 	public static GUID v6() {
+		return v6(System::currentTimeMillis, LazyHolder::random);
+	}
 
-		final long time = gregorian(Instant.now());
+	/**
+	 * Returns a reordered gregorian time-based unique identifier (UUIDv6).
+	 * <p>
+	 * The clock sequence and node bits are reset to a pseudo-random value for each
+	 * new UUIDv6 generated.
+	 * <p>
+	 * Usage:
+	 * 
+	 * <pre>{@code
+	 * SecureRandom random = new SecureRandom();
+	 * GUID guid = GUID.v6(Instant.now(), random);
+	 * }</pre>
+	 * 
+	 * @param instant an instant (optional)
+	 * @param random  a random generator (optional)
+	 * @return a GUID
+	 */
+	public static GUID v6(Instant instant, SecureRandom random) {
+		return v6(optional(instant), optional(random));
+	}
 
+	private static GUID v6(LongSupplier msec, LongSupplier random) {
+		final long time = gregorian(msec.getAsLong());
 		final long msb = ((time & ~MASK_12) << 4) | (time & MASK_12);
-		final long lsb = LazyHolder.random() | MULTICAST;
-
+		final long lsb = random.getAsLong() | MULTICAST;
 		return version(msb, lsb, 6);
 	}
 
 	/**
 	 * Returns a Unix epoch time-based unique identifier (UUIDv7).
+	 * <p>
+	 * It uses {@link ThreadLocalRandom}, which is not cryptographically strong.
 	 * <p>
 	 * Usage:
 	 * 
@@ -332,12 +461,31 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @return a GUID
 	 */
 	public static GUID v7() {
+		return v7(System::currentTimeMillis, LazyHolder::random);
+	}
 
-		final long time = System.currentTimeMillis();
+	/**
+	 * Returns a Unix epoch time-based unique identifier (UUIDv7).
+	 * <p>
+	 * Usage:
+	 * 
+	 * <pre>{@code
+	 * SecureRandom random = new SecureRandom();
+	 * GUID guid = GUID.v7(Instant.now(), random);
+	 * }</pre>
+	 * 
+	 * @param instant an instant (optional)
+	 * @param random  a random generator (optional)
+	 * @return a GUID
+	 */
+	public static GUID v7(Instant instant, SecureRandom random) {
+		return v7(optional(instant), optional(random));
+	}
 
+	private static GUID v7(LongSupplier msec, LongSupplier random) {
+		final long time = msec.getAsLong();
 		final long msb = (time << 16) | (LazyHolder.random() & MASK_12);
-		final long lsb = LazyHolder.random();
-
+		final long lsb = random.getAsLong();
 		return version(msb, lsb, 7);
 	}
 
@@ -473,18 +621,37 @@ public final class GUID implements Serializable, Comparable<GUID> {
 		return 0;
 	}
 
-	static long gregorian(final Instant now) {
-		// 1582-10-15T00:00:00.000Z
-		final long greg = 12219292800L;
-		final long nano = now.getNano();
-		final long secs = now.getEpochSecond() + greg;
-		final long time = (secs * 10_000_000L) + (nano / 100L);
-		return time;
+	static LongSupplier optional(final Instant instant) {
+		return instant == null ? System::currentTimeMillis : instant::toEpochMilli;
+	}
+
+	static LongSupplier optional(final SecureRandom random) {
+		return random == null ? LazyHolder::random : function(random);
+	}
+
+	static LongSupplier function(final SecureRandom random) {
+		final byte[] bytes = new byte[Long.BYTES];
+		return () -> {
+			random.nextBytes(bytes);
+			return ByteBuffer.wrap(bytes).getLong();
+		};
+	}
+
+	static long gregorian(final long millisecons) {
+		// 1582-10-15T00:00:00Z
+		final long factor = 10_000L;
+		final long offset = 12219292800000L;
+		return ((millisecons + offset) * factor);
 	}
 
 	static GUID hash(int version, String algorithm, GUID namespace, String name) {
-
 		Objects.requireNonNull(name, "Null name");
+		return hash(version, algorithm, namespace, name.getBytes(StandardCharsets.UTF_8));
+	}
+
+	static GUID hash(int version, String algorithm, GUID namespace, byte[] bytes) {
+
+		Objects.requireNonNull(bytes, "Null bytes");
 		MessageDigest hasher = hasher(algorithm);
 
 		if (namespace != null) {
@@ -494,7 +661,7 @@ public final class GUID implements Serializable, Comparable<GUID> {
 			hasher.update(ns.array());
 		}
 
-		hasher.update(name.getBytes(StandardCharsets.UTF_8));
+		hasher.update(bytes);
 		ByteBuffer hash = ByteBuffer.wrap(hasher.digest());
 
 		final long msb = hash.getLong();
