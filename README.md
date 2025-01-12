@@ -44,14 +44,14 @@ Maven:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>6.0.0</version>
+  <version>6.1.0</version>
 </dependency>
 ```
 
 Gradle:
 
 ```
-implementation 'com.github.f4b6a3:uuid-creator:6.0.0'
+implementation 'com.github.f4b6a3:uuid-creator:6.1.0'
 ```
 
 See more options in [maven.org](https://search.maven.org/artifact/com.github.f4b6a3/uuid-creator).
@@ -147,14 +147,21 @@ GUID guid = GUID.v6();
 GUID guid = GUID.v7();
 ```
 
-You can generate JDK's UUIDs using GUID's API. For example, you can generate a JDK's UUID version 7 with this simple statement:
+You can generate random-based GUIDs by passing an instance of `SecureRandom` as a parameter:
+
+```java
+GUID guid = GUID.v4(new SecureRandom());
+```
+
+You can also generate JDK's UUIDs using GUID's API. For example, you can generate a JDK's UUID version 7 with this simple statement:
 
 ```java
 UUID uuid = GUID.v7().toUUID();
 ```
 
 > **NOTE:**
-> It uses a **non-cryptographic** PRNG. So it doesn't block when generating random-based UUIDs. However, it is not recommended when the security provided by “cryptographic quality” generators is considered necessary.
+> It uses by default a **non-cryptographic** PRNG. So it doesn't block when generating random-based UUIDs. However, it is not recommended when the security provided by “cryptographic quality” generators is considered necessary. In this case, you can pass a `SecureRandom` instance as a parameter to any method that expects it.
+
 
 Other identifier generators
 ------------------------------------------------------
