@@ -32,7 +32,6 @@ import java.util.function.LongSupplier;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstCombFactory;
 import com.github.f4b6a3.uuid.factory.AbstRandomBasedFactory;
-import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
  * Concrete factory for creating Suffix COMB GUIDs.
@@ -137,17 +136,10 @@ public final class SuffixCombFactory extends AbstCombFactory {
 	public UUID create() {
 		lock.lock();
 		try {
-			final long time = timeFunction.getAsLong();
-			if (this.random instanceof SafeRandom) {
-				final byte[] bytes = this.random.nextBytes(10);
-				final long long1 = ByteUtil.toNumber(bytes, 0, 8);
-				final long long2 = ByteUtil.toNumber(bytes, 8, 10);
-				return make(time, long1, long2);
-			} else {
-				final long long1 = this.random.nextLong();
-				final long long2 = this.random.nextLong();
-				return make(time, long1, long2);
-			}
+			final long time = instantFunction.get().toEpochMilli();
+			final long long1 = this.random.nextLong(8);
+			final long long2 = this.random.nextLong(2);
+			return make(time, long1, long2);
 		} finally {
 			lock.unlock();
 		}
