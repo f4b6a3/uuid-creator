@@ -25,7 +25,9 @@
 package com.github.f4b6a3.uuid.factory;
 
 import java.time.Clock;
+import java.time.Instant;
 import java.util.function.LongSupplier;
+import java.util.function.Supplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 
@@ -37,9 +39,9 @@ import com.github.f4b6a3.uuid.enums.UuidVersion;
 public abstract class AbstCombFactory extends AbstRandomBasedFactory {
 
 	/**
-	 * The time function.
+	 * The instant function.
 	 */
-	protected LongSupplier timeFunction;
+	protected Supplier<Instant> instantFunction;
 
 	/**
 	 * Constructor whith a version number and a builder.
@@ -49,7 +51,7 @@ public abstract class AbstCombFactory extends AbstRandomBasedFactory {
 	 */
 	protected AbstCombFactory(UuidVersion version, Builder<?, ?> builder) {
 		super(version, builder);
-		this.timeFunction = builder.getTimeFunction();
+		this.instantFunction = builder.getInstantFunction();
 	}
 
 	/**
@@ -62,20 +64,20 @@ public abstract class AbstCombFactory extends AbstRandomBasedFactory {
 	public abstract static class Builder<T, B extends Builder<T, B>> extends AbstRandomBasedFactory.Builder<T, B> {
 
 		/**
-		 * The time function.
+		 * The instant function.
 		 */
-		protected LongSupplier timeFunction;
+		protected Supplier<Instant> instantFunction;
 
 		/**
-		 * Get the time function.
+		 * Get the instant function.
 		 * 
 		 * @return the builder
 		 */
-		protected LongSupplier getTimeFunction() {
-			if (this.timeFunction == null) {
-				this.timeFunction = () -> System.currentTimeMillis();
+		protected Supplier<Instant> getInstantFunction() {
+			if (this.instantFunction == null) {
+				this.instantFunction = () -> Instant.now();
 			}
-			return this.timeFunction;
+			return this.instantFunction;
 		}
 
 		/**
@@ -87,7 +89,7 @@ public abstract class AbstCombFactory extends AbstRandomBasedFactory {
 		@SuppressWarnings("unchecked")
 		public B withClock(Clock clock) {
 			if (clock != null) {
-				this.timeFunction = () -> clock.millis();
+				this.instantFunction = () -> clock.instant();
 			}
 			return (B) this;
 		}
@@ -95,12 +97,26 @@ public abstract class AbstCombFactory extends AbstRandomBasedFactory {
 		/**
 		 * Set the time function.
 		 * 
+		 * The time is the number of milliseconds since 1970-01-01T00:00:00Z.
+		 * 
 		 * @param timeFunction a function
 		 * @return the builder
 		 */
 		@SuppressWarnings("unchecked")
 		public B withTimeFunction(LongSupplier timeFunction) {
-			this.timeFunction = timeFunction;
+			this.instantFunction = () -> Instant.ofEpochMilli(timeFunction.getAsLong());
+			return (B) this;
+		}
+
+		/**
+		 * Set the instant function.
+		 * 
+		 * @param instantFunction a function
+		 * @return the builder
+		 */
+		@SuppressWarnings("unchecked")
+		public B withInstantFunction(Supplier<Instant> instantFunction) {
+			this.instantFunction = instantFunction;
 			return (B) this;
 		}
 	}
