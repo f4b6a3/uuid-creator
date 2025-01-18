@@ -5,12 +5,14 @@ import static org.junit.Assert.*;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.SplittableRandom;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
@@ -21,7 +23,9 @@ import com.github.f4b6a3.uuid.util.UuidUtil;
 
 public class GUIDTest {
 
-	protected static final int DEFAULT_LOOP_MAX = 100;
+	private static final int DEFAULT_LOOP_MAX = 100;
+
+	private static final SecureRandom secure = new SecureRandom();
 
 	private static final String REGEX = "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$";
 	private static final Pattern PATTERN = Pattern.compile(REGEX, Pattern.CASE_INSENSITIVE);
@@ -105,10 +109,18 @@ public class GUIDTest {
 
 	@Test
 	public void testV1() {
-		GUID prev = GUID.v1();
+		testV1(() -> GUID.v1());
+		testV1(() -> GUID.v1(null, null));
+		testV1(() -> GUID.v1(null, secure));
+		testV1(() -> GUID.v1(Instant.now(), null));
+		testV1(() -> GUID.v1(Instant.now(), secure));
+	}
+
+	public void testV1(Supplier<GUID> function) {
+		GUID prev = function.get();
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			long t0 = System.currentTimeMillis();
-			GUID guid = GUID.v1();
+			GUID guid = function.get();
 			long t1 = UuidTime.toUnixTimestamp(guid.toUUID().timestamp()) / 10_000L;
 			long t2 = System.currentTimeMillis();
 			assertNotNull(guid);
@@ -159,6 +171,7 @@ public class GUIDTest {
 			assertEquals(GUID.v3(null, name), GUID.v3(null, name));
 			assertEquals(GUID.v3(GUID.NIL, name), GUID.v3(GUID.NIL, name));
 			assertEquals(GUID.v3(namespace, name), GUID.v3(namespace, name));
+			assertEquals(GUID.v3(namespace, name), GUID.v3(namespace, name.getBytes(StandardCharsets.UTF_8)));
 			assertEquals(UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8)), GUID.v3(null, name).toUUID());
 			prev = guid;
 		}
@@ -172,9 +185,14 @@ public class GUIDTest {
 
 	@Test
 	public void testV4() {
-		GUID prev = GUID.v4();
+		testV4(() -> GUID.v4());
+		testV4(() -> GUID.v4(secure));
+	}
+
+	public void testV4(Supplier<GUID> function) {
+		GUID prev = function.get();
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
-			GUID guid = GUID.v4();
+			GUID guid = function.get();
 			assertNotNull(guid);
 			assertNotEquals(prev, guid);
 			assertNotEquals(GUID.NIL, guid);
@@ -202,6 +220,7 @@ public class GUIDTest {
 			assertEquals(GUID.v5(null, name), GUID.v5(null, name));
 			assertEquals(GUID.v5(GUID.NIL, name), GUID.v5(GUID.NIL, name));
 			assertEquals(GUID.v5(namespace, name), GUID.v5(namespace, name));
+			assertEquals(GUID.v5(namespace, name), GUID.v5(namespace, name.getBytes(StandardCharsets.UTF_8)));
 			prev = guid;
 		}
 		{
@@ -214,10 +233,18 @@ public class GUIDTest {
 
 	@Test
 	public void testV6() {
-		GUID prev = GUID.v6();
+		testV6(() -> GUID.v6());
+		testV6(() -> GUID.v6(null, null));
+		testV6(() -> GUID.v6(null, secure));
+		testV6(() -> GUID.v6(Instant.now(), null));
+		testV6(() -> GUID.v6(Instant.now(), secure));
+	}
+
+	public void testV6(Supplier<GUID> function) {
+		GUID prev = function.get();
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			long t0 = System.currentTimeMillis();
-			GUID guid = GUID.v6();
+			GUID guid = function.get();
 			GUID temp = new GUID(TimeOrderedCodec.INSTANCE.decode(guid.toUUID()));
 			long t1 = UuidTime.toUnixTimestamp(temp.toUUID().timestamp()) / 10_000L;
 			long t2 = System.currentTimeMillis();
@@ -233,10 +260,18 @@ public class GUIDTest {
 
 	@Test
 	public void testV7() {
-		GUID prev = GUID.v7();
+		testV7(() -> GUID.v7());
+		testV7(() -> GUID.v7(null, null));
+		testV7(() -> GUID.v7(null, secure));
+		testV7(() -> GUID.v7(Instant.now(), null));
+		testV7(() -> GUID.v7(Instant.now(), secure));
+	}
+
+	public void testV7(Supplier<GUID> function) {
+		GUID prev = function.get();
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			long t0 = System.currentTimeMillis();
-			GUID guid = GUID.v7();
+			GUID guid = function.get();
 			long t1 = guid.getMostSignificantBits() >>> 16;
 			long t2 = System.currentTimeMillis();
 			assertNotNull(guid);
@@ -413,16 +448,16 @@ public class GUIDTest {
 
 	@Test
 	public void testProtectedGregorian() {
-		testProtectedGregorianInstant(Instant.parse("1582-10-15T00:00:00.000Z"));
-		testProtectedGregorianInstant(Instant.parse("1970-01-01T00:00:00.000Z"));
-		testProtectedGregorianInstant(Instant.parse("1955-11-12T06:38:00.000Z"));
-		testProtectedGregorianInstant(Instant.parse("1985-10-26T09:00:00.000Z"));
-		testProtectedGregorianInstant(Instant.parse("2015-10-21T07:28:00.000Z"));
+		testProtectedGregorianInstant(Instant.parse("1582-10-15T00:00:00.000Z").toEpochMilli());
+		testProtectedGregorianInstant(Instant.parse("1970-01-01T00:00:00.000Z").toEpochMilli());
+		testProtectedGregorianInstant(Instant.parse("1955-11-12T06:38:00.000Z").toEpochMilli());
+		testProtectedGregorianInstant(Instant.parse("1985-10-26T09:00:00.000Z").toEpochMilli());
+		testProtectedGregorianInstant(Instant.parse("2015-10-21T07:28:00.000Z").toEpochMilli());
 	}
 
-	private static void testProtectedGregorianInstant(Instant instant) {
+	private static void testProtectedGregorianInstant(final long time) {
 		long epoch = 12219292800L; // seconds since "1582-10-15T00:00:00.000Z"
-		assertEquals(GUID.gregorian(instant) / 10_000_000L, epoch + instant.getEpochSecond());
+		assertEquals(GUID.gregorian(time) / 10_000_000L, epoch + Instant.ofEpochMilli(time).getEpochSecond());
 	}
 
 	@Test

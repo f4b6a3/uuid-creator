@@ -31,7 +31,6 @@ import java.util.function.LongSupplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstCombFactory;
-import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
  * Concrete factory for creating Short Prefix COMB GUIDs.
@@ -175,17 +174,10 @@ public final class ShortPrefixCombFactory extends AbstCombFactory {
 	public UUID create() {
 		lock.lock();
 		try {
-			final long time = timeFunction.getAsLong() / interval;
-			if (this.random instanceof SafeRandom) {
-				final byte[] bytes = this.random.nextBytes(14);
-				final long long1 = ByteUtil.toNumber(bytes, 0, 6);
-				final long long2 = ByteUtil.toNumber(bytes, 6, 14);
-				return make(time, long1, long2);
-			} else {
-				final long long1 = this.random.nextLong();
-				final long long2 = this.random.nextLong();
-				return make(time, long1, long2);
-			}
+			final long time = instantFunction.get().toEpochMilli() / interval;
+			final long long1 = this.random.nextLong(6);
+			final long long2 = this.random.nextLong(8);
+			return make(time, long1, long2);
 		} finally {
 			lock.unlock();
 		}

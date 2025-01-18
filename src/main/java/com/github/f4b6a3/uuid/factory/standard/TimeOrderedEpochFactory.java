@@ -32,11 +32,11 @@ import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.function.LongSupplier;
+import java.util.function.Supplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstCombFactory;
 import com.github.f4b6a3.uuid.factory.nonstandard.PrefixCombFactory;
-import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
  * Concrete factory for creating Unix epoch time-ordered unique identifiers
@@ -82,15 +82,10 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 
 	private static final long INCREMENT_MAX_DEFAULT = 0xffffffffL; // 2^32-1
 
-	// Used to preserve monotonicity when the system clock is
-	// adjusted by NTP after a small clock drift or when the
-	// system clock jumps back by 1 second due to leap second.
-	private static final long CLOCK_DRIFT_TOLERANCE = 10_000;
-
 	private static final long versionBits = 0x000000000000f000L;
 	private static final long variantBits = 0xc000000000000000L;
-	private static final long lower16Bits = 0x000000000000ffffL;
 	private static final long upper16Bits = 0xffff000000000000L;
+	private static final long upper48Bits = 0xffffffffffff0000L;
 
 	/**
 	 * Default constructor.
@@ -152,14 +147,14 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 
 		switch (builder.getIncrementType()) {
 		case INCREMENT_TYPE_PLUS_1:
-			this.uuidFunction = new Plus1Function(random, timeFunction);
+			this.uuidFunction = new Plus1Function(random, instantFunction);
 			break;
 		case INCREMENT_TYPE_PLUS_N:
-			this.uuidFunction = new PlusNFunction(random, timeFunction, builder.getIncrementMax());
+			this.uuidFunction = new PlusNFunction(random, instantFunction, builder.getIncrementMax());
 			break;
 		case INCREMENT_TYPE_DEFAULT:
 		default:
-			this.uuidFunction = new DefaultFunction(random, timeFunction);
+			this.uuidFunction = new DefaultFunction(random, instantFunction);
 		}
 	}
 
@@ -253,7 +248,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	 */
 	@Override
 	public UUID create() {
-		UUID uuid = this.uuidFunction.apply(null);
+		UUID uuid = this.uuidFunction.apply(instantFunction.get());
 		return toUuid(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits());
 	}
 
@@ -278,41 +273,46 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		protected long lsb = 0L; // least significant bits
 
 		protected final IRandom random;
-		protected final LongSupplier timeFunction;
+		protected Supplier<Instant> instantFunction;
 		protected final ReentrantLock lock = new ReentrantLock();
+
+		// let go up to 1 second ahead of system clock
+		private static final long advanceMax = 1_000L;
+
+		// let's try to detect the system clock precision
+		protected static final int precision = precision();
+
+		protected static final int PRECISION_MILLISECOND = 1;
+		protected static final int PRECISION_MICROSECOND = 2;
 
 		protected static final long overflow = 0x0000000000000000L;
 
-		public UuidFunction(IRandom random, LongSupplier timeFunction) {
+		public UuidFunction(IRandom random, Supplier<Instant> instantFunction) {
 
 			this.random = random;
-			this.timeFunction = timeFunction;
+			this.instantFunction = instantFunction;
 
 			// instantiate the internal state
-			reset(this.timeFunction.getAsLong());
+			reset(this.instantFunction.get());
 		}
 
 		@Override
-		public UUID apply(Instant instant) {
+		public UUID apply(final Instant instant) {
 			lock.lock();
 			try {
 
-				if (instant != null) {
-					// The user provided the time.
-					reset(instant.toEpochMilli());
-					return new UUID(this.msb, this.lsb);
+				long lastTime = this.lastTime();
+				long time = instant.toEpochMilli();
+
+				// is it not too much ahead of system clock?
+				if (advanceMax > Math.abs(lastTime - time)) {
+					time = Math.max(lastTime, time);
 				}
 
-				final long lastTime = this.time();
-				final long time = timeFunction.getAsLong();
-
-				// Check if the current time is the same as the previous time or has moved
-				// backwards after a small system clock adjustment or after a leap second.
-				// Drift tolerance = (previous_time - 10s) < current_time <= previous_time
-				if ((time > lastTime - CLOCK_DRIFT_TOLERANCE) && (time <= lastTime)) {
-					increment();
+				if (time == lastTime) {
+					increment(instant);
 				} else {
-					reset(time);
+					reset(instant);
 				}
 
 				return new UUID(this.msb, this.lsb);
@@ -322,67 +322,156 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 			}
 		}
 
-		// to be implemented
-		abstract void increment();
+		/**
+		 * Increment the `rand_b` field.
+		 * 
+		 * If the `rand_b` field rolls over, then `rand_a` should be incremented too.
+		 * 
+		 * Note that as `unix_ts_ms` and `rand_a` are stored in the same `long`
+		 * variable, when `rand_a` rolls over, `unix_ts_ms` goes up automatically.
+		 * 
+		 * To be implemented by each specific subclass.
+		 * 
+		 * @param instant an instant
+		 */
+		abstract void increment(final Instant instant);
 
-		long time() {
+		/**
+		 * Reset the `unix_ts_ms` field with the current milliseconds. Also set the
+		 * `rand_a` and `rand_b` fields with random bits.
+		 * 
+		 * If there's enough clock precision, inject the current microseconds into the
+		 * `rand_a` field instead of random bits.
+		 * 
+		 * @param instant an instant
+		 */
+		void reset(final Instant instant) {
+
+			this.msb = instant.toEpochMilli() << 16;
+			this.lsb = random.nextLong();
+
+			if (precision == PRECISION_MILLISECOND) {
+				// lack of precision: put random bits in `rand_a`
+				this.msb = (msb & upper48Bits) | random.nextLong(2);
+			} else {
+				// set `rand_a` field
+				microseconds(instant);
+			}
+		}
+
+		/**
+		 * Injects microseconds into the `rand_a` field.
+		 * <p>
+		 * It only works when the underlying runtime provides at least microsecond
+		 * resolution. Otherwise, this method won't change the value in `rand_a` field.
+		 * <p>
+		 * In JDK 11, we can get 1 microsecond precision, which is good for this method.
+		 * <p>
+		 * However, in JDK 8, the maximum precision we can get is 1 millisecond, which
+		 * is not enough. On Windows, it is even worse because the default precision is
+		 * 15.625ms, due to the system clock's refresh frequency of 64Hz.
+		 * 
+		 * @param instant an instant
+		 */
+		void microseconds(final Instant instant) {
+
+			// do nothing if not enough precision
+			if (precision == PRECISION_MILLISECOND) {
+				return;
+			}
+
+			final long shift = 12;
+			final long scale = 1_000_000L;
+			final long nanos = instant.getNano();
+			final long randa = ((nanos % scale) << shift) / scale;
+
+			// previous and next and timestamps
+			final long prev = (msb & ~versionBits);
+			final long next = (msb & upper48Bits) | (randa & 0x0fffL);
+
+			// don't let the timestamp go backwards
+			this.msb = (next > prev) ? next : prev;
+		}
+
+		long lastTime() {
 			return this.msb >>> 16;
 		}
 
-		void reset(final long time) {
-			if (random instanceof SafeRandom) {
-				final byte[] bytes = random.nextBytes(10);
-				this.msb = (time << 16) | (ByteUtil.toNumber(bytes, 0, 2));
-				this.lsb = ByteUtil.toNumber(bytes, 2, 10);
-			} else {
-				this.msb = (time << 16) | (random.nextLong() & lower16Bits);
-				this.lsb = random.nextLong();
+		/**
+		 * Returns the instant precision detected.
+		 * 
+		 * @param clock a custom clock instance
+		 * @return the precision
+		 */
+		static int precision() {
+
+			Clock clock = Clock.systemUTC();
+
+			int best = 0;
+			int loop = 3; // the best of 3
+
+			for (int i = 0; i < loop; i++) {
+
+				int x = 0;
+
+				int nanosecond = clock.instant().getNano();
+
+				if (nanosecond % 1_000_000 != 0) {
+					x = PRECISION_MICROSECOND;
+				} else {
+					x = PRECISION_MILLISECOND;
+				}
+
+				best = Math.max(best, x);
 			}
+
+			return best;
 		}
 	}
 
 	static final class DefaultFunction extends UuidFunction {
 
-		public DefaultFunction(IRandom random, LongSupplier timeFunction) {
-			super(random, timeFunction);
+		public DefaultFunction(IRandom random, Supplier<Instant> instantFunction) {
+			super(random, instantFunction);
 		}
 
 		@Override
-		void increment() {
+		void increment(final Instant instant) {
 
-			// add 2^48 to rand_b
+			// set `rand_a` field
+			microseconds(instant);
+
+			// add 2^48 to `rand_b`
 			this.lsb = (this.lsb & upper16Bits);
 			this.lsb = (this.lsb | variantBits) + (1L << 48);
 
 			if (this.lsb == overflow) {
-				// add 1 to rand_a if rand_b overflows
+				// add 1 to `rand_a` if overflow occurs
 				this.msb = (this.msb | versionBits) + 1L;
 			}
 
 			// then randomize the lower 48 bits
-			if (random instanceof SafeRandom) {
-				final byte[] bytes = random.nextBytes(6);
-				this.lsb |= ByteUtil.toNumber(bytes);
-			} else {
-				this.lsb |= this.random.nextLong() & (~upper16Bits);
-			}
+			this.lsb = (this.lsb & upper16Bits) | this.random.nextLong(6);
 		}
 	}
 
 	static final class Plus1Function extends UuidFunction {
 
-		public Plus1Function(IRandom random, LongSupplier timeFunction) {
-			super(random, timeFunction);
+		public Plus1Function(IRandom random, Supplier<Instant> instantFunction) {
+			super(random, instantFunction);
 		}
 
 		@Override
-		void increment() {
+		void increment(final Instant instant) {
 
-			// just add 1 to rand_b
+			// set `rand_a` field
+			microseconds(instant);
+
+			// just add 1 to `rand_b`
 			this.lsb = (this.lsb | variantBits) + 1L;
 
 			if (this.lsb == overflow) {
-				// add 1 to rand_a if rand_b overflows
+				// add 1 to `rand_a` if overflow occurs
 				this.msb = (this.msb | versionBits) + 1L;
 			}
 		}
@@ -392,19 +481,22 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 
 		private final LongSupplier plusNFunction;
 
-		public PlusNFunction(IRandom random, LongSupplier timeFunction, Long incrementMax) {
-			super(random, timeFunction);
+		public PlusNFunction(IRandom random, Supplier<Instant> instantFunction, Long incrementMax) {
+			super(random, instantFunction);
 			this.plusNFunction = customPlusNFunction(random, incrementMax);
 		}
 
 		@Override
-		void increment() {
+		void increment(final Instant instant) {
 
-			// add a random n to rand_b, where 1 <= n <= incrementMax
+			// set `rand_a` field
+			microseconds(instant);
+
+			// add a random n to `rand_b`, where 1 <= n <= incrementMax
 			this.lsb = (this.lsb | variantBits) + plusNFunction.getAsLong();
 
 			if (this.lsb == overflow) {
-				// add 1 to rand_a if rand_b overflows
+				// add 1 to `rand_a` if overflow occurs
 				this.msb = (this.msb | versionBits) + 1L;
 			}
 		}
@@ -414,8 +506,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 				if (random instanceof SafeRandom) {
 					return () -> {
 						// return n, where 1 <= n <= 2^32
-						final byte[] bytes = random.nextBytes(4);
-						return ByteUtil.toNumber(bytes, 0, 4) + 1;
+						return random.nextLong(Integer.BYTES) + 1;
 					};
 				} else {
 					return () -> {
@@ -431,9 +522,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 					final int size = ((bits - 1) / Byte.SIZE) + 1;
 					return () -> {
 						// return n, where 1 <= n <= incrementMax
-						final byte[] bytes = random.nextBytes(size);
-						final long entropy = ByteUtil.toNumber(bytes, 0, size);
-						return ((entropy & positive) % incrementMax) + 1;
+						return ((random.nextLong(size) & positive) % incrementMax) + 1;
 					};
 				} else {
 					return () -> {
