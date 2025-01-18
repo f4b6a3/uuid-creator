@@ -77,9 +77,9 @@ public final class DefaultTimeFunction implements TimeFunction {
 		// get current system time
 		long time = clock.millis();
 
-		// check if this has advanced system clock
-		if (advanceMax > Math.abs(time - lastTime)) {
-			time = Math.max(time, lastTime);
+		// is it not too much ahead of system clock?
+		if (advanceMax > Math.abs(lastTime - time)) {
+			time = Math.max(lastTime, time);
 		}
 
 		// check time change

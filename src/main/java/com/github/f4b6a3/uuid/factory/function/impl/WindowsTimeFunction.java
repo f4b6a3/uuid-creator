@@ -40,7 +40,7 @@ import com.github.f4b6a3.uuid.factory.function.TimeFunction;
  * On WINDOWS, the typical system time granularity is 15.625ms due to a default
  * 64Hz timer frequency.
  * <p>
- * It can advance 48ms or more ahead of system clock on heavy load.
+ * It can advance 16ms or more ahead of system clock on heavy load.
  * 
  * @see TimeFunction
  */
@@ -86,9 +86,9 @@ public final class WindowsTimeFunction implements TimeFunction {
 		// get calculated system time
 		long time = calculatedMillis();
 
-		// check if this has advanced system clock
-		if (advanceMax > Math.abs(time - lastTime)) {
-			time = Math.max(time, lastTime);
+		// is it not too much ahead of system clock?
+		if (advanceMax > Math.abs(lastTime - time)) {
+			time = Math.max(lastTime, time);
 		}
 
 		// check time change
