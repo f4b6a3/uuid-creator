@@ -37,7 +37,6 @@ import java.util.function.Supplier;
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstCombFactory;
 import com.github.f4b6a3.uuid.factory.nonstandard.PrefixCombFactory;
-import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
  * Concrete factory for creating Unix epoch time-ordered unique identifiers
@@ -277,13 +276,16 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		protected Supplier<Instant> instantFunction;
 		protected final ReentrantLock lock = new ReentrantLock();
 
-		protected static final long overflow = 0x0000000000000000L;
+		// let go up to 1 second ahead of system clock
+		private static final long advanceMax = 1_000L;
 
-		// trying to detect the clock precision
+		// let's try to detect the system clock precision
 		protected static final int precision = precision();
 
 		protected static final int PRECISION_MILLISECOND = 1;
 		protected static final int PRECISION_MICROSECOND = 2;
+
+		protected static final long overflow = 0x0000000000000000L;
 
 		public UuidFunction(IRandom random, Supplier<Instant> instantFunction) {
 
@@ -299,8 +301,13 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 			lock.lock();
 			try {
 
-				final long time = instant.toEpochMilli();
-				final long lastTime = this.lastTime();
+				long lastTime = this.lastTime();
+				long time = instant.toEpochMilli();
+
+				// is it not too much ahead of system clock?
+				if (advanceMax > Math.abs(lastTime - time)) {
+					time = Math.max(lastTime, time);
+				}
 
 				if (time == lastTime) {
 					increment(instant);
@@ -315,31 +322,72 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 			}
 		}
 
-		// to be implemented by each specific subclass
+		/**
+		 * Increment the `rand_b` field.
+		 * 
+		 * If the `rand_b` field rolls over, then `rand_a` should be incremented too.
+		 * 
+		 * Note that as `unix_ts_ms` and `rand_a` are stored in the same `long`
+		 * variable, when `rand_a` rolls over, `unix_ts_ms` goes up automatically.
+		 * 
+		 * To be implemented by each specific subclass.
+		 * 
+		 * @param instant an instant
+		 */
 		abstract void increment(final Instant instant);
 
+		/**
+		 * Reset the `unix_ts_ms` field with the current milliseconds. Also set the
+		 * `rand_a` and `rand_b` fields with random bits.
+		 * 
+		 * If there's enough clock precision, inject the current microseconds into the
+		 * `rand_a` field instead of random bits.
+		 * 
+		 * @param instant an instant
+		 */
 		void reset(final Instant instant) {
+
 			this.msb = instant.toEpochMilli() << 16;
 			this.lsb = random.nextLong();
-			if (precision > PRECISION_MILLISECOND) {
-				// enough precision: put microseconds in `rand_a`
-				microseconds(instant);
-			} else {
+
+			if (precision == PRECISION_MILLISECOND) {
 				// lack of precision: put random bits in `rand_a`
 				this.msb = (msb & upper48Bits) | random.nextLong(2);
+			} else {
+				// set `rand_a` field
+				microseconds(instant);
 			}
 		}
 
+		/**
+		 * Injects microseconds into the `rand_a` field.
+		 * <p>
+		 * It only works when the underlying runtime provides at least microsecond
+		 * resolution. Otherwise, this method won't change the value in `rand_a` field.
+		 * <p>
+		 * In JDK 11, we can get 1 microsecond precision, which is good for this method.
+		 * <p>
+		 * However, in JDK 8, the maximum precision we can get is 1 millisecond, which
+		 * is not enough. On Windows, it is even worse because the default precision is
+		 * 15.625ms, due to the system clock's refresh frequency of 64Hz.
+		 * 
+		 * @param instant an instant
+		 */
 		void microseconds(final Instant instant) {
 
-			// 2^20/10^6 or 1048576/1000000
-			final double factor = 1.048576d;
+			// do nothing if not enough precision
+			if (precision == PRECISION_MILLISECOND) {
+				return;
+			}
+
+			final long shift = 12;
+			final long scale = 1_000_000L;
 			final long nanos = instant.getNano();
-			final long micros = ((long) (nanos * factor) >>> 8);
+			final long randa = ((nanos % scale) << shift) / scale;
 
 			// previous and next and timestamps
 			final long prev = (msb & ~versionBits);
-			final long next = (msb & upper48Bits) | (micros & 0x0fffL);
+			final long next = (msb & upper48Bits) | (randa & 0x0fffL);
 
 			// don't let the timestamp go backwards
 			this.msb = (next > prev) ? next : prev;
@@ -416,6 +464,9 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		@Override
 		void increment(final Instant instant) {
 
+			// set `rand_a` field
+			microseconds(instant);
+
 			// just add 1 to `rand_b`
 			this.lsb = (this.lsb | variantBits) + 1L;
 
@@ -438,6 +489,9 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		@Override
 		void increment(final Instant instant) {
 
+			// set `rand_a` field
+			microseconds(instant);
+
 			// add a random n to `rand_b`, where 1 <= n <= incrementMax
 			this.lsb = (this.lsb | variantBits) + plusNFunction.getAsLong();
 
@@ -452,8 +506,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 				if (random instanceof SafeRandom) {
 					return () -> {
 						// return n, where 1 <= n <= 2^32
-						final byte[] bytes = random.nextBytes(4);
-						return ByteUtil.toNumber(bytes, 0, 4) + 1;
+						return random.nextLong(Integer.BYTES) + 1;
 					};
 				} else {
 					return () -> {
@@ -469,9 +522,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 					final int size = ((bits - 1) / Byte.SIZE) + 1;
 					return () -> {
 						// return n, where 1 <= n <= incrementMax
-						final byte[] bytes = random.nextBytes(size);
-						final long entropy = ByteUtil.toNumber(bytes, 0, size);
-						return ((entropy & positive) % incrementMax) + 1;
+						return ((random.nextLong(size) & positive) % incrementMax) + 1;
 					};
 				} else {
 					return () -> {
