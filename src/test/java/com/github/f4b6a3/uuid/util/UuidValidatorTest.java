@@ -93,6 +93,10 @@ public class UuidValidatorTest {
 		uuid = "01234567-89ab-4def-!@#$-ef0123456789"; // String with non alphanumeric chars
 		assertFalse("UUID string non alphanumeric chars should be invalid.", UuidValidator.isValid(uuid));
 
+
+		uuid = "01234567-89ab-4def-😊🤖-ef0123456789"; // String with UTF8 chars
+		assertFalse("UUID string UTF8 chars should be invalid.", UuidValidator.isValid(uuid));
+
 		try {
 			uuid = null;
 			UuidValidator.validate(uuid);
