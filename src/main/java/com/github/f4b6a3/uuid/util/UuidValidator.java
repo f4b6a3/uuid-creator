@@ -251,7 +251,7 @@ public final class UuidValidator {
 	protected static boolean isParseable(final char[] chars) {
 		int dashCount = 0;
 		for (int i = 0; i < chars.length; i++) {
-			if (MAP.get(chars[i]) == -1) {
+			if (chars[i] > MAP.length() || MAP.get(chars[i]) == -1) {
 				if (chars[i] == '-') {
 					dashCount++;
 					continue;
