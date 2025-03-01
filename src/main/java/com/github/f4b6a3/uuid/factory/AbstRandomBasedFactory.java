@@ -180,9 +180,17 @@ public abstract class AbstRandomBasedFactory extends UuidFactory {
 		long nextLong();
 
 		/**
+		 * Return a random number.
+		 *
+		 * @param length the byte array length
+		 * @return a number
+		 */
+		long nextLong(int length);
+
+		/**
 		 * Return a random array of bytes.
 		 * 
-		 * @param length the length
+		 * @param length the byte array length
 		 * @return an array
 		 */
 		byte[] nextBytes(int length);
@@ -223,6 +231,12 @@ public abstract class AbstRandomBasedFactory extends UuidFactory {
 		@Override
 		public long nextLong() {
 			return randomFunction.getAsLong();
+		}
+
+		@Override
+		public long nextLong(int length) {
+			byte[] bytes = nextBytes(length);
+			return ByteUtil.toNumber(bytes);
 		}
 
 		@Override
@@ -293,6 +307,11 @@ public abstract class AbstRandomBasedFactory extends UuidFactory {
 		@Override
 		public long nextLong() {
 			byte[] bytes = this.randomFunction.apply(Long.BYTES);
+			return ByteUtil.toNumber(bytes);
+		}
+
+		public long nextLong(int length) {
+			byte[] bytes = nextBytes(length);
 			return ByteUtil.toNumber(bytes);
 		}
 

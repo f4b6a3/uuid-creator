@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [6.1.0] - 2025-xx-xx
+
+- Added microsecond precision to UUIDv7 when available;
+- Added methods to `GUID`;
+- Refactored many classes;
+- Updated som tests.
+
 ## [6.0.0] - 2024-07-07
 
 This version has breaking changes.

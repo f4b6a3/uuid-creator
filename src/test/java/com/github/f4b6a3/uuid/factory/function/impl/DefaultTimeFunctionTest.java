@@ -20,8 +20,9 @@ public class DefaultTimeFunctionTest {
 		for (int i = 0; i < DEFAULT_LOOP_MAX; i++) {
 			long m1 = System.currentTimeMillis();
 			long ts = function.getAsLong() / 10000L;
-			// TS can be 1ms ahead due to counter shift
-			long m2 = System.currentTimeMillis() + 1;
+			// can be 1 second ahead of system clock
+			// lets allow to advance only a tenth of it
+			long m2 = System.currentTimeMillis() + 100L;
 			assertTrue("The current timstamp millisecond is incorrect", ts >= m1 && ts <= m2);
 		}
 	}
