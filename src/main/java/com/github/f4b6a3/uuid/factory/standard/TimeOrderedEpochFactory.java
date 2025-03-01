@@ -56,12 +56,19 @@ import com.github.f4b6a3.uuid.factory.nonstandard.PrefixCombFactory;
  * faster than the other types.
  * <li><b>Type 3 (plus n)</b>: this type is also divided in 2 components, namely
  * time and monotonic random. The monotonic random component is incremented by a
- * random positive integer between 1 and MAX when the time repeats. If the value
- * of MAX is not specified, MAX is 2^32. This type of UUID is also like a
- * Monotonic ULID.
+ * random positive integer between 1 and 2^32. This type of UUID is also like a
+ * Monotonic ULID, but with a random increment instead of 1.
  * </ul>
  * <p>
- * <b>Warning:</b> this can change in the future.
+ * If the underlying runtime provides enough clock precision, the microseconds
+ * are also injected in the UUID, specifically in the {@code rand_a} field,
+ * which is the name RFC 9562 gives to the 12 bits right after the milliseconds
+ * field, from left to right. Otherwise, these 12 bits are randomly generated.
+ * <p>
+ * In JDK 11, we get 1 microsecond precision. However, in JDK 8, the maximum
+ * precision we can get is 1 millisecond. On Windows, it is even worse because
+ * the default precision is 15.625ms, due to the system clock's refresh rate of
+ * 64Hz.
  * 
  * @since 5.0.0
  * @see PrefixCombFactory
@@ -363,13 +370,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 		 * Injects microseconds into the `rand_a` field.
 		 * <p>
 		 * It only works when the underlying runtime provides at least microsecond
-		 * resolution. Otherwise, this method won't change the value in `rand_a` field.
-		 * <p>
-		 * In JDK 11, we can get 1 microsecond precision, which is good for this method.
-		 * <p>
-		 * However, in JDK 8, the maximum precision we can get is 1 millisecond, which
-		 * is not enough. On Windows, it is even worse because the default precision is
-		 * 15.625ms, due to the system clock's refresh frequency of 64Hz.
+		 * precision. Otherwise, this method won't change the value in `rand_a` field.
 		 * 
 		 * @param instant an instant
 		 */
