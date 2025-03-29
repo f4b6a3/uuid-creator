@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2024 Fabio Lima
+ * Copyright (c) 2018-2025 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,6 @@ import java.util.function.LongSupplier;
 
 import com.github.f4b6a3.uuid.enums.UuidVersion;
 import com.github.f4b6a3.uuid.factory.AbstCombFactory;
-import com.github.f4b6a3.uuid.util.internal.ByteUtil;
 
 /**
  * Concrete factory for creating Prefix COMB GUIDs.
@@ -134,17 +133,10 @@ public final class PrefixCombFactory extends AbstCombFactory {
 	public UUID create() {
 		lock.lock();
 		try {
-			final long time = timeFunction.getAsLong();
-			if (this.random instanceof SafeRandom) {
-				final byte[] bytes = this.random.nextBytes(10);
-				final long long1 = ByteUtil.toNumber(bytes, 0, 2);
-				final long long2 = ByteUtil.toNumber(bytes, 2, 10);
-				return make(time, long1, long2);
-			} else {
-				final long long1 = this.random.nextLong();
-				final long long2 = this.random.nextLong();
-				return make(time, long1, long2);
-			}
+			final long time = instantFunction.get().toEpochMilli();
+			final long long1 = this.random.nextLong(2);
+			final long long2 = this.random.nextLong(8);
+			return make(time, long1, long2);
 		} finally {
 			lock.unlock();
 		}

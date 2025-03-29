@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2024 Fabio Lima
+ * Copyright (c) 2018-2025 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ import com.github.f4b6a3.uuid.factory.function.TimeFunction;
  * Function that returns a number of 100-nanoseconds since 1970-01-01 (Unix
  * epoch).
  * <p>
- * It can advance up to 1ms ahead of system time.
+ * It can advance 1ms or more ahead of system clock on heavy load.
  * 
  * @see TimeFunction
  */
@@ -44,6 +44,9 @@ public final class DefaultTimeFunction implements TimeFunction {
 	private final Clock clock;
 
 	private long lastTime = -1;
+
+	// let go up to 1 second ahead of system clock
+	private static final long advanceMax = 1_000L;
 
 	// start the counter with a random number between 0 and 9,999
 	private long counter = Math.abs(new SplittableRandom().nextLong()) % TICKS_PER_MILLI;
@@ -71,19 +74,20 @@ public final class DefaultTimeFunction implements TimeFunction {
 
 		counter++; // always increment
 
-		// get the current time
+		// get current system time
 		long time = clock.millis();
+
+		// is it not too much ahead of system clock?
+		if (advanceMax > Math.abs(lastTime - time)) {
+			time = Math.max(lastTime, time);
+		}
 
 		// check time change
 		if (time == lastTime) {
 			// if the time repeats,
 			// check the counter limit
 			if (counter >= counterMax) {
-				// if the counter goes beyond the limit,
-				while (time == lastTime) {
-					// wait the time to advance
-					time = clock.millis();
-				}
+				time++; // must go ahead of system clock
 				// reset to a number between 0 and 9,999
 				counter = counter % TICKS_PER_MILLI;
 				// reset to a number between 10,000 and 19,999

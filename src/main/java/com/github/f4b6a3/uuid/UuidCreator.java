@@ -1,7 +1,7 @@
 /*
  * MIT License
  * 
- * Copyright (c) 2018-2024 Fabio Lima
+ * Copyright (c) 2018-2025 Fabio Lima
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -598,6 +598,16 @@ public final class UuidCreator {
 	 * is the timestamp in hexadecimal.
 	 * <p>
 	 * The random bits are generated with each method invocation.
+	 * <p>
+	 * You can use this method to produce UUIDs with any instant you want, for
+	 * example to obfuscate the actual generation instant in a simple way. Example:
+	 * <p>
+	 * 
+	 * <pre>{@code
+	 * // Shift the generation instant 1 day ahead of system clock
+	 * Instant instant = Instant.now().plus(Duration.ofDays(1));
+	 * UUID uuid = UuidCreator.getTimeOrderedEpoch(instant);
+	 * }</pre>
 	 *
 	 * @param instant a given instant
 	 * @return a UUIDv7

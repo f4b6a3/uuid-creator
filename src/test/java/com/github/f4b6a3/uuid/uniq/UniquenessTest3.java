@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.TestSuite;
+import com.github.f4b6a3.uuid.factory.UuidFactory;
 import com.github.f4b6a3.uuid.factory.standard.TimeOrderedEpochFactory;
 
 /**
@@ -24,7 +25,7 @@ public class UniquenessTest3 {
 	private boolean verbose; // Show progress
 
 	// Abstract time-based UUID factory
-	private TimeOrderedEpochFactory factory;
+	private UuidFactory factory;
 
 	/**
 	 * Initialize the test.
@@ -37,7 +38,7 @@ public class UniquenessTest3 {
 	 * @param factory
 	 * @param verbose
 	 */
-	public UniquenessTest3(TimeOrderedEpochFactory factory, int threadCount, int requestCount, boolean verbose) {
+	public UniquenessTest3(UuidFactory factory, int threadCount, int requestCount, boolean verbose) {
 		this.threadCount = threadCount;
 		this.requestCount = requestCount;
 		this.factory = factory;
@@ -75,10 +76,10 @@ public class UniquenessTest3 {
 	public class TestThread extends Thread {
 
 		private int id;
-		private TimeOrderedEpochFactory factory;
+		private UuidFactory factory;
 		private boolean verbose;
 
-		public TestThread(int id, TimeOrderedEpochFactory factory, boolean verbose) {
+		public TestThread(int id, UuidFactory factory, boolean verbose) {
 			this.id = id;
 			this.factory = factory;
 			this.verbose = verbose;
@@ -134,16 +135,17 @@ public class UniquenessTest3 {
 		}
 	}
 
-	public static void execute(TimeOrderedEpochFactory factory, int threadCount, int requestCount, boolean verbose) {
+	public static void execute(UuidFactory factory, int threadCount, int requestCount, boolean verbose) {
 		UniquenessTest3 test = new UniquenessTest3(factory, threadCount, requestCount, verbose);
 		test.start();
 	}
 
-	private static TimeOrderedEpochFactory newFactory() {
+	private static UuidFactory newFactory() {
 		// a new generator that creates time-ordered UUIDs (v7),
 		// that uses a hash instead of a random node identifier,
 		// and that uses a fixed millisecond to simulate a loop faster than the clock
 		return new TimeOrderedEpochFactory.Builder().withIncrementPlus1().build();
+		// return new TimeOrderedEpochFactory.Builder().withFastRandom().build();
 	}
 
 	public static void main(String[] args) {
@@ -153,10 +155,10 @@ public class UniquenessTest3 {
 		System.out.println("-----------------------------------------------------");
 
 		// SHARED generator for all threads
-		TimeOrderedEpochFactory factory = newFactory();
+		UuidFactory factory = newFactory();
 
 		boolean verbose = true;
-		int threadCount = 16; // Number of threads to run
+		int threadCount = 8; // Number of threads to run
 		int requestCount = 1_000_000; // Number of requests for thread
 
 		execute(factory, threadCount, requestCount, verbose);
@@ -170,7 +172,7 @@ public class UniquenessTest3 {
 		factory = null;
 
 		verbose = true;
-		threadCount = 16; // Number of threads to run
+		threadCount = 8; // Number of threads to run
 		requestCount = 1_000_000; // Number of requests for thread
 
 		execute(factory, threadCount, requestCount, verbose);

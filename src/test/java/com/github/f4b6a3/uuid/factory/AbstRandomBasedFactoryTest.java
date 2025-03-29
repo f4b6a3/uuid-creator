@@ -251,39 +251,39 @@ public class AbstRandomBasedFactoryTest extends UuidFactoryTest {
 		{
 
 			List<Long> list = new ArrayList<>();
-			list.add(0x0123456789abcdefL);
+			list.add(0x0123_456789abcdefL);
 			list.add(0xfedcba9876543210L);
-			UUID uuid1 = new UUID(0x0000000000004defL, 0xbedcba9876543210L);
+			UUID uuid1 = new UUID(0x0000000000004123L, 0xbedcba9876543210L);
 			PrefixCombFactory factory = new PrefixCombFactory(() -> list.remove(0));
 			UUID uuid2 = factory.create();
-			String substring1 = uuid1.toString().substring(14);
-			String substring2 = uuid2.toString().substring(14);
-			assertEquals(substring1, substring2);
+			String substring1 = "ffffffff-ffff-" + uuid1.toString().substring(14);
+			String substring2 = "ffffffff-ffff-" +uuid2.toString().substring(14);
+			assertEquals(substring1, substring2); //
 		}
 
 		{
 			// SuffixCombFactory
 			List<Long> list = new ArrayList<>();
 			list.add(0x0123456789abcdefL);
-			list.add(0xfedcba9876543210L);
-			UUID uuid1 = new UUID(0x0123456789ab4defL, 0xb210000000000000L);
+			list.add(0xfedc_ba9876543210L);
+			UUID uuid1 = new UUID(0x0123456789ab4defL, 0xbedcffffffffffffL);
 			SuffixCombFactory factory = new SuffixCombFactory(() -> list.remove(0));
 			UUID uuid2 = factory.create();
-			String substring1 = uuid1.toString().substring(0, 24);
-			String substring2 = uuid2.toString().substring(0, 24);
+			String substring1 = uuid1.toString().substring(0, 24) + "ffffffffffff";
+			String substring2 = uuid2.toString().substring(0, 24) + "ffffffffffff";
 			assertEquals(substring1, substring2);
 		}
 
 		{
 			// ShortPrefixCombFactory
 			List<Long> list = new ArrayList<>();
-			list.add(0x0123456789abcdefL);
+			list.add(0x0123456789ab_cdefL);
 			list.add(0xfedcba9876543210L);
-			UUID uuid1 = new UUID(0x0000456789ab4defL, 0xbedcba9876543210L);
+			UUID uuid1 = new UUID(0xffff0123456749abL, 0xbedcba9876543210L);
 			ShortPrefixCombFactory factory = new ShortPrefixCombFactory(() -> list.remove(0));
 			UUID uuid2 = factory.create();
-			String substring1 = uuid1.toString().substring(14);
-			String substring2 = uuid2.toString().substring(14);
+			String substring1 = uuid1.toString().substring(4) + "ffff-ffff-ffff-ffff-ffffffffffff";
+			String substring2 = uuid2.toString().substring(4) + "ffff-ffff-ffff-ffff-ffffffffffff";
 			assertEquals(substring1, substring2);
 		}
 
@@ -291,12 +291,12 @@ public class AbstRandomBasedFactoryTest extends UuidFactoryTest {
 			// ShortSuffixCombFactory
 			List<Long> list = new ArrayList<>();
 			list.add(0x0123456789abcdefL);
-			list.add(0xfedcba9876543210L);
-			UUID uuid1 = new UUID(0x0123456789ab4defL, 0xba98000076543210L);
+			list.add(0xfedcba987654_3210L);
+			UUID uuid1 = new UUID(0x0123456789ab4defL, 0xbedcffffba987654L);
 			ShortSuffixCombFactory factory = new ShortSuffixCombFactory(() -> list.remove(0));
 			UUID uuid2 = factory.create();
-			String substring1 = uuid1.toString().substring(0, 24) + uuid1.toString().substring(28, 36);
-			String substring2 = uuid2.toString().substring(0, 24) + uuid2.toString().substring(28, 36);
+			String substring1 = uuid1.toString().substring(0, 24) + "ffff" + uuid1.toString().substring(28, 36);
+			String substring2 = uuid2.toString().substring(0, 24) + "ffff" + uuid2.toString().substring(28, 36);
 			assertEquals(substring1, substring2);
 		}
 	}
