@@ -420,6 +420,7 @@ Remove `Fingerprint` // too complex
 
 [unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-6.1.0...HEAD
 [6.1.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-6.0.0...uuid-creator-6.1.0
+[6.1.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-6.0.0...uuid-creator-6.1.0
 [6.0.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.7...uuid-creator-6.0.0
 [5.3.7]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.6...uuid-creator-5.3.7
 [5.3.6]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.5...uuid-creator-5.3.6
