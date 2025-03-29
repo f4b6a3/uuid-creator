@@ -160,7 +160,7 @@ UUID uuid = GUID.v7().toUUID();
 ```
 
 > **NOTE:**
-> It uses by default a **non-cryptographic** PRNG. So it doesn't block when generating random-based UUIDs. However, it is not recommended when the security provided by “cryptographic quality” generators is considered necessary. In this case, you can pass a `SecureRandom` instance as a parameter to any method that expects it.
+> `GUID` API uses `ThreadLocalRandom` by default, which is a **non-cryptographic** PRNG, so it doesn't block when generating UUIDs. If your project needs a “cryptographic quality” random generator, you can pass a `SecureRandom` object to the methods that expect a `Random` parameter.
 
 
 Other identifier generators
