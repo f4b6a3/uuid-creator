@@ -30,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Random;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Objects;
@@ -200,7 +201,7 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * The clock sequence and node bits are reset to a pseudo-random value for each
 	 * new UUIDv1 generated.
 	 * <p>
-	 * It uses {@link ThreadLocalRandom}, which is not cryptographically strong.
+	 * It uses {@link ThreadLocalRandom} as random number generator.
 	 * <p>
 	 * 
 	 * Usage:
@@ -212,7 +213,7 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @return a GUID
 	 */
 	public static GUID v1() {
-		return v1(System::currentTimeMillis, LazyHolder::random);
+		return v1(System::currentTimeMillis, TLRandom::nextLong);
 	}
 
 	/**
@@ -232,7 +233,7 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @param random  a random generator (optional)
 	 * @return a GUID
 	 */
-	public static GUID v1(Instant instant, SecureRandom random) {
+	public static GUID v1(Instant instant, Random random) {
 		return v1(optional(instant), optional(random));
 	}
 
@@ -246,7 +247,7 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	/**
 	 * Returns a DCE Security unique identifier (UUIDv2).
 	 * <p>
-	 * It uses {@link ThreadLocalRandom}, which is not cryptographically strong.
+	 * It uses {@link ThreadLocalRandom} as random number generator.
 	 * <p>
 	 * Usage:
 	 * 
@@ -278,7 +279,7 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @param random          a random generator (optional)
 	 * @return a GUID
 	 */
-	public static GUID v2(byte localDomain, int localIdentifier, Instant instant, SecureRandom random) {
+	public static GUID v2(byte localDomain, int localIdentifier, Instant instant, Random random) {
 		return v2(localDomain, localIdentifier, v1(instant, random));
 	}
 
@@ -330,7 +331,7 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * It is an extremely fast and non-blocking alternative to
 	 * {@link UUID#randomUUID()}.
 	 * <p>
-	 * It uses {@link ThreadLocalRandom}, which is not cryptographically strong.
+	 * It uses {@link ThreadLocalRandom} as random number generator.
 	 * <p>
 	 * Usage:
 	 * 
@@ -341,7 +342,7 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @return a GUID
 	 */
 	public static GUID v4() {
-		return version(LazyHolder.random(), LazyHolder.random(), 4);
+		return version(TLRandom.nextLong(), TLRandom.nextLong(), 4);
 	}
 
 	/**
@@ -356,13 +357,13 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * GUID guid = GUID.v4(random);
 	 * }</pre>
 	 * 
+	 * @param random a random generator
 	 * @return a GUID
 	 * @throws NullPointerException if the random is null
 	 */
-	public static GUID v4(final SecureRandom random) {
+	public static GUID v4(Random random) {
 		Objects.requireNonNull(random, "Null random");
-		final LongSupplier function = function(random);
-		return version(function.getAsLong(), function.getAsLong(), 4);
+		return version(random.nextLong(), random.nextLong(), 4);
 	}
 
 	/**
@@ -407,6 +408,8 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * The clock sequence and node bits are reset to a pseudo-random value for each
 	 * new UUIDv6 generated.
 	 * <p>
+	 * It uses {@link ThreadLocalRandom} as random number generator.
+	 * <p>
 	 * Usage:
 	 * 
 	 * <pre>{@code
@@ -416,7 +419,7 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @return a GUID
 	 */
 	public static GUID v6() {
-		return v6(System::currentTimeMillis, LazyHolder::random);
+		return v6(System::currentTimeMillis, TLRandom::nextLong);
 	}
 
 	/**
@@ -436,7 +439,7 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @param random  a random generator (optional)
 	 * @return a GUID
 	 */
-	public static GUID v6(Instant instant, SecureRandom random) {
+	public static GUID v6(Instant instant, Random random) {
 		return v6(optional(instant), optional(random));
 	}
 
@@ -450,7 +453,7 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	/**
 	 * Returns a Unix epoch time-based unique identifier (UUIDv7).
 	 * <p>
-	 * It uses {@link ThreadLocalRandom}, which is not cryptographically strong.
+	 * It uses {@link ThreadLocalRandom} as random number generator.
 	 * <p>
 	 * Usage:
 	 * 
@@ -461,7 +464,7 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @return a GUID
 	 */
 	public static GUID v7() {
-		return v7(System::currentTimeMillis, LazyHolder::random);
+		return v7(System::currentTimeMillis, TLRandom::nextLong);
 	}
 
 	/**
@@ -478,13 +481,13 @@ public final class GUID implements Serializable, Comparable<GUID> {
 	 * @param random  a random generator (optional)
 	 * @return a GUID
 	 */
-	public static GUID v7(Instant instant, SecureRandom random) {
+	public static GUID v7(Instant instant, Random random) {
 		return v7(optional(instant), optional(random));
 	}
 
 	private static GUID v7(LongSupplier msec, LongSupplier random) {
 		final long time = msec.getAsLong();
-		final long msb = (time << 16) | (LazyHolder.random() & MASK_12);
+		final long msb = (time << 16) | (TLRandom.nextLong() & MASK_12);
 		final long lsb = random.getAsLong();
 		return version(msb, lsb, 7);
 	}
@@ -621,20 +624,12 @@ public final class GUID implements Serializable, Comparable<GUID> {
 		return 0;
 	}
 
-	static LongSupplier optional(final Instant instant) {
+	static LongSupplier optional(Instant instant) {
 		return instant == null ? System::currentTimeMillis : instant::toEpochMilli;
 	}
 
-	static LongSupplier optional(final SecureRandom random) {
-		return random == null ? LazyHolder::random : function(random);
-	}
-
-	static LongSupplier function(final SecureRandom random) {
-		final byte[] bytes = new byte[Long.BYTES];
-		return () -> {
-			random.nextBytes(bytes);
-			return ByteBuffer.wrap(bytes).getLong();
-		};
+	static LongSupplier optional(Random random) {
+		return random == null ? TLRandom::nextLong : random::nextLong;
 	}
 
 	static long gregorian(final long millisecons) {
@@ -798,7 +793,7 @@ public final class GUID implements Serializable, Comparable<GUID> {
 		}
 	}
 
-	private static class LazyHolder {
+	private static class TLRandom {
 
 		// The JVM unique number tries to mitigate the fact that the thread
 		// local random is not seeded with a secure random seed by default.
@@ -809,7 +804,7 @@ public final class GUID implements Serializable, Comparable<GUID> {
 		// Of course it doesn't better the output, but doesn't hurt either.
 		static final long JVM_UNIQUE_NUMBER = new SecureRandom().nextLong();
 
-		private static long random() {
+		private static long nextLong() {
 			return ThreadLocalRandom.current().nextLong() ^ JVM_UNIQUE_NUMBER;
 		}
 	}
