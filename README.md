@@ -44,7 +44,7 @@ Maven:
 <dependency>
   <groupId>com.github.f4b6a3</groupId>
   <artifactId>uuid-creator</artifactId>
-  <version>6.1.0</version>
+  <version>6.1.1</version>
 </dependency>
 ```
 

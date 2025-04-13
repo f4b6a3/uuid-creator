@@ -255,7 +255,7 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 	 */
 	@Override
 	public UUID create() {
-		UUID uuid = this.uuidFunction.apply(instantFunction.get());
+		UUID uuid = this.uuidFunction.apply(null);
 		return toUuid(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits());
 	}
 
@@ -308,8 +308,15 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 			lock.lock();
 			try {
 
+				if (instant != null) {
+					reset(instant); // user specified
+					return new UUID(this.msb, this.lsb);
+				}
+
+				Instant now = instantFunction.get();
+
 				long lastTime = this.lastTime();
-				long time = instant.toEpochMilli();
+				long time = now.toEpochMilli();
 
 				// is it not too much ahead of system clock?
 				if (advanceMax > Math.abs(lastTime - time)) {
@@ -317,9 +324,9 @@ public final class TimeOrderedEpochFactory extends AbstCombFactory {
 				}
 
 				if (time == lastTime) {
-					increment(instant);
+					increment(now);
 				} else {
-					reset(instant);
+					reset(now);
 				}
 
 				return new UUID(this.msb, this.lsb);

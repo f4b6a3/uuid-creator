@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 Nothing unreleased.
 
+## [6.1.1] - 2025-04-13
+
+- Fixed incorrect timestamp in UUIDv7 when using user-specified instant. #107
+
 ## [6.1.0] - 2025-03-29
 
 - Added microsecond precision to UUIDv7;
@@ -418,7 +422,8 @@ Remove `Fingerprint` // too complex
 -   Removed UuidSettings.getNodeIdentifierDeprecated // remove deprecated
 -   Renamed UuidSettings to UuidCreatorSettings
 
-[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-6.1.0...HEAD
+[unreleased]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-6.1.1...HEAD
+[6.1.1]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-6.1.0...uuid-creator-6.1.1
 [6.1.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-6.0.0...uuid-creator-6.1.0
 [6.0.0]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.7...uuid-creator-6.0.0
 [5.3.7]: https://github.com/f4b6a3/uuid-creator/compare/uuid-creator-5.3.6...uuid-creator-5.3.7
