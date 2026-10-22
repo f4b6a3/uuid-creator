@@ -92,9 +92,8 @@ public class UrnCodec implements UuidCodec<String> {
 	 */
 	public static boolean isUuidUrn(String urn) {
 		final int stringLength = 45; // URN string length
-		final int prefixLength = 9; // URN prefix length
 		if (urn != null && urn.length() == stringLength) {
-			String uuid = urn.substring(prefixLength);
+			String uuid = StandardStringCodec.modify(urn);
 			return UuidValidator.isValid(uuid);
 		}
 		return false;
