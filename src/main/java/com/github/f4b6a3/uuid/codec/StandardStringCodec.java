@@ -24,6 +24,7 @@
 
 package com.github.f4b6a3.uuid.codec;
 
+import java.util.Locale;
 import java.util.UUID;
 
 import com.github.f4b6a3.uuid.codec.base.Base16Codec;
@@ -215,7 +216,8 @@ public class StandardStringCodec implements UuidCodec<String> {
 	protected static String modify(final String string) {
 
 		// UUID URN format: "urn:uuid:00000000-0000-0000-0000-000000000000"
-		if (string.length() == LENGTH_WITH_URN_PREFIX && string.startsWith(URN_PREFIX)) {
+		if (string.length() == LENGTH_WITH_URN_PREFIX
+				&& string.substring(0, URN_PREFIX.length()).toLowerCase(Locale.ROOT).equals(URN_PREFIX)) {
 			return string.substring(URN_PREFIX.length()); // Remove the URN prefix: "urn:uuid:"
 		}
 

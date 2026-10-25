@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import java.util.UUID;
+import java.net.URI;
 
 import com.github.f4b6a3.uuid.exception.InvalidUuidException;
 
@@ -14,6 +15,28 @@ public class UrnCodecTest {
 	private static final String URN_PREFIX = "urn:uuid:";
 
 	private static final String RFC4122_URN_PATTERN = "^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-6][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
+
+	@Test
+	public void testRejectInvalidUrnPrefixes() {
+		String uuid = "f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
+		for (String prefix : new String[] { "foo:uuid:", "urn:guid:", "123456789", "urn/uuid/", "urn:uu\u0131d:", "urn:uu\u0130d:" }) {
+			assertFalse(prefix, UrnCodec.isUuidUrn(prefix + uuid));
+			assertFalse(prefix, UriCodec.isUuidUri(URI.create(prefix + uuid)));
+		}
+	}
+
+	@Test
+	public void testCaseInsensitiveUrnPrefixes() {
+		UUID uuid = UUID.fromString("f81d4fae-7dec-11d0-a765-00a0c91e6bf6");
+		for (String prefix : new String[] { "urn:uuid:", "URN:UUID:", "UrN:UuId:" }) {
+			String urn = prefix + uuid;
+			assertTrue(urn, UrnCodec.isUuidUrn(urn));
+			assertEquals(uuid, UrnCodec.INSTANCE.decode(urn));
+			assertTrue(urn, UriCodec.isUuidUri(URI.create(urn)));
+			assertEquals(uuid, UriCodec.INSTANCE.decode(URI.create(urn)));
+			assertEquals(uuid, StandardStringCodec.INSTANCE.decode(urn));
+		}
+	}
 
 	@Test
 	public void testEncode() {
